@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>MDH Stoma Care Clinic — Roster</title>
-<!-- Build v28: VL Vacation Leave wording + one-page Daily Attendance image PDF -->
+<title>MDH Stoma Care Clinic — Patient Dashboard</title>
+<!-- Build v35: Step 4 Patient Register/Profile moved to Project Bible tables + professional violet theme -->
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -12,12 +12,12 @@
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <style>
 :root{
-  --navy:#0f2137;--teal:#00897b;--teal2:#26a69a;--gold:#f5a623;
-  --red:#e53935;--green:#43a047;--orange:#fb8c00;--blue:#1e88e5;
-  --bg:#f4f6f9;--white:#ffffff;--border:#e2e8f0;--text:#1a2332;--muted:#8896a7;
-  --sidebar:#0f2137;--accent:#00c9b1;--card:#ffffff;
-  --shadow:0 2px 12px rgba(15,33,55,.08);
-  --shadow-lg:0 8px 32px rgba(15,33,55,.14);
+  --navy:#241335;--teal:#6d28d9;--teal2:#7c3aed;--gold:#b7791f;
+  --red:#dc2626;--green:#15803d;--orange:#c05621;--blue:#4f46e5;
+  --bg:#f7f4fb;--white:#ffffff;--border:#e5dff0;--text:#21182d;--muted:#7b708b;
+  --sidebar:#241335;--accent:#a78bfa;--card:#ffffff;
+  --shadow:0 2px 12px rgba(36,19,53,.09);
+  --shadow-lg:0 8px 32px rgba(36,19,53,.16);
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:13.5px;}
@@ -31,8 +31,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 }
 #login-screen::before{
   content:'';position:absolute;inset:0;
-  background:radial-gradient(ellipse 80% 80% at 110% 10%,rgba(0,201,177,.18) 0%,transparent 60%),
-             radial-gradient(ellipse 60% 60% at -10% 90%,rgba(0,137,123,.22) 0%,transparent 55%);
+  background:radial-gradient(ellipse 80% 80% at 110% 10%,rgba(167,139,250,.22) 0%,transparent 60%),
+             radial-gradient(ellipse 60% 60% at -10% 90%,rgba(109,40,217,.24) 0%,transparent 55%);
 }
 .lc{
   background:rgba(255,255,255,.04);
@@ -42,7 +42,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   box-shadow:0 32px 80px rgba(0,0,0,.4);
   text-align:center;position:relative;z-index:1;
 }
-.lc .ico{font-size:44px;margin-bottom:16px;filter:drop-shadow(0 4px 12px rgba(0,201,177,.4));}
+.lc .ico{font-size:18px;margin:0 auto 18px;filter:drop-shadow(0 4px 12px rgba(167,139,250,.35));}
+.app-mark{width:64px;height:64px;border-radius:18px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--teal2),var(--accent));color:#fff;font-weight:900;letter-spacing:.8px;border:1px solid rgba(255,255,255,.22);}
 .lc h1{font-family:'DM Serif Display',serif;font-size:26px;font-weight:400;color:#ffffff;margin-bottom:6px;letter-spacing:-.3px;}
 .lc p{color:rgba(255,255,255,.5);font-size:13px;margin-bottom:32px;font-weight:300;}
 .lc input{
@@ -63,10 +64,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   font-size:14px;font-weight:600;cursor:pointer;
   font-family:'DM Sans',sans-serif;
   letter-spacing:.3px;
-  box-shadow:0 4px 20px rgba(0,201,177,.35);
+  box-shadow:0 4px 20px rgba(109,40,217,.34);
   transition:all .2s;
 }
-.lc .btn-li:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(0,201,177,.45);}
+.lc .btn-li:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(109,40,217,.44);}
 .lerr{color:#ff8a80;font-size:12px;margin-top:10px;}
 
 /* ── APP SHELL ── */
@@ -260,7 +261,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .clinic-table tr:hover td.td-time{background:#f0f4f8;}
 
 .nurse-cell-empty{color:var(--muted);font-size:12px;font-style:italic;text-align:center;padding:8px 0;}
-.nurse-cell-booked{border-radius:8px;padding:8px 10px;background:#f0faf9;border:1px solid #c8e6e4;}
+.nurse-cell-booked{border-radius:8px;padding:8px 10px;background:#f7f2ff;border:1px solid #ddd1f0;}
 .ncb-name{font-weight:600;font-size:13px;color:var(--navy);}
 .ncb-id{font-size:11px;color:var(--muted);}
 .ncb-phone{font-size:11px;color:var(--muted);}
@@ -637,8 +638,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   white-space:nowrap;
 }
 .nav-item:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.9);}
-.nav-item.active{background:rgba(0,201,177,.12);color:var(--accent);border-left-color:var(--accent);font-weight:600;}
-.nav-icon{font-size:16px;width:20px;text-align:center;flex-shrink:0;}
+.nav-item.active{background:rgba(167,139,250,.14);color:#ffffff;border-left-color:var(--accent);font-weight:600;}
+.nav-icon{width:26px;height:22px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;font-size:9.5px;font-weight:900;letter-spacing:.4px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.72);}
+.nav-item.active .nav-icon{background:linear-gradient(135deg,var(--teal2),var(--accent));color:#fff;}
 .nav-label{overflow:hidden;text-overflow:ellipsis;}
 .main-content{
   margin-left:220px;padding:28px;
@@ -659,7 +661,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   text-align:center;
 }
 .home-tile:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);}
-.tile-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;margin:0 auto 12px;}
+.tile-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:13px;margin:0 auto 12px;background:linear-gradient(135deg,var(--teal),var(--accent))!important;color:#fff;font-weight:900;letter-spacing:.7px;box-shadow:0 8px 20px rgba(109,40,217,.18);}
 .tile-value{font-size:32px;font-weight:700;color:var(--navy);line-height:1;}
 .tile-label{font-size:12px;color:var(--muted);margin-top:6px;font-weight:500;}
 
@@ -671,7 +673,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   transition:all .18s;box-shadow:var(--shadow);text-align:center;
 }
 .qa-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:var(--shadow-lg);}
-.qa-icon{font-size:26px;margin-bottom:8px;}
+.qa-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 8px;background:#f1eafb;color:var(--teal);font-size:11px;font-weight:900;letter-spacing:.5px;border:1px solid #e5dff0;}
 .qa-label{font-size:12px;font-weight:600;color:var(--navy);}
 .section-heading{font-family:'DM Serif Display',serif;font-size:17px;color:var(--navy);margin-bottom:14px;font-weight:400;}
 
@@ -712,7 +714,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   width:42px;height:42px;border-radius:50%;
   background:var(--border);color:var(--muted);
   display:flex;align-items:center;justify-content:center;
-  font-size:18px;margin:0 auto 10px;
+  font-size:11px;font-weight:900;letter-spacing:.4px;margin:0 auto 10px;
   position:relative;z-index:1;border:3px solid var(--white);
   box-shadow:0 0 0 2px var(--border);transition:all .2s;
 }
@@ -754,7 +756,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 <!-- LOGIN -->
 <div id="login-screen">
   <div class="lc">
-    <div class="ico">🏥</div>
+    <div class="ico app-mark">MDH</div>
     <h1>MDH Stoma Care Clinic</h1>
     <p>Roster &amp; Appointments System</p>
     <input type="email" id="li-email" placeholder="Clinic email" autocomplete="email"/>
@@ -784,57 +786,57 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   <div class="sidebar" id="sidebar">
     <div class="sidebar-section-label">MAIN</div>
     <div class="nav-item active" id="nav-home" onclick="switchSection('home',this)">
-      <span class="nav-icon">🏠</span><span class="nav-label">Dashboard</span>
+      <span class="nav-icon">DB</span><span class="nav-label">Dashboard</span>
     </div>
 
     <div class="sidebar-section-label">CLINICAL</div>
     <div class="nav-item" id="nav-patients" onclick="switchSection('patients',this)">
-      <span class="nav-icon">👥</span><span class="nav-label">Patient Register</span>
+      <span class="nav-icon">PT</span><span class="nav-label">Patient Register</span>
     </div>
     <div class="nav-item" id="nav-patient-detail" onclick="switchSection('patient-detail',this)" style="display:none;">
-      <span class="nav-icon">📄</span><span class="nav-label">Patient Profile</span>
+      <span class="nav-icon">PF</span><span class="nav-label">Patient Profile</span>
     </div>
     <div class="nav-item" id="nav-clinical-reviews" onclick="switchSection('clinical-reviews',this)">
-      <span class="nav-icon">📋</span><span class="nav-label">Clinical Reviews</span>
+      <span class="nav-icon">RV</span><span class="nav-label">Clinical Reviews</span>
     </div>
     <div class="nav-item" id="nav-teaching" onclick="switchSection('teaching',this)">
-      <span class="nav-icon">📚</span><span class="nav-label">Teaching</span>
+      <span class="nav-icon">ED</span><span class="nav-label">Teaching</span>
     </div>
     <div class="nav-item" id="nav-referrals" onclick="switchSection('referrals',this)">
-      <span class="nav-icon">🔀</span><span class="nav-label">Referrals</span>
+      <span class="nav-icon">RF</span><span class="nav-label">Referrals</span>
     </div>
     <div class="nav-item" id="nav-appointments" onclick="switchSection('appointments',this)">
-      <span class="nav-icon">📅</span><span class="nav-label">Clinic Appointments</span>
+      <span class="nav-icon">AP</span><span class="nav-label">Clinic Appointments</span>
     </div>
 
     <div class="sidebar-section-label">STAFF</div>
     <div class="nav-item" id="nav-roster" onclick="switchSection('roster',this)">
-      <span class="nav-icon">📆</span><span class="nav-label">Monthly Roster</span>
+      <span class="nav-icon">RO</span><span class="nav-label">Monthly Roster</span>
     </div>
     <div class="nav-item" id="nav-cod" onclick="switchSection('cod',this)">
-      <span class="nav-icon">🔄</span><span class="nav-label">Change of Duty</span>
+      <span class="nav-icon">CD</span><span class="nav-label">Change of Duty</span>
     </div>
     <div class="nav-item" id="nav-daily-attendance" onclick="switchSection('daily-attendance',this)">
-      <span class="nav-icon">✅</span><span class="nav-label">Daily Attendance</span>
+      <span class="nav-icon">AT</span><span class="nav-label">Daily Attendance</span>
     </div>
 
     <div class="sidebar-section-label">REPORTS</div>
     <div class="nav-item" id="nav-staff-audit" onclick="switchSection('staff-audit',this)">
-      <span class="nav-icon">👤</span><span class="nav-label">Staff Audit</span>
+      <span class="nav-icon">SA</span><span class="nav-label">Staff Audit</span>
     </div>
     <div class="nav-item" id="nav-clinic-audit" onclick="switchSection('clinic-audit',this)">
-      <span class="nav-icon">🏥</span><span class="nav-label">Clinic Audit</span>
+      <span class="nav-icon">CA</span><span class="nav-label">Clinic Audit</span>
     </div>
     <div class="nav-item" id="nav-reports" onclick="switchSection('reports',this)">
-      <span class="nav-icon">📊</span><span class="nav-label">Reports & Charts</span>
+      <span class="nav-icon">KP</span><span class="nav-label">Reports & Charts</span>
     </div>
     <div class="nav-item" id="nav-audit-trail" onclick="switchSection('audit-trail',this)">
-      <span class="nav-icon">🔍</span><span class="nav-label">Audit Trail</span>
+      <span class="nav-icon">AU</span><span class="nav-label">Audit Trail</span>
     </div>
 
     <div class="sidebar-section-label">ACCOUNT</div>
     <div class="nav-item" id="nav-account" onclick="switchSection('account',this)">
-      <span class="nav-icon">⚙️</span><span class="nav-label">My Account</span>
+      <span class="nav-icon">AC</span><span class="nav-label">My Account</span>
     </div>
   </div>
 
@@ -847,7 +849,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     <div class="section active" id="section-home">
       <div class="phdr">
         <div>
-          <h2>Good morning 👋</h2>
+          <h2>Good morning</h2>
           <p id="home-date-line">Today's overview for MDH Stoma Care Clinic</p>
         </div>
         <button class="btn-add" onclick="loadHomeDashboard()">↻ Refresh</button>
@@ -856,32 +858,32 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
       <!-- KPI TILES -->
       <div class="home-tiles" id="home-tiles">
         <div class="home-tile" onclick="switchSection('patients',document.getElementById('nav-patients'))">
-          <div class="tile-icon" style="background:linear-gradient(135deg,#00897b,#26a69a);">👥</div>
+          <div class="tile-icon">PT</div>
           <div class="tile-value" id="tile-active-patients">—</div>
           <div class="tile-label">Active Patients</div>
         </div>
         <div class="home-tile" onclick="switchSection('appointments',document.getElementById('nav-appointments'))">
-          <div class="tile-icon" style="background:linear-gradient(135deg,#1e88e5,#42a5f5);">📅</div>
+          <div class="tile-icon">AP</div>
           <div class="tile-value" id="tile-today-appts">—</div>
           <div class="tile-label">Today's Appointments</div>
         </div>
         <div class="home-tile" onclick="switchSection('clinical-reviews',document.getElementById('nav-clinical-reviews'))">
-          <div class="tile-icon" style="background:linear-gradient(135deg,#8e24aa,#ab47bc);">📋</div>
+          <div class="tile-icon">RV</div>
           <div class="tile-value" id="tile-reviews-today">—</div>
           <div class="tile-label">Reviews Today</div>
         </div>
         <div class="home-tile" onclick="switchSection('referrals',document.getElementById('nav-referrals'))">
-          <div class="tile-icon" style="background:linear-gradient(135deg,#f5a623,#ffca28);">🔀</div>
+          <div class="tile-icon">RF</div>
           <div class="tile-value" id="tile-pending-refs">—</div>
           <div class="tile-label">Pending Referrals</div>
         </div>
         <div class="home-tile" onclick="switchSection('roster',document.getElementById('nav-roster'))">
-          <div class="tile-icon" style="background:linear-gradient(135deg,#e53935,#ef5350);">👩‍⚕️</div>
+          <div class="tile-icon">ST</div>
           <div class="tile-value" id="tile-staff-today">—</div>
           <div class="tile-label">Staff On Today</div>
         </div>
         <div class="home-tile" onclick="switchSection('teaching',document.getElementById('nav-teaching'))">
-          <div class="tile-icon" style="background:linear-gradient(135deg,#00acc1,#26c6da);">📚</div>
+          <div class="tile-icon">ED</div>
           <div class="tile-value" id="tile-teaching-total">—</div>
           <div class="tile-label">Teaching Sessions</div>
         </div>
@@ -891,27 +893,27 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
       <div class="section-heading">Quick Actions</div>
       <div class="quick-actions">
         <div class="qa-card" onclick="openAddPatientModal()">
-          <div class="qa-icon">➕</div>
+          <div class="qa-icon">NEW</div>
           <div class="qa-label">Add Patient</div>
         </div>
         <div class="qa-card" onclick="openAddReviewModal()">
-          <div class="qa-icon">📋</div>
+          <div class="qa-icon">RV</div>
           <div class="qa-label">New Review</div>
         </div>
         <div class="qa-card" onclick="openAddTeachingModal()">
-          <div class="qa-icon">📚</div>
+          <div class="qa-icon">ED</div>
           <div class="qa-label">Teaching Session</div>
         </div>
         <div class="qa-card" onclick="openAddReferralModal()">
-          <div class="qa-icon">🔀</div>
+          <div class="qa-icon">RF</div>
           <div class="qa-label">New Referral</div>
         </div>
         <div class="qa-card" onclick="switchSection('daily-attendance',document.getElementById('nav-daily-attendance'))">
-          <div class="qa-icon">✅</div>
+          <div class="qa-icon">AT</div>
           <div class="qa-label">Daily Attendance</div>
         </div>
         <div class="qa-card" onclick="switchSection('reports',document.getElementById('nav-reports'))">
-          <div class="qa-icon">📊</div>
+          <div class="qa-icon">KPI</div>
           <div class="qa-label">View Reports</div>
         </div>
       </div>
@@ -2277,13 +2279,12 @@ async function loadHomeDashboard(){
   // Greet by name
   const greetEl=document.querySelector('#section-home .phdr h2');
   const hour=now.getHours();
-  const greeting=hour<12?'Good morning':'hour<17'?'Good afternoon':'Good evening';
-  const greetWord=hour<12?'Good morning ☀️':hour<17?'Good afternoon 👋':'Good evening 🌙';
+  const greeting=hour<12?'Good morning':hour<17?'Good afternoon':'Good evening';
+  const greetWord=hour<12?'Good morning':hour<17?'Good afternoon':'Good evening';
   if(greetEl)greetEl.textContent=`${greetWord}, ${getLoggedInSubmitterName().split(' ')[0]}`;
 
-  // Load KPIs in parallel
-  const [ptsRes, apptsRes, revsRes, refsRes, staffRes, teachRes] = await Promise.all([
-    SB.from('patients').select('id,pathway_status,is_active,patient_type'),
+  // Load KPIs in parallel. Patient count now reads from Project Bible tables.
+  const [apptsRes, revsRes, refsRes, staffRes, teachRes] = await Promise.all([
     SB.from('appointments').select('id,status,appt_date').eq('appt_date',TODAY),
     SB.from('clinical_reviews').select('id').eq('review_date',TODAY),
     SB.from('referrals').select('id').eq('status','Pending'),
@@ -2291,7 +2292,12 @@ async function loadHomeDashboard(){
     SB.from('teaching_records').select('id')
   ]);
 
-  const pts=ptsRes.data||[];
+  let pts=[];
+  try{pts=await getProjectPatients();}
+  catch(e){
+    const fallback=await SB.from('patients').select('id,pathway_status,is_active,patient_type');
+    pts=fallback.data||[];
+  }
   const activePts=pts.filter(p=>p.is_active);
   const setValue=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
   setValue('tile-active-patients',activePts.length);
@@ -2365,28 +2371,21 @@ let currentPatientId=null;
 
 async function openPatientProfile(id){
   currentPatientId=id;
-  const{data:p,error}=await SB.from('patients').select('*').eq('id',id).single();
-  if(error||!p){alert('Could not load patient.');return;}
+  const p=await getProjectPatientById(id);
+  if(!p){alert('Could not load patient from patients_main.');return;}
 
-  // Show patient detail nav item
   const navItem=document.getElementById('nav-patient-detail');
   if(navItem)navItem.style.display='flex';
   switchSection('patient-detail',navItem);
 
-  // Title
   const name=`${p.first_name||''} ${p.surname||''}`.trim();
   document.getElementById('pd-title').textContent=name;
-  document.getElementById('pd-subtitle').textContent=`${p.stoma_type||'—'} · ${p.patient_type==='inpatient'?'Inpatient':'Outpatient'} · ${p.ward||'No ward'}`;
+  document.getElementById('pd-subtitle').textContent=`${p.stoma_type||'—'} · ${p.episode_type||'No episode type'} · ${p.ward||'No ward'}`;
   const editBtn=document.getElementById('pd-edit-btn');
   if(editBtn)editBtn.setAttribute('onclick',`openEditPatientModal('${id}')`);
 
-  // Summary card
   renderPatientSummary(p);
-
-  // Pathway
   renderPathwayTimeline(p);
-
-  // Load first tab
   loadPdTab('reviews',id);
 }
 
@@ -2396,52 +2395,71 @@ function renderPatientSummary(p){
   const age=p.date_of_birth?Math.floor((new Date()-new Date(p.date_of_birth))/31557600000)+'y':'—';
   const badge=pathwayBadge(p.pathway_status);
   container.innerHTML=`
+    <div class="psc-group"><div class="psc-label">Patient Number</div><div class="psc-value">${htmlSafe(p.patient_number||'—')}</div></div>
+    <div class="psc-group"><div class="psc-label">Hospital Number</div><div class="psc-value" style="font-family:monospace;">${htmlSafe(p.hospital_number||'—')}</div></div>
     <div class="psc-group"><div class="psc-label">Full Name</div><div class="psc-value">${htmlSafe(p.first_name||'')} ${htmlSafe(p.surname||'')}</div></div>
-    <div class="psc-group"><div class="psc-label">ID Card</div><div class="psc-value" style="font-family:monospace;">${htmlSafe(p.id_card||'—')}</div></div>
+    <div class="psc-group"><div class="psc-label">ID Card / Passport</div><div class="psc-value" style="font-family:monospace;">${htmlSafe(p.id_card||p.passport_number||'—')}</div></div>
     <div class="psc-group"><div class="psc-label">Age / DOB</div><div class="psc-value">${age}${p.date_of_birth?' / '+new Date(p.date_of_birth).toLocaleDateString('en-MT'):''}</div></div>
     <div class="psc-group"><div class="psc-label">Phone</div><div class="psc-value">${htmlSafe(p.phone_number||'—')}</div></div>
+    <div class="psc-group"><div class="psc-label">Episode Number</div><div class="psc-value">${htmlSafe(p.episode_number||'—')}</div></div>
+    <div class="psc-group"><div class="psc-label">Episode Type</div><div class="psc-value">${htmlSafe(p.episode_type||'—')}</div></div>
+    <div class="psc-group"><div class="psc-label">Episode Status</div><div class="psc-value">${htmlSafe(p.episode_status||'—')}</div></div>
     <div class="psc-group"><div class="psc-label">Stoma Type</div><div class="psc-value">${htmlSafe(p.stoma_type||'—')}</div></div>
     <div class="psc-group"><div class="psc-label">Stoma Site</div><div class="psc-value">${htmlSafe(p.stoma_site||'—')}</div></div>
     <div class="psc-group"><div class="psc-label">Surgery Date</div><div class="psc-value">${p.surgery_date?new Date(p.surgery_date).toLocaleDateString('en-MT'):'—'}</div></div>
     <div class="psc-group"><div class="psc-label">Ward</div><div class="psc-value">${htmlSafe(p.ward||'—')}</div></div>
     <div class="psc-group"><div class="psc-label">Consultant</div><div class="psc-value">${htmlSafe(p.consultant||'—')}</div></div>
-    <div class="psc-group"><div class="psc-label">Diagnosis</div><div class="psc-value">${htmlSafe(p.diagnosis||'—')}</div></div>
-    <div class="psc-group"><div class="psc-label">Bag Brand/Size</div><div class="psc-value">${htmlSafe(p.bag_brand||'—')}</div></div>
+    <div class="psc-group"><div class="psc-label">Diagnosis / History</div><div class="psc-value">${htmlSafe(p.diagnosis||'—')}</div></div>
+    <div class="psc-group"><div class="psc-label">Bag Brand</div><div class="psc-value">${htmlSafe(p.bag_brand||'—')}</div></div>
     <div class="psc-group"><div class="psc-label">Flange Size</div><div class="psc-value">${htmlSafe(p.flange_size||'—')}</div></div>
     <div class="psc-group"><div class="psc-label">Output Colour</div><div class="psc-value">${htmlSafe(p.output_colour||'—')}</div></div>
     <div class="psc-group"><div class="psc-label">Pathway Stage</div><div class="psc-value">${badge}</div></div>
-    <div class="psc-group"><div class="psc-label">Patient Type</div><div class="psc-value">${p.patient_type==='inpatient'?'Inpatient':'Outpatient'}</div></div>
-    <div class="psc-group"><div class="psc-label">Status</div><div class="psc-value">${p.is_active?'<span style="color:#1b5e20;font-weight:700;">Active</span>':'<span style="color:#757575;">Closed</span>'}</div></div>
+    <div class="psc-group"><div class="psc-label">Patient Location</div><div class="psc-value">${htmlSafe(p.patient_type_label||'—')}</div></div>
+    <div class="psc-group"><div class="psc-label">Status</div><div class="psc-value">${p.is_active?'<span style="color:#1b5e20;font-weight:700;">Active</span>':'<span style="color:#757575;">Closed / Archived</span>'}</div></div>
   `;
 }
 
-const PATHWAY_ICONS=['📋','🏥','🎓','🏠','🌍','✅'];
+const PATHWAY_ICONS=['01','02','03','04','05','06','07','08','09','10','11','12','13','14','15','16','17','18','19'];
 const PATHWAY_CHECKLISTS={
-  'Pre-op teaching':['Stoma site marked by nurse','Pre-op education session completed','Written information pack given','Patient questions addressed','Carer/family informed'],
-  'Post-op Day 1-3':['Stoma observed and documented','Bag change performed by nurse','Output colour and consistency recorded','Skin condition assessed','Pain score recorded','Patient shown stoma for first time'],
-  'Independence check':['Patient able to empty bag independently','Patient able to change bag with supervision','Patient understands skin care routine','Patient able to recognise complications','Dietary advice given','Clothing and lifestyle advice given'],
-  'Discharge ready':['Patient changing bag independently','Discharge prescription written','Community nurse referral made','Follow-up appointment booked','Written discharge instructions given','Emergency contact numbers provided'],
-  'Community follow-up':['First community visit completed','Patient managing independently at home','Any complications reviewed','Outpatient appointment arranged','GP updated'],
-  'Closed/Discharged':['All follow-ups completed','GP letter sent','Patient contact details confirmed','Case notes completed','Patient discharged from service']
+  'Referral / New Patient':['Patient details confirmed','Episode opened','Initial pathway selected'],
+  'Elective Pathway Started':['Elective referral reviewed','Pre-op requirements identified','Surgery plan noted'],
+  'Emergency Pathway Started':['Emergency stoma identified','Urgent review required','Ward and consultant confirmed'],
+  'Pre-Op Siting':['Abdomen assessed','Preferred site marked','Alternative site considered'],
+  'Pre-Op Education':['Stoma explained','Appliance shown','Questions answered'],
+  'Awaiting Surgery':['Surgery date checked','Ward details reviewed','Pre-op plan complete'],
+  'Surgery / Stoma Formed':['Stoma formed date recorded','Stoma type recorded','Stoma site recorded'],
+  'Post-Op Review':['Stoma appearance checked','Output checked','Peristomal skin checked'],
+  'Daily Reviews':['Daily review completed','Appliance checked','Education progress reviewed'],
+  'Appliance Selection':['Appliance type selected','Size/fit checked','Accessories considered'],
+  'Output Review':['Output consistency checked','Volume reviewed','High output risk considered'],
+  'Peristomal Skin Review':['Skin condition checked','Leakage assessed','Skin care plan recorded'],
+  'Self-Care Education':['Emptying taught','Changing taught','Patient confidence assessed'],
+  'Discharge Planning':['Self-care status reviewed','Supplies arranged','Community referral considered'],
+  'Discharged':['Discharge date recorded','Follow-up arranged','Advice given'],
+  'Follow-Up':['Clinic review booked','Outcome recorded','Next review considered'],
+  'Long-Term Monitoring':['Long-term issues reviewed','Appliance suitability checked','Ongoing plan documented'],
+  'Reversal / Refashion / Closure':['Surgical change recorded','Reason documented','Episode outcome updated'],
+  'Closed':['Final outcome recorded','Audit trail complete','Episode closed']
 };
 
 function renderPathwayTimeline(p){
   const container=document.getElementById('pd-pathway');
   if(!container)return;
-  const currentIdx=PATHWAY_STAGES.indexOf(p.pathway_status);
+  let currentIdx=PATHWAY_STAGES.indexOf(p.pathway_status);
+  if(currentIdx<0)currentIdx=0;
   container.innerHTML=PATHWAY_STAGES.map((stage,i)=>{
     const isCompleted=i<currentIdx;
     const isActive=i===currentIdx;
     const cls=isCompleted?'completed':isActive?'active-stage':'';
     const checks=(PATHWAY_CHECKLISTS[stage]||[]).map(item=>`
       <div class="pt-check-item ${isCompleted?'done':''}">
-        <span class="pt-check-icon">${isCompleted?'✅':'⬜'}</span>
-        <span>${item}</span>
+        <span class="pt-check-icon">${isCompleted?'✓':'□'}</span>
+        <span>${htmlSafe(item)}</span>
       </div>`).join('');
-    const advBtn=isActive&&i<PATHWAY_STAGES.length-1?`<button class="pt-advance-btn" onclick="advancePathway('${p.id}','${stage}','${PATHWAY_STAGES[i+1]}')">Advance →</button>`:'';
+    const advBtn=isActive&&i<PATHWAY_STAGES.length-1?`<button class="pt-advance-btn" onclick="advancePathway('${p.id}','${jsSafe(stage)}','${jsSafe(PATHWAY_STAGES[i+1])}')">Advance →</button>`:'';
     return `<div class="pt-stage ${cls}">
-      <div class="pt-dot">${PATHWAY_ICONS[i]}</div>
-      <div class="pt-stage-name">${stage}</div>
+      <div class="pt-dot">${PATHWAY_ICONS[i]||'•'}</div>
+      <div class="pt-stage-name">${htmlSafe(stage)}</div>
       <div class="pt-checklist">${checks}${advBtn}</div>
     </div>`;
   }).join('');
@@ -2449,13 +2467,14 @@ function renderPathwayTimeline(p){
 
 async function advancePathway(patId,oldStatus,newStatus){
   if(!confirm(`Move patient to "${newStatus}"?`))return;
-  const{error}=await SB.from('patients').update({pathway_status:newStatus}).eq('id',patId);
-  if(error){alert('Error: '+error.message);return;}
-  await SB.from('pathway_history').insert({patient_id:patId,changed_by:getLoggedInSubmitterName(),old_status:oldStatus,new_status:newStatus,notes:'Advanced via pathway timeline'});
-  await logAuditTrailAction('update','patients',patId,{description:`Pathway advanced: ${oldStatus} → ${newStatus}`});
-  const{data:p}=await SB.from('patients').select('*').eq('id',patId).single();
-  if(p){renderPathwayTimeline(p);renderPatientSummary(p);}
+  const ok=await saveProjectPatientPathway(patId,newStatus,oldStatus,'Advanced via pathway timeline');
+  if(!ok)return;
+  await logAuditTrailAction('update','episodes_main',patId,{description:`Pathway advanced: ${oldStatus} → ${newStatus}`});
+  await syncLegacyPatientMirrorById(patId);
+  const p=await getProjectPatientById(patId);
+  if(p){renderPathwayTimeline(p);renderPatientSummary(p);loadPatients();}
 }
+
 
 function switchPdTab(tab,el){
   document.querySelectorAll('.pd-tab').forEach(t=>t.classList.remove('active'));
@@ -5353,36 +5372,173 @@ checkSession();
 // PATIENT DASHBOARD — JAVASCRIPT
 // ══════════════════════════════════════════════════════
 
-const PATHWAY_STAGES=['Pre-op teaching','Post-op Day 1-3','Independence check','Discharge ready','Community follow-up','Closed/Discharged'];
-const STOMA_TYPES=['Colostomy','Ileostomy','Urostomy'];
+const PATHWAY_STAGES=[
+  'Referral / New Patient',
+  'Elective Pathway Started',
+  'Emergency Pathway Started',
+  'Pre-Op Siting',
+  'Pre-Op Education',
+  'Awaiting Surgery',
+  'Surgery / Stoma Formed',
+  'Post-Op Review',
+  'Daily Reviews',
+  'Appliance Selection',
+  'Output Review',
+  'Peristomal Skin Review',
+  'Self-Care Education',
+  'Discharge Planning',
+  'Discharged',
+  'Follow-Up',
+  'Long-Term Monitoring',
+  'Reversal / Refashion / Closure',
+  'Closed'
+];
+const STOMA_TYPES=['Colostomy','Ileostomy','Urostomy','Mucous Fistula','Double-Barrel Stoma','Loop Stoma','End Stoma','Other'];
+const EPISODE_TYPES=['Elective','Emergency','Review Only','Follow-Up Only','Reversal','Refashion','Closure'];
+
+function refreshPatientPathwayFilterOptions(){
+  document.querySelectorAll('select[id="pt-pathway-filter"]').forEach(sel=>{
+    const current=sel.value||'';
+    sel.innerHTML='<option value="">All Stages</option>'+PATHWAY_STAGES.map(s=>`<option value="${htmlSafe(s)}">${htmlSafe(s)}</option>`).join('');
+    if([...sel.options].some(o=>o.value===current))sel.value=current;
+  });
+}
+function projectEpisodeStatusFromStage(stage){
+  const s=String(stage||'').toLowerCase();
+  if(s.includes('closed'))return 'Closed';
+  if(s.includes('discharged'))return 'Discharged';
+  if(s.includes('pre-op'))return 'Pre-Operative';
+  if(s.includes('post-op')||s.includes('daily')||s.includes('surgery'))return 'Post-Operative';
+  if(s.includes('follow'))return 'Follow-Up';
+  if(s.includes('discharge planning'))return 'Discharge Planning';
+  return 'Active';
+}
+function patientTypeFromProject(p,e){
+  const status=String(p?.patient_status||'').toLowerCase();
+  if(status.includes('inpatient'))return 'inpatient';
+  if(status.includes('outpatient'))return 'outpatient';
+  if(p?.current_ward||e?.admission_ward)return 'inpatient';
+  return 'outpatient';
+}
+function normalizeProjectPatient(p,e={},s={}){
+  const pathway=e?.pathway_stage||'Referral / New Patient';
+  const patientType=patientTypeFromProject(p,e);
+  return {
+    id:p.id,
+    patient_number:p.patient_number,
+    hospital_number:p.hospital_number,
+    first_name:p.first_name,
+    surname:p.surname,
+    id_card:p.id_card_number,
+    id_card_number:p.id_card_number,
+    passport_number:p.passport_number,
+    phone_number:p.mobile_number||p.home_number,
+    date_of_birth:p.date_of_birth,
+    patient_status:p.patient_status,
+    patient_type:patientType,
+    patient_type_label:patientType==='inpatient'?'Inpatient':'Outpatient',
+    ward:p.current_ward||e?.admission_ward,
+    diagnosis:p.medical_history||e?.operation_performed,
+    is_active:p.is_active!==false&&!p.is_deleted,
+    created_at:p.created_at,
+    created_by:p.created_by,
+    episode_id:e?.id||null,
+    episode_number:e?.episode_number,
+    episode_type:e?.episode_type,
+    episode_status:e?.episode_status,
+    pathway_status:pathway,
+    admission_date:e?.admission_date,
+    consultant:e?.consultant,
+    surgeon:e?.surgeon,
+    surgery_date:s?.surgery_date||e?.surgery_date,
+    stoma_id:s?.id||null,
+    stoma_number:s?.stoma_number,
+    stoma_type:s?.stoma_type||e?.actual_stoma_type||e?.intended_stoma_type,
+    stoma_site:s?.stoma_site||e?.stoma_site,
+    bag_brand:s?.bag_brand,
+    flange_size:s?.flange_size,
+    output_colour:s?.output_colour
+  };
+}
+async function getProjectPatients(){
+  const {data:patients,error}=await SB.from('patients_main').select('*').eq('is_deleted',false).order('created_at',{ascending:false});
+  if(error)throw error;
+  const ids=(patients||[]).map(p=>p.id);
+  let episodes=[],stomas=[];
+  if(ids.length){
+    const er=await SB.from('episodes_main').select('*').in('patient_id',ids).eq('is_deleted',false).order('created_at',{ascending:false});
+    if(!er.error)episodes=er.data||[];
+    const sr=await SB.from('stomas_main').select('*').in('patient_id',ids).eq('is_deleted',false).order('created_at',{ascending:false});
+    if(!sr.error)stomas=sr.data||[];
+  }
+  const epByPatient={}, stomaByPatient={};
+  episodes.forEach(e=>{if(!epByPatient[e.patient_id])epByPatient[e.patient_id]=e;});
+  stomas.forEach(st=>{if(!stomaByPatient[st.patient_id])stomaByPatient[st.patient_id]=st;});
+  return (patients||[]).map(p=>normalizeProjectPatient(p,epByPatient[p.id],stomaByPatient[p.id]));
+}
+async function getProjectPatientById(id){
+  const {data:p,error}=await SB.from('patients_main').select('*').eq('id',id).maybeSingle();
+  if(error||!p)return null;
+  const {data:e}=await SB.from('episodes_main').select('*').eq('patient_id',id).eq('is_deleted',false).order('created_at',{ascending:false}).limit(1).maybeSingle();
+  const {data:st}=await SB.from('stomas_main').select('*').eq('patient_id',id).eq('is_deleted',false).order('created_at',{ascending:false}).limit(1).maybeSingle();
+  return normalizeProjectPatient(p,e||{},st||{});
+}
+async function syncLegacyPatientMirrorById(id){
+  try{
+    const p=await getProjectPatientById(id);
+    if(!p)return;
+    await SB.from('patients').upsert({
+      id:p.id,
+      first_name:p.first_name,
+      surname:p.surname,
+      id_card:p.id_card||p.hospital_number||p.patient_number,
+      phone_number:p.phone_number,
+      date_of_birth:p.date_of_birth,
+      patient_type:p.patient_type,
+      stoma_type:p.stoma_type,
+      stoma_site:p.stoma_site,
+      surgery_date:p.surgery_date,
+      admission_date:p.admission_date,
+      ward:p.ward,
+      consultant:p.consultant,
+      diagnosis:p.diagnosis,
+      pathway_status:p.pathway_status,
+      bag_brand:p.bag_brand,
+      flange_size:p.flange_size,
+      output_colour:p.output_colour,
+      is_active:p.is_active,
+      created_by:p.created_by
+    },{onConflict:'id'});
+  }catch(e){console.warn('Legacy patient mirror skipped:',e?.message||e);}
+}
 
 // ── PATIENT REGISTER ──────────────────────────────────
 
 async function loadPatients(){
   const tbody=document.getElementById('patients-tbody');
   if(!tbody)return;
-  tbody.innerHTML='<tr><td colspan="8" class="empty">Loading...</td></tr>';
+  refreshPatientPathwayFilterOptions();
+  tbody.innerHTML='<tr><td colspan="8" class="empty">Loading patients from Project Bible tables...</td></tr>';
   const search=(document.getElementById('pt-search')?.value||'').trim().toLowerCase();
   const typeF=document.getElementById('pt-type-filter')?.value||'';
   const statusF=document.getElementById('pt-status-filter')?.value||'';
   const pathwayF=document.getElementById('pt-pathway-filter')?.value||'';
-  let q=SB.from('patients').select('*').order('created_at',{ascending:false});
-  if(typeF)q=q.eq('patient_type',typeF);
-  if(pathwayF)q=q.eq('pathway_status',pathwayF);
-  if(statusF==='active')q=q.eq('is_active',true);
-  if(statusF==='inactive')q=q.eq('is_active',false);
-  const{data,error}=await q;
-  if(error){tbody.innerHTML=`<tr><td colspan="8" class="empty">Error: ${htmlSafe(error.message)}</td></tr>`;return;}
-  let rows=data||[];
-  if(search)rows=rows.filter(r=>[r.first_name,r.surname,r.id_card].some(v=>String(v||'').toLowerCase().includes(search)));
+  let rows=[];
+  try{rows=await getProjectPatients();}
+  catch(error){tbody.innerHTML=`<tr><td colspan="8" class="empty">Error loading patients_main: ${htmlSafe(error.message)}</td></tr>`;return;}
+  if(typeF)rows=rows.filter(r=>r.patient_type===typeF);
+  if(pathwayF)rows=rows.filter(r=>r.pathway_status===pathwayF);
+  if(statusF==='active')rows=rows.filter(r=>r.is_active);
+  if(statusF==='inactive')rows=rows.filter(r=>!r.is_active);
+  if(search)rows=rows.filter(r=>[r.first_name,r.surname,r.id_card,r.hospital_number,r.patient_number,r.ward,r.stoma_type].some(v=>String(v||'').toLowerCase().includes(search)));
   if(!rows.length){tbody.innerHTML='<tr><td colspan="8" class="empty">No patients found</td></tr>';return;}
   tbody.innerHTML=rows.map(p=>{
     const name=`${p.first_name||''} ${p.surname||''}`.trim();
     const badge=pathwayBadge(p.pathway_status);
-    const typeBadge=p.patient_type==='inpatient'?'<span style="background:#e3f2fd;color:#0d47a1;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;">Inpatient</span>':'<span style="background:#e8f5e9;color:#1b5e20;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;">Outpatient</span>';
+    const typeBadge=p.patient_type==='inpatient'?'<span style="background:#eee6ff;color:#4c1d95;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;">Inpatient</span>':'<span style="background:#f5f3ff;color:#5b21b6;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;">Outpatient</span>';
     return `<tr>
-      <td><strong>${htmlSafe(name)}</strong></td>
-      <td style="font-family:monospace;font-size:12px;">${htmlSafe(p.id_card||'—')}</td>
+      <td><strong>${htmlSafe(name)}</strong><br/><span style="font-size:10px;color:var(--muted);">${htmlSafe(p.patient_number||'')}</span></td>
+      <td style="font-family:monospace;font-size:12px;">${htmlSafe(p.id_card||p.hospital_number||'—')}</td>
       <td>${typeBadge}</td>
       <td>${htmlSafe(p.stoma_type||'—')}</td>
       <td>${p.surgery_date?new Date(p.surgery_date).toLocaleDateString('en-MT'):'—'}</td>
@@ -5390,42 +5546,45 @@ async function loadPatients(){
       <td>${badge}</td>
       <td>
         <button onclick="openPatientProfile('${p.id}')" style="padding:4px 10px;border-radius:6px;border:none;background:var(--teal);color:white;font-size:11px;font-weight:700;cursor:pointer;margin-right:4px;">Profile</button>
-        <button onclick="openEditPatientModal('${p.id}')" style="padding:4px 10px;border-radius:6px;border:none;background:#e3f2fd;color:#0d47a1;font-size:11px;font-weight:700;cursor:pointer;">Edit</button>
+        <button onclick="openEditPatientModal('${p.id}')" style="padding:4px 10px;border-radius:6px;border:none;background:#eee6ff;color:#4c1d95;font-size:11px;font-weight:700;cursor:pointer;">Edit</button>
       </td>
     </tr>`;
   }).join('');
 }
 
 function pathwayBadge(status){
-  const colours={
-    'Pre-op teaching':'background:#fff8e1;color:#e65100;',
-    'Post-op Day 1-3':'background:#fce4ec;color:#880e4f;',
-    'Independence check':'background:#e3f2fd;color:#0d47a1;',
-    'Discharge ready':'background:#e8f5e9;color:#1b5e20;',
-    'Community follow-up':'background:#f3e5f5;color:#6a1b9a;',
-    'Closed/Discharged':'background:#f5f5f5;color:#757575;'
-  };
-  const style=colours[status]||'background:#f5f5f5;color:#757575;';
-  return `<span style="${style}padding:3px 10px;border-radius:10px;font-size:10px;font-weight:700;">${htmlSafe(status||'—')}</span>`;
+  const palette=[
+    'background:#f5f3ff;color:#4c1d95;',
+    'background:#ede9fe;color:#5b21b6;',
+    'background:#f3e8ff;color:#6b21a8;',
+    'background:#fae8ff;color:#86198f;',
+    'background:#ede9fe;color:#3730a3;',
+    'background:#f1f5f9;color:#334155;'
+  ];
+  const idx=Math.max(0,PATHWAY_STAGES.indexOf(status));
+  const style=palette[idx%palette.length]||palette[0];
+  return `<span style="${style}padding:3px 10px;border-radius:10px;font-size:10px;font-weight:800;">${htmlSafe(status||'—')}</span>`;
 }
 
 function openAddPatientModal(){
-  const h=`<h2>Add Patient</h2><div class="msub">New stoma care patient</div>
+  const h=`<h2>Add Patient</h2><div class="msub">New stoma care patient — saves to patients_main, episodes_main and stomas_main</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
       <div class="fg"><label>First Name *</label><input id="mp-fn" placeholder="First name"/></div>
       <div class="fg"><label>Surname *</label><input id="mp-sn" placeholder="Surname"/></div>
-      <div class="fg"><label>ID Card *</label><input id="mp-id" placeholder="000000M"/></div>
+      <div class="fg"><label>Hospital Number *</label><input id="mp-hosp" placeholder="Hospital / CRN number"/></div>
+      <div class="fg"><label>ID Card</label><input id="mp-id" placeholder="000000M"/></div>
       <div class="fg"><label>Phone</label><input id="mp-ph" placeholder="Phone number"/></div>
       <div class="fg"><label>Date of Birth</label><input type="date" id="mp-dob"/></div>
-      <div class="fg"><label>Patient Type *</label><select id="mp-type"><option value="inpatient">Inpatient</option><option value="outpatient">Outpatient</option></select></div>
-      <div class="fg"><label>Stoma Type *</label><select id="mp-stoma"><option value="">Select...</option>${STOMA_TYPES.map(t=>`<option>${t}</option>`).join('')}</select></div>
+      <div class="fg"><label>Patient Location</label><select id="mp-type"><option value="inpatient">Inpatient</option><option value="outpatient">Outpatient</option></select></div>
+      <div class="fg"><label>Episode Type</label><select id="mp-episode-type">${EPISODE_TYPES.map(t=>`<option>${t}</option>`).join('')}</select></div>
+      <div class="fg"><label>Stoma Type</label><select id="mp-stoma"><option value="">Select...</option>${STOMA_TYPES.map(t=>`<option>${t}</option>`).join('')}</select></div>
       <div class="fg"><label>Stoma Site</label><input id="mp-site" placeholder="e.g. Left iliac fossa"/></div>
       <div class="fg"><label>Surgery Date</label><input type="date" id="mp-surg"/></div>
       <div class="fg"><label>Admission Date</label><input type="date" id="mp-adm"/></div>
       <div class="fg"><label>Ward</label><input id="mp-ward" placeholder="e.g. SW1"/></div>
       <div class="fg"><label>Consultant</label><input id="mp-cons" placeholder="Consultant name"/></div>
     </div>
-    <div class="fg"><label>Diagnosis</label><input id="mp-diag" placeholder="Primary diagnosis"/></div>
+    <div class="fg"><label>Diagnosis / History</label><input id="mp-diag" placeholder="Primary diagnosis or history"/></div>
     <div class="fg"><label>Pathway Stage</label><select id="mp-pathway">${PATHWAY_STAGES.map(s=>`<option>${s}</option>`).join('')}</select></div>
     <div class="mact"><button class="btn-cancel" onclick="closeMo()">Cancel</button><button class="btn-save" onclick="saveNewPatient()">Save Patient</button></div>`;
   document.getElementById('mb').innerHTML=h;
@@ -5435,70 +5594,172 @@ function openAddPatientModal(){
 async function saveNewPatient(){
   const fn=document.getElementById('mp-fn')?.value.trim();
   const sn=document.getElementById('mp-sn')?.value.trim();
-  const id=document.getElementById('mp-id')?.value.trim();
-  if(!fn||!sn||!id){alert('First name, surname and ID card are required.');return;}
-  const payload={
-    first_name:fn,surname:sn,id_card:id,
-    phone_number:document.getElementById('mp-ph')?.value.trim()||null,
+  const hospital=document.getElementById('mp-hosp')?.value.trim();
+  if(!fn||!sn||!hospital){alert('First name, surname and hospital number are required.');return;}
+  const patientType=document.getElementById('mp-type')?.value||'inpatient';
+  const pathway=document.getElementById('mp-pathway')?.value||'Referral / New Patient';
+  const stomaType=document.getElementById('mp-stoma')?.value||null;
+  const stomaSite=document.getElementById('mp-site')?.value.trim()||null;
+  const surgeryDate=document.getElementById('mp-surg')?.value||null;
+  const patientPayload={
+    hospital_number:hospital,
+    id_card_number:document.getElementById('mp-id')?.value.trim()||null,
+    first_name:fn,
+    surname:sn,
+    mobile_number:document.getElementById('mp-ph')?.value.trim()||null,
     date_of_birth:document.getElementById('mp-dob')?.value||null,
-    patient_type:document.getElementById('mp-type')?.value||'inpatient',
-    stoma_type:document.getElementById('mp-stoma')?.value||null,
-    stoma_site:document.getElementById('mp-site')?.value.trim()||null,
-    surgery_date:document.getElementById('mp-surg')?.value||null,
-    admission_date:document.getElementById('mp-adm')?.value||null,
-    ward:document.getElementById('mp-ward')?.value.trim()||null,
-    consultant:document.getElementById('mp-cons')?.value.trim()||null,
-    diagnosis:document.getElementById('mp-diag')?.value.trim()||null,
-    pathway_status:document.getElementById('mp-pathway')?.value||'Pre-op teaching',
+    patient_status:patientType==='inpatient'?'Inpatient':'Outpatient',
+    current_ward:document.getElementById('mp-ward')?.value.trim()||null,
+    medical_history:document.getElementById('mp-diag')?.value.trim()||null,
     is_active:true,
     created_by:getLoggedInSubmitterName()
   };
-  const{error}=await SB.from('patients').insert(payload);
-  if(error){alert('Error: '+error.message);return;}
-  closeMo();loadPatients();
-  await logAuditTrailAction('insert','patients',null,{description:`Patient added: ${fn} ${sn}`});
+  const {data:p,error:pErr}=await SB.from('patients_main').insert(patientPayload).select('id').single();
+  if(pErr){alert('Error saving patient: '+pErr.message);return;}
+  const episodePayload={
+    patient_id:p.id,
+    episode_type:document.getElementById('mp-episode-type')?.value||'Elective',
+    episode_status:projectEpisodeStatusFromStage(pathway),
+    pathway_stage:pathway,
+    admission_date:document.getElementById('mp-adm')?.value||null,
+    admission_ward:patientPayload.current_ward,
+    consultant:document.getElementById('mp-cons')?.value.trim()||null,
+    surgery_date:surgeryDate,
+    operation_performed:patientPayload.medical_history,
+    intended_stoma_type:stomaType,
+    actual_stoma_type:stomaType,
+    stoma_site:stomaSite,
+    assigned_nurse:getLoggedInSubmitterName(),
+    created_by:getLoggedInSubmitterName()
+  };
+  const {data:e,error:eErr}=await SB.from('episodes_main').insert(episodePayload).select('id').single();
+  if(eErr){alert('Patient saved, but episode could not be created: '+eErr.message);}
+  if(e?.id&&(stomaType||stomaSite||surgeryDate)){
+    const {error:sErr}=await SB.from('stomas_main').insert({
+      patient_id:p.id,
+      episode_id:e.id,
+      stoma_type:stomaType,
+      stoma_site:stomaSite,
+      surgery_date:surgeryDate,
+      date_formed:surgeryDate,
+      stoma_status:'New',
+      created_by:getLoggedInSubmitterName()
+    });
+    if(sErr)console.warn('Stoma record skipped:',sErr.message);
+  }
+  await syncLegacyPatientMirrorById(p.id);
+  closeMo();
+  loadPatients();
+  await logAuditTrailAction('insert','patients_main',p.id,{description:`Patient added: ${fn} ${sn}`});
 }
 
 async function openEditPatientModal(id){
-  const{data:p,error}=await SB.from('patients').select('*').eq('id',id).single();
-  if(error||!p){alert('Could not load patient.');return;}
-  const h=`<h2>Edit Patient</h2><div class="msub">${htmlSafe(p.first_name)} ${htmlSafe(p.surname)}</div>
+  const p=await getProjectPatientById(id);
+  if(!p){alert('Could not load patient from patients_main.');return;}
+  const h=`<h2>Edit Patient</h2><div class="msub">${htmlSafe(p.first_name)} ${htmlSafe(p.surname)} · Project Bible tables</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
       <div class="fg"><label>First Name</label><input id="ep-fn" value="${htmlSafe(p.first_name||'')}"/></div>
       <div class="fg"><label>Surname</label><input id="ep-sn" value="${htmlSafe(p.surname||'')}"/></div>
+      <div class="fg"><label>Hospital Number</label><input id="ep-hosp" value="${htmlSafe(p.hospital_number||'')}"/></div>
       <div class="fg"><label>ID Card</label><input id="ep-id" value="${htmlSafe(p.id_card||'')}"/></div>
       <div class="fg"><label>Phone</label><input id="ep-ph" value="${htmlSafe(p.phone_number||'')}"/></div>
-      <div class="fg"><label>Patient Type</label><select id="ep-type"><option value="inpatient"${p.patient_type==='inpatient'?' selected':''}>Inpatient</option><option value="outpatient"${p.patient_type==='outpatient'?' selected':''}>Outpatient</option></select></div>
+      <div class="fg"><label>Date of Birth</label><input type="date" id="ep-dob" value="${p.date_of_birth||''}"/></div>
+      <div class="fg"><label>Patient Location</label><select id="ep-type"><option value="inpatient"${p.patient_type==='inpatient'?' selected':''}>Inpatient</option><option value="outpatient"${p.patient_type==='outpatient'?' selected':''}>Outpatient</option></select></div>
+      <div class="fg"><label>Episode Type</label><select id="ep-episode-type">${EPISODE_TYPES.map(t=>`<option${p.episode_type===t?' selected':''}>${t}</option>`).join('')}</select></div>
       <div class="fg"><label>Stoma Type</label><select id="ep-stoma"><option value="">Select...</option>${STOMA_TYPES.map(t=>`<option${p.stoma_type===t?' selected':''}>${t}</option>`).join('')}</select></div>
+      <div class="fg"><label>Stoma Site</label><input id="ep-site" value="${htmlSafe(p.stoma_site||'')}"/></div>
       <div class="fg"><label>Surgery Date</label><input type="date" id="ep-surg" value="${p.surgery_date||''}"/></div>
       <div class="fg"><label>Ward</label><input id="ep-ward" value="${htmlSafe(p.ward||'')}"/></div>
       <div class="fg"><label>Consultant</label><input id="ep-cons" value="${htmlSafe(p.consultant||'')}"/></div>
-      <div class="fg"><label>Active</label><select id="ep-active"><option value="true"${p.is_active?' selected':''}>Active</option><option value="false"${!p.is_active?' selected':''}>Closed/Discharged</option></select></div>
+      <div class="fg"><label>Active</label><select id="ep-active"><option value="true"${p.is_active?' selected':''}>Active</option><option value="false"${!p.is_active?' selected':''}>Closed / Archived</option></select></div>
     </div>
-    <div class="fg"><label>Diagnosis</label><input id="ep-diag" value="${htmlSafe(p.diagnosis||'')}"/></div>
+    <div class="fg"><label>Pathway Stage</label><select id="ep-pathway">${PATHWAY_STAGES.map(s=>`<option${p.pathway_status===s?' selected':''}>${s}</option>`).join('')}</select></div>
+    <div class="fg"><label>Diagnosis / History</label><input id="ep-diag" value="${htmlSafe(p.diagnosis||'')}"/></div>
     <div class="mact"><button class="btn-cancel" onclick="closeMo()">Cancel</button><button class="btn-save" onclick="saveEditPatient('${id}')">Save Changes</button></div>`;
   document.getElementById('mb').innerHTML=h;
   document.getElementById('mo').classList.add('open');
 }
 
 async function saveEditPatient(id){
-  const payload={
+  const existing=await getProjectPatientById(id);
+  if(!existing){alert('Could not load current patient.');return;}
+  const patientType=document.getElementById('ep-type')?.value||'outpatient';
+  const pathway=document.getElementById('ep-pathway')?.value||existing.pathway_status||'Referral / New Patient';
+  const patientPayload={
     first_name:document.getElementById('ep-fn')?.value.trim(),
     surname:document.getElementById('ep-sn')?.value.trim(),
-    id_card:document.getElementById('ep-id')?.value.trim(),
-    phone_number:document.getElementById('ep-ph')?.value.trim()||null,
-    patient_type:document.getElementById('ep-type')?.value,
-    stoma_type:document.getElementById('ep-stoma')?.value||null,
-    surgery_date:document.getElementById('ep-surg')?.value||null,
-    ward:document.getElementById('ep-ward')?.value.trim()||null,
-    consultant:document.getElementById('ep-cons')?.value.trim()||null,
-    diagnosis:document.getElementById('ep-diag')?.value.trim()||null,
-    is_active:document.getElementById('ep-active')?.value==='true'
+    hospital_number:document.getElementById('ep-hosp')?.value.trim()||existing.hospital_number||existing.id_card||'UNKNOWN',
+    id_card_number:document.getElementById('ep-id')?.value.trim()||null,
+    mobile_number:document.getElementById('ep-ph')?.value.trim()||null,
+    date_of_birth:document.getElementById('ep-dob')?.value||null,
+    patient_status:patientType==='inpatient'?'Inpatient':'Outpatient',
+    current_ward:document.getElementById('ep-ward')?.value.trim()||null,
+    medical_history:document.getElementById('ep-diag')?.value.trim()||null,
+    is_active:document.getElementById('ep-active')?.value==='true',
+    modified_at:new Date().toISOString()
   };
-  const{error}=await SB.from('patients').update(payload).eq('id',id);
-  if(error){alert('Error: '+error.message);return;}
-  closeMo();loadPatients();
-  await logAuditTrailAction('update','patients',id,{description:`Patient updated`});
+  const {error:pErr}=await SB.from('patients_main').update(patientPayload).eq('id',id);
+  if(pErr){alert('Error updating patient: '+pErr.message);return;}
+  const episodePayload={
+    patient_id:id,
+    episode_type:document.getElementById('ep-episode-type')?.value||existing.episode_type||'Elective',
+    episode_status:projectEpisodeStatusFromStage(pathway),
+    pathway_stage:pathway,
+    admission_ward:patientPayload.current_ward,
+    consultant:document.getElementById('ep-cons')?.value.trim()||null,
+    surgery_date:document.getElementById('ep-surg')?.value||null,
+    operation_performed:patientPayload.medical_history,
+    intended_stoma_type:document.getElementById('ep-stoma')?.value||null,
+    actual_stoma_type:document.getElementById('ep-stoma')?.value||null,
+    stoma_site:document.getElementById('ep-site')?.value.trim()||null,
+    modified_at:new Date().toISOString()
+  };
+  let episodeId=existing.episode_id;
+  if(episodeId){
+    const {error:eErr}=await SB.from('episodes_main').update(episodePayload).eq('id',episodeId);
+    if(eErr)console.warn('Episode update skipped:',eErr.message);
+  }else{
+    const {data:e,error:eErr}=await SB.from('episodes_main').insert(episodePayload).select('id').single();
+    if(!eErr)episodeId=e.id; else console.warn('Episode insert skipped:',eErr.message);
+  }
+  const stomaPayload={
+    patient_id:id,
+    episode_id:episodeId,
+    stoma_type:document.getElementById('ep-stoma')?.value||null,
+    stoma_site:document.getElementById('ep-site')?.value.trim()||null,
+    surgery_date:document.getElementById('ep-surg')?.value||null,
+    date_formed:document.getElementById('ep-surg')?.value||null,
+    stoma_status:'Active'
+  };
+  if(episodeId&&(stomaPayload.stoma_type||stomaPayload.stoma_site||stomaPayload.surgery_date)){
+    if(existing.stoma_id){
+      const {error:sErr}=await SB.from('stomas_main').update(stomaPayload).eq('id',existing.stoma_id);
+      if(sErr)console.warn('Stoma update skipped:',sErr.message);
+    }else{
+      const {error:sErr}=await SB.from('stomas_main').insert(stomaPayload);
+      if(sErr)console.warn('Stoma insert skipped:',sErr.message);
+    }
+  }
+  await syncLegacyPatientMirrorById(id);
+  closeMo();
+  loadPatients();
+  if(currentPatientId===id){const p=await getProjectPatientById(id); if(p){renderPatientSummary(p);renderPathwayTimeline(p);}}
+  await logAuditTrailAction('update','patients_main',id,{description:'Patient updated'});
+}
+
+async function saveProjectPatientPathway(id,newStatus,oldStatus,notes){
+  const p=await getProjectPatientById(id);
+  if(!p)return false;
+  if(p.episode_id){
+    const {error}=await SB.from('episodes_main').update({pathway_stage:newStatus,episode_status:projectEpisodeStatusFromStage(newStatus),modified_at:new Date().toISOString()}).eq('id',p.episode_id);
+    if(error){alert('Could not update pathway: '+error.message);return false;}
+  }else{
+    const {error}=await SB.from('episodes_main').insert({patient_id:id,episode_type:'Review Only',episode_status:projectEpisodeStatusFromStage(newStatus),pathway_stage:newStatus,assigned_nurse:getLoggedInSubmitterName(),created_by:getLoggedInSubmitterName()});
+    if(error){alert('Could not create pathway episode: '+error.message);return false;}
+  }
+  try{await SB.from('pathway_history').insert({patient_id:id,changed_by:getLoggedInSubmitterName(),old_status:oldStatus||p.pathway_status,new_status:newStatus,notes});}catch(e){console.warn('Pathway history skipped:',e?.message||e);}
+  await syncLegacyPatientMirrorById(id);
+  return true;
 }
 
 async function openPatientPathwayModal(id,currentStatus){
@@ -5516,19 +5777,24 @@ async function openPatientPathwayModal(id,currentStatus){
 async function savePathwayChange(id,oldStatus){
   const newStatus=document.getElementById('pathway-select')?.value;
   const notes=document.getElementById('pathway-notes')?.value.trim()||null;
-  const{error}=await SB.from('patients').update({pathway_status:newStatus}).eq('id',id);
-  if(error){alert('Error: '+error.message);return;}
-  await SB.from('pathway_history').insert({patient_id:id,changed_by:getLoggedInSubmitterName(),old_status:oldStatus,new_status:newStatus,notes});
-  closeMo();loadPatients();
-  await logAuditTrailAction('update','patients',id,{description:`Pathway changed: ${oldStatus} → ${newStatus}`});
+  const ok=await saveProjectPatientPathway(id,newStatus,oldStatus,notes);
+  if(!ok)return;
+  closeMo();
+  loadPatients();
+  if(currentPatientId===id){const p=await getProjectPatientById(id); if(p){renderPatientSummary(p);renderPathwayTimeline(p);}}
+  await logAuditTrailAction('update','episodes_main',id,{description:`Pathway changed: ${oldStatus} → ${newStatus}`});
 }
 
 // ── CLINICAL REVIEWS ──────────────────────────────────
 
 async function populatePatientDropdowns(){
-  const{data}=await SB.from('patients').select('id,first_name,surname').eq('is_active',true).order('surname');
-  if(!data)return;
-  const opts=data.map(p=>`<option value="${p.id}">${htmlSafe(p.surname)}, ${htmlSafe(p.first_name)}</option>`).join('');
+  let data=[];
+  try{data=(await getProjectPatients()).filter(p=>p.is_active);}
+  catch(e){
+    const fallback=await SB.from('patients').select('id,first_name,surname').eq('is_active',true).order('surname');
+    data=fallback.data||[];
+  }
+  const opts=data.sort((a,b)=>String(a.surname||'').localeCompare(String(b.surname||''))).map(p=>`<option value="${p.id}">${htmlSafe(p.surname)}, ${htmlSafe(p.first_name)}</option>`).join('');
   ['rev-patient-filter','teach-patient-filter','ref-patient-filter'].forEach(id=>{
     const el=document.getElementById(id);
     if(el&&el.options.length<=1)el.innerHTML='<option value="">All Patients</option>'+opts;
