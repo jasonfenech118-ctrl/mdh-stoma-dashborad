@@ -641,6 +641,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   <div class="tabs">
     <div class="tab active" onclick="switchTab('roster',this)">Monthly Roster</div>
     <div class="tab" onclick="switchTab('appointments',this)">Patient Appointments</div>
+    <div class="tab" onclick="switchTab('patients',this)">🏥 Patient Register</div>
+    <div class="tab" onclick="switchTab('clinical-reviews',this)">📋 Clinical Reviews</div>
+    <div class="tab" onclick="switchTab('teaching',this)">📚 Teaching</div>
+    <div class="tab" onclick="switchTab('referrals',this)">🔀 Referrals</div>
     <div class="tab" onclick="switchTab('cod',this)">Change of Duty</div>
     <div class="tab" onclick="switchTab('daily-attendance',this)">Daily Attendance</div>
     <div class="tab" onclick="switchTab('account',this)">Account</div>
@@ -1119,6 +1123,158 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
       </div>
     </div>
 
+    <!-- ══════════════════════════════════════════════ -->
+    <!-- PATIENT REGISTER PAGE -->
+    <!-- ══════════════════════════════════════════════ -->
+    <div class="page" id="page-patients">
+      <div class="phdr">
+        <div><h2>Patient Register</h2><p>All stoma care patients — inpatients and outpatients</p></div>
+        <button class="btn-add" onclick="openAddPatientModal()">+ Add Patient</button>
+      </div>
+
+      <div class="filter-row" style="background:white;border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:14px;">
+        <label>Search:</label>
+        <input type="text" id="pt-search" placeholder="Name or ID Card..." oninput="loadPatients()" style="min-width:220px;"/>
+        <label>Type:</label>
+        <select id="pt-type-filter" onchange="loadPatients()">
+          <option value="">All</option>
+          <option value="inpatient">Inpatient</option>
+          <option value="outpatient">Outpatient</option>
+        </select>
+        <label>Status:</label>
+        <select id="pt-status-filter" onchange="loadPatients()">
+          <option value="">All</option>
+          <option value="active">Active</option>
+          <option value="inactive">Closed/Discharged</option>
+        </select>
+        <label>Pathway:</label>
+        <select id="pt-pathway-filter" onchange="loadPatients()">
+          <option value="">All Stages</option>
+          <option>Pre-op teaching</option>
+          <option>Post-op Day 1-3</option>
+          <option>Independence check</option>
+          <option>Discharge ready</option>
+          <option>Community follow-up</option>
+          <option>Closed/Discharged</option>
+        </select>
+      </div>
+
+      <div class="card" style="padding:0;overflow:hidden;">
+        <table class="dt" id="patients-table">
+          <thead><tr>
+            <th>Name</th><th>ID Card</th><th>Type</th><th>Stoma</th>
+            <th>Surgery Date</th><th>Ward</th><th>Pathway Stage</th><th>Actions</th>
+          </tr></thead>
+          <tbody id="patients-tbody"><tr><td colspan="8" class="empty">Loading patients...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════ -->
+    <!-- CLINICAL REVIEWS PAGE -->
+    <!-- ══════════════════════════════════════════════ -->
+    <div class="page" id="page-clinical-reviews">
+      <div class="phdr">
+        <div><h2>Daily Clinical Reviews</h2><p>Structured nursing assessments per patient visit</p></div>
+        <button class="btn-add" onclick="openAddReviewModal()">+ New Review</button>
+      </div>
+
+      <div class="filter-row" style="background:white;border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:14px;">
+        <label>Patient:</label>
+        <select id="rev-patient-filter" onchange="loadReviews()">
+          <option value="">All Patients</option>
+        </select>
+        <label>From:</label>
+        <input type="date" id="rev-from" onchange="loadReviews()"/>
+        <label>To:</label>
+        <input type="date" id="rev-to" onchange="loadReviews()"/>
+        <button onclick="clearReviewFilters()" style="padding:7px 14px;border:1.5px solid var(--border);border-radius:7px;background:white;font-size:12px;cursor:pointer;">Clear</button>
+      </div>
+
+      <div class="card" style="padding:0;overflow:hidden;">
+        <table class="dt">
+          <thead><tr>
+            <th>Date</th><th>Patient</th><th>Reviewed By</th><th>Bag Change</th>
+            <th>Skin</th><th>Pain</th><th>Output</th><th>Complications</th><th>Pathway</th><th>Actions</th>
+          </tr></thead>
+          <tbody id="reviews-tbody"><tr><td colspan="10" class="empty">Loading reviews...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════ -->
+    <!-- TEACHING RECORDS PAGE -->
+    <!-- ══════════════════════════════════════════════ -->
+    <div class="page" id="page-teaching">
+      <div class="phdr">
+        <div><h2>Stoma Teaching Records</h2><p>Patient and carer education sessions</p></div>
+        <button class="btn-add" onclick="openAddTeachingModal()">+ New Session</button>
+      </div>
+
+      <div class="filter-row" style="background:white;border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:14px;">
+        <label>Patient:</label>
+        <select id="teach-patient-filter" onchange="loadTeaching()">
+          <option value="">All Patients</option>
+        </select>
+        <label>From:</label>
+        <input type="date" id="teach-from" onchange="loadTeaching()"/>
+        <label>To:</label>
+        <input type="date" id="teach-to" onchange="loadTeaching()"/>
+        <button onclick="clearTeachingFilters()" style="padding:7px 14px;border:1.5px solid var(--border);border-radius:7px;background:white;font-size:12px;cursor:pointer;">Clear</button>
+      </div>
+
+      <div class="card" style="padding:0;overflow:hidden;">
+        <table class="dt">
+          <thead><tr>
+            <th>Date</th><th>Patient</th><th>Taught By</th><th>Topic</th>
+            <th>Method</th><th>Response</th><th>Carer</th><th>Actions</th>
+          </tr></thead>
+          <tbody id="teaching-tbody"><tr><td colspan="8" class="empty">Loading teaching records...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════ -->
+    <!-- REFERRALS PAGE -->
+    <!-- ══════════════════════════════════════════════ -->
+    <div class="page" id="page-referrals">
+      <div class="phdr">
+        <div><h2>Referrals</h2><p>Inbound and outbound referrals for stoma care patients</p></div>
+        <button class="btn-add" onclick="openAddReferralModal()">+ New Referral</button>
+      </div>
+
+      <div class="filter-row" style="background:white;border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:14px;">
+        <label>Patient:</label>
+        <select id="ref-patient-filter" onchange="loadReferrals()">
+          <option value="">All Patients</option>
+        </select>
+        <label>Type:</label>
+        <select id="ref-type-filter" onchange="loadReferrals()">
+          <option value="">All</option>
+          <option value="Inbound">Inbound</option>
+          <option value="Outbound">Outbound</option>
+        </select>
+        <label>Status:</label>
+        <select id="ref-status-filter" onchange="loadReferrals()">
+          <option value="">All</option>
+          <option value="Pending">Pending</option>
+          <option value="Accepted">Accepted</option>
+          <option value="Completed">Completed</option>
+          <option value="Declined">Declined</option>
+        </select>
+      </div>
+
+      <div class="card" style="padding:0;overflow:hidden;">
+        <table class="dt">
+          <thead><tr>
+            <th>Date</th><th>Patient</th><th>Type</th><th>Referred To/From</th>
+            <th>Reason</th><th>Status</th><th>Actions</th>
+          </tr></thead>
+          <tbody id="referrals-tbody"><tr><td colspan="7" class="empty">Loading referrals...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -1553,6 +1709,10 @@ function switchTab(name,el){
   if(name==='account')updateSignedInUI();
   if(name==='audit-trail')loadAuditTrail();
   if(name==='cod'){populateCODDropdowns();loadCOD();}
+  if(name==='patients')loadPatients();
+  if(name==='clinical-reviews'){populatePatientDropdowns();loadReviews();}
+  if(name==='teaching'){populatePatientDropdowns();loadTeaching();}
+  if(name==='referrals'){populatePatientDropdowns();loadReferrals();}
 }
 
 async function loadHolidays(){
@@ -4335,6 +4495,465 @@ async function printClinicAuditBook(){
 
 
 checkSession();
+
+// ══════════════════════════════════════════════════════
+// PATIENT DASHBOARD — JAVASCRIPT
+// ══════════════════════════════════════════════════════
+
+const PATHWAY_STAGES=['Pre-op teaching','Post-op Day 1-3','Independence check','Discharge ready','Community follow-up','Closed/Discharged'];
+const STOMA_TYPES=['Colostomy','Ileostomy','Urostomy'];
+
+// ── PATIENT REGISTER ──────────────────────────────────
+
+async function loadPatients(){
+  const tbody=document.getElementById('patients-tbody');
+  if(!tbody)return;
+  tbody.innerHTML='<tr><td colspan="8" class="empty">Loading...</td></tr>';
+  const search=(document.getElementById('pt-search')?.value||'').trim().toLowerCase();
+  const typeF=document.getElementById('pt-type-filter')?.value||'';
+  const statusF=document.getElementById('pt-status-filter')?.value||'';
+  const pathwayF=document.getElementById('pt-pathway-filter')?.value||'';
+  let q=SB.from('patients').select('*').order('created_at',{ascending:false});
+  if(typeF)q=q.eq('patient_type',typeF);
+  if(pathwayF)q=q.eq('pathway_status',pathwayF);
+  if(statusF==='active')q=q.eq('is_active',true);
+  if(statusF==='inactive')q=q.eq('is_active',false);
+  const{data,error}=await q;
+  if(error){tbody.innerHTML=`<tr><td colspan="8" class="empty">Error: ${htmlSafe(error.message)}</td></tr>`;return;}
+  let rows=data||[];
+  if(search)rows=rows.filter(r=>[r.first_name,r.surname,r.id_card].some(v=>String(v||'').toLowerCase().includes(search)));
+  if(!rows.length){tbody.innerHTML='<tr><td colspan="8" class="empty">No patients found</td></tr>';return;}
+  tbody.innerHTML=rows.map(p=>{
+    const name=`${p.first_name||''} ${p.surname||''}`.trim();
+    const badge=pathwayBadge(p.pathway_status);
+    const typeBadge=p.patient_type==='inpatient'?'<span style="background:#e3f2fd;color:#0d47a1;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;">Inpatient</span>':'<span style="background:#e8f5e9;color:#1b5e20;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;">Outpatient</span>';
+    return `<tr>
+      <td><strong>${htmlSafe(name)}</strong></td>
+      <td style="font-family:monospace;font-size:12px;">${htmlSafe(p.id_card||'—')}</td>
+      <td>${typeBadge}</td>
+      <td>${htmlSafe(p.stoma_type||'—')}</td>
+      <td>${p.surgery_date?new Date(p.surgery_date).toLocaleDateString('en-MT'):'—'}</td>
+      <td>${htmlSafe(p.ward||'—')}</td>
+      <td>${badge}</td>
+      <td>
+        <button onclick="openEditPatientModal('${p.id}')" style="padding:4px 10px;border-radius:6px;border:none;background:#e3f2fd;color:#0d47a1;font-size:11px;font-weight:700;cursor:pointer;margin-right:4px;">Edit</button>
+        <button onclick="openPatientPathwayModal('${p.id}','${htmlSafe(p.pathway_status||'')}')" style="padding:4px 10px;border-radius:6px;border:none;background:#e8f5e9;color:#1b5e20;font-size:11px;font-weight:700;cursor:pointer;">Pathway</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function pathwayBadge(status){
+  const colours={
+    'Pre-op teaching':'background:#fff8e1;color:#e65100;',
+    'Post-op Day 1-3':'background:#fce4ec;color:#880e4f;',
+    'Independence check':'background:#e3f2fd;color:#0d47a1;',
+    'Discharge ready':'background:#e8f5e9;color:#1b5e20;',
+    'Community follow-up':'background:#f3e5f5;color:#6a1b9a;',
+    'Closed/Discharged':'background:#f5f5f5;color:#757575;'
+  };
+  const style=colours[status]||'background:#f5f5f5;color:#757575;';
+  return `<span style="${style}padding:3px 10px;border-radius:10px;font-size:10px;font-weight:700;">${htmlSafe(status||'—')}</span>`;
+}
+
+function openAddPatientModal(){
+  const h=`<h2>Add Patient</h2><div class="msub">New stoma care patient</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div class="fg"><label>First Name *</label><input id="mp-fn" placeholder="First name"/></div>
+      <div class="fg"><label>Surname *</label><input id="mp-sn" placeholder="Surname"/></div>
+      <div class="fg"><label>ID Card *</label><input id="mp-id" placeholder="000000M"/></div>
+      <div class="fg"><label>Phone</label><input id="mp-ph" placeholder="Phone number"/></div>
+      <div class="fg"><label>Date of Birth</label><input type="date" id="mp-dob"/></div>
+      <div class="fg"><label>Patient Type *</label><select id="mp-type"><option value="inpatient">Inpatient</option><option value="outpatient">Outpatient</option></select></div>
+      <div class="fg"><label>Stoma Type *</label><select id="mp-stoma"><option value="">Select...</option>${STOMA_TYPES.map(t=>`<option>${t}</option>`).join('')}</select></div>
+      <div class="fg"><label>Stoma Site</label><input id="mp-site" placeholder="e.g. Left iliac fossa"/></div>
+      <div class="fg"><label>Surgery Date</label><input type="date" id="mp-surg"/></div>
+      <div class="fg"><label>Admission Date</label><input type="date" id="mp-adm"/></div>
+      <div class="fg"><label>Ward</label><input id="mp-ward" placeholder="e.g. SW1"/></div>
+      <div class="fg"><label>Consultant</label><input id="mp-cons" placeholder="Consultant name"/></div>
+    </div>
+    <div class="fg"><label>Diagnosis</label><input id="mp-diag" placeholder="Primary diagnosis"/></div>
+    <div class="fg"><label>Pathway Stage</label><select id="mp-pathway">${PATHWAY_STAGES.map(s=>`<option>${s}</option>`).join('')}</select></div>
+    <div class="mact"><button class="btn-cancel" onclick="closeMo()">Cancel</button><button class="btn-save" onclick="saveNewPatient()">Save Patient</button></div>`;
+  document.getElementById('mb').innerHTML=h;
+  document.getElementById('mo').classList.add('open');
+}
+
+async function saveNewPatient(){
+  const fn=document.getElementById('mp-fn')?.value.trim();
+  const sn=document.getElementById('mp-sn')?.value.trim();
+  const id=document.getElementById('mp-id')?.value.trim();
+  if(!fn||!sn||!id){alert('First name, surname and ID card are required.');return;}
+  const payload={
+    first_name:fn,surname:sn,id_card:id,
+    phone_number:document.getElementById('mp-ph')?.value.trim()||null,
+    date_of_birth:document.getElementById('mp-dob')?.value||null,
+    patient_type:document.getElementById('mp-type')?.value||'inpatient',
+    stoma_type:document.getElementById('mp-stoma')?.value||null,
+    stoma_site:document.getElementById('mp-site')?.value.trim()||null,
+    surgery_date:document.getElementById('mp-surg')?.value||null,
+    admission_date:document.getElementById('mp-adm')?.value||null,
+    ward:document.getElementById('mp-ward')?.value.trim()||null,
+    consultant:document.getElementById('mp-cons')?.value.trim()||null,
+    diagnosis:document.getElementById('mp-diag')?.value.trim()||null,
+    pathway_status:document.getElementById('mp-pathway')?.value||'Pre-op teaching',
+    is_active:true,
+    created_by:getLoggedInSubmitterName()
+  };
+  const{error}=await SB.from('patients').insert(payload);
+  if(error){alert('Error: '+error.message);return;}
+  closeMo();loadPatients();
+  await logAuditTrailAction('insert','patients',null,{description:`Patient added: ${fn} ${sn}`});
+}
+
+async function openEditPatientModal(id){
+  const{data:p,error}=await SB.from('patients').select('*').eq('id',id).single();
+  if(error||!p){alert('Could not load patient.');return;}
+  const h=`<h2>Edit Patient</h2><div class="msub">${htmlSafe(p.first_name)} ${htmlSafe(p.surname)}</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div class="fg"><label>First Name</label><input id="ep-fn" value="${htmlSafe(p.first_name||'')}"/></div>
+      <div class="fg"><label>Surname</label><input id="ep-sn" value="${htmlSafe(p.surname||'')}"/></div>
+      <div class="fg"><label>ID Card</label><input id="ep-id" value="${htmlSafe(p.id_card||'')}"/></div>
+      <div class="fg"><label>Phone</label><input id="ep-ph" value="${htmlSafe(p.phone_number||'')}"/></div>
+      <div class="fg"><label>Patient Type</label><select id="ep-type"><option value="inpatient"${p.patient_type==='inpatient'?' selected':''}>Inpatient</option><option value="outpatient"${p.patient_type==='outpatient'?' selected':''}>Outpatient</option></select></div>
+      <div class="fg"><label>Stoma Type</label><select id="ep-stoma"><option value="">Select...</option>${STOMA_TYPES.map(t=>`<option${p.stoma_type===t?' selected':''}>${t}</option>`).join('')}</select></div>
+      <div class="fg"><label>Surgery Date</label><input type="date" id="ep-surg" value="${p.surgery_date||''}"/></div>
+      <div class="fg"><label>Ward</label><input id="ep-ward" value="${htmlSafe(p.ward||'')}"/></div>
+      <div class="fg"><label>Consultant</label><input id="ep-cons" value="${htmlSafe(p.consultant||'')}"/></div>
+      <div class="fg"><label>Active</label><select id="ep-active"><option value="true"${p.is_active?' selected':''}>Active</option><option value="false"${!p.is_active?' selected':''}>Closed/Discharged</option></select></div>
+    </div>
+    <div class="fg"><label>Diagnosis</label><input id="ep-diag" value="${htmlSafe(p.diagnosis||'')}"/></div>
+    <div class="mact"><button class="btn-cancel" onclick="closeMo()">Cancel</button><button class="btn-save" onclick="saveEditPatient('${id}')">Save Changes</button></div>`;
+  document.getElementById('mb').innerHTML=h;
+  document.getElementById('mo').classList.add('open');
+}
+
+async function saveEditPatient(id){
+  const payload={
+    first_name:document.getElementById('ep-fn')?.value.trim(),
+    surname:document.getElementById('ep-sn')?.value.trim(),
+    id_card:document.getElementById('ep-id')?.value.trim(),
+    phone_number:document.getElementById('ep-ph')?.value.trim()||null,
+    patient_type:document.getElementById('ep-type')?.value,
+    stoma_type:document.getElementById('ep-stoma')?.value||null,
+    surgery_date:document.getElementById('ep-surg')?.value||null,
+    ward:document.getElementById('ep-ward')?.value.trim()||null,
+    consultant:document.getElementById('ep-cons')?.value.trim()||null,
+    diagnosis:document.getElementById('ep-diag')?.value.trim()||null,
+    is_active:document.getElementById('ep-active')?.value==='true'
+  };
+  const{error}=await SB.from('patients').update(payload).eq('id',id);
+  if(error){alert('Error: '+error.message);return;}
+  closeMo();loadPatients();
+  await logAuditTrailAction('update','patients',id,{description:`Patient updated`});
+}
+
+async function openPatientPathwayModal(id,currentStatus){
+  const h=`<h2>Update Pathway Stage</h2>
+    <div class="msub">Select the new pathway stage for this patient</div>
+    <div class="fg"><label>New Stage</label>
+      <select id="pathway-select">${PATHWAY_STAGES.map(s=>`<option${s===currentStatus?' selected':''}>${s}</option>`).join('')}</select>
+    </div>
+    <div class="fg"><label>Notes (optional)</label><input id="pathway-notes" placeholder="Reason for change..."/></div>
+    <div class="mact"><button class="btn-cancel" onclick="closeMo()">Cancel</button><button class="btn-save" onclick="savePathwayChange('${id}','${htmlSafe(currentStatus)}')">Update Stage</button></div>`;
+  document.getElementById('mb').innerHTML=h;
+  document.getElementById('mo').classList.add('open');
+}
+
+async function savePathwayChange(id,oldStatus){
+  const newStatus=document.getElementById('pathway-select')?.value;
+  const notes=document.getElementById('pathway-notes')?.value.trim()||null;
+  const{error}=await SB.from('patients').update({pathway_status:newStatus}).eq('id',id);
+  if(error){alert('Error: '+error.message);return;}
+  await SB.from('pathway_history').insert({patient_id:id,changed_by:getLoggedInSubmitterName(),old_status:oldStatus,new_status:newStatus,notes});
+  closeMo();loadPatients();
+  await logAuditTrailAction('update','patients',id,{description:`Pathway changed: ${oldStatus} → ${newStatus}`});
+}
+
+// ── CLINICAL REVIEWS ──────────────────────────────────
+
+async function populatePatientDropdowns(){
+  const{data}=await SB.from('patients').select('id,first_name,surname').eq('is_active',true).order('surname');
+  if(!data)return;
+  const opts=data.map(p=>`<option value="${p.id}">${htmlSafe(p.surname)}, ${htmlSafe(p.first_name)}</option>`).join('');
+  ['rev-patient-filter','teach-patient-filter','ref-patient-filter'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el&&el.options.length<=1)el.innerHTML='<option value="">All Patients</option>'+opts;
+  });
+}
+
+async function loadReviews(){
+  const tbody=document.getElementById('reviews-tbody');
+  if(!tbody)return;
+  tbody.innerHTML='<tr><td colspan="10" class="empty">Loading...</td></tr>';
+  const patF=document.getElementById('rev-patient-filter')?.value||'';
+  const fromF=document.getElementById('rev-from')?.value||'';
+  const toF=document.getElementById('rev-to')?.value||'';
+  let q=SB.from('clinical_reviews').select('*, patients(first_name,surname)').order('review_date',{ascending:false}).limit(200);
+  if(patF)q=q.eq('patient_id',patF);
+  if(fromF)q=q.gte('review_date',fromF);
+  if(toF)q=q.lte('review_date',toF);
+  const{data,error}=await q;
+  if(error){tbody.innerHTML=`<tr><td colspan="10" class="empty">Error: ${htmlSafe(error.message)}</td></tr>`;return;}
+  if(!data?.length){tbody.innerHTML='<tr><td colspan="10" class="empty">No reviews found</td></tr>';return;}
+  tbody.innerHTML=data.map(r=>{
+    const pt=r.patients?`${r.patients.surname}, ${r.patients.first_name}`:'Unknown';
+    const bagIcon=r.bag_change?'✅':'—';
+    const painColour=r.pain_score>=7?'color:#c62828;font-weight:700;':r.pain_score>=4?'color:#e65100;font-weight:700;':'';
+    return `<tr>
+      <td>${r.review_date?new Date(r.review_date).toLocaleDateString('en-MT'):'—'}</td>
+      <td><strong>${htmlSafe(pt)}</strong></td>
+      <td>${htmlSafe(r.reviewed_by||'—')}</td>
+      <td style="text-align:center;">${bagIcon}</td>
+      <td>${htmlSafe(r.skin_condition||'—')}</td>
+      <td style="${painColour}">${r.pain_score!=null?r.pain_score+'/10':'—'}</td>
+      <td>${htmlSafe(r.stoma_output||'—')}</td>
+      <td>${htmlSafe(r.complications||'—')}</td>
+      <td>${pathwayBadge(r.pathway_status)}</td>
+      <td><button onclick="deleteReview('${r.id}')" style="padding:4px 10px;border-radius:6px;border:none;background:#fdecea;color:#b71c1c;font-size:11px;font-weight:700;cursor:pointer;">Delete</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function clearReviewFilters(){
+  ['rev-patient-filter','rev-from','rev-to'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  loadReviews();
+}
+
+async function openAddReviewModal(){
+  const{data:pts}=await SB.from('patients').select('id,first_name,surname').eq('is_active',true).order('surname');
+  const ptOpts=(pts||[]).map(p=>`<option value="${p.id}">${htmlSafe(p.surname)}, ${htmlSafe(p.first_name)}</option>`).join('');
+  const h=`<h2>New Clinical Review</h2><div class="msub">Record a patient assessment</div>
+    <div class="fg"><label>Patient *</label><select id="nr-patient"><option value="">Select patient...</option>${ptOpts}</select></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div class="fg"><label>Review Date *</label><input type="date" id="nr-date" value="${TODAY}"/></div>
+      <div class="fg"><label>Reviewed By *</label><input id="nr-by" value="${getLoggedInSubmitterName()}"/></div>
+      <div class="fg"><label>Bag Change Done?</label><select id="nr-bag"><option value="false">No</option><option value="true">Yes</option></select></div>
+      <div class="fg"><label>Skin Condition</label><select id="nr-skin"><option value="">Select...</option><option>Intact</option><option>Mild irritation</option><option>Severe irritation</option><option>Ulceration</option></select></div>
+      <div class="fg"><label>Pain Score (0–10)</label><input type="number" id="nr-pain" min="0" max="10" placeholder="0-10"/></div>
+      <div class="fg"><label>Stoma Output</label><select id="nr-output"><option value="">Select...</option><option>Normal</option><option>High output</option><option>Low output</option><option>None</option></select></div>
+      <div class="fg"><label>Stoma Colour</label><select id="nr-colour"><option value="">Select...</option><option>Pink/Red (healthy)</option><option>Pale</option><option>Dark/Purple (concerning)</option></select></div>
+      <div class="fg"><label>Complications</label><select id="nr-comp"><option value="">Select...</option><option>None</option><option>Prolapse</option><option>Retraction</option><option>Parastomal hernia</option><option>Leakage</option><option>Skin breakdown</option></select></div>
+    </div>
+    <div class="fg"><label>Update Pathway Stage</label><select id="nr-pathway"><option value="">No change</option>${PATHWAY_STAGES.map(s=>`<option>${s}</option>`).join('')}</select></div>
+    <div class="fg"><label>Free Text Notes</label><textarea id="nr-notes" rows="3" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:13px;outline:none;resize:vertical;" placeholder="Additional clinical notes..."></textarea></div>
+    <div class="mact"><button class="btn-cancel" onclick="closeMo()">Cancel</button><button class="btn-save" onclick="saveNewReview()">Save Review</button></div>`;
+  document.getElementById('mb').innerHTML=h;
+  document.getElementById('mo').classList.add('open');
+}
+
+async function saveNewReview(){
+  const patId=document.getElementById('nr-patient')?.value;
+  const by=document.getElementById('nr-by')?.value.trim();
+  const date=document.getElementById('nr-date')?.value;
+  if(!patId||!by||!date){alert('Patient, date and reviewed by are required.');return;}
+  const newPathway=document.getElementById('nr-pathway')?.value||null;
+  const payload={
+    patient_id:patId,review_date:date,reviewed_by:by,
+    bag_change:document.getElementById('nr-bag')?.value==='true',
+    skin_condition:document.getElementById('nr-skin')?.value||null,
+    pain_score:document.getElementById('nr-pain')?.value?parseInt(document.getElementById('nr-pain').value):null,
+    stoma_output:document.getElementById('nr-output')?.value||null,
+    stoma_colour:document.getElementById('nr-colour')?.value||null,
+    complications:document.getElementById('nr-comp')?.value||null,
+    free_text_notes:document.getElementById('nr-notes')?.value.trim()||null,
+    pathway_status:newPathway||null
+  };
+  const{error}=await SB.from('clinical_reviews').insert(payload);
+  if(error){alert('Error: '+error.message);return;}
+  if(newPathway){
+    const{data:pt}=await SB.from('patients').select('pathway_status').eq('id',patId).single();
+    await SB.from('patients').update({pathway_status:newPathway}).eq('id',patId);
+    await SB.from('pathway_history').insert({patient_id:patId,changed_by:by,old_status:pt?.pathway_status,new_status:newPathway,notes:'Updated via clinical review'});
+  }
+  closeMo();loadReviews();
+  await logAuditTrailAction('insert','clinical_reviews',null,{description:`Clinical review added for patient`});
+}
+
+async function deleteReview(id){
+  if(!confirm('Delete this review?'))return;
+  await SB.from('clinical_reviews').delete().eq('id',id);
+  loadReviews();
+}
+
+// ── TEACHING RECORDS ──────────────────────────────────
+
+async function loadTeaching(){
+  const tbody=document.getElementById('teaching-tbody');
+  if(!tbody)return;
+  tbody.innerHTML='<tr><td colspan="8" class="empty">Loading...</td></tr>';
+  const patF=document.getElementById('teach-patient-filter')?.value||'';
+  const fromF=document.getElementById('teach-from')?.value||'';
+  const toF=document.getElementById('teach-to')?.value||'';
+  let q=SB.from('teaching_records').select('*, patients(first_name,surname)').order('teaching_date',{ascending:false}).limit(200);
+  if(patF)q=q.eq('patient_id',patF);
+  if(fromF)q=q.gte('teaching_date',fromF);
+  if(toF)q=q.lte('teaching_date',toF);
+  const{data,error}=await q;
+  if(error){tbody.innerHTML=`<tr><td colspan="8" class="empty">Error: ${htmlSafe(error.message)}</td></tr>`;return;}
+  if(!data?.length){tbody.innerHTML='<tr><td colspan="8" class="empty">No teaching records found</td></tr>';return;}
+  tbody.innerHTML=data.map(r=>{
+    const pt=r.patients?`${r.patients.surname}, ${r.patients.first_name}`:'Unknown';
+    const carerBadge=r.carer_involved?`<span style="background:#f3e5f5;color:#6a1b9a;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:700;">Carer: ${htmlSafe(r.carer_name||'Yes')}</span>`:'—';
+    return `<tr>
+      <td>${r.teaching_date?new Date(r.teaching_date).toLocaleDateString('en-MT'):'—'}</td>
+      <td><strong>${htmlSafe(pt)}</strong></td>
+      <td>${htmlSafe(r.taught_by||'—')}</td>
+      <td>${htmlSafe(r.topic||'—')}</td>
+      <td>${htmlSafe(r.method||'—')}</td>
+      <td>${htmlSafe(r.patient_response||'—')}</td>
+      <td>${carerBadge}</td>
+      <td><button onclick="deleteTeaching('${r.id}')" style="padding:4px 10px;border-radius:6px;border:none;background:#fdecea;color:#b71c1c;font-size:11px;font-weight:700;cursor:pointer;">Delete</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function clearTeachingFilters(){
+  ['teach-patient-filter','teach-from','teach-to'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  loadTeaching();
+}
+
+async function openAddTeachingModal(){
+  const{data:pts}=await SB.from('patients').select('id,first_name,surname').eq('is_active',true).order('surname');
+  const ptOpts=(pts||[]).map(p=>`<option value="${p.id}">${htmlSafe(p.surname)}, ${htmlSafe(p.first_name)}</option>`).join('');
+  const topics=['Bag change','Diet advice','Skin care','Activity','Swimming/Bathing','Returning to work','Support groups','Medication management','Odour control','Clothing tips'];
+  const h=`<h2>New Teaching Session</h2><div class="msub">Record a patient education session</div>
+    <div class="fg"><label>Patient *</label><select id="nt-patient"><option value="">Select patient...</option>${ptOpts}</select></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div class="fg"><label>Teaching Date *</label><input type="date" id="nt-date" value="${TODAY}"/></div>
+      <div class="fg"><label>Taught By *</label><input id="nt-by" value="${getLoggedInSubmitterName()}"/></div>
+      <div class="fg"><label>Topic *</label><select id="nt-topic"><option value="">Select...</option>${topics.map(t=>`<option>${t}</option>`).join('')}<option value="Other">Other</option></select></div>
+      <div class="fg"><label>Method</label><select id="nt-method"><option value="">Select...</option><option>Demonstration</option><option>Discussion</option><option>Written material</option><option>Video</option></select></div>
+      <div class="fg"><label>Patient Response</label><select id="nt-response"><option value="">Select...</option><option>Understood well</option><option>Needs reinforcement</option><option>Unable to engage</option><option>Carer present</option></select></div>
+      <div class="fg"><label>Carer Involved?</label><select id="nt-carer" onchange="toggleCarerName()"><option value="false">No</option><option value="true">Yes</option></select></div>
+    </div>
+    <div class="fg" id="nt-carer-name-wrap" style="display:none;"><label>Carer Name</label><input id="nt-carer-name" placeholder="Carer's name"/></div>
+    <div class="fg"><label>Notes</label><textarea id="nt-notes" rows="3" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:13px;outline:none;resize:vertical;" placeholder="Additional notes..."></textarea></div>
+    <div class="mact"><button class="btn-cancel" onclick="closeMo()">Cancel</button><button class="btn-save" onclick="saveNewTeaching()">Save Session</button></div>`;
+  document.getElementById('mb').innerHTML=h;
+  document.getElementById('mo').classList.add('open');
+}
+
+function toggleCarerName(){
+  const v=document.getElementById('nt-carer')?.value==='true';
+  const w=document.getElementById('nt-carer-name-wrap');
+  if(w)w.style.display=v?'block':'none';
+}
+
+async function saveNewTeaching(){
+  const patId=document.getElementById('nt-patient')?.value;
+  const by=document.getElementById('nt-by')?.value.trim();
+  const date=document.getElementById('nt-date')?.value;
+  const topic=document.getElementById('nt-topic')?.value;
+  if(!patId||!by||!date||!topic){alert('Patient, date, taught by and topic are required.');return;}
+  const carerInvolved=document.getElementById('nt-carer')?.value==='true';
+  const payload={
+    patient_id:patId,teaching_date:date,taught_by:by,topic,
+    method:document.getElementById('nt-method')?.value||null,
+    patient_response:document.getElementById('nt-response')?.value||null,
+    carer_involved:carerInvolved,
+    carer_name:carerInvolved?document.getElementById('nt-carer-name')?.value.trim()||null:null,
+    notes:document.getElementById('nt-notes')?.value.trim()||null
+  };
+  const{error}=await SB.from('teaching_records').insert(payload);
+  if(error){alert('Error: '+error.message);return;}
+  closeMo();loadTeaching();
+  await logAuditTrailAction('insert','teaching_records',null,{description:`Teaching session recorded`});
+}
+
+async function deleteTeaching(id){
+  if(!confirm('Delete this teaching record?'))return;
+  await SB.from('teaching_records').delete().eq('id',id);
+  loadTeaching();
+}
+
+// ── REFERRALS ──────────────────────────────────────────
+
+async function loadReferrals(){
+  const tbody=document.getElementById('referrals-tbody');
+  if(!tbody)return;
+  tbody.innerHTML='<tr><td colspan="7" class="empty">Loading...</td></tr>';
+  const patF=document.getElementById('ref-patient-filter')?.value||'';
+  const typeF=document.getElementById('ref-type-filter')?.value||'';
+  const statusF=document.getElementById('ref-status-filter')?.value||'';
+  let q=SB.from('referrals').select('*, patients(first_name,surname)').order('referral_date',{ascending:false}).limit(200);
+  if(patF)q=q.eq('patient_id',patF);
+  if(typeF)q=q.eq('referral_type',typeF);
+  if(statusF)q=q.eq('status',statusF);
+  const{data,error}=await q;
+  if(error){tbody.innerHTML=`<tr><td colspan="7" class="empty">Error: ${htmlSafe(error.message)}</td></tr>`;return;}
+  if(!data?.length){tbody.innerHTML='<tr><td colspan="7" class="empty">No referrals found</td></tr>';return;}
+  const statusColours={Pending:'background:#fff8e1;color:#e65100;',Accepted:'background:#e3f2fd;color:#0d47a1;',Completed:'background:#e8f5e9;color:#1b5e20;',Declined:'background:#fdecea;color:#b71c1c;'};
+  tbody.innerHTML=data.map(r=>{
+    const pt=r.patients?`${r.patients.surname}, ${r.patients.first_name}`:'Unknown';
+    const typeBadge=r.referral_type==='Inbound'?'<span style="background:#e3f2fd;color:#0d47a1;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;">Inbound</span>':'<span style="background:#fce4ec;color:#880e4f;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;">Outbound</span>';
+    const sc=statusColours[r.status]||'background:#f5f5f5;color:#757575;';
+    const statusBadge=`<span style="${sc}padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;">${htmlSafe(r.status||'Pending')}</span>`;
+    return `<tr>
+      <td>${r.referral_date?new Date(r.referral_date).toLocaleDateString('en-MT'):'—'}</td>
+      <td><strong>${htmlSafe(pt)}</strong></td>
+      <td>${typeBadge}</td>
+      <td>${htmlSafe(r.referred_to||'—')}</td>
+      <td>${htmlSafe(r.reason||'—')}</td>
+      <td>${statusBadge} <button onclick="updateReferralStatus('${r.id}')" style="padding:3px 8px;border-radius:5px;border:none;background:#f5f5f5;color:#333;font-size:10px;cursor:pointer;margin-left:4px;">Update</button></td>
+      <td><button onclick="deleteReferral('${r.id}')" style="padding:4px 10px;border-radius:6px;border:none;background:#fdecea;color:#b71c1c;font-size:11px;font-weight:700;cursor:pointer;">Delete</button></td>
+    </tr>`;
+  }).join('');
+}
+
+async function openAddReferralModal(){
+  const{data:pts}=await SB.from('patients').select('id,first_name,surname').eq('is_active',true).order('surname');
+  const ptOpts=(pts||[]).map(p=>`<option value="${p.id}">${htmlSafe(p.surname)}, ${htmlSafe(p.first_name)}</option>`).join('');
+  const services=['Dietitian','Physiotherapy','Community Nurse','Psychologist','Social Worker','Oncology','Colorectal Surgeon','Dermatology','Occupational Therapy'];
+  const h=`<h2>New Referral</h2><div class="msub">Record an inbound or outbound referral</div>
+    <div class="fg"><label>Patient *</label><select id="nref-patient"><option value="">Select patient...</option>${ptOpts}</select></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div class="fg"><label>Referral Date *</label><input type="date" id="nref-date" value="${TODAY}"/></div>
+      <div class="fg"><label>Type *</label><select id="nref-type"><option value="Outbound">Outbound (we refer out)</option><option value="Inbound">Inbound (referred to us)</option></select></div>
+      <div class="fg"><label>Referred By</label><input id="nref-by" placeholder="Referring clinician"/></div>
+      <div class="fg"><label>Referred To/From *</label><select id="nref-to"><option value="">Select service...</option>${services.map(s=>`<option>${s}</option>`).join('')}<option value="Other">Other</option></select></div>
+    </div>
+    <div class="fg"><label>Reason</label><input id="nref-reason" placeholder="Reason for referral"/></div>
+    <div class="fg"><label>Notes</label><textarea id="nref-notes" rows="2" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:13px;outline:none;resize:vertical;"></textarea></div>
+    <div class="mact"><button class="btn-cancel" onclick="closeMo()">Cancel</button><button class="btn-save" onclick="saveNewReferral()">Save Referral</button></div>`;
+  document.getElementById('mb').innerHTML=h;
+  document.getElementById('mo').classList.add('open');
+}
+
+async function saveNewReferral(){
+  const patId=document.getElementById('nref-patient')?.value;
+  const date=document.getElementById('nref-date')?.value;
+  const to=document.getElementById('nref-to')?.value;
+  if(!patId||!date||!to){alert('Patient, date and referred to/from are required.');return;}
+  const payload={
+    patient_id:patId,referral_date:date,
+    referral_type:document.getElementById('nref-type')?.value||'Outbound',
+    referred_by:document.getElementById('nref-by')?.value.trim()||null,
+    referred_to:to,
+    reason:document.getElementById('nref-reason')?.value.trim()||null,
+    notes:document.getElementById('nref-notes')?.value.trim()||null,
+    status:'Pending'
+  };
+  const{error}=await SB.from('referrals').insert(payload);
+  if(error){alert('Error: '+error.message);return;}
+  closeMo();loadReferrals();
+  await logAuditTrailAction('insert','referrals',null,{description:`Referral recorded`});
+}
+
+async function updateReferralStatus(id){
+  const newStatus=prompt('Update status:\nOptions: Pending, Accepted, Completed, Declined');
+  if(!newStatus)return;
+  const valid=['Pending','Accepted','Completed','Declined'];
+  if(!valid.includes(newStatus)){alert('Invalid status. Choose: Pending, Accepted, Completed, or Declined');return;}
+  await SB.from('referrals').update({status:newStatus,response_date:newStatus!=='Pending'?TODAY:null}).eq('id',id);
+  loadReferrals();
+}
+
+async function deleteReferral(id){
+  if(!confirm('Delete this referral?'))return;
+  await SB.from('referrals').delete().eq('id',id);
+  loadReferrals();
+}
 </script>
 </body>
 </html>
