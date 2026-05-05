@@ -1052,7 +1052,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
       </div>
       <div class="card" style="padding:0;overflow:hidden;">
         <table class="dt">
-          <thead><tr><th>Date</th><th>Patient</th><th>By</th><th>Bag Change</th><th>Skin</th><th>Pain</th><th>Output</th><th>Complications</th><th>Pathway</th><th></th></tr></thead>
+          <thead><tr><th>Date</th><th>Patient</th><th>Reviewed By</th><th>Appliance</th><th>Skin</th><th>Appearance</th><th>Output</th><th>Self Care</th><th>Outcome</th><th>Actions</th></tr></thead>
           <tbody id="reviews-tbody"><tr><td colspan="10" class="empty">Loading...</td></tr></tbody>
         </table>
       </div>
@@ -1709,8 +1709,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
       <div class="card" style="padding:0;overflow:hidden;">
         <table class="dt">
           <thead><tr>
-            <th>Date</th><th>Patient</th><th>Reviewed By</th><th>Bag Change</th>
-            <th>Skin</th><th>Pain</th><th>Output</th><th>Complications</th><th>Pathway</th><th>Actions</th>
+            <th>Date</th><th>Patient</th><th>Reviewed By</th><th>Appliance</th>
+            <th>Skin</th><th>Appearance</th><th>Output</th><th>Self Care</th><th>Outcome</th><th>Actions</th>
           </tr></thead>
           <tbody id="reviews-tbody"><tr><td colspan="10" class="empty">Loading reviews...</td></tr></tbody>
         </table>
@@ -2322,7 +2322,7 @@ async function loadHomeDashboard(){
   // Load KPIs in parallel. Patient count now reads from Project Bible tables.
   const [apptsRes, revsRes, refsRes, staffRes, teachRes] = await Promise.all([
     SB.from('appointments').select('id,status,appt_date').eq('appt_date',TODAY),
-    SB.from('clinical_reviews').select('id').eq('review_date',TODAY),
+    SB.from('daily_reviews').select('id').eq('review_date',TODAY).eq('is_deleted',false),
     SB.from('referrals').select('id').eq('status','Pending'),
     SB.from('roster').select('id,status').eq('roster_date',TODAY),
     SB.from('teaching_records').select('id')
@@ -2524,25 +2524,30 @@ async function loadPdTab(tab,patId){
   container.innerHTML='<div style="padding:20px;color:var(--muted);font-size:13px;">Loading...</div>';
 
   if(tab==='reviews'){
-    const{data}=await SB.from('clinical_reviews').select('*').eq('patient_id',patId).order('review_date',{ascending:false});
+    const{data,error}=await SB.from('daily_reviews')
+      .select('*')
+      .eq('patient_id',patId)
+      .eq('is_deleted',false)
+      .order('review_date',{ascending:false});
     const rows=(data||[]);
+    if(error){container.innerHTML=`<div class="card"><div class="empty">Error loading daily_reviews: ${htmlSafe(error.message)}</div></div>`;return;}
     container.innerHTML=`
       <div style="margin-bottom:12px;display:flex;justify-content:flex-end;">
         <button class="btn-add" onclick="openAddReviewModal('${patId}')">+ New Review</button>
       </div>
       <div class="card" style="padding:0;overflow:hidden;">
         <table class="dt">
-          <thead><tr><th>Date</th><th>By</th><th>Bag Change</th><th>Skin</th><th>Pain</th><th>Output</th><th>Complications</th><th>Pathway</th><th>Notes</th><th></th></tr></thead>
+          <thead><tr><th>Date</th><th>By</th><th>Appliance</th><th>Skin</th><th>Appearance</th><th>Output</th><th>Self Care</th><th>Outcome</th><th>Notes</th><th></th></tr></thead>
           <tbody>${rows.length?rows.map(r=>`<tr>
             <td>${r.review_date?new Date(r.review_date).toLocaleDateString('en-MT'):'—'}</td>
             <td>${htmlSafe(r.reviewed_by||'—')}</td>
-            <td style="text-align:center;">${r.bag_change?'✅':'—'}</td>
-            <td>${htmlSafe(r.skin_condition||'—')}</td>
-            <td style="${r.pain_score>=7?'color:#c62828;font-weight:700;':r.pain_score>=4?'color:#e65100;font-weight:700;':''}">${r.pain_score!=null?r.pain_score+'/10':'—'}</td>
-            <td>${htmlSafe(r.stoma_output||'—')}</td>
-            <td>${htmlSafe(r.complications||'—')}</td>
-            <td>${pathwayBadge(r.pathway_status)}</td>
-            <td style="max-width:180px;font-size:11px;color:var(--muted);">${htmlSafe(r.free_text_notes||'—')}</td>
+            <td style="text-align:center;">${r.appliance_changed?'✅ Changed':'—'}</td>
+            <td>${htmlSafe(r.peristomal_skin||'—')}</td>
+            <td>${htmlSafe(r.stoma_appearance||'—')}</td>
+            <td>${htmlSafe([r.stoma_output,r.output_consistency,r.output_volume_ml?String(r.output_volume_ml)+' ml':null].filter(Boolean).join(' · ')||'—')}</td>
+            <td>${htmlSafe(r.self_care_status||'—')}</td>
+            <td>${htmlSafe(r.outcome||'—')}</td>
+            <td style="max-width:180px;font-size:11px;color:var(--muted);">${htmlSafe(r.clinical_notes||'—')}</td>
             <td><button onclick="deleteReview('${r.id}')" style="padding:3px 8px;border-radius:5px;border:none;background:#fdecea;color:#b71c1c;font-size:10px;cursor:pointer;">Del</button></td>
           </tr>`).join(''):'<tr><td colspan="10" class="empty">No reviews yet</td></tr>'}</tbody>
         </table>
@@ -5840,31 +5845,47 @@ async function populatePatientDropdowns(){
 async function loadReviews(){
   const tbody=document.getElementById('reviews-tbody');
   if(!tbody)return;
-  tbody.innerHTML='<tr><td colspan="10" class="empty">Loading...</td></tr>';
+  tbody.innerHTML='<tr><td colspan="10" class="empty">Loading daily_reviews...</td></tr>';
   const patF=document.getElementById('rev-patient-filter')?.value||'';
   const fromF=document.getElementById('rev-from')?.value||'';
   const toF=document.getElementById('rev-to')?.value||'';
-  let q=SB.from('clinical_reviews').select('*, patients(first_name,surname)').order('review_date',{ascending:false}).limit(200);
+  let q=SB.from('daily_reviews')
+    .select('*')
+    .eq('is_deleted',false)
+    .order('review_date',{ascending:false})
+    .limit(200);
   if(patF)q=q.eq('patient_id',patF);
   if(fromF)q=q.gte('review_date',fromF);
   if(toF)q=q.lte('review_date',toF);
   const{data,error}=await q;
-  if(error){tbody.innerHTML=`<tr><td colspan="10" class="empty">Error: ${htmlSafe(error.message)}</td></tr>`;return;}
-  if(!data?.length){tbody.innerHTML='<tr><td colspan="10" class="empty">No reviews found</td></tr>';return;}
-  tbody.innerHTML=data.map(r=>{
-    const pt=r.patients?`${r.patients.surname}, ${r.patients.first_name}`:'Unknown';
-    const bagIcon=r.bag_change?'✅':'—';
-    const painColour=r.pain_score>=7?'color:#c62828;font-weight:700;':r.pain_score>=4?'color:#e65100;font-weight:700;':'';
+  if(error){tbody.innerHTML=`<tr><td colspan="10" class="empty">Error loading daily_reviews: ${htmlSafe(error.message)}</td></tr>`;return;}
+  const rows=data||[];
+  if(!rows.length){tbody.innerHTML='<tr><td colspan="10" class="empty">No reviews found</td></tr>';return;}
+
+  const patientIds=[...new Set(rows.map(r=>r.patient_id).filter(Boolean))];
+  const patMap={};
+  if(patientIds.length){
+    const{data:pts}=await SB.from('patients_main').select('id,first_name,surname,patient_number,hospital_number').in('id',patientIds);
+    (pts||[]).forEach(p=>{patMap[p.id]=p;});
+  }
+
+  tbody.innerHTML=rows.map(r=>{
+    const p=patMap[r.patient_id];
+    const pt=p?`${p.surname||''}, ${p.first_name||''}`.replace(/^,\s*/,''):'Unknown patient';
+    const output=[r.stoma_output,r.output_consistency,r.output_volume_ml?String(r.output_volume_ml)+' ml':null].filter(Boolean).join(' · ')||'—';
+    const appliance=r.appliance_changed?'Changed':(r.appliance_type||'—');
+    const skin=r.skin_problem_present&&r.peristomal_skin?`${r.peristomal_skin} ⚠`:(r.peristomal_skin||'—');
+    const outcome=r.outcome||r.review_type||'—';
     return `<tr>
-      <td>${r.review_date?new Date(r.review_date).toLocaleDateString('en-MT'):'—'}</td>
-      <td><strong>${htmlSafe(pt)}</strong></td>
+      <td>${r.review_date?new Date(r.review_date).toLocaleDateString('en-MT'):'—'}${r.review_time?`<br/><span style="font-size:10px;color:var(--muted);">${String(r.review_time).slice(0,5)}</span>`:''}</td>
+      <td><strong>${htmlSafe(pt)}</strong><br/><span style="font-size:10px;color:var(--muted);">${htmlSafe(p?.patient_number||p?.hospital_number||'')}</span></td>
       <td>${htmlSafe(r.reviewed_by||'—')}</td>
-      <td style="text-align:center;">${bagIcon}</td>
-      <td>${htmlSafe(r.skin_condition||'—')}</td>
-      <td style="${painColour}">${r.pain_score!=null?r.pain_score+'/10':'—'}</td>
-      <td>${htmlSafe(r.stoma_output||'—')}</td>
-      <td>${htmlSafe(r.complications||'—')}</td>
-      <td>${pathwayBadge(r.pathway_status)}</td>
+      <td>${htmlSafe(appliance)}</td>
+      <td>${htmlSafe(skin)}</td>
+      <td>${htmlSafe(r.stoma_appearance||'—')}</td>
+      <td>${htmlSafe(output)}</td>
+      <td>${htmlSafe(r.self_care_status||'—')}</td>
+      <td>${htmlSafe(outcome)}</td>
       <td><button onclick="deleteReview('${r.id}')" style="padding:4px 10px;border-radius:6px;border:none;background:#fdecea;color:#b71c1c;font-size:11px;font-weight:700;cursor:pointer;">Delete</button></td>
     </tr>`;
   }).join('');
@@ -5875,23 +5896,37 @@ function clearReviewFilters(){
   loadReviews();
 }
 
-async function openAddReviewModal(){
-  const{data:pts}=await SB.from('patients').select('id,first_name,surname').eq('is_active',true).order('surname');
-  const ptOpts=(pts||[]).map(p=>`<option value="${p.id}">${htmlSafe(p.surname)}, ${htmlSafe(p.first_name)}</option>`).join('');
-  const h=`<h2>New Clinical Review</h2><div class="msub">Record a patient assessment</div>
+async function openAddReviewModal(defaultPatientId=''){
+  let pts=[];
+  try{pts=(await getProjectPatients()).filter(p=>p.is_active);}
+  catch(e){const fallback=await SB.from('patients').select('id,first_name,surname').eq('is_active',true).order('surname'); pts=fallback.data||[];}
+  pts.sort((a,b)=>String(a.surname||'').localeCompare(String(b.surname||'')));
+  const ptOpts=pts.map(p=>`<option value="${p.id}" ${p.id===defaultPatientId?'selected':''}>${htmlSafe(p.surname)}, ${htmlSafe(p.first_name)}</option>`).join('');
+  const h=`<h2>New Clinical Review</h2><div class="msub">Saves directly to daily_reviews</div>
     <div class="fg"><label>Patient *</label><select id="nr-patient"><option value="">Select patient...</option>${ptOpts}</select></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
       <div class="fg"><label>Review Date *</label><input type="date" id="nr-date" value="${TODAY}"/></div>
-      <div class="fg"><label>Reviewed By *</label><input id="nr-by" value="${getLoggedInSubmitterName()}"/></div>
-      <div class="fg"><label>Bag Change Done?</label><select id="nr-bag"><option value="false">No</option><option value="true">Yes</option></select></div>
-      <div class="fg"><label>Skin Condition</label><select id="nr-skin"><option value="">Select...</option><option>Intact</option><option>Mild irritation</option><option>Severe irritation</option><option>Ulceration</option></select></div>
-      <div class="fg"><label>Pain Score (0–10)</label><input type="number" id="nr-pain" min="0" max="10" placeholder="0-10"/></div>
-      <div class="fg"><label>Stoma Output</label><select id="nr-output"><option value="">Select...</option><option>Normal</option><option>High output</option><option>Low output</option><option>None</option></select></div>
-      <div class="fg"><label>Stoma Colour</label><select id="nr-colour"><option value="">Select...</option><option>Pink/Red (healthy)</option><option>Pale</option><option>Dark/Purple (concerning)</option></select></div>
-      <div class="fg"><label>Complications</label><select id="nr-comp"><option value="">Select...</option><option>None</option><option>Prolapse</option><option>Retraction</option><option>Parastomal hernia</option><option>Leakage</option><option>Skin breakdown</option></select></div>
+      <div class="fg"><label>Review Time</label><input type="time" id="nr-time"/></div>
+      <div class="fg"><label>Reviewed By *</label><input id="nr-by" value="${htmlSafe(getLoggedInSubmitterName())}"/></div>
+      <div class="fg"><label>Ward</label><input id="nr-ward" placeholder="Ward / clinic"/></div>
+      <div class="fg"><label>Review Type</label><select id="nr-type"><option>Daily Review</option><option>First Post-Op Review</option><option>Appliance Review</option><option>Skin Review</option><option>Education Review</option><option>Discharge Review</option><option>Urgent Review</option></select></div>
+      <div class="fg"><label>Bed Number</label><input id="nr-bed" placeholder="Optional"/></div>
+      <div class="fg"><label>Stoma Appearance</label><select id="nr-appearance"><option value="">Select...</option><option>Healthy</option><option>Pink</option><option>Red</option><option>Moist</option><option>Oedematous</option><option>Pale</option><option>Dusky</option><option>Bleeding</option><option>Retracted</option><option>Prolapsed</option><option>Other</option><option>Not Assessed</option></select></div>
+      <div class="fg"><label>Stoma Output</label><select id="nr-output"><option value="">Select...</option><option>No Output</option><option>Low Output</option><option>Moderate Output</option><option>High Output</option><option>Watery Output</option><option>Thick Output</option><option>Urine Output</option><option>Other</option><option>Not Assessed</option></select></div>
+      <div class="fg"><label>Output Consistency</label><select id="nr-consistency"><option value="">Select...</option><option>None</option><option>Watery</option><option>Liquid</option><option>Loose</option><option>Porridge-Like</option><option>Soft</option><option>Formed</option><option>Thick</option><option>Urine</option><option>Other</option></select></div>
+      <div class="fg"><label>Output Volume ml</label><input type="number" id="nr-volume" min="0" placeholder="Optional"/></div>
+      <div class="fg"><label>Peristomal Skin</label><select id="nr-skin"><option value="">Select...</option><option>Intact</option><option>Healthy</option><option>Redness</option><option>Sore</option><option>Excoriated</option><option>Macerated</option><option>Bleeding</option><option>Rash</option><option>Allergic Reaction</option><option>Granuloma</option><option>Ulcerated</option><option>Infected</option><option>Other</option><option>Not Assessed</option></select></div>
+      <div class="fg"><label>Appliance Changed?</label><select id="nr-appliance"><option value="false">No</option><option value="true">Yes</option></select></div>
+      <div class="fg"><label>Leakage Present?</label><select id="nr-leak"><option value="false">No</option><option value="true">Yes</option></select></div>
+      <div class="fg"><label>Skin Problem?</label><select id="nr-skin-problem"><option value="false">No</option><option value="true">Yes</option></select></div>
+      <div class="fg"><label>Self Care Status</label><select id="nr-selfcare"><option value="">Select...</option><option>Not Started</option><option>Observed Only</option><option>Requires Full Assistance</option><option>Requires Partial Assistance</option><option>Practising With Supervision</option><option>Can Empty Bag</option><option>Can Change Bag With Help</option><option>Can Change Bag Independently</option><option>Independent</option><option>Family / Carer Managing</option><option>Not Applicable</option></select></div>
+      <div class="fg"><label>Teaching Progress</label><select id="nr-teaching"><option value="">Select...</option><option>Not Started</option><option>Started</option><option>Progressing</option><option>Independent</option><option>Needs Support</option><option>Not Applicable</option></select></div>
+      <div class="fg"><label>Discharge Planning</label><select id="nr-discharge"><option value="">Select...</option><option>Not Started</option><option>Started</option><option>In Progress</option><option>Ready for Discharge</option><option>Delayed</option><option>Completed</option></select></div>
+      <div class="fg"><label>Outcome</label><select id="nr-outcome"><option value="">Select...</option><option>Completed</option><option>Partially Completed</option><option>Ongoing</option><option>Improved</option><option>No Change</option><option>Deteriorated</option><option>Escalated</option><option>Follow-Up Required</option><option>Not Applicable</option></select></div>
     </div>
+    <div class="fg"><label>Complications / Problems</label><input id="nr-comp" placeholder="e.g. None, leakage, skin problem, high output"/></div>
     <div class="fg"><label>Update Pathway Stage</label><select id="nr-pathway"><option value="">No change</option>${PATHWAY_STAGES.map(s=>`<option>${s}</option>`).join('')}</select></div>
-    <div class="fg"><label>Free Text Notes</label><textarea id="nr-notes" rows="3" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:13px;outline:none;resize:vertical;" placeholder="Additional clinical notes..."></textarea></div>
+    <div class="fg"><label>Clinical Notes</label><textarea id="nr-notes" rows="3" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:13px;outline:none;resize:vertical;" placeholder="Additional clinical notes..."></textarea></div>
     <div class="mact"><button class="btn-cancel" onclick="closeMo()">Cancel</button><button class="btn-save" onclick="saveNewReview()">Save Review</button></div>`;
   document.getElementById('mb').innerHTML=h;
   document.getElementById('mo').classList.add('open');
@@ -5902,33 +5937,72 @@ async function saveNewReview(){
   const by=document.getElementById('nr-by')?.value.trim();
   const date=document.getElementById('nr-date')?.value;
   if(!patId||!by||!date){alert('Patient, date and reviewed by are required.');return;}
+  const patient=await getProjectPatientById(patId);
   const newPathway=document.getElementById('nr-pathway')?.value||null;
   const payload={
-    patient_id:patId,review_date:date,reviewed_by:by,
-    bag_change:document.getElementById('nr-bag')?.value==='true',
-    skin_condition:document.getElementById('nr-skin')?.value||null,
-    pain_score:document.getElementById('nr-pain')?.value?parseInt(document.getElementById('nr-pain').value):null,
+    patient_id:patId,
+    episode_id:patient?.episode_id||null,
+    stoma_id:patient?.stoma_id||null,
+    review_date:date,
+    review_time:document.getElementById('nr-time')?.value||null,
+    ward:document.getElementById('nr-ward')?.value.trim()||patient?.ward||null,
+    bed_number:document.getElementById('nr-bed')?.value.trim()||null,
+    reviewed_by:by,
+    review_type:document.getElementById('nr-type')?.value||'Daily Review',
+    stoma_appearance:document.getElementById('nr-appearance')?.value||null,
     stoma_output:document.getElementById('nr-output')?.value||null,
-    stoma_colour:document.getElementById('nr-colour')?.value||null,
-    complications:document.getElementById('nr-comp')?.value||null,
-    free_text_notes:document.getElementById('nr-notes')?.value.trim()||null,
-    pathway_status:newPathway||null
+    output_consistency:document.getElementById('nr-consistency')?.value||null,
+    output_volume_ml:document.getElementById('nr-volume')?.value?parseInt(document.getElementById('nr-volume').value,10):null,
+    peristomal_skin:document.getElementById('nr-skin')?.value||null,
+    appliance_changed:document.getElementById('nr-appliance')?.value==='true',
+    leakage_present:document.getElementById('nr-leak')?.value==='true',
+    skin_problem_present:document.getElementById('nr-skin-problem')?.value==='true',
+    complications:document.getElementById('nr-comp')?.value.trim()||null,
+    problem_type:document.getElementById('nr-comp')?.value.trim()||null,
+    self_care_status:document.getElementById('nr-selfcare')?.value||null,
+    teaching_progress:document.getElementById('nr-teaching')?.value||null,
+    discharge_planning_status:document.getElementById('nr-discharge')?.value||null,
+    outcome:document.getElementById('nr-outcome')?.value||null,
+    clinical_notes:document.getElementById('nr-notes')?.value.trim()||null,
+    submitted_at:new Date().toISOString(),
+    submitted_by:by,
+    is_active:true,
+    is_deleted:false
   };
-  const{error}=await SB.from('clinical_reviews').insert(payload);
-  if(error){alert('Error: '+error.message);return;}
+  const{data:review,error}=await SB.from('daily_reviews').insert(payload).select('id').single();
+  if(error){alert('Error saving daily_reviews: '+error.message);return;}
   if(newPathway){
-    const{data:pt}=await SB.from('patients').select('pathway_status').eq('id',patId).single();
-    await SB.from('patients').update({pathway_status:newPathway}).eq('id',patId);
-    await SB.from('pathway_history').insert({patient_id:patId,changed_by:by,old_status:pt?.pathway_status,new_status:newPathway,notes:'Updated via clinical review'});
+    await saveProjectPatientPathway(patId,newPathway,patient?.pathway_status,'Updated via clinical review');
   }
-  closeMo();loadReviews();
-  await logAuditTrailAction('insert','clinical_reviews',null,{description:`Clinical review added for patient`});
+  try{
+    await SB.from('clinical_reviews').upsert({
+      id:review.id,
+      patient_id:patId,
+      review_date:date,
+      reviewed_by:by,
+      bag_change:payload.appliance_changed,
+      skin_condition:payload.peristomal_skin,
+      stoma_output:payload.stoma_output,
+      stoma_colour:payload.stoma_appearance,
+      complications:payload.complications,
+      free_text_notes:payload.clinical_notes,
+      pathway_status:newPathway||patient?.pathway_status||null
+    },{onConflict:'id'});
+  }catch(e){console.warn('Legacy clinical_reviews mirror skipped:',e?.message||e);}
+  closeMo();
+  loadReviews();
+  if(currentPatientId===patId)loadPdTab('reviews',patId);
+  await logAuditTrailAction('insert','daily_reviews',review?.id||null,{description:`Daily review added for patient`});
 }
 
 async function deleteReview(id){
   if(!confirm('Delete this review?'))return;
-  await SB.from('clinical_reviews').delete().eq('id',id);
+  const{error}=await SB.from('daily_reviews').update({is_deleted:true,is_active:false}).eq('id',id);
+  if(error){alert('Could not delete review: '+error.message);return;}
+  try{await SB.from('clinical_reviews').delete().eq('id',id);}catch(e){}
   loadReviews();
+  if(currentPatientId)loadPdTab('reviews',currentPatientId);
+  await logAuditTrailAction('delete','daily_reviews',id,{description:'Daily review deleted'});
 }
 
 // ── TEACHING RECORDS ──────────────────────────────────
