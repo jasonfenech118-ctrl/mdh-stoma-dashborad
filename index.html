@@ -1417,7 +1417,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
             <option value="">All Tables</option>
             <option value="roster">Roster</option>
             <option value="appointments">Appointments</option>
-            <option value="patients">Patients</option>
+            <option value="patients_main">Patients</option>
             <option value="leave_records">Leave / TIL / OT</option>
             <option value="bank_staff_assignments">OT / TIL Assignments</option>
             <option value="bank_staff">Bank / OT Staff</option>
@@ -2325,7 +2325,7 @@ async function loadHomeDashboard(){
     SB.from('daily_reviews').select('id').eq('review_date',TODAY).eq('is_deleted',false),
     SB.from('referrals').select('id').eq('status','Pending'),
     SB.from('roster').select('id,status').eq('roster_date',TODAY),
-    SB.from('teaching_records').select('id')
+    SB.from('teaching_education').select('id').eq('is_deleted',false)
   ]);
 
   let pts=[];
@@ -2555,7 +2555,12 @@ async function loadPdTab(tab,patId){
   }
 
   if(tab==='teaching'){
-    const{data}=await SB.from('teaching_records').select('*').eq('patient_id',patId).order('teaching_date',{ascending:false});
+    const{data,error}=await SB.from('teaching_education')
+      .select('*')
+      .eq('patient_id',patId)
+      .eq('is_deleted',false)
+      .order('education_date',{ascending:false});
+    if(error){container.innerHTML=`<div class="card"><div class="empty">Error loading teaching_education: ${htmlSafe(error.message)}</div></div>`;return;}
     const rows=(data||[]);
     container.innerHTML=`
       <div style="margin-bottom:12px;display:flex;justify-content:flex-end;">
@@ -2563,17 +2568,20 @@ async function loadPdTab(tab,patId){
       </div>
       <div class="card" style="padding:0;overflow:hidden;">
         <table class="dt">
-          <thead><tr><th>Date</th><th>By</th><th>Topic</th><th>Method</th><th>Response</th><th>Carer</th><th>Notes</th><th></th></tr></thead>
+          <thead><tr><th>Date</th><th>By</th><th>Education Type</th><th>Topic</th><th>Method</th><th>Understanding</th><th>Self Care</th><th>Carer</th><th>Outcome</th><th>Notes</th><th></th></tr></thead>
           <tbody>${rows.length?rows.map(r=>`<tr>
-            <td>${r.teaching_date?new Date(r.teaching_date).toLocaleDateString('en-MT'):'—'}</td>
-            <td>${htmlSafe(r.taught_by||'—')}</td>
+            <td>${r.education_date?new Date(r.education_date).toLocaleDateString('en-MT'):'—'}</td>
+            <td>${htmlSafe(r.nurse||r.submitted_by||'—')}</td>
+            <td>${htmlSafe(r.education_type||'—')}</td>
             <td>${htmlSafe(r.topic||'—')}</td>
             <td>${htmlSafe(r.method||'—')}</td>
-            <td>${htmlSafe(r.patient_response||'—')}</td>
-            <td>${r.carer_involved?`<span style="color:#6a1b9a;font-weight:600;">${htmlSafe(r.carer_name||'Yes')}</span>`:'—'}</td>
-            <td style="max-width:160px;font-size:11px;color:var(--muted);">${htmlSafe(r.notes||'—')}</td>
+            <td>${htmlSafe(r.patient_understanding||'—')}</td>
+            <td>${htmlSafe(r.self_care_status||'—')}</td>
+            <td>${r.carer_involved?`<span style="color:var(--teal);font-weight:700;">${htmlSafe(r.carer_name||'Yes')}</span>`:'—'}</td>
+            <td>${htmlSafe(r.outcome||'—')}</td>
+            <td style="max-width:160px;font-size:11px;color:var(--muted);">${htmlSafe(r.education_notes||'—')}</td>
             <td><button onclick="deleteTeaching('${r.id}')" style="padding:3px 8px;border-radius:5px;border:none;background:#fdecea;color:#b71c1c;font-size:10px;cursor:pointer;">Del</button></td>
-          </tr>`).join(''):'<tr><td colspan="8" class="empty">No teaching records yet</td></tr>'}</tbody>
+          </tr>`).join(''):'<tr><td colspan="11" class="empty">No teaching records yet</td></tr>'}</tbody>
         </table>
       </div>`;
   }
@@ -6005,34 +6013,65 @@ async function deleteReview(id){
   await logAuditTrailAction('delete','daily_reviews',id,{description:'Daily review deleted'});
 }
 
-// ── TEACHING RECORDS ──────────────────────────────────
+// ── TEACHING / EDUCATION ────────────────────────────
+// Step 6: uses Project Bible table teaching_education directly.
+
+async function getProjectPatientNameMap(){
+  const map={};
+  try{
+    const pts=await getProjectPatients();
+    (pts||[]).forEach(p=>{map[p.id]=`${p.surname||''}, ${p.first_name||''}`.replace(/^,\s*/,'').trim()||p.patient_number||'Unknown';});
+  }catch(e){
+    try{
+      const fallback=await SB.from('patients').select('id,first_name,surname');
+      (fallback.data||[]).forEach(p=>{map[p.id]=`${p.surname||''}, ${p.first_name||''}`.replace(/^,\s*/,'').trim()||'Unknown';});
+    }catch(_e){}
+  }
+  return map;
+}
+
+function teachingUnderstandingBadge(value){
+  const v=String(value||'').toLowerCase();
+  if(!v)return '—';
+  let bg='#eef2f7', color='var(--navy)';
+  if(v.includes('good')||v.includes('excellent')||v.includes('understood')||v.includes('independent')){bg='#d4edda';color='#155724';}
+  else if(v.includes('reinforcement')||v.includes('partial')||v.includes('fair')){bg='#fff3cd';color='#856404';}
+  else if(v.includes('poor')||v.includes('unable')){bg='#f8d7da';color='#721c24';}
+  return `<span style="background:${bg};color:${color};padding:3px 9px;border-radius:999px;font-size:10px;font-weight:800;white-space:nowrap;">${htmlSafe(value)}</span>`;
+}
 
 async function loadTeaching(){
   const tbody=document.getElementById('teaching-tbody');
   if(!tbody)return;
-  tbody.innerHTML='<tr><td colspan="8" class="empty">Loading...</td></tr>';
+  tbody.innerHTML='<tr><td colspan="8" class="empty">Loading teaching_education...</td></tr>';
   const patF=document.getElementById('teach-patient-filter')?.value||'';
   const fromF=document.getElementById('teach-from')?.value||'';
   const toF=document.getElementById('teach-to')?.value||'';
-  let q=SB.from('teaching_records').select('*, patients(first_name,surname)').order('teaching_date',{ascending:false}).limit(200);
+  let q=SB.from('teaching_education')
+    .select('*')
+    .eq('is_deleted',false)
+    .order('education_date',{ascending:false})
+    .limit(200);
   if(patF)q=q.eq('patient_id',patF);
-  if(fromF)q=q.gte('teaching_date',fromF);
-  if(toF)q=q.lte('teaching_date',toF);
+  if(fromF)q=q.gte('education_date',fromF);
+  if(toF)q=q.lte('education_date',toF);
   const{data,error}=await q;
-  if(error){tbody.innerHTML=`<tr><td colspan="8" class="empty">Error: ${htmlSafe(error.message)}</td></tr>`;return;}
-  if(!data?.length){tbody.innerHTML='<tr><td colspan="8" class="empty">No teaching records found</td></tr>';return;}
-  tbody.innerHTML=data.map(r=>{
-    const pt=r.patients?`${r.patients.surname}, ${r.patients.first_name}`:'Unknown';
-    const carerBadge=r.carer_involved?`<span style="background:#f3e5f5;color:#6a1b9a;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:700;">Carer: ${htmlSafe(r.carer_name||'Yes')}</span>`:'—';
+  if(error){tbody.innerHTML=`<tr><td colspan="8" class="empty">Error loading teaching_education: ${htmlSafe(error.message)}</td></tr>`;return;}
+  const rows=data||[];
+  if(!rows.length){tbody.innerHTML='<tr><td colspan="8" class="empty">No teaching records found</td></tr>';return;}
+  const nameMap=await getProjectPatientNameMap();
+  tbody.innerHTML=rows.map(r=>{
+    const pt=nameMap[r.patient_id]||'Unknown';
+    const carerBadge=r.carer_involved?`<span style="background:#e6fffb;color:#00695c;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:800;">Carer: ${htmlSafe(r.carer_name||'Yes')}</span>`:'—';
     return `<tr>
-      <td>${r.teaching_date?new Date(r.teaching_date).toLocaleDateString('en-MT'):'—'}</td>
+      <td>${r.education_date?new Date(r.education_date).toLocaleDateString('en-MT'):'—'}</td>
       <td><strong>${htmlSafe(pt)}</strong></td>
-      <td>${htmlSafe(r.taught_by||'—')}</td>
-      <td>${htmlSafe(r.topic||'—')}</td>
+      <td>${htmlSafe(r.nurse||r.submitted_by||'—')}</td>
+      <td><strong>${htmlSafe(r.education_type||r.topic||'—')}</strong><br/><span style="font-size:11px;color:var(--muted);">${htmlSafe(r.topic&&r.education_type!==r.topic?r.topic:'')}</span></td>
       <td>${htmlSafe(r.method||'—')}</td>
-      <td>${htmlSafe(r.patient_response||'—')}</td>
+      <td>${teachingUnderstandingBadge(r.patient_understanding)}</td>
       <td>${carerBadge}</td>
-      <td><button onclick="deleteTeaching('${r.id}')" style="padding:4px 10px;border-radius:6px;border:none;background:#fdecea;color:#b71c1c;font-size:11px;font-weight:700;cursor:pointer;">Delete</button></td>
+      <td><button onclick="deleteTeaching('${r.id}')" style="padding:4px 10px;border-radius:6px;border:none;background:#fdecea;color:#721c24;font-size:11px;font-weight:700;cursor:pointer;">Delete</button></td>
     </tr>`;
   }).join('');
 }
@@ -6042,19 +6081,29 @@ function clearTeachingFilters(){
   loadTeaching();
 }
 
-async function openAddTeachingModal(){
-  const{data:pts}=await SB.from('patients').select('id,first_name,surname').eq('is_active',true).order('surname');
-  const ptOpts=(pts||[]).map(p=>`<option value="${p.id}">${htmlSafe(p.surname)}, ${htmlSafe(p.first_name)}</option>`).join('');
-  const topics=['Bag change','Diet advice','Skin care','Activity','Swimming/Bathing','Returning to work','Support groups','Medication management','Odour control','Clothing tips'];
-  const h=`<h2>New Teaching Session</h2><div class="msub">Record a patient education session</div>
+async function openAddTeachingModal(preselectedPatientId=''){
+  let pts=[];
+  try{pts=(await getProjectPatients()).filter(p=>p.is_active);}
+  catch(e){const fallback=await SB.from('patients').select('id,first_name,surname').eq('is_active',true).order('surname');pts=fallback.data||[];}
+  const ptOpts=(pts||[])
+    .sort((a,b)=>String(a.surname||'').localeCompare(String(b.surname||'')))
+    .map(p=>`<option value="${p.id}" ${p.id===preselectedPatientId?'selected':''}>${htmlSafe(p.surname||'')}, ${htmlSafe(p.first_name||'')}</option>`).join('');
+  const educationTypes=['Pre-Op Education','Post-Op Education','Appliance Education','Skin Care Education','Diet / Fluids','Discharge Education','Family / Carer Education','Long-Term Education'];
+  const topics=['Bag change','Emptying bag','Diet advice','Fluid advice','Skin care','Recognising complications','Appliance supplies','Activity and lifestyle','Swimming/Bathing','Returning to work','Support groups','Medication management','Odour control','Clothing tips','Discharge preparation'];
+  const h=`<h2>New Teaching Session</h2><div class="msub">Record a patient education session — saves to teaching_education</div>
     <div class="fg"><label>Patient *</label><select id="nt-patient"><option value="">Select patient...</option>${ptOpts}</select></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-      <div class="fg"><label>Teaching Date *</label><input type="date" id="nt-date" value="${TODAY}"/></div>
-      <div class="fg"><label>Taught By *</label><input id="nt-by" value="${getLoggedInSubmitterName()}"/></div>
-      <div class="fg"><label>Topic *</label><select id="nt-topic"><option value="">Select...</option>${topics.map(t=>`<option>${t}</option>`).join('')}<option value="Other">Other</option></select></div>
-      <div class="fg"><label>Method</label><select id="nt-method"><option value="">Select...</option><option>Demonstration</option><option>Discussion</option><option>Written material</option><option>Video</option></select></div>
-      <div class="fg"><label>Patient Response</label><select id="nt-response"><option value="">Select...</option><option>Understood well</option><option>Needs reinforcement</option><option>Unable to engage</option><option>Carer present</option></select></div>
+      <div class="fg"><label>Education Date *</label><input type="date" id="nt-date" value="${TODAY}"/></div>
+      <div class="fg"><label>Nurse *</label><input id="nt-by" value="${htmlSafe(getLoggedInSubmitterName())}"/></div>
+      <div class="fg"><label>Education Type *</label><select id="nt-type"><option value="">Select...</option>${educationTypes.map(t=>`<option>${t}</option>`).join('')}</select></div>
+      <div class="fg"><label>Topic</label><select id="nt-topic"><option value="">Select...</option>${topics.map(t=>`<option>${t}</option>`).join('')}<option value="Other">Other</option></select></div>
+      <div class="fg"><label>Method</label><select id="nt-method"><option value="">Select...</option><option>Demonstration</option><option>Discussion</option><option>Written material</option><option>Video</option><option>Practice with supervision</option><option>Family / carer teaching</option></select></div>
+      <div class="fg"><label>Patient Understanding</label><select id="nt-response"><option value="">Select...</option><option>Poor</option><option>Fair</option><option>Good</option><option>Excellent</option><option>Needs Reinforcement</option><option>Not Applicable</option></select></div>
+      <div class="fg"><label>Self Care Status</label><select id="nt-selfcare"><option value="">Select...</option><option>Not Started</option><option>Observed Only</option><option>Requires Full Assistance</option><option>Requires Partial Assistance</option><option>Practising With Supervision</option><option>Can Empty Bag</option><option>Can Change Bag With Help</option><option>Can Change Bag Independently</option><option>Independent</option><option>Family / Carer Managing</option><option>Not Suitable</option><option>Not Applicable</option></select></div>
       <div class="fg"><label>Carer Involved?</label><select id="nt-carer" onchange="toggleCarerName()"><option value="false">No</option><option value="true">Yes</option></select></div>
+      <div class="fg"><label>Leaflets Given?</label><select id="nt-leaflets"><option value="false">No</option><option value="true">Yes</option></select></div>
+      <div class="fg"><label>Education Completed?</label><select id="nt-completed"><option value="false">No</option><option value="true">Yes</option></select></div>
+      <div class="fg"><label>Outcome</label><select id="nt-outcome"><option value="">Select...</option><option>Completed</option><option>Partially Completed</option><option>Ongoing</option><option>Needs Reinforcement</option><option>Follow-Up Required</option><option>Not Applicable</option></select></div>
     </div>
     <div class="fg" id="nt-carer-name-wrap" style="display:none;"><label>Carer Name</label><input id="nt-carer-name" placeholder="Carer's name"/></div>
     <div class="fg"><label>Notes</label><textarea id="nt-notes" rows="3" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:13px;outline:none;resize:vertical;" placeholder="Additional notes..."></textarea></div>
@@ -6073,27 +6122,63 @@ async function saveNewTeaching(){
   const patId=document.getElementById('nt-patient')?.value;
   const by=document.getElementById('nt-by')?.value.trim();
   const date=document.getElementById('nt-date')?.value;
-  const topic=document.getElementById('nt-topic')?.value;
-  if(!patId||!by||!date||!topic){alert('Patient, date, taught by and topic are required.');return;}
+  const educationType=document.getElementById('nt-type')?.value;
+  if(!patId||!by||!date||!educationType){alert('Patient, date, nurse and education type are required.');return;}
+  const patient=await getProjectPatientById(patId).catch(()=>null);
   const carerInvolved=document.getElementById('nt-carer')?.value==='true';
   const payload={
-    patient_id:patId,teaching_date:date,taught_by:by,topic,
+    patient_id:patId,
+    episode_id:patient?.episode_id||null,
+    education_date:date,
+    education_time:null,
+    nurse:by,
+    ward_clinic:patient?.ward||null,
+    education_type:educationType,
+    topic:document.getElementById('nt-topic')?.value||educationType,
     method:document.getElementById('nt-method')?.value||null,
-    patient_response:document.getElementById('nt-response')?.value||null,
+    patient_understanding:document.getElementById('nt-response')?.value||null,
+    self_care_status:document.getElementById('nt-selfcare')?.value||null,
     carer_involved:carerInvolved,
     carer_name:carerInvolved?document.getElementById('nt-carer-name')?.value.trim()||null:null,
-    notes:document.getElementById('nt-notes')?.value.trim()||null
+    leaflets_given:document.getElementById('nt-leaflets')?.value==='true',
+    education_completed:document.getElementById('nt-completed')?.value==='true',
+    outcome:document.getElementById('nt-outcome')?.value||null,
+    education_notes:document.getElementById('nt-notes')?.value.trim()||null,
+    submitted_at:new Date().toISOString(),
+    submitted_by:by,
+    is_active:true,
+    is_deleted:false
   };
-  const{error}=await SB.from('teaching_records').insert(payload);
-  if(error){alert('Error: '+error.message);return;}
-  closeMo();loadTeaching();
-  await logAuditTrailAction('insert','teaching_records',null,{description:`Teaching session recorded`});
+  const{data:record,error}=await SB.from('teaching_education').insert(payload).select('id').single();
+  if(error){alert('Error saving to teaching_education: '+error.message);return;}
+  try{
+    await SB.from('teaching_records').upsert({
+      id:record?.id,
+      patient_id:patId,
+      teaching_date:date,
+      taught_by:by,
+      topic:payload.topic,
+      method:payload.method,
+      patient_response:payload.patient_understanding,
+      carer_involved:payload.carer_involved,
+      carer_name:payload.carer_name,
+      notes:payload.education_notes
+    },{onConflict:'id'});
+  }catch(e){console.warn('Legacy teaching_records mirror skipped:',e?.message||e);}
+  closeMo();
+  loadTeaching();
+  if(currentPatientId===patId)loadPdTab('teaching',patId);
+  await logAuditTrailAction('insert','teaching_education',record?.id||null,{description:`Teaching session recorded`});
 }
 
 async function deleteTeaching(id){
   if(!confirm('Delete this teaching record?'))return;
-  await SB.from('teaching_records').delete().eq('id',id);
+  const{error}=await SB.from('teaching_education').update({is_deleted:true,is_active:false}).eq('id',id);
+  if(error){alert('Could not delete teaching record: '+error.message);return;}
+  try{await SB.from('teaching_records').delete().eq('id',id);}catch(e){}
   loadTeaching();
+  if(currentPatientId)loadPdTab('teaching',currentPatientId);
+  await logAuditTrailAction('delete','teaching_education',id,{description:'Teaching record deleted'});
 }
 
 // ── REFERRALS ──────────────────────────────────────────
