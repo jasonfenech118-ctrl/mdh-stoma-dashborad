@@ -835,6 +835,15 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     <div class="nav-item" id="nav-appointments" onclick="switchSection('appointments',this)">
       <span class="nav-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/></svg></span><span class="nav-label">Clinic Appointments</span>
     </div>
+    <div class="nav-item" id="nav-appliances" onclick="switchSection('appliances',this)">
+      <span class="nav-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="3"/><path d="M9 7h6"/><path d="M9 11h6"/><path d="M9 15h4"/><path d="M17 17l2 2"/><path d="M19 17l-2 2"/></svg></span><span class="nav-label">Appliances</span>
+    </div>
+    <div class="nav-item" id="nav-discharge" onclick="switchSection('discharge',this)">
+      <span class="nav-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-7h6v7"/><path d="M14 9h5"/><path d="m16 6 3 3-3 3"/></svg></span><span class="nav-label">Discharge Planning</span>
+    </div>
+    <div class="nav-item" id="nav-followups" onclick="switchSection('followups',this)">
+      <span class="nav-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="m8 16 2 2 5-5"/><path d="M17 17h2"/></svg></span><span class="nav-label">Follow-Ups</span>
+    </div>
 
     <div class="sidebar-section-label">STAFF</div>
     <div class="nav-item" id="nav-roster" onclick="switchSection('roster',this)">
@@ -922,6 +931,21 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
           <div class="tile-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5z"/><path d="M8 6h8"/><path d="M8 10h6"/></svg></div>
           <div class="tile-value" id="tile-teaching-total">—</div>
           <div class="tile-label">Teaching Sessions</div>
+        </div>
+        <div class="home-tile" onclick="switchSection('appliances',document.getElementById('nav-appliances'))">
+          <div class="tile-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="3"/><path d="M9 7h6"/><path d="M9 11h6"/><path d="M9 15h4"/><path d="M17 17l2 2"/><path d="M19 17l-2 2"/></svg></div>
+          <div class="tile-value" id="tile-appliances-total">—</div>
+          <div class="tile-label">Appliances</div>
+        </div>
+        <div class="home-tile" onclick="switchSection('discharge',document.getElementById('nav-discharge'))">
+          <div class="tile-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-7h6v7"/><path d="M14 9h5"/><path d="m16 6 3 3-3 3"/></svg></div>
+          <div class="tile-value" id="tile-discharge-active">—</div>
+          <div class="tile-label">Discharge Plans</div>
+        </div>
+        <div class="home-tile" onclick="switchSection('followups',document.getElementById('nav-followups'))">
+          <div class="tile-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="m8 16 2 2 5-5"/><path d="M17 17h2"/></svg></div>
+          <div class="tile-value" id="tile-followups-due">—</div>
+          <div class="tile-label">Follow-Ups Due</div>
         </div>
       </div>
 
@@ -1031,6 +1055,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
         <div class="pd-tab" onclick="switchPdTab('teaching',this)"><span class="tab-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5z"/><path d="M8 6h8"/><path d="M8 10h6"/></svg></span>Teaching</div>
         <div class="pd-tab" onclick="switchPdTab('referrals',this)"><span class="tab-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 7h11"/><path d="m12 4 3 3-3 3"/><path d="M20 17H9"/><path d="m12 14-3 3 3 3"/></svg></span>Referrals</div>
         <div class="pd-tab" onclick="switchPdTab('appts',this)"><span class="tab-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/></svg></span>Appointments</div>
+        <div class="pd-tab" onclick="switchPdTab('appliances',this)"><span class="tab-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="3"/><path d="M9 7h6"/><path d="M9 11h6"/><path d="M9 15h4"/><path d="M17 17l2 2"/><path d="M19 17l-2 2"/></svg></span>Appliances</div>
+        <div class="pd-tab" onclick="switchPdTab('discharge',this)"><span class="tab-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-7h6v7"/><path d="M14 9h5"/><path d="m16 6 3 3-3 3"/></svg></span>Discharge</div>
+        <div class="pd-tab" onclick="switchPdTab('followups',this)"><span class="tab-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="m8 16 2 2 5-5"/><path d="M17 17h2"/></svg></span>Follow-Ups</div>
       </div>
       <div id="pd-tab-content"></div>
     </div>
@@ -1101,6 +1128,72 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
         <table class="dt">
           <thead><tr><th>Date</th><th>Patient</th><th>Type</th><th>Referred To/From</th><th>Reason</th><th>Status</th><th></th></tr></thead>
           <tbody id="referrals-tbody"><tr><td colspan="7" class="empty">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════ -->
+    <!-- APPLIANCES -->
+    <!-- ══════════════════════════════════ -->
+    <div class="section" id="section-appliances">
+      <div class="phdr">
+        <div><h2>Appliances</h2><p>Current and previous appliance/product records</p></div>
+        <button class="btn-add" onclick="openAddApplianceModal()">+ Add Appliance</button>
+      </div>
+      <div class="filter-row">
+        <label>Patient:</label>
+        <select id="appliance-patient-filter" onchange="loadAppliances()"><option value="">All Patients</option></select>
+        <label>Status:</label>
+        <select id="appliance-current-filter" onchange="loadAppliances()"><option value="">All</option><option value="current">Current only</option><option value="previous">Previous only</option></select>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden;">
+        <table class="dt">
+          <thead><tr><th>Date Started</th><th>Patient</th><th>Appliance</th><th>Size</th><th>Product</th><th>Accessory</th><th>Current</th><th>Reason / Outcome</th><th>Actions</th></tr></thead>
+          <tbody id="appliances-tbody"><tr><td colspan="9" class="empty">Loading appliances...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════ -->
+    <!-- DISCHARGE PLANNING -->
+    <!-- ══════════════════════════════════ -->
+    <div class="section" id="section-discharge">
+      <div class="phdr">
+        <div><h2>Discharge Planning</h2><p>Discharge readiness, supplies, community referral, and follow-up planning</p></div>
+        <button class="btn-add" onclick="openAddDischargeModal()">+ Add Discharge Plan</button>
+      </div>
+      <div class="filter-row">
+        <label>Patient:</label>
+        <select id="discharge-patient-filter" onchange="loadDischargePlans()"><option value="">All Patients</option></select>
+        <label>Status:</label>
+        <select id="discharge-status-filter" onchange="loadDischargePlans()"><option value="">All</option><option value="active">Active</option><option value="completed">Completed</option></select>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden;">
+        <table class="dt">
+          <thead><tr><th>Started</th><th>Patient</th><th>Ward</th><th>Expected</th><th>Actual</th><th>Self Care</th><th>Community</th><th>Follow-Up</th><th>Outcome</th><th>Actions</th></tr></thead>
+          <tbody id="discharge-tbody"><tr><td colspan="10" class="empty">Loading discharge plans...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════ -->
+    <!-- FOLLOW UPS -->
+    <!-- ══════════════════════════════════ -->
+    <div class="section" id="section-followups">
+      <div class="phdr">
+        <div><h2>Follow-Ups</h2><p>Post-discharge, routine, urgent, and long-term monitoring follow-ups</p></div>
+        <button class="btn-add" onclick="openAddFollowupModal()">+ Add Follow-Up</button>
+      </div>
+      <div class="filter-row">
+        <label>Patient:</label>
+        <select id="followup-patient-filter" onchange="loadFollowups()"><option value="">All Patients</option></select>
+        <label>Status:</label>
+        <select id="followup-status-filter" onchange="loadFollowups()"><option value="">All</option><option>Required</option><option>Booked</option><option>Seen</option><option>DNTU</option><option>Cancelled</option><option>Completed</option></select>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden;">
+        <table class="dt">
+          <thead><tr><th>Due</th><th>Appointment</th><th>Patient</th><th>Type</th><th>Status</th><th>Nurse</th><th>Outcome</th><th>Next</th><th>Actions</th></tr></thead>
+          <tbody id="followups-tbody"><tr><td colspan="9" class="empty">Loading follow-ups...</td></tr></tbody>
         </table>
       </div>
     </div>
@@ -1952,7 +2045,7 @@ function mapById(rows){
   return m;
 }
 async function enrichAppointments(rows){
-  const base=rows||[];
+  const base=(rows||[]).map(normaliseProjectAppointment);
   const patientIds=uniqueNonEmpty(base.map(a=>a.patient_id));
   const staffIds=uniqueNonEmpty(base.map(a=>a.assigned_to));
   const bankIds=uniqueNonEmpty(base.map(a=>a.bank_staff_id));
@@ -1960,8 +2053,16 @@ async function enrichAppointments(rows){
   let patientsMap={}, staffMap={}, bankMap={};
 
   if(patientIds.length){
-    const{data}=await SB.from('patients').select('id,first_name,surname,id_card,phone_number').in('id',patientIds);
-    patientsMap=mapById(data||[]);
+    const{data}=await SB.from('patients_main').select('id,first_name,surname,id_card_number,hospital_number,mobile_number,home_number').in('id',patientIds);
+    (data||[]).forEach(p=>{
+      patientsMap[String(p.id)]={
+        id:p.id,
+        first_name:p.first_name,
+        surname:p.surname,
+        id_card:p.id_card_number||p.hospital_number||'',
+        phone_number:p.mobile_number||p.home_number||''
+      };
+    });
   }
   if(staffIds.length){
     const{data}=await SB.from('staff').select('id,full_name,role').in('id',staffIds);
@@ -1978,6 +2079,187 @@ async function enrichAppointments(rows){
     staff:a.assigned_to?staffMap[String(a.assigned_to)]||null:null,
     bank_staff:a.bank_staff_id?bankMap[String(a.bank_staff_id)]||null:null
   }));
+}
+
+function projectAppointmentStatusToLegacy(status){
+  const s=String(status||'').toLowerCase();
+  if(s==='seen'||s==='attended'||s==='completed')return 'attended';
+  if(s==='dntu'||s==='dna'||s==='did_not_attend'||s==='did not turn up')return 'did_not_attend';
+  if(s==='cancelled'||s==='canceled')return 'cancelled';
+  return 'booked';
+}
+function legacyAppointmentStatusToProject(status){
+  const s=String(status||'').toLowerCase();
+  if(s==='attended'||s==='seen')return 'Seen';
+  if(s==='did_not_attend'||s==='dntu'||s==='dna')return 'DNTU';
+  if(s==='cancelled'||s==='canceled')return 'Cancelled';
+  if(s==='completed')return 'Completed';
+  return 'Booked';
+}
+function appointmentSlotFromTime(t){
+  if(!t)return '08:30';
+  return String(t).slice(0,5);
+}
+function appointmentTimeFromSlot(slot){
+  const s=String(slot||'08:30').slice(0,5);
+  return s && s.includes(':') ? s : '08:30';
+}
+function parseAssignedNurseValue(value){
+  const raw=String(value||'').trim();
+  if(!raw||raw==='common')return {assigned_to:null,bank_staff_id:null};
+  if(raw.startsWith('core:'))return {assigned_to:raw.replace('core:',''),bank_staff_id:null};
+  if(raw.startsWith('bank:'))return {assigned_to:null,bank_staff_id:raw.replace('bank:','')};
+  const staffMatch=(staffList||[]).find(s=>String(s.id)===raw || String(s.full_name||'').toLowerCase()===raw.toLowerCase());
+  if(staffMatch)return {assigned_to:staffMatch.id,bank_staff_id:null};
+  return {assigned_to:raw,bank_staff_id:null};
+}
+function assignedNurseValueFromLegacy(payload){
+  if(payload?.bank_staff_id)return `bank:${payload.bank_staff_id}`;
+  if(payload?.assigned_to)return `core:${payload.assigned_to}`;
+  return null;
+}
+function normaliseProjectAppointment(row){
+  if(!row)return row;
+  if(row.appointment_date!==undefined || row.appointment_time!==undefined || row.appointment_status!==undefined){
+    const parsed=parseAssignedNurseValue(row.assigned_nurse);
+    return {
+      id:row.id,
+      patient_id:row.patient_id,
+      appt_date:row.appointment_date,
+      appt_slot:appointmentSlotFromTime(row.appointment_time),
+      assigned_to:parsed.assigned_to,
+      bank_staff_id:parsed.bank_staff_id,
+      status:projectAppointmentStatusToLegacy(row.appointment_status),
+      notes:row.appointment_notes||row.reason||row.outcome||'',
+      created_at:row.created_at,
+      _raw:row
+    };
+  }
+  return row;
+}
+function appointmentProjectPayloadFromLegacy(payload){
+  const p=payload||{};
+  const status=legacyAppointmentStatusToProject(p.status);
+  const out={
+    patient_id:p.patient_id||null,
+    appointment_date:p.appt_date||p.appointment_date,
+    appointment_time:appointmentTimeFromSlot(p.appt_slot||p.appointment_time),
+    appointment_type:p.appointment_type||'Follow-Up',
+    appointment_status:status,
+    assigned_nurse:assignedNurseValueFromLegacy(p),
+    appointment_notes:p.notes||p.appointment_notes||null,
+    clinic_location:p.clinic_location||'Stoma Care Clinic',
+    is_active:p.is_active!==undefined?p.is_active:true
+  };
+  if(status==='Seen'){
+    out.seen_at=new Date().toISOString();
+    out.seen_by=getLoggedInSubmitterName()||null;
+  }
+  if(status==='Cancelled' && p.cancellation_reason)out.cancellation_reason=p.cancellation_reason;
+  if(status==='DNTU' && p.dntu_reason)out.dntu_reason=p.dntu_reason;
+  return out;
+}
+async function getAppointmentsOnDate(date){
+  const{data,error}=await SB.from('outpatient_appointments').select('*').eq('appointment_date',date).eq('is_active',true).order('appointment_time',{ascending:true});
+  if(error)throw error;
+  return await enrichAppointments(data||[]);
+}
+async function getAppointmentsBetween(start,end,includeCancelled=true){
+  let q=SB.from('outpatient_appointments').select('*').gte('appointment_date',start).lte('appointment_date',end).eq('is_active',true).order('appointment_date',{ascending:true}).order('appointment_time',{ascending:true});
+  if(!includeCancelled)q=q.neq('appointment_status','Cancelled');
+  const{data,error}=await q;
+  if(error)throw error;
+  return await enrichAppointments(data||[]);
+}
+async function getAppointmentsForPatient(patientId){
+  const{data,error}=await SB.from('outpatient_appointments').select('*').eq('patient_id',patientId).eq('is_active',true).order('appointment_date',{ascending:false}).limit(50);
+  if(error)throw error;
+  return await enrichAppointments(data||[]);
+}
+async function getAppointmentById(id){
+  const{data,error}=await SB.from('outpatient_appointments').select('*').eq('id',id).single();
+  if(error)throw error;
+  return normaliseProjectAppointment(data);
+}
+async function insertProjectAppointment(payload){
+  const projectPayload=appointmentProjectPayloadFromLegacy(payload);
+  const{data,error}=await SB.from('outpatient_appointments').insert(projectPayload).select('*').single();
+  if(error)throw error;
+  mirrorAppointmentToCompatibility(data).catch(()=>{});
+  return normaliseProjectAppointment(data);
+}
+async function updateProjectAppointment(id,payload){
+  const projectPayload=appointmentProjectPayloadFromLegacy(payload);
+  if(!projectPayload.patient_id)delete projectPayload.patient_id;
+  if(!projectPayload.appointment_date)delete projectPayload.appointment_date;
+  const{data,error}=await SB.from('outpatient_appointments').update(projectPayload).eq('id',id).select('*').single();
+  if(error)throw error;
+  mirrorAppointmentToCompatibility(data).catch(()=>{});
+  return normaliseProjectAppointment(data);
+}
+async function setProjectAppointmentStatus(id,status){
+  const newStatus=legacyAppointmentStatusToProject(status);
+  const payload={appointment_status:newStatus};
+  if(newStatus==='Seen'){
+    payload.seen_at=new Date().toISOString();
+    payload.seen_by=getLoggedInSubmitterName()||null;
+  }
+  const{data,error}=await SB.from('outpatient_appointments').update(payload).eq('id',id).select('*').single();
+  if(error)throw error;
+  mirrorAppointmentToCompatibility(data).catch(()=>{});
+}
+async function deleteProjectAppointment(id){
+  const{data,error}=await SB.from('outpatient_appointments')
+    .update({is_active:false,appointment_status:'Cancelled',cancellation_reason:'Deleted from dashboard'})
+    .eq('id',id)
+    .select('*')
+    .single();
+  if(error)throw error;
+  mirrorAppointmentToCompatibility(data).catch(()=>{});
+}
+async function mirrorAppointmentToCompatibility(row){
+  if(!row?.id)return;
+  const a=normaliseProjectAppointment(row);
+  try{
+    await SB.from('appointments').upsert({
+      id:a.id,
+      patient_id:a.patient_id,
+      appt_date:a.appt_date,
+      appt_slot:a.appt_slot,
+      assigned_to:a.assigned_to,
+      bank_staff_id:a.bank_staff_id,
+      status:a.status,
+      notes:a.notes||null
+    },{onConflict:'id'});
+  }catch(e){console.warn('Appointment compatibility mirror skipped',e?.message||e);}
+}
+async function findOrCreateAppointmentPatient(fn,sn,idcard,phone){
+  const first=String(fn||'').trim();
+  const sur=String(sn||'').trim();
+  const idNo=String(idcard||'').trim();
+  const ph=String(phone||'').trim();
+  if(!first||!sur||!idNo)throw new Error('First name, surname and ID card are required.');
+  let {data:existing,error:findErr}=await SB.from('patients_main')
+    .select('id')
+    .or(`id_card_number.eq.${idNo},hospital_number.eq.${idNo}`)
+    .limit(1);
+  if(findErr)throw findErr;
+  if(existing&&existing[0]?.id){
+    const {error}=await SB.from('patients_main').update({first_name:first,surname:sur,id_card_number:idNo,mobile_number:ph||null,modified_at:new Date().toISOString()}).eq('id',existing[0].id);
+    if(error)throw error;
+    return existing[0].id;
+  }
+  const {data:created,error:createErr}=await SB.from('patients_main').insert({
+    first_name:first,
+    surname:sur,
+    hospital_number:idNo,
+    id_card_number:idNo,
+    mobile_number:ph||null,
+    patient_status:'Outpatient',
+    created_by:getLoggedInSubmitterName()||null
+  }).select('id').single();
+  if(createErr)throw createErr;
+  return created.id;
 }
 function monthEndDate(year,month){return `${year}-${month}-${String(new Date(Number(year),Number(month),0).getDate()).padStart(2,'0')}`;}
 
@@ -2284,6 +2566,9 @@ function switchSection(name, navEl){
   if(name==='clinical-reviews'){populatePatientDropdowns();loadReviews();}
   if(name==='teaching'){populatePatientDropdowns();loadTeaching();}
   if(name==='referrals'){populatePatientDropdowns();loadReferrals();}
+  if(name==='appliances')loadAppliances();
+  if(name==='discharge')loadDischargePlans();
+  if(name==='followups')loadFollowups();
 
   // Close sidebar on mobile
   if(window.innerWidth<=900){
@@ -2320,12 +2605,15 @@ async function loadHomeDashboard(){
   if(greetEl)greetEl.textContent=`${greetWord}, ${getLoggedInSubmitterName().split(' ')[0]}`;
 
   // Load KPIs in parallel. Patient count now reads from Project Bible tables.
-  const [apptsRes, revsRes, refsRes, staffRes, teachRes] = await Promise.all([
-    SB.from('appointments').select('id,status,appt_date').eq('appt_date',TODAY),
+  const [apptsRes, revsRes, refsRes, staffRes, teachRes, appliancesRes, dischargeRes, followupRes] = await Promise.all([
+    SB.from('outpatient_appointments').select('id,appointment_status,appointment_date').eq('appointment_date',TODAY).eq('is_active',true),
     SB.from('daily_reviews').select('id').eq('review_date',TODAY).eq('is_deleted',false),
     SB.from('community_referrals').select('id').eq('referral_status','Pending').eq('is_active',true),
     SB.from('roster').select('id,status').eq('roster_date',TODAY),
-    SB.from('teaching_education').select('id').eq('is_deleted',false)
+    SB.from('teaching_education').select('id').eq('is_deleted',false),
+    SB.from('appliances_main').select('id').eq('is_active',true),
+    SB.from('discharge_planning').select('id,actual_discharge_date').eq('is_active',true),
+    SB.from('follow_ups').select('id,followup_due_date,followup_status').eq('is_active',true)
   ]);
 
   let pts=[];
@@ -2343,6 +2631,9 @@ async function loadHomeDashboard(){
   const staffOn=(staffRes.data||[]).filter(r=>['D','working','OT'].includes(r.status)).length;
   setValue('tile-staff-today',staffOn);
   setValue('tile-teaching-total',(teachRes.data||[]).length);
+  setValue('tile-appliances-total',(appliancesRes.data||[]).length);
+  setValue('tile-discharge-active',(dischargeRes.data||[]).filter(r=>!r.actual_discharge_date).length);
+  setValue('tile-followups-due',(followupRes.data||[]).filter(r=>String(r.followup_status||'Required')!=='Completed').length);
 
   // Today's clinic
   await loadHomeClinic();
@@ -2354,26 +2645,22 @@ async function loadHomeDashboard(){
 async function loadHomeClinic(){
   const tbody=document.getElementById('home-clinic-tbody');
   if(!tbody)return;
-  const{data:appts}=await SB.from('appointments').select('*').eq('appt_date',TODAY).order('appt_slot');
+  let appts=[];
+  try{appts=await getAppointmentsOnDate(TODAY);}catch(e){tbody.innerHTML=`<tr><td colspan="5" class="empty">Could not load today's clinic: ${htmlSafe(e.message||String(e))}</td></tr>`;return;}
   if(!appts?.length){tbody.innerHTML='<tr><td colspan="5" class="empty">No appointments today</td></tr>';return;}
-  const patIds=[...new Set(appts.map(a=>a.patient_id).filter(Boolean))];
-  let patMap={};
-  if(patIds.length){
-    const{data:pts}=await SB.from('patients').select('id,first_name,surname,id_card').in('id',patIds);
-    (pts||[]).forEach(p=>{patMap[p.id]=p;});
-  }
-  const statusColours={booked:'background:#e3f2fd;color:#0d47a1',attended:'background:#e8f5e9;color:#1b5e20',dna:'background:#fff8e1;color:#e65100',cancelled:'background:#fdecea;color:#b71c1c'};
+  const statusColours={booked:'background:#e3f2fd;color:#0d47a1',attended:'background:#e8f5e9;color:#1b5e20',did_not_attend:'background:#fff8e1;color:#e65100',cancelled:'background:#fdecea;color:#b71c1c'};
+  const statusText={booked:'Booked',attended:'Seen',did_not_attend:'DNTU',cancelled:'Cancelled'};
   tbody.innerHTML=appts.map(a=>{
-    const pt=patMap[a.patient_id];
+    const pt=a.patients;
     const sc=statusColours[a.status]||'background:#f5f5f5;color:#757575';
     return `<tr>
       <td><strong style="color:var(--teal);">${htmlSafe(a.appt_slot||'—')}</strong></td>
       <td>${pt?`<strong>${htmlSafe(pt.surname)}, ${htmlSafe(pt.first_name)}</strong>`:'—'}</td>
       <td style="font-family:monospace;font-size:12px;">${pt?htmlSafe(pt.id_card||'—'):'—'}</td>
-      <td><span style="${sc};padding:3px 10px;border-radius:10px;font-size:10px;font-weight:700;">${htmlSafe(a.status||'booked')}</span></td>
+      <td><span style="${sc};padding:3px 10px;border-radius:10px;font-size:10px;font-weight:700;">${htmlSafe(statusText[a.status]||'Booked')}</span></td>
       <td>
-        <button onclick="setOutcome('${a.id}','attended')" style="padding:3px 8px;border-radius:5px;border:none;background:#e8f5e9;color:#1b5e20;font-size:10px;font-weight:700;cursor:pointer;margin-right:3px;">Attended</button>
-        <button onclick="setOutcome('${a.id}','dna')" style="padding:3px 8px;border-radius:5px;border:none;background:#fff8e1;color:#e65100;font-size:10px;font-weight:700;cursor:pointer;">DNA</button>
+        <button onclick="setOutcome('${a.id}','attended')" style="padding:3px 8px;border-radius:5px;border:none;background:#e8f5e9;color:#1b5e20;font-size:10px;font-weight:700;cursor:pointer;margin-right:3px;">Seen</button>
+        <button onclick="setOutcome('${a.id}','did_not_attend')" style="padding:3px 8px;border-radius:5px;border:none;background:#fff8e1;color:#e65100;font-size:10px;font-weight:700;cursor:pointer;">DNTU</button>
       </td>
     </tr>`;
   }).join('');
@@ -2618,9 +2905,10 @@ async function loadPdTab(tab,patId){
   }
 
   if(tab==='appts'){
-    const{data}=await SB.from('appointments').select('*').eq('patient_id',patId).order('appt_date',{ascending:false}).limit(50);
-    const rows=(data||[]);
-    const sc2={booked:'background:#e3f2fd;color:#0d47a1',attended:'background:#e8f5e9;color:#1b5e20',dna:'background:#fff8e1;color:#e65100',cancelled:'background:#fdecea;color:#b71c1c'};
+    let rows=[];
+    try{rows=await getAppointmentsForPatient(patId);}catch(e){rows=[];}
+    const sc2={booked:'background:#e3f2fd;color:#0d47a1',attended:'background:#e8f5e9;color:#1b5e20',did_not_attend:'background:#fff8e1;color:#e65100',cancelled:'background:#fdecea;color:#b71c1c'};
+    const sl2={booked:'Booked',attended:'Seen',did_not_attend:'DNTU',cancelled:'Cancelled'};
     container.innerHTML=`
       <div class="card" style="padding:0;overflow:hidden;">
         <table class="dt">
@@ -2630,12 +2918,36 @@ async function loadPdTab(tab,patId){
             return `<tr>
               <td>${r.appt_date?new Date(r.appt_date).toLocaleDateString('en-MT'):'—'}</td>
               <td><strong style="color:var(--teal);">${htmlSafe(r.appt_slot||'—')}</strong></td>
-              <td><span style="${s};padding:3px 10px;border-radius:10px;font-size:10px;font-weight:700;">${htmlSafe(r.status||'booked')}</span></td>
+              <td><span style="${s};padding:3px 10px;border-radius:10px;font-size:10px;font-weight:700;">${htmlSafe(sl2[r.status]||'Booked')}</span></td>
               <td style="font-size:12px;color:var(--muted);">${htmlSafe(r.notes||'—')}</td>
             </tr>`;
           }).join(''):'<tr><td colspan="4" class="empty">No appointments yet</td></tr>'}</tbody>
         </table>
       </div>`;
+  }
+
+  if(tab==='appliances'){
+    const{data,error}=await SB.from('appliances_main').select('*').eq('patient_id',patId).eq('is_active',true).order('created_at',{ascending:false});
+    if(error){container.innerHTML=`<div class="card"><div class="empty">Error loading appliances_main: ${htmlSafe(error.message)}</div></div>`;return;}
+    const rows=data||[];
+    container.innerHTML=`<div style="margin-bottom:12px;display:flex;justify-content:flex-end;"><button class="btn-add" onclick="openAddApplianceModal('${patId}')">+ Add Appliance</button></div>
+      <div class="card" style="padding:0;overflow:hidden;"><table class="dt"><thead><tr><th>Date</th><th>Appliance</th><th>Size</th><th>Product</th><th>Accessory</th><th>Current</th><th>Outcome</th><th>Notes</th><th></th></tr></thead><tbody>${rows.length?rows.map(r=>`<tr><td>${fmtMaybeDate(r.date_started)}</td><td>${htmlSafe(r.appliance_type||'—')}</td><td>${htmlSafe(r.appliance_size||'—')}</td><td>${htmlSafe([r.product_name,r.product_code,r.manufacturer].filter(Boolean).join(' · ')||'—')}</td><td>${htmlSafe([r.accessory_type,r.accessory_name].filter(Boolean).join(' · ')||'—')}</td><td>${r.is_current?'Yes':'No'}</td><td>${htmlSafe(r.outcome||'—')}</td><td style="max-width:180px;font-size:11px;color:var(--muted);">${htmlSafe(r.appliance_notes||'—')}</td><td><button onclick="deleteAppliance('${r.id}','${patId}')" style="padding:3px 8px;border-radius:5px;border:none;background:#fdecea;color:#b71c1c;font-size:10px;cursor:pointer;">Del</button></td></tr>`).join(''):'<tr><td colspan="9" class="empty">No appliance records yet</td></tr>'}</tbody></table></div>`;
+  }
+
+  if(tab==='discharge'){
+    const{data,error}=await SB.from('discharge_planning').select('*').eq('patient_id',patId).eq('is_active',true).order('created_at',{ascending:false});
+    if(error){container.innerHTML=`<div class="card"><div class="empty">Error loading discharge_planning: ${htmlSafe(error.message)}</div></div>`;return;}
+    const rows=data||[];
+    container.innerHTML=`<div style="margin-bottom:12px;display:flex;justify-content:flex-end;"><button class="btn-add" onclick="openAddDischargeModal('${patId}')">+ Add Discharge Plan</button></div>
+      <div class="card" style="padding:0;overflow:hidden;"><table class="dt"><thead><tr><th>Started</th><th>Ward</th><th>Expected</th><th>Actual</th><th>Self Care</th><th>Community</th><th>Follow-Up</th><th>Outcome</th><th>Notes</th><th></th></tr></thead><tbody>${rows.length?rows.map(r=>`<tr><td>${fmtMaybeDate(r.planning_started_date)}</td><td>${htmlSafe(r.ward||'—')}</td><td>${fmtMaybeDate(r.expected_discharge_date)}</td><td>${fmtMaybeDate(r.actual_discharge_date)}</td><td>${htmlSafe(r.self_care_status||'—')}</td><td>${htmlSafe(r.community_referral_status||'—')}</td><td>${r.followup_booked?'Booked':'Not booked'}</td><td>${htmlSafe(r.discharge_outcome||'—')}</td><td style="max-width:180px;font-size:11px;color:var(--muted);">${htmlSafe(r.discharge_notes||'—')}</td><td><button onclick="deleteDischargePlan('${r.id}','${patId}')" style="padding:3px 8px;border-radius:5px;border:none;background:#fdecea;color:#b71c1c;font-size:10px;cursor:pointer;">Del</button></td></tr>`).join(''):'<tr><td colspan="10" class="empty">No discharge plan yet</td></tr>'}</tbody></table></div>`;
+  }
+
+  if(tab==='followups'){
+    const{data,error}=await SB.from('follow_ups').select('*').eq('patient_id',patId).eq('is_active',true).order('followup_due_date',{ascending:true});
+    if(error){container.innerHTML=`<div class="card"><div class="empty">Error loading follow_ups: ${htmlSafe(error.message)}</div></div>`;return;}
+    const rows=data||[];
+    container.innerHTML=`<div style="margin-bottom:12px;display:flex;justify-content:flex-end;"><button class="btn-add" onclick="openAddFollowupModal('${patId}')">+ Add Follow-Up</button></div>
+      <div class="card" style="padding:0;overflow:hidden;"><table class="dt"><thead><tr><th>Due</th><th>Appointment</th><th>Type</th><th>Status</th><th>Nurse</th><th>Outcome</th><th>Next</th><th>Notes</th><th></th></tr></thead><tbody>${rows.length?rows.map(r=>`<tr><td>${fmtMaybeDate(r.followup_due_date)}</td><td>${fmtMaybeDate(r.appointment_date)} ${htmlSafe(String(r.appointment_time||'').slice(0,5))}</td><td>${htmlSafe(r.followup_type||'—')}</td><td>${followupStatusBadge(r.followup_status)}</td><td>${htmlSafe(r.assigned_nurse||'—')}</td><td>${htmlSafe(r.outcome||'—')}</td><td>${fmtMaybeDate(r.next_followup_date)}</td><td style="max-width:180px;font-size:11px;color:var(--muted);">${htmlSafe(r.notes||'—')}</td><td><button onclick="updateFollowupStatus('${r.id}','${patId}')" style="padding:3px 8px;border-radius:5px;border:none;background:#f5f5f5;font-size:10px;cursor:pointer;">Status</button></td></tr>`).join(''):'<tr><td colspan="9" class="empty">No follow-ups yet</td></tr>'}</tbody></table></div>`;
   }
 }
 
@@ -2971,8 +3283,7 @@ async function loadTodaySnapshot(){
   const d=new Date(snapCurrentDate+'T12:00:00');
   const isToday=snapCurrentDate===TODAY;
   document.getElementById('snap-date').textContent=d.toLocaleDateString('en-MT',{weekday:'long',day:'numeric',month:'long',year:'numeric'})+(isToday?' (Today)':'');
-  const{data:rawAppts}=await SB.from('appointments').select('*').eq('appt_date',snapCurrentDate).order('appt_slot');
-  const appts=await enrichAppointments(rawAppts||[]);
+  const appts=await getAppointmentsOnDate(snapCurrentDate);
   const body=document.getElementById('snap-body');
   const countEl=document.getElementById('snap-count');
   const booked=(appts||[]).filter(a=>a.status!=='cancelled');
@@ -3071,21 +3382,14 @@ async function loadMonthlyAppointmentSnapshot(){
   labelEl.textContent=curMonth.toLocaleDateString('en-MT',{month:'long',year:'numeric'});
   body.innerHTML='<div class="pt-snap-empty">Loading monthly appointment list...</div>';
 
-  const {data:rawAppts,error}=await SB.from('appointments')
-    .select('*')
-    .gte('appt_date',start)
-    .lte('appt_date',end)
-    .order('appt_date',{ascending:true})
-    .order('appt_slot',{ascending:true});
-
-  if(error){
+  let appts=[];
+  try{appts=await getAppointmentsBetween(start,end,true);}
+  catch(error){
     console.error('Monthly appointment snapshot error:',error);
-    body.innerHTML=`<div class="pt-snap-empty">Could not load monthly appointment snapshot: ${htmlSafe(error.message)}</div>`;
+    body.innerHTML=`<div class="pt-snap-empty">Could not load monthly appointment snapshot: ${htmlSafe(error.message||String(error))}</div>`;
     countEl.textContent='Error';
     return;
   }
-
-  const appts=await enrichAppointments(rawAppts||[]);
   const active=appts.filter(a=>a.status!=='cancelled');
   countEl.textContent=`${active.length} patient${active.length!==1?'s':''}`;
   if(!appts.length){
@@ -3725,10 +4029,7 @@ async function getWorkingNurses(date){
 // Get ALL nurses who have bookings on a date — even if now absent (sick etc.)
 // Used to show existing bookings with warning when nurse is absent
 async function getNursesWithBookings(date, workingNurses){
-  const{data:appts}=await SB.from('appointments')
-    .select('assigned_to, staff(full_name)')
-    .eq('appt_date',date)
-    .neq('status','cancelled');
+  const appts=(await getAppointmentsOnDate(date)).filter(a=>a.status!=='cancelled');
 
   const workingIds=new Set(workingNurses.map(n=>n.id));
   const extraNurses=[];
@@ -3760,11 +4061,7 @@ async function loadAppts(){
   const offIds=new Set((tilOff||[]).map(t=>String(t.staff_id)));
   const OFF_ST=['off','sick_leave','maternity_leave','study_leave','annual_leave','public_holiday'];
 
-  const{data:rawAppts}=await SB.from('appointments')
-    .select('*')
-    .eq('appt_date',date)
-    .order('appt_slot');
-  const appts=await enrichAppointments(rawAppts||[]);
+  const appts=await getAppointmentsOnDate(date);
 
   const nurses=[];
   const addNurse=(n)=>{
@@ -3880,8 +4177,7 @@ async function refreshAppointmentViews(){
 }
 async function setAS(id,status){
   try{
-    const {error}=await SB.from('appointments').update({status}).eq('id',id);
-    if(error)throw new Error(error.message);
+    await setProjectAppointmentStatus(id,status);
     await refreshAppointmentViews();
   }catch(e){
     alert('Appointment status did not update: '+(e?.message||String(e))+'. Run the v21 SQL fix if you have not done so.');
@@ -3890,8 +4186,7 @@ async function setAS(id,status){
 async function delApp(id){
   if(!confirm('Delete this appointment?'))return;
   try{
-    const {error}=await SB.from('appointments').delete().eq('id',id);
-    if(error)throw new Error(error.message);
+    await deleteProjectAppointment(id);
     await refreshAppointmentViews();
   }catch(e){
     alert('Appointment was not deleted: '+(e?.message||String(e))+'. Run the v21 SQL fix if you have not done so.');
@@ -3899,8 +4194,9 @@ async function delApp(id){
 }
 
 async function openSnapshotAppointmentEdit(apptId){
-  const{data:raw,error}=await SB.from('appointments').select('*').eq('id',apptId).single();
-  if(error||!raw){alert('Could not load appointment.');return;}
+  let raw;
+  try{raw=await getAppointmentById(apptId);}
+  catch(error){alert('Could not load appointment.');return;}
   const enriched=(await enrichAppointments([raw]))[0]||raw;
   const{data:bankRows}=await SB.from('bank_staff').select('id,full_name,role').order('full_name');
   const currentAssigned=raw.bank_staff_id?`bank:${raw.bank_staff_id}`:(raw.assigned_to?`core:${raw.assigned_to}`:'common');
@@ -3949,7 +4245,7 @@ async function saveSnapshotAppointmentEdit(apptId,patientId){
   if(!fn||!sn||!idcard||!apptDate||!apptSlot){alert('Please fill in first name, surname, ID card, date and slot.');return;}
 
   if(patientId){
-    const{error:patErr}=await SB.from('patients').update({first_name:fn,surname:sn,id_card:idcard,phone_number:phone||null}).eq('id',patientId);
+    const{error:patErr}=await SB.from('patients_main').update({first_name:fn,surname:sn,id_card_number:idcard,mobile_number:phone||null,modified_at:new Date().toISOString()}).eq('id',patientId);
     if(patErr){alert('Patient update error: '+patErr.message);return;}
   }
 
@@ -3957,8 +4253,8 @@ async function saveSnapshotAppointmentEdit(apptId,patientId){
   if(assigned.startsWith('core:'))payload.assigned_to=assigned.replace('core:','');
   if(assigned.startsWith('bank:'))payload.bank_staff_id=assigned.replace('bank:','');
 
-  const{error}=await SB.from('appointments').update(payload).eq('id',apptId);
-  if(error){alert('Appointment update error: '+error.message);return;}
+  try{await updateProjectAppointment(apptId,payload);}
+  catch(error){alert('Appointment update error: '+(error.message||String(error)));return;}
   closeModal();
   if(apptDate!==snapCurrentDate){snapCurrentDate=apptDate;}
   loadTodaySnapshot();
@@ -3985,17 +4281,17 @@ async function doBook(slot,date,nurseIdParam,nurseType){
   const ph=document.getElementById('p-ph').value.trim();
   if(!fn||!sn||!id){alert('Please fill in patient details.');return;}
 
-  let{data:pat,error:patErr}=await SB.from('patients').upsert({first_name:fn,surname:sn,id_card:id,phone_number:ph||null},{onConflict:'id_card'}).select().single();
-  if(patErr&&!pat?.id){const r=await SB.from('patients').select('id').eq('id_card',id).single();pat=r.data;}
-  if(!pat?.id){alert('Error saving patient.');return;}
+  let patId;
+  try{patId=await findOrCreateAppointmentPatient(fn,sn,id,ph);}
+  catch(e){alert('Error saving patient: '+(e?.message||String(e)));return;}
 
-  const payload={patient_id:pat.id,appt_date:date,appt_slot:String(slot).slice(0,5),assigned_to:null,bank_staff_id:null,status:'booked'};
+  const payload={patient_id:patId,appt_date:date,appt_slot:String(slot).slice(0,5),assigned_to:null,bank_staff_id:null,status:'booked'};
   if(nurseType==='ot') payload.bank_staff_id=nurseIdParam;
   else if(nurseType==='common') { payload.assigned_to=null; payload.bank_staff_id=null; }
   else if(nurseIdParam&&nurseIdParam!=='undefined') payload.assigned_to=nurseIdParam;
 
-  const{error}=await SB.from('appointments').insert(payload);
-  if(error){alert('Booking error: '+error.message);return;}
+  try{await insertProjectAppointment(payload);}
+  catch(error){alert('Booking error: '+(error.message||String(error)));return;}
   closeModal();loadAppts();loadTodaySnapshot();if(document.getElementById('page-reports')?.classList.contains('active'))loadReports();
 }
 
@@ -4320,14 +4616,22 @@ function getClinicAuditFilters(){
 async function getClinicAuditRowsForCurrentFilter(){
   const {month,year,search}=getClinicAuditFilters();
   const asc=caSort==='asc';
-  let query=SB.from('appointments').select('*').order('appt_date',{ascending:asc}).order('appt_slot',{ascending:asc});
-  if(year&&month){
-    query=query.gte('appt_date',`${year}-${month}-01`).lte('appt_date',monthEndDate(year,month));
-  }else if(year){
-    query=query.gte('appt_date',`${year}-01-01`).lte('appt_date',`${year}-12-31`);
-  }
-  const {data:rawData}=await query;
-  let data=await enrichAppointments(rawData||[]);
+  let data=[];
+  try{
+    if(year&&month){
+      data=await getAppointmentsBetween(`${year}-${month}-01`,monthEndDate(year,month),true);
+    }else if(year){
+      data=await getAppointmentsBetween(`${year}-01-01`,`${year}-12-31`,true);
+    }else{
+      const {data:rawData,error}=await SB.from('outpatient_appointments').select('*').eq('is_active',true).order('appointment_date',{ascending:asc}).order('appointment_time',{ascending:asc});
+      if(error)throw error;
+      data=await enrichAppointments(rawData||[]);
+    }
+  }catch(e){console.error('Clinic audit appointment load error:',e);data=[];}
+  data=data.sort((a,b)=>{
+    const v=String(a.appt_date||'').localeCompare(String(b.appt_date||'')) || String(a.appt_slot||'').localeCompare(String(b.appt_slot||''));
+    return asc?v:-v;
+  });
   const s=String(search||'').toLowerCase();
   if(s){
     data=data.filter(a=>{
@@ -4500,8 +4804,8 @@ async function loadClinicAudit(){
   </tr>`).join('');
 }
 
-async function setOutcome(id,status){await SB.from('appointments').update({status}).eq('id',id);loadClinicAudit();loadTodaySnapshot();if(document.getElementById('page-reports')?.classList.contains('active'))loadReports();}
-async function delFromAudit(id){if(!confirm('Delete this appointment?'))return;await SB.from('appointments').delete().eq('id',id);loadClinicAudit();loadTodaySnapshot();if(document.getElementById('page-reports')?.classList.contains('active'))loadReports();}
+async function setOutcome(id,status){await setProjectAppointmentStatus(id,status);loadClinicAudit();loadTodaySnapshot();if(document.getElementById('page-reports')?.classList.contains('active'))loadReports();}
+async function delFromAudit(id){if(!confirm('Delete this appointment?'))return;await deleteProjectAppointment(id);loadClinicAudit();loadTodaySnapshot();if(document.getElementById('page-reports')?.classList.contains('active'))loadReports();}
 
 
 // REPORTS & CHARTS - no staff leave metrics and no per-nurse booking metrics
@@ -4538,14 +4842,7 @@ async function loadReports(){
   const start=month?`${year}-${month}-01`:`${year}-01-01`;
   const end=month?monthEndDate(year,month):`${year}-12-31`;
 
-  const{data:rawReportAppts}=await SB.from('appointments')
-    .select('*')
-    .gte('appt_date',start)
-    .lte('appt_date',end)
-    .order('appt_date',{ascending:true})
-    .order('appt_slot',{ascending:true});
-
-  const appts=await enrichAppointments(rawReportAppts||[]);
+  const appts=await getAppointmentsBetween(start,end,true);
   const total=appts.length;
   const attended=appts.filter(a=>a.status==='attended').length;
   const cancelled=appts.filter(a=>a.status==='cancelled').length;
@@ -4622,14 +4919,7 @@ async function loadReports(){
     upData.push(0);
   }
   const upStart=today,upEnd=dateAddStr(today,13);
-  const{data:rawUpcoming}=await SB.from('appointments')
-    .select('*')
-    .gte('appt_date',upStart)
-    .lte('appt_date',upEnd)
-    .neq('status','cancelled')
-    .order('appt_date',{ascending:true})
-    .order('appt_slot',{ascending:true});
-  const upcoming=await enrichAppointments(rawUpcoming||[]);
+  const upcoming=await getAppointmentsBetween(upStart,upEnd,false);
 
   (upcoming||[]).forEach(a=>{
     const diff=Math.round((new Date(a.appt_date+'T12:00:00')-new Date(today+'T12:00:00'))/86400000);
@@ -5238,16 +5528,15 @@ async function saveAppt(slot,date,nurseId){
   const idno=document.getElementById('p-id').value.trim();
   const phone=document.getElementById('p-phone')?.value.trim()||'';
   if(!fn||!sn||!idno){alert('Please fill in all patient details.');return;}
-  const{data:pat}=await SB.from('patients').upsert({first_name:fn,surname:sn,id_card:idno,phone_number:phone||null},{onConflict:'id_card'}).select().single();
-  let patId=pat?.id;
-  if(!patId){const{data:ep}=await SB.from('patients').select('id').eq('id_card',idno).single();patId=ep?.id;}
-  if(!patId){alert('Error saving patient.');return;}
-  const{error}=await SB.from('appointments').insert({
+  let patId;
+  try{patId=await findOrCreateAppointmentPatient(fn,sn,idno,phone);}
+  catch(e){alert('Error saving patient: '+(e?.message||String(e)));return;}
+  try{await insertProjectAppointment({
     patient_id:patId,appt_date:date,appt_slot:slot,
     assigned_to:nurseId&&nurseId!=='undefined'&&nurseId!==''?nurseId:null,
     status:'booked'
-  });
-  if(error){alert('Booking error: '+error.message);return;}
+  });}
+  catch(error){alert('Booking error: '+(error.message||String(error)));return;}
   closeModal();loadAppts();loadTodaySnapshot();
 }
 
@@ -6346,6 +6635,391 @@ async function deleteReferral(id){
   loadReferrals();
   if(currentPatientId&&updated?.patient_id===currentPatientId)loadPdTab('referrals',currentPatientId);
   await logAuditTrailAction('delete','community_referrals',id,{description:'Referral deleted'});
+}
+
+
+
+// ══════════════════════════════════════════════════════
+// STEP 9 — APPLIANCES / DISCHARGE / FOLLOW-UPS
+// Uses Project Bible Phase 2 tables directly.
+// ══════════════════════════════════════════════════════
+
+function fmtMaybeDate(value){
+  if(!value)return '—';
+  try{return new Date(String(value).slice(0,10)+'T12:00:00').toLocaleDateString('en-MT');}
+  catch(e){return String(value).slice(0,10)||'—';}
+}
+function boolText(v){return v?'Yes':'No';}
+function currentBadge(v){return v?'<span style="background:#e8f5e9;color:#1b5e20;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:800;">Current</span>':'<span style="background:#eef2f7;color:#475569;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:800;">Previous</span>';}
+function followupStatusBadge(status){
+  const s=String(status||'Required');
+  const colours={Required:'background:#fff8e1;color:#e65100;',Booked:'background:#e3f2fd;color:#0d47a1;',Seen:'background:#e8f5e9;color:#1b5e20;',Completed:'background:#e8f5e9;color:#1b5e20;',DNTU:'background:#fff3cd;color:#856404;',Cancelled:'background:#fdecea;color:#b71c1c;'};
+  return `<span style="${colours[s]||'background:#eef2f7;color:#475569;'}padding:2px 8px;border-radius:10px;font-size:10px;font-weight:800;">${htmlSafe(s)}</span>`;
+}
+async function populateWorkflowPatientSelect(selectId, selectedValue=''){
+  const el=document.getElementById(selectId);
+  if(!el)return;
+  const keep=selectedValue||el.value||'';
+  let pts=[];
+  try{pts=await getProjectPatients();}catch(e){pts=[];}
+  pts=pts.filter(p=>p.is_active).sort((a,b)=>String(a.surname||'').localeCompare(String(b.surname||'')));
+  el.innerHTML='<option value="">All Patients</option>'+pts.map(p=>`<option value="${p.id}" ${keep===p.id?'selected':''}>${htmlSafe(p.surname)}, ${htmlSafe(p.first_name)}</option>`).join('');
+}
+async function patientSelectOptions(selectedValue=''){
+  let pts=[];
+  try{pts=await getProjectPatients();}catch(e){pts=[];}
+  return pts.filter(p=>p.is_active).sort((a,b)=>String(a.surname||'').localeCompare(String(b.surname||''))).map(p=>`<option value="${p.id}" ${selectedValue===p.id?'selected':''}>${htmlSafe(p.surname)}, ${htmlSafe(p.first_name)}${p.hospital_number?' · '+htmlSafe(p.hospital_number):''}</option>`).join('');
+}
+async function getLatestEpisodeForPatient(patientId){
+  const {data,error}=await SB.from('episodes_main').select('*').eq('patient_id',patientId).eq('is_deleted',false).order('created_at',{ascending:false}).limit(1).maybeSingle();
+  if(error)return null;
+  return data||null;
+}
+async function getLatestStomaForPatient(patientId){
+  const {data,error}=await SB.from('stomas_main').select('*').eq('patient_id',patientId).eq('is_deleted',false).order('created_at',{ascending:false}).limit(1).maybeSingle();
+  if(error)return null;
+  return data||null;
+}
+async function ensureEpisodeForPatient(patientId){
+  let ep=await getLatestEpisodeForPatient(patientId);
+  if(ep)return ep;
+  const {data,error}=await SB.from('episodes_main').insert({
+    patient_id:patientId,
+    episode_type:'Review Only',
+    episode_status:'Active',
+    pathway_stage:'Referral / New Patient',
+    post_op_review_required:true,
+    daily_review_required:true,
+    discharge_planning_required:true,
+    follow_up_required:true,
+    created_by:getLoggedInSubmitterName()||null
+  }).select('*').single();
+  if(error)throw error;
+  await syncLegacyPatientMirrorById(patientId);
+  return data;
+}
+async function getPatientNamesMap(rows){return await patientNameMapForIds((rows||[]).map(r=>r.patient_id));}
+
+async function loadAppliances(){
+  await populateWorkflowPatientSelect('appliance-patient-filter');
+  const tbody=document.getElementById('appliances-tbody');
+  if(!tbody)return;
+  tbody.innerHTML='<tr><td colspan="9" class="empty">Loading appliances_main...</td></tr>';
+  const patF=document.getElementById('appliance-patient-filter')?.value||'';
+  const curF=document.getElementById('appliance-current-filter')?.value||'';
+  let q=SB.from('appliances_main').select('*').eq('is_active',true).order('created_at',{ascending:false}).limit(300);
+  if(patF)q=q.eq('patient_id',patF);
+  if(curF==='current')q=q.eq('is_current',true);
+  if(curF==='previous')q=q.eq('is_current',false);
+  const {data,error}=await q;
+  if(error){tbody.innerHTML=`<tr><td colspan="9" class="empty">Error loading appliances_main: ${htmlSafe(error.message)}</td></tr>`;return;}
+  const rows=data||[];
+  if(!rows.length){tbody.innerHTML='<tr><td colspan="9" class="empty">No appliance records found</td></tr>';return;}
+  const patMap=await getPatientNamesMap(rows);
+  tbody.innerHTML=rows.map(r=>{
+    const p=patMap[r.patient_id];
+    const pt=p?`${p.surname||''}, ${p.first_name||''}`.replace(/^,\s*/,''):'Unknown patient';
+    return `<tr>
+      <td>${fmtMaybeDate(r.date_started)}</td>
+      <td><strong>${htmlSafe(pt)}</strong><br/><span style="font-size:10px;color:var(--muted);">${htmlSafe(p?.patient_number||p?.hospital_number||'')}</span></td>
+      <td>${htmlSafe(r.appliance_type||'—')}</td>
+      <td>${htmlSafe(r.appliance_size||'—')}</td>
+      <td>${htmlSafe([r.product_name,r.product_code,r.manufacturer].filter(Boolean).join(' · ')||'—')}</td>
+      <td>${htmlSafe([r.accessory_type,r.accessory_name].filter(Boolean).join(' · ')||'—')}</td>
+      <td>${currentBadge(r.is_current)}</td>
+      <td>${htmlSafe([r.reason_for_change,r.outcome].filter(Boolean).join(' · ')||'—')}</td>
+      <td><button onclick="deleteAppliance('${r.id}')" style="padding:4px 10px;border-radius:6px;border:none;background:#fdecea;color:#b71c1c;font-size:11px;font-weight:700;cursor:pointer;">Delete</button></td>
+    </tr>`;
+  }).join('');
+}
+
+async function openAddApplianceModal(preselectedPatientId=''){
+  const patientOptions=await patientSelectOptions(preselectedPatientId);
+  const h=`<h2>Add Appliance</h2><div class="msub">Record appliance/product details — saves to appliances_main</div>
+    <div class="fg"><label>Patient *</label><select id="nap-patient"><option value="">Select patient...</option>${patientOptions}</select></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div class="fg"><label>Date Started</label><input type="date" id="nap-date" value="${TODAY}"/></div>
+      <div class="fg"><label>Current Appliance</label><select id="nap-current"><option value="true">Yes</option><option value="false">No</option></select></div>
+      <div class="fg"><label>Appliance Type</label><select id="nap-type"><option>One-Piece Drainable</option><option>One-Piece Closed</option><option>Two-Piece Drainable</option><option>Two-Piece Closed</option><option>Convex Appliance</option><option>Flat Appliance</option><option>High Output Bag</option><option>Urostomy Bag</option><option>Other</option></select></div>
+      <div class="fg"><label>Appliance Size</label><select id="nap-size"><option>Cut-To-Fit</option><option>Pre-Cut</option><option>Small</option><option>Medium</option><option>Large</option><option>Extra Large</option><option>Other</option></select></div>
+      <div class="fg"><label>Product Name</label><input id="nap-product" placeholder="Product name"/></div>
+      <div class="fg"><label>Product Code</label><input id="nap-code" placeholder="Code"/></div>
+      <div class="fg"><label>Manufacturer</label><input id="nap-maker" placeholder="Manufacturer"/></div>
+      <div class="fg"><label>Accessory Type</label><select id="nap-accessory"><option value="">None</option><option>Adhesive Remover Spray</option><option>Barrier Spray</option><option>Filler Paste</option><option>Seal / Ring</option><option>Belt</option><option>Powder</option><option>Flange Extender</option><option>Other</option></select></div>
+    </div>
+    <div class="fg"><label>Accessory Product Name</label><input id="nap-accessory-name" placeholder="Optional"/></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div class="fg"><label>Reason For Change</label><select id="nap-reason"><option>Routine Change</option><option>Leakage</option><option>Skin Problem</option><option>Poor Fit</option><option>High Output</option><option>Patient Preference</option><option>Discharge Supply</option><option>Other</option></select></div>
+      <div class="fg"><label>Outcome</label><select id="nap-outcome"><option>Completed</option><option>Ongoing</option><option>Improved</option><option>Follow-Up Required</option><option>Other</option></select></div>
+    </div>
+    <div class="fg"><label>Notes</label><textarea id="nap-notes" rows="2" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:13px;outline:none;resize:vertical;"></textarea></div>
+    <div class="mact"><button class="btn-cancel" onclick="closeMo()">Cancel</button><button class="btn-save" onclick="saveNewAppliance()">Save Appliance</button></div>`;
+  document.getElementById('mb').innerHTML=h;
+  document.getElementById('mo').classList.add('open');
+}
+
+async function saveNewAppliance(){
+  const patientId=document.getElementById('nap-patient')?.value||'';
+  if(!patientId){alert('Patient is required.');return;}
+  const ep=await getLatestEpisodeForPatient(patientId);
+  const st=await getLatestStomaForPatient(patientId);
+  const payload={
+    patient_id:patientId,
+    episode_id:ep?.id||null,
+    stoma_id:st?.id||null,
+    date_started:document.getElementById('nap-date')?.value||null,
+    is_current:document.getElementById('nap-current')?.value==='true',
+    appliance_type:document.getElementById('nap-type')?.value||null,
+    appliance_size:document.getElementById('nap-size')?.value||null,
+    product_name:document.getElementById('nap-product')?.value.trim()||null,
+    product_code:document.getElementById('nap-code')?.value.trim()||null,
+    manufacturer:document.getElementById('nap-maker')?.value.trim()||null,
+    accessory_type:document.getElementById('nap-accessory')?.value||null,
+    accessory_name:document.getElementById('nap-accessory-name')?.value.trim()||null,
+    reason_for_change:document.getElementById('nap-reason')?.value||null,
+    outcome:document.getElementById('nap-outcome')?.value||null,
+    appliance_notes:document.getElementById('nap-notes')?.value.trim()||null,
+    nurse:getLoggedInSubmitterName()||null,
+    created_by:getLoggedInSubmitterName()||null,
+    is_active:true
+  };
+  const{data,error}=await SB.from('appliances_main').insert(payload).select('id').single();
+  if(error){alert('Error saving appliance: '+error.message);return;}
+  closeMo();
+  loadAppliances();
+  if(currentPatientId===patientId)loadPdTab('appliances',patientId);
+  await logAuditTrailAction('insert','appliances_main',data.id,{description:'Appliance record added'});
+}
+async function deleteAppliance(id,patientId=null){
+  if(!confirm('Delete this appliance record?'))return;
+  const{data,error}=await SB.from('appliances_main').update({is_active:false}).eq('id',id).select('patient_id').maybeSingle();
+  if(error){alert('Could not delete appliance: '+error.message);return;}
+  loadAppliances();
+  const pid=patientId||data?.patient_id;
+  if(currentPatientId&&pid===currentPatientId)loadPdTab('appliances',currentPatientId);
+  await logAuditTrailAction('delete','appliances_main',id,{description:'Appliance record deleted'});
+}
+
+async function loadDischargePlans(){
+  await populateWorkflowPatientSelect('discharge-patient-filter');
+  const tbody=document.getElementById('discharge-tbody');
+  if(!tbody)return;
+  tbody.innerHTML='<tr><td colspan="10" class="empty">Loading discharge_planning...</td></tr>';
+  const patF=document.getElementById('discharge-patient-filter')?.value||'';
+  const statusF=document.getElementById('discharge-status-filter')?.value||'';
+  let q=SB.from('discharge_planning').select('*').eq('is_active',true).order('created_at',{ascending:false}).limit(300);
+  if(patF)q=q.eq('patient_id',patF);
+  const{data,error}=await q;
+  if(error){tbody.innerHTML=`<tr><td colspan="10" class="empty">Error loading discharge_planning: ${htmlSafe(error.message)}</td></tr>`;return;}
+  let rows=data||[];
+  if(statusF==='active')rows=rows.filter(r=>!r.actual_discharge_date);
+  if(statusF==='completed')rows=rows.filter(r=>!!r.actual_discharge_date);
+  if(!rows.length){tbody.innerHTML='<tr><td colspan="10" class="empty">No discharge plans found</td></tr>';return;}
+  const patMap=await getPatientNamesMap(rows);
+  tbody.innerHTML=rows.map(r=>{
+    const p=patMap[r.patient_id];
+    const pt=p?`${p.surname||''}, ${p.first_name||''}`.replace(/^,\s*/,''):'Unknown patient';
+    return `<tr>
+      <td>${fmtMaybeDate(r.planning_started_date)}</td>
+      <td><strong>${htmlSafe(pt)}</strong><br/><span style="font-size:10px;color:var(--muted);">${htmlSafe(p?.patient_number||p?.hospital_number||'')}</span></td>
+      <td>${htmlSafe(r.ward||'—')}</td>
+      <td>${fmtMaybeDate(r.expected_discharge_date)}</td>
+      <td>${fmtMaybeDate(r.actual_discharge_date)}</td>
+      <td>${htmlSafe(r.self_care_status||'—')}</td>
+      <td>${htmlSafe(r.community_referral_status||'—')}</td>
+      <td>${r.followup_booked?'Booked':'Not booked'}</td>
+      <td>${htmlSafe(r.discharge_outcome||'—')}</td>
+      <td><button onclick="markDischargeComplete('${r.id}')" style="padding:4px 8px;border-radius:6px;border:none;background:#e8f5e9;color:#1b5e20;font-size:10px;font-weight:700;cursor:pointer;margin-right:4px;">Complete</button><button onclick="deleteDischargePlan('${r.id}')" style="padding:4px 8px;border-radius:6px;border:none;background:#fdecea;color:#b71c1c;font-size:10px;font-weight:700;cursor:pointer;">Delete</button></td>
+    </tr>`;
+  }).join('');
+}
+
+async function openAddDischargeModal(preselectedPatientId=''){
+  const patientOptions=await patientSelectOptions(preselectedPatientId);
+  const h=`<h2>Discharge Plan</h2><div class="msub">Record discharge readiness — saves to discharge_planning</div>
+    <div class="fg"><label>Patient *</label><select id="ndc-patient"><option value="">Select patient...</option>${patientOptions}</select></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div class="fg"><label>Planning Started</label><input type="date" id="ndc-start" value="${TODAY}"/></div>
+      <div class="fg"><label>Ward</label><input id="ndc-ward" placeholder="Ward / unit"/></div>
+      <div class="fg"><label>Expected Discharge</label><input type="date" id="ndc-expected"/></div>
+      <div class="fg"><label>Actual Discharge</label><input type="date" id="ndc-actual"/></div>
+      <div class="fg"><label>Self Care Status</label><select id="ndc-selfcare"><option>Not Started</option><option>Requires Full Assistance</option><option>Requires Partial Assistance</option><option>Practising With Supervision</option><option>Can Empty Bag</option><option>Can Change Bag With Help</option><option>Can Change Bag Independently</option><option>Independent</option><option>Family / Carer Managing</option><option>Not Applicable</option></select></div>
+      <div class="fg"><label>Community Referral</label><select id="ndc-community"><option>Not Required</option><option>Required</option><option>Pending</option><option>Sent</option><option>Accepted</option><option>Completed</option></select></div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:6px 0 12px;">
+      <label><input type="checkbox" id="ndc-empty"/> Can empty bag</label>
+      <label><input type="checkbox" id="ndc-change"/> Can change bag</label>
+      <label><input type="checkbox" id="ndc-skin"/> Understands skin care</label>
+      <label><input type="checkbox" id="ndc-diet"/> Diet / fluids explained</label>
+      <label><input type="checkbox" id="ndc-supply"/> Appliances supplied</label>
+      <label><input type="checkbox" id="ndc-follow"/> Follow-up booked</label>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div class="fg"><label>Follow-Up Date</label><input type="date" id="ndc-followdate"/></div>
+      <div class="fg"><label>Outcome</label><select id="ndc-outcome"><option>Ongoing</option><option>Completed</option><option>Discharged</option><option>Follow-Up Required</option><option>Delayed</option></select></div>
+    </div>
+    <div class="fg"><label>Notes</label><textarea id="ndc-notes" rows="2" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:13px;outline:none;resize:vertical;"></textarea></div>
+    <div class="mact"><button class="btn-cancel" onclick="closeMo()">Cancel</button><button class="btn-save" onclick="saveNewDischargePlan()">Save Plan</button></div>`;
+  document.getElementById('mb').innerHTML=h;
+  document.getElementById('mo').classList.add('open');
+}
+
+async function saveNewDischargePlan(){
+  const patientId=document.getElementById('ndc-patient')?.value||'';
+  if(!patientId){alert('Patient is required.');return;}
+  let ep;
+  try{ep=await ensureEpisodeForPatient(patientId);}catch(e){alert('Could not create/load episode: '+(e.message||e));return;}
+  const payload={
+    patient_id:patientId,
+    episode_id:ep.id,
+    ward:document.getElementById('ndc-ward')?.value.trim()||null,
+    planning_started_date:document.getElementById('ndc-start')?.value||TODAY,
+    expected_discharge_date:document.getElementById('ndc-expected')?.value||null,
+    actual_discharge_date:document.getElementById('ndc-actual')?.value||null,
+    self_care_status:document.getElementById('ndc-selfcare')?.value||null,
+    patient_can_empty_bag:document.getElementById('ndc-empty')?.checked||false,
+    patient_can_change_bag:document.getElementById('ndc-change')?.checked||false,
+    understands_skin_care:document.getElementById('ndc-skin')?.checked||false,
+    understands_diet_fluids:document.getElementById('ndc-diet')?.checked||false,
+    appliances_supplied:document.getElementById('ndc-supply')?.checked||false,
+    community_referral_status:document.getElementById('ndc-community')?.value||'Not Required',
+    followup_booked:document.getElementById('ndc-follow')?.checked||false,
+    followup_date:document.getElementById('ndc-followdate')?.value||null,
+    discharge_outcome:document.getElementById('ndc-outcome')?.value||null,
+    discharge_notes:document.getElementById('ndc-notes')?.value.trim()||null,
+    submitted_at:new Date().toISOString(),
+    submitted_by:getLoggedInSubmitterName()||null,
+    is_active:true
+  };
+  const{data,error}=await SB.from('discharge_planning').insert(payload).select('id').single();
+  if(error){alert('Error saving discharge plan: '+error.message);return;}
+  closeMo();
+  loadDischargePlans();
+  if(currentPatientId===patientId)loadPdTab('discharge',patientId);
+  await logAuditTrailAction('insert','discharge_planning',data.id,{description:'Discharge plan added'});
+}
+async function markDischargeComplete(id){
+  const today=TODAY;
+  const{data,error}=await SB.from('discharge_planning').update({actual_discharge_date:today,discharge_outcome:'Discharged'}).eq('id',id).select('patient_id,episode_id').maybeSingle();
+  if(error){alert('Could not complete discharge plan: '+error.message);return;}
+  if(data?.episode_id){try{await SB.from('episodes_main').update({episode_status:'Discharged',pathway_stage:'Discharged',discharge_date:today}).eq('id',data.episode_id);}catch(e){}}
+  loadDischargePlans();
+  if(currentPatientId&&data?.patient_id===currentPatientId)loadPdTab('discharge',currentPatientId);
+  await logAuditTrailAction('update','discharge_planning',id,{description:'Discharge marked complete'});
+}
+async function deleteDischargePlan(id,patientId=null){
+  if(!confirm('Delete this discharge plan?'))return;
+  const{data,error}=await SB.from('discharge_planning').update({is_active:false}).eq('id',id).select('patient_id').maybeSingle();
+  if(error){alert('Could not delete discharge plan: '+error.message);return;}
+  loadDischargePlans();
+  const pid=patientId||data?.patient_id;
+  if(currentPatientId&&pid===currentPatientId)loadPdTab('discharge',currentPatientId);
+  await logAuditTrailAction('delete','discharge_planning',id,{description:'Discharge plan deleted'});
+}
+
+async function loadFollowups(){
+  await populateWorkflowPatientSelect('followup-patient-filter');
+  const tbody=document.getElementById('followups-tbody');
+  if(!tbody)return;
+  tbody.innerHTML='<tr><td colspan="9" class="empty">Loading follow_ups...</td></tr>';
+  const patF=document.getElementById('followup-patient-filter')?.value||'';
+  const statusF=document.getElementById('followup-status-filter')?.value||'';
+  let q=SB.from('follow_ups').select('*').eq('is_active',true).order('followup_due_date',{ascending:true}).limit(300);
+  if(patF)q=q.eq('patient_id',patF);
+  if(statusF)q=q.eq('followup_status',statusF);
+  const{data,error}=await q;
+  if(error){tbody.innerHTML=`<tr><td colspan="9" class="empty">Error loading follow_ups: ${htmlSafe(error.message)}</td></tr>`;return;}
+  const rows=data||[];
+  if(!rows.length){tbody.innerHTML='<tr><td colspan="9" class="empty">No follow-ups found</td></tr>';return;}
+  const patMap=await getPatientNamesMap(rows);
+  tbody.innerHTML=rows.map(r=>{
+    const p=patMap[r.patient_id];
+    const pt=p?`${p.surname||''}, ${p.first_name||''}`.replace(/^,\s*/,''):'Unknown patient';
+    return `<tr>
+      <td>${fmtMaybeDate(r.followup_due_date)}</td>
+      <td>${fmtMaybeDate(r.appointment_date)} ${htmlSafe(String(r.appointment_time||'').slice(0,5))}</td>
+      <td><strong>${htmlSafe(pt)}</strong><br/><span style="font-size:10px;color:var(--muted);">${htmlSafe(p?.patient_number||p?.hospital_number||'')}</span></td>
+      <td>${htmlSafe(r.followup_type||'—')}</td>
+      <td>${followupStatusBadge(r.followup_status)}</td>
+      <td>${htmlSafe(r.assigned_nurse||'—')}</td>
+      <td>${htmlSafe(r.outcome||'—')}</td>
+      <td>${fmtMaybeDate(r.next_followup_date)}</td>
+      <td><button onclick="updateFollowupStatus('${r.id}')" style="padding:4px 8px;border-radius:6px;border:none;background:#e3f2fd;color:#0d47a1;font-size:10px;font-weight:700;cursor:pointer;margin-right:4px;">Status</button><button onclick="deleteFollowup('${r.id}')" style="padding:4px 8px;border-radius:6px;border:none;background:#fdecea;color:#b71c1c;font-size:10px;font-weight:700;cursor:pointer;">Delete</button></td>
+    </tr>`;
+  }).join('');
+}
+
+async function openAddFollowupModal(preselectedPatientId=''){
+  const patientOptions=await patientSelectOptions(preselectedPatientId);
+  const h=`<h2>Add Follow-Up</h2><div class="msub">Record follow-up planning — saves to follow_ups</div>
+    <div class="fg"><label>Patient *</label><select id="nfu-patient"><option value="">Select patient...</option>${patientOptions}</select></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div class="fg"><label>Follow-Up Due Date</label><input type="date" id="nfu-due" value="${TODAY}"/></div>
+      <div class="fg"><label>Appointment Date</label><input type="date" id="nfu-appt-date"/></div>
+      <div class="fg"><label>Appointment Time</label><input type="time" id="nfu-appt-time"/></div>
+      <div class="fg"><label>Follow-Up Type</label><select id="nfu-type"><option>Post-Discharge</option><option>Routine</option><option>Urgent</option><option>Telephone</option><option>Clinic</option><option>Community</option><option>Long-Term Monitoring</option><option>Reversal Review</option></select></div>
+      <div class="fg"><label>Status</label><select id="nfu-status"><option>Required</option><option>Booked</option><option>Seen</option><option>DNTU</option><option>Cancelled</option><option>Completed</option></select></div>
+      <div class="fg"><label>Assigned Nurse</label><input id="nfu-nurse" value="${htmlSafe(getLoggedInSubmitterName()||'')}"/></div>
+      <div class="fg"><label>Outcome</label><select id="nfu-outcome"><option>Follow-Up Required</option><option>Completed</option><option>Ongoing</option><option>Improved</option><option>No Change</option><option>Discharged</option></select></div>
+      <div class="fg"><label>Next Follow-Up Date</label><input type="date" id="nfu-next"/></div>
+    </div>
+    <div class="fg"><label>Notes</label><textarea id="nfu-notes" rows="2" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:13px;outline:none;resize:vertical;"></textarea></div>
+    <div class="mact"><button class="btn-cancel" onclick="closeMo()">Cancel</button><button class="btn-save" onclick="saveNewFollowup()">Save Follow-Up</button></div>`;
+  document.getElementById('mb').innerHTML=h;
+  document.getElementById('mo').classList.add('open');
+}
+
+async function saveNewFollowup(){
+  const patientId=document.getElementById('nfu-patient')?.value||'';
+  if(!patientId){alert('Patient is required.');return;}
+  const ep=await getLatestEpisodeForPatient(patientId);
+  const st=await getLatestStomaForPatient(patientId);
+  const payload={
+    patient_id:patientId,
+    episode_id:ep?.id||null,
+    stoma_id:st?.id||null,
+    followup_due_date:document.getElementById('nfu-due')?.value||null,
+    appointment_date:document.getElementById('nfu-appt-date')?.value||null,
+    appointment_time:document.getElementById('nfu-appt-time')?.value||null,
+    followup_type:document.getElementById('nfu-type')?.value||'Post-Discharge',
+    followup_status:document.getElementById('nfu-status')?.value||'Required',
+    assigned_nurse:document.getElementById('nfu-nurse')?.value.trim()||null,
+    outcome:document.getElementById('nfu-outcome')?.value||null,
+    next_followup_required:!!document.getElementById('nfu-next')?.value,
+    next_followup_date:document.getElementById('nfu-next')?.value||null,
+    notes:document.getElementById('nfu-notes')?.value.trim()||null,
+    is_active:true
+  };
+  const{data,error}=await SB.from('follow_ups').insert(payload).select('id').single();
+  if(error){alert('Error saving follow-up: '+error.message);return;}
+  closeMo();
+  loadFollowups();
+  if(currentPatientId===patientId)loadPdTab('followups',patientId);
+  await logAuditTrailAction('insert','follow_ups',data.id,{description:'Follow-up added'});
+}
+async function updateFollowupStatus(id,patientId=null){
+  const newStatus=prompt('Update follow-up status:\nRequired, Booked, Seen, DNTU, Cancelled, Completed');
+  if(!newStatus)return;
+  const valid=['Required','Booked','Seen','DNTU','Cancelled','Completed'];
+  if(!valid.includes(newStatus)){alert('Invalid status.');return;}
+  const patch={followup_status:newStatus};
+  if(newStatus==='Seen')patch.seen_date=TODAY;
+  if(newStatus==='DNTU')patch.did_not_turn_up=true;
+  if(newStatus==='Cancelled')patch.cancelled=true;
+  const{data,error}=await SB.from('follow_ups').update(patch).eq('id',id).select('patient_id').maybeSingle();
+  if(error){alert('Could not update follow-up: '+error.message);return;}
+  loadFollowups();
+  const pid=patientId||data?.patient_id;
+  if(currentPatientId&&pid===currentPatientId)loadPdTab('followups',currentPatientId);
+  await logAuditTrailAction('update','follow_ups',id,{description:`Follow-up status changed to ${newStatus}`});
+}
+async function deleteFollowup(id){
+  if(!confirm('Delete this follow-up?'))return;
+  const{data,error}=await SB.from('follow_ups').update({is_active:false}).eq('id',id).select('patient_id').maybeSingle();
+  if(error){alert('Could not delete follow-up: '+error.message);return;}
+  loadFollowups();
+  if(currentPatientId&&data?.patient_id===currentPatientId)loadPdTab('followups',currentPatientId);
+  await logAuditTrailAction('delete','follow_ups',id,{description:'Follow-up deleted'});
 }
 
 </script>
