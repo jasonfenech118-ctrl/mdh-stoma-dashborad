@@ -4,7 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>MDH Stoma Care Clinic — Patient Dashboard</title>
-<!-- Build v37: Step 4 Patient Register/Profile + professional navy/teal clinical theme with professional SVG button icons -->
+<!-- Build v40: Step 7 Referrals now use community_referrals + professional navy/teal SVG button icons -->
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -2323,7 +2323,7 @@ async function loadHomeDashboard(){
   const [apptsRes, revsRes, refsRes, staffRes, teachRes] = await Promise.all([
     SB.from('appointments').select('id,status,appt_date').eq('appt_date',TODAY),
     SB.from('daily_reviews').select('id').eq('review_date',TODAY).eq('is_deleted',false),
-    SB.from('referrals').select('id').eq('status','Pending'),
+    SB.from('community_referrals').select('id').eq('referral_status','Pending').eq('is_active',true),
     SB.from('roster').select('id,status').eq('roster_date',TODAY),
     SB.from('teaching_education').select('id').eq('is_deleted',false)
   ]);
@@ -2587,28 +2587,32 @@ async function loadPdTab(tab,patId){
   }
 
   if(tab==='referrals'){
-    const{data}=await SB.from('referrals').select('*').eq('patient_id',patId).order('referral_date',{ascending:false});
+    let q=SB.from('community_referrals').select('*').eq('patient_id',patId).eq('is_active',true).order('referral_date',{ascending:false});
+    const{data,error}=await q;
+    if(error){container.innerHTML=`<div class="card"><div class="empty">Error loading community_referrals: ${htmlSafe(error.message)}</div></div>`;return;}
     const rows=(data||[]);
-    const sc={Pending:'background:#fff8e1;color:#e65100;',Accepted:'background:#e3f2fd;color:#0d47a1;',Completed:'background:#e8f5e9;color:#1b5e20;',Declined:'background:#fdecea;color:#b71c1c;'};
+    const sc={Pending:'background:#fff8e1;color:#e65100;',Sent:'background:#e3f2fd;color:#0d47a1;',Accepted:'background:#e3f2fd;color:#0d47a1;',Completed:'background:#e8f5e9;color:#1b5e20;',Declined:'background:#fdecea;color:#b71c1c;'};
     container.innerHTML=`
       <div style="margin-bottom:12px;display:flex;justify-content:flex-end;">
         <button class="btn-add" onclick="openAddReferralModal('${patId}')">+ New Referral</button>
       </div>
       <div class="card" style="padding:0;overflow:hidden;">
         <table class="dt">
-          <thead><tr><th>Date</th><th>Type</th><th>Referred To/From</th><th>Reason</th><th>Status</th><th></th></tr></thead>
+          <thead><tr><th>Date</th><th>Type</th><th>Sent By</th><th>Referred To/From</th><th>Reason / Notes</th><th>Status</th><th></th></tr></thead>
           <tbody>${rows.length?rows.map(r=>{
-            const typeBadge=r.referral_type==='Inbound'?'<span style="background:#e3f2fd;color:#0d47a1;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;">Inbound</span>':'<span style="background:#fce4ec;color:#880e4f;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;">Outbound</span>';
-            const statusStyle=sc[r.status]||'background:#f5f5f5;color:#757575;';
+            const typeBadge=referralTypeBadge(r.referral_type);
+            const status=normaliseReferralStatus(r.referral_status);
+            const statusStyle=sc[status]||'background:#f5f5f5;color:#757575;';
             return `<tr>
               <td>${r.referral_date?new Date(r.referral_date).toLocaleDateString('en-MT'):'—'}</td>
               <td>${typeBadge}</td>
-              <td>${htmlSafe(r.referred_to||'—')}</td>
-              <td>${htmlSafe(r.reason||'—')}</td>
-              <td><span style="${statusStyle}padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;">${htmlSafe(r.status||'Pending')}</span></td>
+              <td>${htmlSafe(r.referral_sent_by||'—')}</td>
+              <td>${htmlSafe(r.referral_sent_to||'—')}</td>
+              <td>${htmlSafe(referralReasonText(r)||'—')}</td>
+              <td><span style="${statusStyle}padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;">${htmlSafe(status)}</span></td>
               <td><button onclick="updateReferralStatus('${r.id}')" style="padding:3px 8px;border-radius:5px;border:none;background:#f5f5f5;font-size:10px;cursor:pointer;">Update</button></td>
             </tr>`;
-          }).join(''):'<tr><td colspan="6" class="empty">No referrals yet</td></tr>'}</tbody>
+          }).join(''):'<tr><td colspan="7" class="empty">No referrals yet</td></tr>'}</tbody>
         </table>
       </div>`;
   }
@@ -6182,50 +6186,97 @@ async function deleteTeaching(id){
 }
 
 // ── REFERRALS ──────────────────────────────────────────
+// Step 7: Referrals now use Project Bible table community_referrals.
+
+function normaliseReferralStatus(status){
+  const s=String(status||'Pending').trim();
+  if(['Pending','Sent','Accepted','Completed','Declined'].includes(s))return s;
+  if(s.toLowerCase()==='required')return 'Pending';
+  return s||'Pending';
+}
+function referralTypeBadge(type){
+  const t=String(type||'Outbound').trim()||'Outbound';
+  const isInbound=t.toLowerCase()==='inbound';
+  const isCommunity=t.toLowerCase().includes('community');
+  const style=isInbound?'background:#e3f2fd;color:#0d47a1;':isCommunity?'background:#e8f5e9;color:#1b5e20;':'background:#eef2f7;color:var(--navy);';
+  return `<span style="${style}padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;">${htmlSafe(t)}</span>`;
+}
+function referralReasonText(r){
+  const raw=String(r?.referral_notes||'').trim();
+  if(!raw)return '';
+  return raw.replace(/^Reason:\s*/i,'').replace(/\s*\|\s*Notes:\s*/i,' · ');
+}
+function communityReferralToLegacyStatus(status){
+  const s=normaliseReferralStatus(status);
+  if(['Pending','Accepted','Completed','Declined'].includes(s))return s;
+  if(s==='Sent')return 'Pending';
+  return 'Pending';
+}
+async function patientNameMapForIds(patientIds){
+  const patMap={};
+  const ids=[...new Set((patientIds||[]).filter(Boolean))];
+  if(ids.length){
+    const{data:pts}=await SB.from('patients_main').select('id,first_name,surname,patient_number,hospital_number').in('id',ids);
+    (pts||[]).forEach(p=>{patMap[p.id]=p;});
+  }
+  return patMap;
+}
 
 async function loadReferrals(){
   const tbody=document.getElementById('referrals-tbody');
   if(!tbody)return;
-  tbody.innerHTML='<tr><td colspan="7" class="empty">Loading...</td></tr>';
+  tbody.innerHTML='<tr><td colspan="7" class="empty">Loading community_referrals...</td></tr>';
   const patF=document.getElementById('ref-patient-filter')?.value||'';
   const typeF=document.getElementById('ref-type-filter')?.value||'';
   const statusF=document.getElementById('ref-status-filter')?.value||'';
-  let q=SB.from('referrals').select('*, patients(first_name,surname)').order('referral_date',{ascending:false}).limit(200);
+  let q=SB.from('community_referrals')
+    .select('*')
+    .eq('is_active',true)
+    .order('referral_date',{ascending:false})
+    .limit(200);
   if(patF)q=q.eq('patient_id',patF);
   if(typeF)q=q.eq('referral_type',typeF);
-  if(statusF)q=q.eq('status',statusF);
+  if(statusF)q=q.eq('referral_status',statusF);
   const{data,error}=await q;
-  if(error){tbody.innerHTML=`<tr><td colspan="7" class="empty">Error: ${htmlSafe(error.message)}</td></tr>`;return;}
-  if(!data?.length){tbody.innerHTML='<tr><td colspan="7" class="empty">No referrals found</td></tr>';return;}
-  const statusColours={Pending:'background:#fff8e1;color:#e65100;',Accepted:'background:#e3f2fd;color:#0d47a1;',Completed:'background:#e8f5e9;color:#1b5e20;',Declined:'background:#fdecea;color:#b71c1c;'};
-  tbody.innerHTML=data.map(r=>{
-    const pt=r.patients?`${r.patients.surname}, ${r.patients.first_name}`:'Unknown';
-    const typeBadge=r.referral_type==='Inbound'?'<span style="background:#e3f2fd;color:#0d47a1;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;">Inbound</span>':'<span style="background:#fce4ec;color:#880e4f;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;">Outbound</span>';
-    const sc=statusColours[r.status]||'background:#f5f5f5;color:#757575;';
-    const statusBadge=`<span style="${sc}padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;">${htmlSafe(r.status||'Pending')}</span>`;
+  if(error){tbody.innerHTML=`<tr><td colspan="7" class="empty">Error loading community_referrals: ${htmlSafe(error.message)}</td></tr>`;return;}
+  const rows=data||[];
+  if(!rows.length){tbody.innerHTML='<tr><td colspan="7" class="empty">No referrals found</td></tr>';return;}
+  const patMap=await patientNameMapForIds(rows.map(r=>r.patient_id));
+  const statusColours={Pending:'background:#fff8e1;color:#e65100;',Sent:'background:#e3f2fd;color:#0d47a1;',Accepted:'background:#e3f2fd;color:#0d47a1;',Completed:'background:#e8f5e9;color:#1b5e20;',Declined:'background:#fdecea;color:#b71c1c;'};
+  tbody.innerHTML=rows.map(r=>{
+    const p=patMap[r.patient_id];
+    const pt=p?`${p.surname||''}, ${p.first_name||''}`.replace(/^,\s*/,''):'Unknown patient';
+    const status=normaliseReferralStatus(r.referral_status);
+    const sc=statusColours[status]||'background:#f5f5f5;color:#757575;';
+    const statusBadge=`<span style="${sc}padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;">${htmlSafe(status)}</span>`;
     return `<tr>
       <td>${r.referral_date?new Date(r.referral_date).toLocaleDateString('en-MT'):'—'}</td>
-      <td><strong>${htmlSafe(pt)}</strong></td>
-      <td>${typeBadge}</td>
-      <td>${htmlSafe(r.referred_to||'—')}</td>
-      <td>${htmlSafe(r.reason||'—')}</td>
+      <td><strong>${htmlSafe(pt)}</strong><br/><span style="font-size:10px;color:var(--muted);">${htmlSafe(p?.patient_number||p?.hospital_number||'')}</span></td>
+      <td>${referralTypeBadge(r.referral_type)}</td>
+      <td>${htmlSafe(r.referral_sent_to||'—')}</td>
+      <td>${htmlSafe(referralReasonText(r)||'—')}</td>
       <td>${statusBadge} <button onclick="updateReferralStatus('${r.id}')" style="padding:3px 8px;border-radius:5px;border:none;background:#f5f5f5;color:#333;font-size:10px;cursor:pointer;margin-left:4px;">Update</button></td>
       <td><button onclick="deleteReferral('${r.id}')" style="padding:4px 10px;border-radius:6px;border:none;background:#fdecea;color:#b71c1c;font-size:11px;font-weight:700;cursor:pointer;">Delete</button></td>
     </tr>`;
   }).join('');
 }
 
-async function openAddReferralModal(){
-  const{data:pts}=await SB.from('patients').select('id,first_name,surname').eq('is_active',true).order('surname');
-  const ptOpts=(pts||[]).map(p=>`<option value="${p.id}">${htmlSafe(p.surname)}, ${htmlSafe(p.first_name)}</option>`).join('');
-  const services=['Dietitian','Physiotherapy','Community Nurse','Psychologist','Social Worker','Oncology','Colorectal Surgeon','Dermatology','Occupational Therapy'];
-  const h=`<h2>New Referral</h2><div class="msub">Record an inbound or outbound referral</div>
+async function openAddReferralModal(preselectPatientId=null){
+  let pts=[];
+  try{pts=(await getProjectPatients()).filter(p=>p.is_active);}
+  catch(e){
+    const fallback=await SB.from('patients_main').select('id,first_name,surname').eq('is_active',true).eq('is_deleted',false).order('surname');
+    pts=fallback.data||[];
+  }
+  const ptOpts=(pts||[]).sort((a,b)=>String(a.surname||'').localeCompare(String(b.surname||''))).map(p=>`<option value="${p.id}" ${preselectPatientId===p.id?'selected':''}>${htmlSafe(p.surname)}, ${htmlSafe(p.first_name)}</option>`).join('');
+  const services=['Community Nurse','Dietitian','Physiotherapy','Psychologist','Social Worker','Oncology','Colorectal Surgeon','Dermatology','Occupational Therapy','GP','Other'];
+  const h=`<h2>New Referral</h2><div class="msub">Record an inbound or outbound referral — saves to community_referrals</div>
     <div class="fg"><label>Patient *</label><select id="nref-patient"><option value="">Select patient...</option>${ptOpts}</select></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
       <div class="fg"><label>Referral Date *</label><input type="date" id="nref-date" value="${TODAY}"/></div>
-      <div class="fg"><label>Type *</label><select id="nref-type"><option value="Outbound">Outbound (we refer out)</option><option value="Inbound">Inbound (referred to us)</option></select></div>
-      <div class="fg"><label>Referred By</label><input id="nref-by" placeholder="Referring clinician"/></div>
-      <div class="fg"><label>Referred To/From *</label><select id="nref-to"><option value="">Select service...</option>${services.map(s=>`<option>${s}</option>`).join('')}<option value="Other">Other</option></select></div>
+      <div class="fg"><label>Type *</label><select id="nref-type"><option value="Outbound">Outbound (we refer out)</option><option value="Inbound">Inbound (referred to us)</option><option value="Community Nurse">Community Nurse</option></select></div>
+      <div class="fg"><label>Referred By</label><input id="nref-by" placeholder="Referring clinician" value="${htmlSafe(getLoggedInSubmitterName()||'')}"/></div>
+      <div class="fg"><label>Referred To/From *</label><select id="nref-to"><option value="">Select service...</option>${services.map(s=>`<option>${s}</option>`).join('')}</select></div>
     </div>
     <div class="fg"><label>Reason</label><input id="nref-reason" placeholder="Reason for referral"/></div>
     <div class="fg"><label>Notes</label><textarea id="nref-notes" rows="2" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:13px;outline:none;resize:vertical;"></textarea></div>
@@ -6239,35 +6290,64 @@ async function saveNewReferral(){
   const date=document.getElementById('nref-date')?.value;
   const to=document.getElementById('nref-to')?.value;
   if(!patId||!date||!to){alert('Patient, date and referred to/from are required.');return;}
+  const reason=document.getElementById('nref-reason')?.value.trim()||'';
+  const notes=document.getElementById('nref-notes')?.value.trim()||'';
+  const combinedNotes=[reason?`Reason: ${reason}`:null,notes?`Notes: ${notes}`:null].filter(Boolean).join(' | ')||null;
   const payload={
-    patient_id:patId,referral_date:date,
+    patient_id:patId,
+    referral_date:date,
     referral_type:document.getElementById('nref-type')?.value||'Outbound',
-    referred_by:document.getElementById('nref-by')?.value.trim()||null,
-    referred_to:to,
-    reason:document.getElementById('nref-reason')?.value.trim()||null,
-    notes:document.getElementById('nref-notes')?.value.trim()||null,
-    status:'Pending'
+    referral_sent_by:document.getElementById('nref-by')?.value.trim()||getLoggedInSubmitterName()||null,
+    referral_sent_to:to,
+    referral_status:'Pending',
+    referral_notes:combinedNotes,
+    is_active:true
   };
-  const{error}=await SB.from('referrals').insert(payload);
-  if(error){alert('Error: '+error.message);return;}
-  closeMo();loadReferrals();
-  await logAuditTrailAction('insert','referrals',null,{description:`Referral recorded`});
+  const{data:record,error}=await SB.from('community_referrals').insert(payload).select('id').single();
+  if(error){alert('Error saving to community_referrals: '+error.message);return;}
+  try{
+    await SB.from('referrals').upsert({
+      id:record.id,
+      patient_id:patId,
+      referral_date:date,
+      referral_type:payload.referral_type,
+      referred_by:payload.referral_sent_by,
+      referred_to:payload.referral_sent_to,
+      reason:reason||payload.referral_type,
+      notes:notes||combinedNotes,
+      status:'Pending'
+    },{onConflict:'id'});
+  }catch(e){console.warn('Legacy referrals mirror skipped:',e?.message||e);}
+  closeMo();
+  loadReferrals();
+  if(currentPatientId===patId)loadPdTab('referrals',patId);
+  await logAuditTrailAction('insert','community_referrals',record.id,{description:`Referral recorded`});
 }
 
 async function updateReferralStatus(id){
-  const newStatus=prompt('Update status:\nOptions: Pending, Accepted, Completed, Declined');
+  const newStatus=prompt('Update status:\nOptions: Pending, Sent, Accepted, Completed, Declined');
   if(!newStatus)return;
-  const valid=['Pending','Accepted','Completed','Declined'];
-  if(!valid.includes(newStatus)){alert('Invalid status. Choose: Pending, Accepted, Completed, or Declined');return;}
-  await SB.from('referrals').update({status:newStatus,response_date:newStatus!=='Pending'?TODAY:null}).eq('id',id);
+  const valid=['Pending','Sent','Accepted','Completed','Declined'];
+  if(!valid.includes(newStatus)){alert('Invalid status. Choose: Pending, Sent, Accepted, Completed, or Declined');return;}
+  const patch={referral_status:newStatus,confirmation_date:newStatus!=='Pending'?TODAY:null};
+  const{data:updated,error}=await SB.from('community_referrals').update(patch).eq('id',id).select('patient_id').maybeSingle();
+  if(error){alert('Could not update referral: '+error.message);return;}
+  try{await SB.from('referrals').update({status:communityReferralToLegacyStatus(newStatus),response_date:newStatus!=='Pending'?TODAY:null}).eq('id',id);}catch(e){}
   loadReferrals();
+  if(currentPatientId&&updated?.patient_id===currentPatientId)loadPdTab('referrals',currentPatientId);
+  await logAuditTrailAction('update','community_referrals',id,{description:`Referral status changed to ${newStatus}`});
 }
 
 async function deleteReferral(id){
   if(!confirm('Delete this referral?'))return;
-  await SB.from('referrals').delete().eq('id',id);
+  const{data:updated,error}=await SB.from('community_referrals').update({is_active:false}).eq('id',id).select('patient_id').maybeSingle();
+  if(error){alert('Could not delete referral: '+error.message);return;}
+  try{await SB.from('referrals').delete().eq('id',id);}catch(e){}
   loadReferrals();
+  if(currentPatientId&&updated?.patient_id===currentPatientId)loadPdTab('referrals',currentPatientId);
+  await logAuditTrailAction('delete','community_referrals',id,{description:'Referral deleted'});
 }
+
 </script>
 </body>
 </html>
