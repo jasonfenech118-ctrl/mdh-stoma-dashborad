@@ -386,6 +386,40 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   .attendance-sheet{padding:0;}
   .att-table th,.att-table td{font-size:10px;padding:5px 4px;}
 }
+
+
+/* v43 — KPI command-centre module */
+.kpi-command-hero{display:grid;grid-template-columns:1.25fr .75fr;gap:16px;align-items:stretch;margin-bottom:16px;}
+.kpi-command-panel{background:linear-gradient(135deg,#0f2f46,#0d5960);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:22px;color:white;box-shadow:var(--shadow-lg);overflow:hidden;position:relative;}
+.kpi-command-panel:after{content:'';position:absolute;right:-70px;top:-70px;width:190px;height:190px;border-radius:50%;background:rgba(255,255,255,.08);}
+.kpi-command-panel .eyebrow{font-size:10px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:#a7f3ec;margin-bottom:8px;}
+.kpi-command-panel h3{font-size:22px;font-weight:900;line-height:1.12;margin-bottom:8px;letter-spacing:-.4px;}
+.kpi-command-panel p{font-size:13px;line-height:1.55;color:rgba(255,255,255,.78);max-width:720px;}
+.kpi-command-mark{display:flex;align-items:center;justify-content:center;background:white;border:1px solid var(--border);border-radius:18px;padding:20px;box-shadow:var(--shadow);}
+.kpi-command-mark .icon-svg{width:72px;height:72px;color:var(--teal);stroke-width:1.7;}
+.kpi-command-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:16px;}
+.kpi-command-card{background:white;border:1px solid var(--border);border-radius:14px;padding:16px;box-shadow:var(--shadow);position:relative;overflow:hidden;}
+.kpi-command-card:before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--teal);}
+.kpi-command-card.warning:before{background:var(--orange);}
+.kpi-command-card.danger:before{background:var(--red);}
+.kpi-command-card.good:before{background:var(--green);}
+.kpi-command-label{font-size:10px;font-weight:900;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
+.kpi-command-value{font-size:30px;font-weight:900;color:var(--navy);line-height:1;margin-top:7px;}
+.kpi-command-sub{font-size:11px;color:var(--muted);margin-top:5px;line-height:1.35;}
+.kpi-status-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-bottom:16px;}
+.kpi-status-item{background:#f8fafc;border:1px solid var(--border);border-radius:12px;padding:12px 14px;display:flex;justify-content:space-between;gap:12px;align-items:center;}
+.kpi-status-item strong{font-size:12px;color:var(--navy);}
+.kpi-status-pill{padding:4px 10px;border-radius:999px;font-size:10px;font-weight:900;text-transform:uppercase;background:#e8f5f4;color:var(--teal);white-space:nowrap;}
+.kpi-status-pill.warn{background:#fff3cd;color:#856404;}
+.kpi-status-pill.red{background:#fdecea;color:#b71c1c;}
+.kpi-two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.kpi-mini-list{display:grid;gap:8px;}
+.kpi-mini-row{display:flex;justify-content:space-between;gap:12px;border:1px solid var(--border);background:#fafafa;border-radius:10px;padding:9px 11px;font-size:12px;}
+.kpi-mini-row span{color:var(--muted);}
+.kpi-mini-row strong{color:var(--navy);}
+.kpi-note-box{background:#f8fafc;border:1px dashed var(--border);border-radius:12px;padding:12px 14px;font-size:12px;color:var(--muted);line-height:1.45;margin-bottom:14px;}
+@media(max-width:900px){.kpi-command-hero{grid-template-columns:1fr}.kpi-command-mark{display:none}.kpi-two-col{grid-template-columns:1fr}}
+
 /* REPORTS & CHARTS */
 .report-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-bottom:16px;}
 .report-card{background:white;border-radius:12px;border:1px solid var(--border);padding:16px;box-shadow:0 2px 6px rgba(0,0,0,.05);min-height:260px;}
@@ -866,6 +900,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     <div class="nav-item" id="nav-reports" onclick="switchSection('reports',this)">
       <span class="nav-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="5" rx="1"/><rect x="12" y="8" width="3" height="9" rx="1"/><rect x="17" y="5" width="3" height="12" rx="1"/></svg></span><span class="nav-label">Reports & Charts</span>
     </div>
+    <div class="nav-item" id="nav-kpi-dashboard" onclick="switchSection('kpi-dashboard',this)">
+      <span class="nav-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-5"/><path d="M12 16V8"/><path d="M16 16v-7"/><path d="M20 6l-4 4-3-3-5 5"/></svg></span><span class="nav-label">KPI Dashboard</span>
+    </div>
     <div class="nav-item" id="nav-audit-trail" onclick="switchSection('audit-trail',this)">
       <span class="nav-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg></span><span class="nav-label">Audit Trail</span>
     </div>
@@ -947,6 +984,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
           <div class="tile-value" id="tile-followups-due">—</div>
           <div class="tile-label">Follow-Ups Due</div>
         </div>
+        <div class="home-tile" onclick="switchSection('kpi-dashboard',document.getElementById('nav-kpi-dashboard'))">
+          <div class="tile-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-5"/><path d="M12 16V8"/><path d="M16 16v-7"/><path d="M20 6l-4 4-3-3-5 5"/></svg></div>
+          <div class="tile-value" id="tile-kpi-events">—</div>
+          <div class="tile-label">KPI Events</div>
+        </div>
       </div>
 
       <!-- QUICK ACTION TILES -->
@@ -975,6 +1017,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
         <div class="qa-card" onclick="switchSection('reports',document.getElementById('nav-reports'))">
           <div class="qa-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="5" rx="1"/><rect x="12" y="8" width="3" height="9" rx="1"/><rect x="17" y="5" width="3" height="12" rx="1"/></svg></div>
           <div class="qa-label">View Reports</div>
+        </div>
+        <div class="qa-card" onclick="switchSection('kpi-dashboard',document.getElementById('nav-kpi-dashboard'))">
+          <div class="qa-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-5"/><path d="M12 16V8"/><path d="M16 16v-7"/><path d="M20 6l-4 4-3-3-5 5"/></svg></div>
+          <div class="qa-label">KPI Dashboard</div>
         </div>
       </div>
 
@@ -1245,6 +1291,36 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     <!-- ══════════════════════════════════ -->
     <div class="section" id="section-reports">
       <div id="page-reports-inner"></div>
+    </div>
+
+    <!-- ══════════════════════════════════ -->
+    <!-- KPI DASHBOARD -->
+    <!-- ══════════════════════════════════ -->
+    <div class="section" id="section-kpi-dashboard">
+      <div class="phdr">
+        <div>
+          <h2>KPI Dashboard</h2>
+          <p>Clinical activity, pathway progress, appointment outcomes, and service-safety indicators.</p>
+        </div>
+        <button class="btn-add" onclick="loadKpiDashboard()">Refresh</button>
+      </div>
+      <div class="report-filters">
+        <label>Month:</label>
+        <select id="kpi-month" onchange="loadKpiDashboard()">
+          <option value="01">January</option><option value="02">February</option><option value="03">March</option>
+          <option value="04">April</option><option value="05">May</option><option value="06">June</option>
+          <option value="07">July</option><option value="08">August</option><option value="09">September</option>
+          <option value="10">October</option><option value="11">November</option><option value="12">December</option>
+        </select>
+        <label>Year:</label>
+        <select id="kpi-year" onchange="loadKpiDashboard()">
+          <option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option>
+        </select>
+        <button onclick="saveKpiMonthlySnapshot()">Save Monthly Snapshot</button>
+      </div>
+      <div id="kpi-dashboard-body">
+        <div class="empty">Loading KPI dashboard...</div>
+      </div>
     </div>
 
     <!-- ══════════════════════════════════ -->
@@ -2569,6 +2645,7 @@ function switchSection(name, navEl){
   if(name==='appliances')loadAppliances();
   if(name==='discharge')loadDischargePlans();
   if(name==='followups')loadFollowups();
+  if(name==='kpi-dashboard')loadKpiDashboard();
 
   // Close sidebar on mobile
   if(window.innerWidth<=900){
@@ -2634,6 +2711,7 @@ async function loadHomeDashboard(){
   setValue('tile-appliances-total',(appliancesRes.data||[]).length);
   setValue('tile-discharge-active',(dischargeRes.data||[]).filter(r=>!r.actual_discharge_date).length);
   setValue('tile-followups-due',(followupRes.data||[]).filter(r=>String(r.followup_status||'Required')!=='Completed').length);
+  loadHomeKpiTile().catch(()=>{});
 
   // Today's clinic
   await loadHomeClinic();
@@ -7020,6 +7098,189 @@ async function deleteFollowup(id){
   loadFollowups();
   if(currentPatientId&&data?.patient_id===currentPatientId)loadPdTab('followups',currentPatientId);
   await logAuditTrailAction('delete','follow_ups',id,{description:'Follow-up deleted'});
+}
+
+
+
+// ══════════════════════════════════════════════════════
+// v43 — KPI DASHBOARD / COMMAND CENTRE
+// ══════════════════════════════════════════════════════
+
+let latestKpiSnapshotData=null;
+function kpiSelectedPeriod(){
+  const now=new Date();
+  const mEl=document.getElementById('kpi-month');
+  const yEl=document.getElementById('kpi-year');
+  if(mEl&&!mEl.value)mEl.value=String(now.getMonth()+1).padStart(2,'0');
+  if(yEl&&!yEl.value)yEl.value=String(now.getFullYear());
+  const month=mEl?.value||String(now.getMonth()+1).padStart(2,'0');
+  const year=yEl?.value||String(now.getFullYear());
+  const start=`${year}-${month}-01`;
+  const next=new Date(Number(year),Number(month),1);
+  const end=fmt(next);
+  const monthName=new Date(Number(year),Number(month)-1,1).toLocaleDateString('en-MT',{month:'long'});
+  return {month,year,start,end,monthName};
+}
+function kpiCount(rows){return (rows||[]).length;}
+function kpiPct(n,d){return d?Math.round((Number(n||0)/Number(d||1))*100):0;}
+async function safeSelect(table,columns,filterFn){
+  try{
+    let q=SB.from(table).select(columns);
+    if(filterFn)q=filterFn(q);
+    const {data,error}=await q;
+    if(error)throw error;
+    return data||[];
+  }catch(e){
+    console.warn('KPI query skipped:',table,e?.message||e);
+    return [];
+  }
+}
+async function loadHomeKpiTile(){
+  const el=document.getElementById('tile-kpi-events');
+  if(!el)return;
+  const now=new Date();
+  const start=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-01`;
+  const next=new Date(now.getFullYear(),now.getMonth()+1,1);
+  const end=fmt(next);
+  const rows=await safeSelect('kpi_events','id',q=>q.gte('event_date',start).lt('event_date',end));
+  el.textContent=rows.length;
+}
+async function loadKpiDashboard(){
+  const body=document.getElementById('kpi-dashboard-body');
+  if(!body)return;
+  const now=new Date();
+  const mEl=document.getElementById('kpi-month');
+  const yEl=document.getElementById('kpi-year');
+  if(mEl&&!mEl.value)mEl.value=String(now.getMonth()+1).padStart(2,'0');
+  if(yEl&&!yEl.value)yEl.value=String(now.getFullYear());
+  body.innerHTML='<div class="empty">Loading KPI dashboard...</div>';
+  const p=kpiSelectedPeriod();
+
+  const [patients,patientsNew,episodes,reviews,appointments,teaching,referrals,appliances,discharges,followups,kpiEvents,snapshotRows]=await Promise.all([
+    safeSelect('patients_main','id,patient_status,is_active,is_deleted,current_ward,created_at',q=>q.eq('is_deleted',false)),
+    safeSelect('patients_main','id,created_at,is_deleted',q=>q.eq('is_deleted',false).gte('created_at',p.start).lt('created_at',p.end)),
+    safeSelect('episodes_main','id,episode_type,episode_status,pathway_stage,created_at,surgery_date,discharge_date,is_deleted',q=>q.eq('is_deleted',false)),
+    safeSelect('daily_reviews','id,review_date,review_type,skin_problem_present,leakage_present,complications,outcome,is_deleted',q=>q.eq('is_deleted',false).gte('review_date',p.start).lt('review_date',p.end)),
+    safeSelect('outpatient_appointments','id,appointment_date,appointment_status,is_active',q=>q.eq('is_active',true).gte('appointment_date',p.start).lt('appointment_date',p.end)),
+    safeSelect('teaching_education','id,education_date,education_completed,is_deleted',q=>q.eq('is_deleted',false).gte('education_date',p.start).lt('education_date',p.end)),
+    safeSelect('community_referrals','id,referral_date,referral_status,is_active',q=>q.eq('is_active',true).gte('referral_date',p.start).lt('referral_date',p.end)),
+    safeSelect('appliances_main','id,date_started,is_current,is_active,skin_related,leakage_related',q=>q.eq('is_active',true)),
+    safeSelect('discharge_planning','id,planning_started_date,actual_discharge_date,followup_booked,community_referral_status,is_active',q=>q.eq('is_active',true)),
+    safeSelect('follow_ups','id,followup_due_date,followup_status,is_active',q=>q.eq('is_active',true)),
+    safeSelect('kpi_events','id,event_date,event_type,kpi_category,ward,nurse,value_number,value_text,notes',q=>q.gte('event_date',p.start).lt('event_date',p.end).order('event_date',{ascending:false}).limit(50)),
+    safeSelect('kpi_monthly_snapshot','*',q=>q.eq('month',Number(p.month)).eq('year',Number(p.year)).limit(1))
+  ]);
+
+  const activePatients=patients.filter(x=>x.is_active!==false).length;
+  const elective=episodes.filter(e=>String(e.episode_type||'').toLowerCase().includes('elective')).length;
+  const emergency=episodes.filter(e=>String(e.episode_type||'').toLowerCase().includes('emergency')).length;
+  const activeEpisodes=episodes.filter(e=>!['Closed','Cancelled','Archived'].includes(String(e.episode_status||''))).length;
+  const seen=appointments.filter(a=>String(a.appointment_status||'').toLowerCase()==='seen').length;
+  const dntu=appointments.filter(a=>['dntu','did not turn up','did_not_attend'].includes(String(a.appointment_status||'').toLowerCase())).length;
+  const cancelled=appointments.filter(a=>String(a.appointment_status||'').toLowerCase()==='cancelled').length;
+  const skinProblems=reviews.filter(r=>r.skin_problem_present||String(r.complications||'').toLowerCase().includes('skin')).length;
+  const leakage=reviews.filter(r=>r.leakage_present||String(r.complications||'').toLowerCase().includes('leak')).length;
+  const completedTeaching=teaching.filter(t=>t.education_completed===true).length;
+  const pendingRefs=referrals.filter(r=>String(r.referral_status||'Pending')==='Pending').length;
+  const activeDischarge=discharges.filter(d=>!d.actual_discharge_date).length;
+  const followupsDue=followups.filter(f=>String(f.followup_status||'Required')!=='Completed').length;
+  const overdueFollowups=followups.filter(f=>f.followup_due_date&&f.followup_due_date<TODAY&&String(f.followup_status||'Required')!=='Completed').length;
+  const currentAppliances=appliances.filter(a=>a.is_current!==false).length;
+  const appTotal=appointments.length;
+  const attendanceRate=kpiPct(seen,appTotal);
+  const dntuRate=kpiPct(dntu,appTotal);
+  const educationRate=kpiPct(completedTeaching,teaching.length);
+  const latestSnapshot=snapshotRows[0]||null;
+
+  latestKpiSnapshotData={
+    month:Number(p.month),year:Number(p.year),month_name:p.monthName,
+    total_active_patients:activePatients,
+    total_new_patients:patientsNew.length,
+    total_elective_episodes:elective,
+    total_emergency_episodes:emergency,
+    total_pre_op_sitings:kpiEvents.filter(e=>String(e.event_type||'').includes('Pre-Op Siting')).length,
+    total_pre_op_education:kpiEvents.filter(e=>String(e.event_type||'').includes('Pre-Op Education')).length,
+    total_post_op_reviews:reviews.filter(r=>String(r.review_type||'').toLowerCase().includes('post')).length,
+    total_daily_reviews:reviews.length,
+    total_appliance_reviews:reviews.filter(r=>String(r.review_type||'').toLowerCase().includes('appliance')).length,
+    total_skin_problems:skinProblems,
+    total_complications:reviews.filter(r=>String(r.complications||'').trim()).length,
+    total_discharges:discharges.filter(d=>d.actual_discharge_date&&d.actual_discharge_date>=p.start&&d.actual_discharge_date<p.end).length,
+    total_followups:followups.filter(f=>f.followup_due_date&&f.followup_due_date>=p.start&&f.followup_due_date<p.end).length,
+    total_dntu:dntu,
+    total_cancelled:cancelled,
+    total_community_referrals:referrals.length
+  };
+
+  const riskPill=overdueFollowups>0?'red':(pendingRefs>0||dntuRate>=10?'warn':'');
+  const riskLabel=overdueFollowups>0?'Action needed':(pendingRefs>0||dntuRate>=10?'Monitor':'Stable');
+  const snapshotText=latestSnapshot?`Last snapshot saved on ${new Date(latestSnapshot.generated_at||latestSnapshot.created_at||new Date()).toLocaleString('en-MT')}`:'No saved snapshot for this month yet.';
+
+  body.innerHTML=`
+    <div class="kpi-command-hero">
+      <div class="kpi-command-panel">
+        <div class="eyebrow">KPI command centre</div>
+        <h3>${p.monthName} ${p.year} service position</h3>
+        <p>Live clinical indicators from patients, episodes, reviews, teaching, referrals, appliances, discharge planning, follow-ups, appointments, and KPI events.</p>
+      </div>
+      <div class="kpi-command-mark" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-5"/><path d="M12 16V8"/><path d="M16 16v-7"/><path d="M20 6l-4 4-3-3-5 5"/></svg></div>
+    </div>
+    <div class="kpi-note-box"><strong>Snapshot status:</strong> ${htmlSafe(snapshotText)} This dashboard is live; use “Save Monthly Snapshot” to store the month into <strong>kpi_monthly_snapshot</strong>.</div>
+    <div class="kpi-status-strip">
+      <div class="kpi-status-item"><strong>Overall service status</strong><span class="kpi-status-pill ${riskPill}">${riskLabel}</span></div>
+      <div class="kpi-status-item"><strong>Appointment attendance</strong><span class="kpi-status-pill ${attendanceRate<75?'warn':''}">${attendanceRate}% seen</span></div>
+      <div class="kpi-status-item"><strong>Education completion</strong><span class="kpi-status-pill ${educationRate<70&&teaching.length?'warn':''}">${educationRate}% complete</span></div>
+      <div class="kpi-status-item"><strong>Overdue follow-ups</strong><span class="kpi-status-pill ${overdueFollowups?'red':''}">${overdueFollowups}</span></div>
+    </div>
+    <div class="kpi-command-grid">
+      ${kpiCard('Active Patients',activePatients,'Current active patients','good')}
+      ${kpiCard('New Patients',patientsNew.length,`${p.monthName} ${p.year}`)}
+      ${kpiCard('Active Episodes',activeEpisodes,`${elective} elective · ${emergency} emergency`)}
+      ${kpiCard('Daily Reviews',reviews.length,'reviews this month')}
+      ${kpiCard('Skin Problems',skinProblems,'from monthly reviews',skinProblems?'warning':'')}
+      ${kpiCard('Leakage Issues',leakage,'from monthly reviews',leakage?'warning':'')}
+      ${kpiCard('Appointments',appTotal,`${seen} seen · ${dntu} DNTU · ${cancelled} cancelled`)}
+      ${kpiCard('DNTU Rate',dntuRate+'%',`${dntu} DNTU this month`,dntuRate>=10?'danger':'')}
+      ${kpiCard('Teaching',teaching.length,`${completedTeaching} completed`)}
+      ${kpiCard('Community Referrals',referrals.length,`${pendingRefs} pending`,pendingRefs?'warning':'')}
+      ${kpiCard('Current Appliances',currentAppliances,'active appliance records')}
+      ${kpiCard('Discharge Plans',activeDischarge,'active discharge plans')}
+      ${kpiCard('Follow-Ups Due',followupsDue,`${overdueFollowups} overdue`,overdueFollowups?'danger':'')}
+      ${kpiCard('KPI Events',kpiEvents.length,'logged this month')}
+    </div>
+    <div class="kpi-two-col">
+      <div class="card"><div class="card-title">Pathway stage overview</div><div class="kpi-mini-list">${renderKpiPathwayRows(episodes)}</div></div>
+      <div class="card"><div class="card-title">Latest KPI events</div><div style="overflow-x:auto;"><table class="dt"><thead><tr><th>Date</th><th>Event</th><th>Category</th><th>Nurse/Ward</th></tr></thead><tbody>${renderKpiEventRows(kpiEvents)}</tbody></table></div></div>
+    </div>`;
+}
+function kpiCard(label,value,sub,cls=''){
+  return `<div class="kpi-command-card ${cls}"><div class="kpi-command-label">${htmlSafe(label)}</div><div class="kpi-command-value">${htmlSafe(value)}</div><div class="kpi-command-sub">${htmlSafe(sub||'')}</div></div>`;
+}
+function renderKpiPathwayRows(episodes){
+  const map={};
+  (episodes||[]).forEach(e=>{const key=e.pathway_stage||'Not recorded';map[key]=(map[key]||0)+1;});
+  const rows=Object.entries(map).sort((a,b)=>b[1]-a[1]);
+  if(!rows.length)return '<div class="empty">No pathway data yet.</div>';
+  return rows.map(([stage,count])=>`<div class="kpi-mini-row"><span>${htmlSafe(stage)}</span><strong>${count}</strong></div>`).join('');
+}
+function renderKpiEventRows(rows){
+  if(!rows||!rows.length)return '<tr><td colspan="4" class="empty">No KPI events logged for this month.</td></tr>';
+  return rows.slice(0,12).map(r=>`<tr><td>${htmlSafe(r.event_date||'—')}</td><td>${htmlSafe(r.event_type||'—')}</td><td>${htmlSafe(r.kpi_category||'—')}</td><td>${htmlSafe([r.nurse,r.ward].filter(Boolean).join(' / ')||'—')}</td></tr>`).join('');
+}
+async function saveKpiMonthlySnapshot(){
+  if(!latestKpiSnapshotData)await loadKpiDashboard();
+  if(!latestKpiSnapshotData){alert('KPI data is not ready yet.');return;}
+  const row={...latestKpiSnapshotData,generated_at:new Date().toISOString(),generated_by:getLoggedInSubmitterName(),kpi_notes:'Saved from KPI Dashboard'};
+  try{
+    const {error}=await SB.from('kpi_monthly_snapshot').upsert(row,{onConflict:'month,year'});
+    if(error)throw error;
+    await SB.from('kpi_events').insert({
+      event_date:TODAY,event_type:'Monthly KPI Snapshot Saved',kpi_category:'Audit',nurse:getLoggedInSubmitterName(),month:row.month,year:row.year,value_text:`${row.month_name} ${row.year}`,notes:'Snapshot saved from KPI Dashboard'
+    });
+    await logAuditTrailAction('kpi_snapshot_saved','kpi_monthly_snapshot',`${row.year}-${String(row.month).padStart(2,'0')}`,{description:`KPI snapshot saved for ${row.month_name} ${row.year}`});
+    alert('Monthly KPI snapshot saved.');
+    loadKpiDashboard();
+  }catch(e){alert('Could not save KPI snapshot: '+(e?.message||String(e)));}
 }
 
 </script>
