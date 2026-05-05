@@ -609,6 +609,144 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   @page{size:A4 landscape;margin:8mm;}
 }
 
+/* ── SIDEBAR LAYOUT ── */
+.sidebar-toggle{background:none;border:none;color:white;font-size:20px;cursor:pointer;padding:4px 8px;border-radius:6px;line-height:1;}
+.sidebar-toggle:hover{background:rgba(255,255,255,.1);}
+.sidebar{
+  position:fixed;top:56px;left:0;bottom:0;width:220px;
+  background:var(--navy);
+  overflow-y:auto;z-index:100;
+  transition:transform .25s ease;
+  border-right:1px solid rgba(255,255,255,.06);
+  padding-bottom:24px;
+}
+.sidebar.collapsed{transform:translateX(-220px);}
+.sidebar::-webkit-scrollbar{width:4px;}
+.sidebar::-webkit-scrollbar-track{background:transparent;}
+.sidebar::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px;}
+.sidebar-section-label{
+  font-size:9.5px;font-weight:700;letter-spacing:1.2px;
+  color:rgba(255,255,255,.3);padding:18px 20px 6px;
+  text-transform:uppercase;
+}
+.nav-item{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 20px;cursor:pointer;
+  color:rgba(255,255,255,.6);font-size:13px;font-weight:500;
+  transition:all .15s;border-left:3px solid transparent;
+  white-space:nowrap;
+}
+.nav-item:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.9);}
+.nav-item.active{background:rgba(0,201,177,.12);color:var(--accent);border-left-color:var(--accent);font-weight:600;}
+.nav-icon{font-size:16px;width:20px;text-align:center;flex-shrink:0;}
+.nav-label{overflow:hidden;text-overflow:ellipsis;}
+.main-content{
+  margin-left:220px;padding:28px;
+  min-height:calc(100vh - 56px);
+  margin-top:56px;
+  transition:margin-left .25s ease;
+}
+.main-content.expanded{margin-left:0;}
+.section{display:none;animation:fi .22s ease;}
+.section.active{display:block;}
+
+/* ── HOME TILES ── */
+.home-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;margin-bottom:28px;}
+.home-tile{
+  background:var(--white);border:1px solid var(--border);
+  border-radius:16px;padding:20px;cursor:pointer;
+  transition:all .2s;box-shadow:var(--shadow);
+  text-align:center;
+}
+.home-tile:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);}
+.tile-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;margin:0 auto 12px;}
+.tile-value{font-size:32px;font-weight:700;color:var(--navy);line-height:1;}
+.tile-label{font-size:12px;color:var(--muted);margin-top:6px;font-weight:500;}
+
+/* ── QUICK ACTIONS ── */
+.quick-actions{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-bottom:8px;}
+.qa-card{
+  background:var(--white);border:1px solid var(--border);
+  border-radius:14px;padding:18px 12px;cursor:pointer;
+  transition:all .18s;box-shadow:var(--shadow);text-align:center;
+}
+.qa-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:var(--shadow-lg);}
+.qa-icon{font-size:26px;margin-bottom:8px;}
+.qa-label{font-size:12px;font-weight:600;color:var(--navy);}
+.section-heading{font-family:'DM Serif Display',serif;font-size:17px;color:var(--navy);margin-bottom:14px;font-weight:400;}
+
+/* ── PATHWAY OVERVIEW ── */
+.pathway-overview-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:28px;}
+.pathway-tile{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:16px;box-shadow:var(--shadow);cursor:pointer;transition:all .18s;}
+.pathway-tile:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg);}
+.pathway-tile-count{font-size:28px;font-weight:700;color:var(--navy);}
+.pathway-tile-label{font-size:11px;color:var(--muted);margin-top:4px;font-weight:500;line-height:1.3;}
+.pathway-tile-bar{height:4px;border-radius:2px;margin-top:10px;}
+
+/* ── PATIENT PROFILE ── */
+.patient-summary-card{
+  background:var(--white);border:1px solid var(--border);
+  border-radius:16px;padding:24px;box-shadow:var(--shadow);
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:20px;
+}
+.psc-group{display:flex;flex-direction:column;gap:4px;}
+.psc-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
+.psc-value{font-size:14px;font-weight:600;color:var(--navy);}
+.psc-badge{display:inline-block;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;}
+
+/* ── PATHWAY TIMELINE ── */
+.pathway-timeline{
+  display:flex;align-items:flex-start;gap:0;
+  background:var(--white);border:1px solid var(--border);
+  border-radius:16px;padding:28px 24px;box-shadow:var(--shadow);
+  overflow-x:auto;margin-bottom:20px;
+}
+.pt-stage{flex:1;min-width:140px;position:relative;text-align:center;}
+.pt-stage:not(:last-child)::after{
+  content:'';position:absolute;top:20px;left:50%;width:100%;
+  height:3px;background:var(--border);z-index:0;
+}
+.pt-stage.completed:not(:last-child)::after{background:var(--accent);}
+.pt-stage.active-stage:not(:last-child)::after{background:linear-gradient(90deg,var(--accent),var(--border));}
+.pt-dot{
+  width:42px;height:42px;border-radius:50%;
+  background:var(--border);color:var(--muted);
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;margin:0 auto 10px;
+  position:relative;z-index:1;border:3px solid var(--white);
+  box-shadow:0 0 0 2px var(--border);transition:all .2s;
+}
+.pt-stage.completed .pt-dot{background:var(--accent);color:white;box-shadow:0 0 0 2px var(--accent);}
+.pt-stage.active-stage .pt-dot{background:var(--navy);color:white;box-shadow:0 0 0 3px var(--navy);transform:scale(1.15);}
+.pt-stage-name{font-size:11px;font-weight:600;color:var(--muted);line-height:1.3;}
+.pt-stage.completed .pt-stage-name{color:var(--teal);}
+.pt-stage.active-stage .pt-stage-name{color:var(--navy);font-weight:700;}
+.pt-checklist{margin-top:10px;text-align:left;padding:10px 12px;background:#f8fafc;border-radius:9px;border:1px solid var(--border);min-width:130px;}
+.pt-check-item{display:flex;align-items:flex-start;gap:6px;font-size:10.5px;color:var(--muted);margin-bottom:5px;line-height:1.3;}
+.pt-check-item.done{color:var(--teal);}
+.pt-check-icon{flex-shrink:0;margin-top:1px;}
+.pt-advance-btn{margin-top:10px;padding:5px 12px;border:none;border-radius:7px;background:var(--teal);color:white;font-size:11px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;}
+
+/* ── PATIENT SUB TABS ── */
+.pd-tabs{display:flex;gap:4px;margin-bottom:16px;border-bottom:2px solid var(--border);padding-bottom:0;}
+.pd-tab{padding:10px 18px;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;border-bottom:2.5px solid transparent;margin-bottom:-2px;transition:all .18s;white-space:nowrap;}
+.pd-tab:hover{color:var(--navy);}
+.pd-tab.active{color:var(--navy);border-bottom-color:var(--accent);font-weight:600;}
+
+/* ── FILTER ROW ── */
+.filter-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:white;border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:14px;}
+.filter-row label{font-size:12px;font-weight:600;color:var(--navy);}
+.filter-row select,.filter-row input[type=text],.filter-row input[type=date]{padding:7px 12px;border:1.5px solid var(--border);border-radius:7px;font-size:12px;font-family:'DM Sans',sans-serif;outline:none;}
+.filter-row select:focus,.filter-row input:focus{border-color:var(--teal);}
+
+@media(max-width:900px){
+  .sidebar{transform:translateX(-220px);}
+  .sidebar.mobile-open{transform:translateX(0);}
+  .main-content{margin-left:0;}
+  .home-tiles{grid-template-columns:repeat(2,1fr);}
+  .pathway-timeline{flex-direction:column;gap:16px;}
+  .pt-stage::after{display:none;}
+}
 </style>
 </head>
 <body>
@@ -628,36 +766,375 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 
 <!-- APP -->
 <div id="app">
+
+  <!-- TOP BAR -->
   <div class="topbar">
-    <div style="display:flex;align-items:center;">
-      <div class="tb-logo">MDH <span>Stoma Care</span> Clinic</div>
+    <div style="display:flex;align-items:center;gap:14px;">
+      <button class="sidebar-toggle" onclick="toggleSidebar()" title="Toggle menu">☰</button>
+      <div class="tb-logo">MDH <span>Stoma Care</span></div>
       <div class="tb-date" id="tb-date"></div>
     </div>
-    <div class="tb-actions">
+    <div style="display:flex;align-items:center;gap:12px;">
       <div class="tb-user" id="tb-user">Signed in</div>
       <button class="btn-so" onclick="doLogout()">Sign Out</button>
     </div>
   </div>
-  <div class="tabs">
-    <div class="tab active" onclick="switchTab('roster',this)">Monthly Roster</div>
-    <div class="tab" onclick="switchTab('appointments',this)">Patient Appointments</div>
-    <div class="tab" onclick="switchTab('patients',this)">🏥 Patient Register</div>
-    <div class="tab" onclick="switchTab('clinical-reviews',this)">📋 Clinical Reviews</div>
-    <div class="tab" onclick="switchTab('teaching',this)">📚 Teaching</div>
-    <div class="tab" onclick="switchTab('referrals',this)">🔀 Referrals</div>
-    <div class="tab" onclick="switchTab('cod',this)">Change of Duty</div>
-    <div class="tab" onclick="switchTab('daily-attendance',this)">Daily Attendance</div>
-    <div class="tab" onclick="switchTab('account',this)">Account</div>
-    <div class="tab" onclick="switchTab('audit-trail',this)">Audit Trail</div>
-    <div class="tab" onclick="switchTab('staff-audit',this)">Staff Audit</div>
-    <div class="tab" onclick="switchTab('clinic-audit',this)">Clinic Audit</div>
-    <div class="tab" onclick="switchTab('reports',this)">Reports &amp; Charts</div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-section-label">MAIN</div>
+    <div class="nav-item active" id="nav-home" onclick="switchSection('home',this)">
+      <span class="nav-icon">🏠</span><span class="nav-label">Dashboard</span>
+    </div>
+
+    <div class="sidebar-section-label">CLINICAL</div>
+    <div class="nav-item" id="nav-patients" onclick="switchSection('patients',this)">
+      <span class="nav-icon">👥</span><span class="nav-label">Patient Register</span>
+    </div>
+    <div class="nav-item" id="nav-patient-detail" onclick="switchSection('patient-detail',this)" style="display:none;">
+      <span class="nav-icon">📄</span><span class="nav-label">Patient Profile</span>
+    </div>
+    <div class="nav-item" id="nav-clinical-reviews" onclick="switchSection('clinical-reviews',this)">
+      <span class="nav-icon">📋</span><span class="nav-label">Clinical Reviews</span>
+    </div>
+    <div class="nav-item" id="nav-teaching" onclick="switchSection('teaching',this)">
+      <span class="nav-icon">📚</span><span class="nav-label">Teaching</span>
+    </div>
+    <div class="nav-item" id="nav-referrals" onclick="switchSection('referrals',this)">
+      <span class="nav-icon">🔀</span><span class="nav-label">Referrals</span>
+    </div>
+    <div class="nav-item" id="nav-appointments" onclick="switchSection('appointments',this)">
+      <span class="nav-icon">📅</span><span class="nav-label">Clinic Appointments</span>
+    </div>
+
+    <div class="sidebar-section-label">STAFF</div>
+    <div class="nav-item" id="nav-roster" onclick="switchSection('roster',this)">
+      <span class="nav-icon">📆</span><span class="nav-label">Monthly Roster</span>
+    </div>
+    <div class="nav-item" id="nav-cod" onclick="switchSection('cod',this)">
+      <span class="nav-icon">🔄</span><span class="nav-label">Change of Duty</span>
+    </div>
+    <div class="nav-item" id="nav-daily-attendance" onclick="switchSection('daily-attendance',this)">
+      <span class="nav-icon">✅</span><span class="nav-label">Daily Attendance</span>
+    </div>
+
+    <div class="sidebar-section-label">REPORTS</div>
+    <div class="nav-item" id="nav-staff-audit" onclick="switchSection('staff-audit',this)">
+      <span class="nav-icon">👤</span><span class="nav-label">Staff Audit</span>
+    </div>
+    <div class="nav-item" id="nav-clinic-audit" onclick="switchSection('clinic-audit',this)">
+      <span class="nav-icon">🏥</span><span class="nav-label">Clinic Audit</span>
+    </div>
+    <div class="nav-item" id="nav-reports" onclick="switchSection('reports',this)">
+      <span class="nav-icon">📊</span><span class="nav-label">Reports & Charts</span>
+    </div>
+    <div class="nav-item" id="nav-audit-trail" onclick="switchSection('audit-trail',this)">
+      <span class="nav-icon">🔍</span><span class="nav-label">Audit Trail</span>
+    </div>
+
+    <div class="sidebar-section-label">ACCOUNT</div>
+    <div class="nav-item" id="nav-account" onclick="switchSection('account',this)">
+      <span class="nav-icon">⚙️</span><span class="nav-label">My Account</span>
+    </div>
   </div>
 
-  <div class="main">
+  <!-- MAIN CONTENT -->
+  <div class="main-content" id="main-content">
 
-    <!-- ROSTER -->
-    <div class="page active" id="page-roster">
+    <!-- ══════════════════════════════════ -->
+    <!-- HOME DASHBOARD -->
+    <!-- ══════════════════════════════════ -->
+    <div class="section active" id="section-home">
+      <div class="phdr">
+        <div>
+          <h2>Good morning 👋</h2>
+          <p id="home-date-line">Today's overview for MDH Stoma Care Clinic</p>
+        </div>
+        <button class="btn-add" onclick="loadHomeDashboard()">↻ Refresh</button>
+      </div>
+
+      <!-- KPI TILES -->
+      <div class="home-tiles" id="home-tiles">
+        <div class="home-tile" onclick="switchSection('patients',document.getElementById('nav-patients'))">
+          <div class="tile-icon" style="background:linear-gradient(135deg,#00897b,#26a69a);">👥</div>
+          <div class="tile-value" id="tile-active-patients">—</div>
+          <div class="tile-label">Active Patients</div>
+        </div>
+        <div class="home-tile" onclick="switchSection('appointments',document.getElementById('nav-appointments'))">
+          <div class="tile-icon" style="background:linear-gradient(135deg,#1e88e5,#42a5f5);">📅</div>
+          <div class="tile-value" id="tile-today-appts">—</div>
+          <div class="tile-label">Today's Appointments</div>
+        </div>
+        <div class="home-tile" onclick="switchSection('clinical-reviews',document.getElementById('nav-clinical-reviews'))">
+          <div class="tile-icon" style="background:linear-gradient(135deg,#8e24aa,#ab47bc);">📋</div>
+          <div class="tile-value" id="tile-reviews-today">—</div>
+          <div class="tile-label">Reviews Today</div>
+        </div>
+        <div class="home-tile" onclick="switchSection('referrals',document.getElementById('nav-referrals'))">
+          <div class="tile-icon" style="background:linear-gradient(135deg,#f5a623,#ffca28);">🔀</div>
+          <div class="tile-value" id="tile-pending-refs">—</div>
+          <div class="tile-label">Pending Referrals</div>
+        </div>
+        <div class="home-tile" onclick="switchSection('roster',document.getElementById('nav-roster'))">
+          <div class="tile-icon" style="background:linear-gradient(135deg,#e53935,#ef5350);">👩‍⚕️</div>
+          <div class="tile-value" id="tile-staff-today">—</div>
+          <div class="tile-label">Staff On Today</div>
+        </div>
+        <div class="home-tile" onclick="switchSection('teaching',document.getElementById('nav-teaching'))">
+          <div class="tile-icon" style="background:linear-gradient(135deg,#00acc1,#26c6da);">📚</div>
+          <div class="tile-value" id="tile-teaching-total">—</div>
+          <div class="tile-label">Teaching Sessions</div>
+        </div>
+      </div>
+
+      <!-- QUICK ACTION TILES -->
+      <div class="section-heading">Quick Actions</div>
+      <div class="quick-actions">
+        <div class="qa-card" onclick="openAddPatientModal()">
+          <div class="qa-icon">➕</div>
+          <div class="qa-label">Add Patient</div>
+        </div>
+        <div class="qa-card" onclick="openAddReviewModal()">
+          <div class="qa-icon">📋</div>
+          <div class="qa-label">New Review</div>
+        </div>
+        <div class="qa-card" onclick="openAddTeachingModal()">
+          <div class="qa-icon">📚</div>
+          <div class="qa-label">Teaching Session</div>
+        </div>
+        <div class="qa-card" onclick="openAddReferralModal()">
+          <div class="qa-icon">🔀</div>
+          <div class="qa-label">New Referral</div>
+        </div>
+        <div class="qa-card" onclick="switchSection('daily-attendance',document.getElementById('nav-daily-attendance'))">
+          <div class="qa-icon">✅</div>
+          <div class="qa-label">Daily Attendance</div>
+        </div>
+        <div class="qa-card" onclick="switchSection('reports',document.getElementById('nav-reports'))">
+          <div class="qa-icon">📊</div>
+          <div class="qa-label">View Reports</div>
+        </div>
+      </div>
+
+      <!-- TODAY'S CLINIC -->
+      <div class="section-heading" style="margin-top:28px;">Today's Clinic
+        <span id="home-clinic-date" style="font-size:12px;font-weight:400;color:var(--muted);margin-left:8px;"></span>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden;">
+        <table class="dt">
+          <thead><tr><th>Time</th><th>Patient</th><th>ID Card</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody id="home-clinic-tbody"><tr><td colspan="5" class="empty">Loading today's clinic...</td></tr></tbody>
+        </table>
+      </div>
+
+      <!-- PATHWAY OVERVIEW -->
+      <div class="section-heading" style="margin-top:28px;">Patients by Pathway Stage</div>
+      <div id="home-pathway-overview" class="pathway-overview-grid"></div>
+
+    </div>
+
+    <!-- ══════════════════════════════════ -->
+    <!-- PATIENT REGISTER -->
+    <!-- ══════════════════════════════════ -->
+    <div class="section" id="section-patients">
+      <div class="phdr">
+        <div><h2>Patient Register</h2><p>All stoma care patients — inpatients and outpatients</p></div>
+        <button class="btn-add" onclick="openAddPatientModal()">+ Add Patient</button>
+      </div>
+      <div class="filter-row">
+        <label>Search:</label>
+        <input type="text" id="pt-search" placeholder="Name or ID Card..." oninput="loadPatients()" style="min-width:200px;"/>
+        <label>Type:</label>
+        <select id="pt-type-filter" onchange="loadPatients()">
+          <option value="">All</option><option value="inpatient">Inpatient</option><option value="outpatient">Outpatient</option>
+        </select>
+        <label>Pathway:</label>
+        <select id="pt-pathway-filter" onchange="loadPatients()">
+          <option value="">All Stages</option>
+          <option>Pre-op teaching</option><option>Post-op Day 1-3</option><option>Independence check</option>
+          <option>Discharge ready</option><option>Community follow-up</option><option>Closed/Discharged</option>
+        </select>
+        <label>Status:</label>
+        <select id="pt-status-filter" onchange="loadPatients()">
+          <option value="">All</option><option value="active">Active</option><option value="inactive">Closed</option>
+        </select>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden;">
+        <table class="dt">
+          <thead><tr><th>Name</th><th>ID Card</th><th>Type</th><th>Stoma</th><th>Ward</th><th>Surgery Date</th><th>Pathway Stage</th><th>Actions</th></tr></thead>
+          <tbody id="patients-tbody"><tr><td colspan="8" class="empty">Loading patients...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════ -->
+    <!-- PATIENT PROFILE (individual) -->
+    <!-- ══════════════════════════════════ -->
+    <div class="section" id="section-patient-detail">
+      <div class="phdr">
+        <div>
+          <button onclick="switchSection('patients',document.getElementById('nav-patients'))" style="background:none;border:none;color:var(--teal);font-size:13px;cursor:pointer;padding:0;margin-bottom:6px;font-family:'DM Sans',sans-serif;">← Back to Patient Register</button>
+          <h2 id="pd-title">Patient Profile</h2>
+          <p id="pd-subtitle"></p>
+        </div>
+        <button class="btn-add" id="pd-edit-btn" onclick="">Edit Patient</button>
+      </div>
+
+      <!-- Summary Card -->
+      <div class="patient-summary-card" id="pd-summary"></div>
+
+      <!-- Pathway Timeline -->
+      <div class="section-heading" style="margin-top:24px;">Patient Pathway</div>
+      <div class="pathway-timeline" id="pd-pathway"></div>
+
+      <!-- Sub tabs -->
+      <div class="pd-tabs">
+        <div class="pd-tab active" onclick="switchPdTab('reviews',this)">📋 Clinical Reviews</div>
+        <div class="pd-tab" onclick="switchPdTab('teaching',this)">📚 Teaching</div>
+        <div class="pd-tab" onclick="switchPdTab('referrals',this)">🔀 Referrals</div>
+        <div class="pd-tab" onclick="switchPdTab('appts',this)">📅 Appointments</div>
+      </div>
+      <div id="pd-tab-content"></div>
+    </div>
+
+    <!-- ══════════════════════════════════ -->
+    <!-- CLINICAL REVIEWS -->
+    <!-- ══════════════════════════════════ -->
+    <div class="section" id="section-clinical-reviews">
+      <div class="phdr">
+        <div><h2>Clinical Reviews</h2><p>Daily nursing assessments</p></div>
+        <button class="btn-add" onclick="openAddReviewModal()">+ New Review</button>
+      </div>
+      <div class="filter-row">
+        <label>Patient:</label>
+        <select id="rev-patient-filter" onchange="loadReviews()"><option value="">All Patients</option></select>
+        <label>From:</label><input type="date" id="rev-from" onchange="loadReviews()"/>
+        <label>To:</label><input type="date" id="rev-to" onchange="loadReviews()"/>
+        <button onclick="clearReviewFilters()" style="padding:7px 14px;border:1.5px solid var(--border);border-radius:7px;background:white;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;">Clear</button>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden;">
+        <table class="dt">
+          <thead><tr><th>Date</th><th>Patient</th><th>By</th><th>Bag Change</th><th>Skin</th><th>Pain</th><th>Output</th><th>Complications</th><th>Pathway</th><th></th></tr></thead>
+          <tbody id="reviews-tbody"><tr><td colspan="10" class="empty">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════ -->
+    <!-- TEACHING -->
+    <!-- ══════════════════════════════════ -->
+    <div class="section" id="section-teaching">
+      <div class="phdr">
+        <div><h2>Teaching Records</h2><p>Patient and carer education sessions</p></div>
+        <button class="btn-add" onclick="openAddTeachingModal()">+ New Session</button>
+      </div>
+      <div class="filter-row">
+        <label>Patient:</label>
+        <select id="teach-patient-filter" onchange="loadTeaching()"><option value="">All Patients</option></select>
+        <label>From:</label><input type="date" id="teach-from" onchange="loadTeaching()"/>
+        <label>To:</label><input type="date" id="teach-to" onchange="loadTeaching()"/>
+        <button onclick="clearTeachingFilters()" style="padding:7px 14px;border:1.5px solid var(--border);border-radius:7px;background:white;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;">Clear</button>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden;">
+        <table class="dt">
+          <thead><tr><th>Date</th><th>Patient</th><th>Taught By</th><th>Topic</th><th>Method</th><th>Response</th><th>Carer</th><th></th></tr></thead>
+          <tbody id="teaching-tbody"><tr><td colspan="8" class="empty">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════ -->
+    <!-- REFERRALS -->
+    <!-- ══════════════════════════════════ -->
+    <div class="section" id="section-referrals">
+      <div class="phdr">
+        <div><h2>Referrals</h2><p>Inbound and outbound referrals</p></div>
+        <button class="btn-add" onclick="openAddReferralModal()">+ New Referral</button>
+      </div>
+      <div class="filter-row">
+        <label>Patient:</label>
+        <select id="ref-patient-filter" onchange="loadReferrals()"><option value="">All Patients</option></select>
+        <label>Type:</label>
+        <select id="ref-type-filter" onchange="loadReferrals()"><option value="">All</option><option value="Inbound">Inbound</option><option value="Outbound">Outbound</option></select>
+        <label>Status:</label>
+        <select id="ref-status-filter" onchange="loadReferrals()"><option value="">All</option><option>Pending</option><option>Accepted</option><option>Completed</option><option>Declined</option></select>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden;">
+        <table class="dt">
+          <thead><tr><th>Date</th><th>Patient</th><th>Type</th><th>Referred To/From</th><th>Reason</th><th>Status</th><th></th></tr></thead>
+          <tbody id="referrals-tbody"><tr><td colspan="7" class="empty">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════ -->
+    <!-- APPOINTMENTS (existing) -->
+    <!-- ══════════════════════════════════ -->
+    <div class="section" id="section-appointments">
+      <div id="page-appointments-inner"></div>
+    </div>
+
+    <!-- ══════════════════════════════════ -->
+    <!-- ROSTER (existing) -->
+    <!-- ══════════════════════════════════ -->
+    <div class="section" id="section-roster">
+      <div id="page-roster-inner"></div>
+    </div>
+
+    <!-- ══════════════════════════════════ -->
+    <!-- CHANGE OF DUTY (existing) -->
+    <!-- ══════════════════════════════════ -->
+    <div class="section" id="section-cod">
+      <div id="page-cod-inner"></div>
+    </div>
+
+    <!-- ══════════════════════════════════ -->
+    <!-- DAILY ATTENDANCE (existing) -->
+    <!-- ══════════════════════════════════ -->
+    <div class="section" id="section-daily-attendance">
+      <div id="page-daily-attendance-inner"></div>
+    </div>
+
+    <!-- ══════════════════════════════════ -->
+    <!-- STAFF AUDIT (existing) -->
+    <!-- ══════════════════════════════════ -->
+    <div class="section" id="section-staff-audit">
+      <div id="page-staff-audit-inner"></div>
+    </div>
+
+    <!-- ══════════════════════════════════ -->
+    <!-- CLINIC AUDIT (existing) -->
+    <!-- ══════════════════════════════════ -->
+    <div class="section" id="section-clinic-audit">
+      <div id="page-clinic-audit-inner"></div>
+    </div>
+
+    <!-- ══════════════════════════════════ -->
+    <!-- REPORTS (existing) -->
+    <!-- ══════════════════════════════════ -->
+    <div class="section" id="section-reports">
+      <div id="page-reports-inner"></div>
+    </div>
+
+    <!-- ══════════════════════════════════ -->
+    <!-- AUDIT TRAIL (existing) -->
+    <!-- ══════════════════════════════════ -->
+    <div class="section" id="section-audit-trail">
+      <div id="page-audit-trail-inner"></div>
+    </div>
+
+    <!-- ══════════════════════════════════ -->
+    <!-- ACCOUNT (existing) -->
+    <!-- ══════════════════════════════════ -->
+    <div class="section" id="section-account">
+      <div id="page-account-inner"></div>
+    </div>
+
+  </div><!-- end main-content -->
+</div><!-- end app -->
+
+    <!-- ROSTER content moved into section-roster -->
+    <div style="display:none" id="page-roster">
       <div class="phdr"><div><h2>Monthly Roster</h2><p>Click any day cell to update</p></div></div>
       <div class="legend">
         <strong style="font-size:11px;color:var(--navy);margin-right:4px;">Legend:</strong>
@@ -753,7 +1230,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     </div>
 
     <!-- APPOINTMENTS — MULTI-COLUMN -->
-    <div class="page" id="page-appointments">
+    <div style="display:none" id="page-appointments">
       <div class="phdr"><div><h2>Patient Appointments</h2><p>08:30 – 13:30 · 30 min slots · One column per nurse working</p></div></div>
       <div id="hban-appt"></div>
       <div class="appt-date-row">
@@ -773,7 +1250,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     </div>
 
     <!-- CHANGE OF DUTY -->
-    <div class="page" id="page-cod">
+    <div style="display:none" id="page-cod">
       <div class="phdr"><div><h2>Change of Duty</h2><p>Record duty swaps — roster updates automatically</p></div></div>
       <div class="cod-section">
         <div class="cod-section-hdr cod-hdr-normal">📅 Normal Day Swap</div>
@@ -815,7 +1292,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 
 
     <!-- DAILY ATTENDANCE -->
-    <div class="page" id="page-daily-attendance">
+    <div style="display:none" id="page-daily-attendance">
       <div class="phdr">
         <div>
           <h2>Daily Attendance</h2>
@@ -849,7 +1326,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     </div>
 
     <!-- ACCOUNT -->
-    <div class="page" id="page-account">
+    <div style="display:none" id="page-account">
       <div class="phdr">
         <div>
           <h2>Account</h2>
@@ -883,7 +1360,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     </div>
 
     <!-- AUDIT TRAIL -->
-    <div class="page" id="page-audit-trail">
+    <div style="display:none" id="page-audit-trail">
       <div class="phdr">
         <div>
           <h2>Audit Trail</h2>
@@ -931,7 +1408,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     </div>
 
     <!-- STAFF AUDIT -->
-    <div class="page" id="page-staff-audit">
+    <div style="display:none" id="page-staff-audit">
       <div class="phdr">
         <div><h2>Staff Audit</h2><p>All leave, overtime &amp; TIL records</p></div>
         <button class="btn-add" onclick="openModal('leave')">+ Add Record</button>
@@ -982,7 +1459,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     </div>
 
     <!-- CLINIC AUDIT -->
-    <div class="page" id="page-clinic-audit">
+    <div style="display:none" id="page-clinic-audit">
       <div class="phdr">
         <div><h2>Clinic Audit</h2><p>Outpatient appointment history, monthly appointment book, and statistics</p></div>
         <button class="btn-add" onclick="printClinicAuditBook()">🖨 Print Clinic Book</button>
@@ -1031,7 +1508,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     </div>
 
     <!-- REPORTS & CHARTS -->
-    <div class="page" id="page-reports">
+    <div style="display:none" id="page-reports">
       <div class="phdr">
         <div>
           <h2>Reports &amp; Charts</h2>
@@ -1695,25 +2172,401 @@ async function startApp(){
   populateCODDropdowns();
   loadCOD();
   const ry=document.getElementById('rep-year'); if(ry) ry.value=String(new Date().getFullYear());
+  // Show home dashboard
+  const now=new Date();
+  const tbDate=document.getElementById('tb-date');
+  if(tbDate)tbDate.textContent=now.toLocaleDateString('en-MT',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+  loadHomeDashboard();
 }
 
-function switchTab(name,el){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.getElementById('page-'+name).classList.add('active');
-  el.classList.add('active');
-  if(name==='staff-audit')loadStaffAudit();
-  if(name==='clinic-audit')loadClinicAudit();
-  if(name==='reports')loadReports();
-  if(name==='daily-attendance'){updateSignedInUI();loadDailyAttendance();}
-  if(name==='account')updateSignedInUI();
-  if(name==='audit-trail')loadAuditTrail();
-  if(name==='cod'){populateCODDropdowns();loadCOD();}
+// ══════════════════════════════════════════════════════
+// SIDEBAR NAVIGATION
+// ══════════════════════════════════════════════════════
+
+let sidebarCollapsed=false;
+function toggleSidebar(){
+  sidebarCollapsed=!sidebarCollapsed;
+  const sb=document.getElementById('sidebar');
+  const mc=document.getElementById('main-content');
+  if(window.innerWidth<=900){
+    sb.classList.toggle('mobile-open',!sidebarCollapsed);
+  } else {
+    sb.classList.toggle('collapsed',sidebarCollapsed);
+    mc.classList.toggle('expanded',sidebarCollapsed);
+  }
+}
+
+// Map section names to old page IDs for existing content
+const SECTION_PAGE_MAP={
+  'roster':'page-roster',
+  'appointments':'page-appointments',
+  'cod':'page-cod',
+  'daily-attendance':'page-daily-attendance',
+  'account':'page-account',
+  'audit-trail':'page-audit-trail',
+  'staff-audit':'page-staff-audit',
+  'clinic-audit':'page-clinic-audit',
+  'reports':'page-reports'
+};
+
+function switchSection(name, navEl){
+  // Update sections
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const section=document.getElementById('section-'+name);
+  if(section)section.classList.add('active');
+  if(navEl)navEl.classList.add('active');
+
+  // For legacy pages - clone content into new section inner div
+  const legacyId=SECTION_PAGE_MAP[name];
+  if(legacyId){
+    const legacyPage=document.getElementById(legacyId);
+    const innerDiv=document.getElementById(legacyId.replace('page-','page-')+'-inner') ||
+                   document.getElementById('page-'+name+'-inner');
+    if(legacyPage && innerDiv && !innerDiv.hasChildNodes()){
+      innerDiv.innerHTML=legacyPage.innerHTML;
+    }
+    if(innerDiv && innerDiv.hasChildNodes()){
+      // Trigger existing load functions
+      if(name==='staff-audit')loadStaffAudit();
+      if(name==='clinic-audit')loadClinicAudit();
+      if(name==='reports')loadReports();
+      if(name==='daily-attendance'){updateSignedInUI();loadDailyAttendance();}
+      if(name==='account')updateSignedInUI();
+      if(name==='audit-trail')loadAuditTrail();
+      if(name==='cod'){populateCODDropdowns();loadCOD();}
+      if(name==='roster')renderRoster();
+      if(name==='appointments')loadTodaySnapshot();
+    }
+  }
+
+  // New sections
+  if(name==='home')loadHomeDashboard();
   if(name==='patients')loadPatients();
   if(name==='clinical-reviews'){populatePatientDropdowns();loadReviews();}
   if(name==='teaching'){populatePatientDropdowns();loadTeaching();}
   if(name==='referrals'){populatePatientDropdowns();loadReferrals();}
+
+  // Close sidebar on mobile
+  if(window.innerWidth<=900){
+    document.getElementById('sidebar').classList.remove('mobile-open');
+  }
 }
+
+// Keep switchTab working for any legacy calls
+function switchTab(name,el){
+  const navId='nav-'+name;
+  const navEl=document.getElementById(navId)||el;
+  switchSection(name,navEl);
+}
+
+// ══════════════════════════════════════════════════════
+// HOME DASHBOARD
+// ══════════════════════════════════════════════════════
+
+async function loadHomeDashboard(){
+  // Date line
+  const now=new Date();
+  const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const el=document.getElementById('home-date-line');
+  if(el)el.textContent=`${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()} — MDH Stoma Care Clinic`;
+  const clinicEl=document.getElementById('home-clinic-date');
+  if(clinicEl)clinicEl.textContent=now.toLocaleDateString('en-MT',{weekday:'long',day:'numeric',month:'long'});
+
+  // Greet by name
+  const greetEl=document.querySelector('#section-home .phdr h2');
+  const hour=now.getHours();
+  const greeting=hour<12?'Good morning':'hour<17'?'Good afternoon':'Good evening';
+  const greetWord=hour<12?'Good morning ☀️':hour<17?'Good afternoon 👋':'Good evening 🌙';
+  if(greetEl)greetEl.textContent=`${greetWord}, ${getLoggedInSubmitterName().split(' ')[0]}`;
+
+  // Load KPIs in parallel
+  const [ptsRes, apptsRes, revsRes, refsRes, staffRes, teachRes] = await Promise.all([
+    SB.from('patients').select('id,pathway_status,is_active,patient_type'),
+    SB.from('appointments').select('id,status,appt_date').eq('appt_date',TODAY),
+    SB.from('clinical_reviews').select('id').eq('review_date',TODAY),
+    SB.from('referrals').select('id').eq('status','Pending'),
+    SB.from('roster').select('id,status').eq('roster_date',TODAY),
+    SB.from('teaching_records').select('id')
+  ]);
+
+  const pts=ptsRes.data||[];
+  const activePts=pts.filter(p=>p.is_active);
+  const setValue=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  setValue('tile-active-patients',activePts.length);
+  setValue('tile-today-appts',(apptsRes.data||[]).length);
+  setValue('tile-reviews-today',(revsRes.data||[]).length);
+  setValue('tile-pending-refs',(refsRes.data||[]).length);
+  const staffOn=(staffRes.data||[]).filter(r=>['D','working','OT'].includes(r.status)).length;
+  setValue('tile-staff-today',staffOn);
+  setValue('tile-teaching-total',(teachRes.data||[]).length);
+
+  // Today's clinic
+  await loadHomeClinic();
+
+  // Pathway overview
+  renderPathwayOverview(activePts);
+}
+
+async function loadHomeClinic(){
+  const tbody=document.getElementById('home-clinic-tbody');
+  if(!tbody)return;
+  const{data:appts}=await SB.from('appointments').select('*').eq('appt_date',TODAY).order('appt_slot');
+  if(!appts?.length){tbody.innerHTML='<tr><td colspan="5" class="empty">No appointments today</td></tr>';return;}
+  const patIds=[...new Set(appts.map(a=>a.patient_id).filter(Boolean))];
+  let patMap={};
+  if(patIds.length){
+    const{data:pts}=await SB.from('patients').select('id,first_name,surname,id_card').in('id',patIds);
+    (pts||[]).forEach(p=>{patMap[p.id]=p;});
+  }
+  const statusColours={booked:'background:#e3f2fd;color:#0d47a1',attended:'background:#e8f5e9;color:#1b5e20',dna:'background:#fff8e1;color:#e65100',cancelled:'background:#fdecea;color:#b71c1c'};
+  tbody.innerHTML=appts.map(a=>{
+    const pt=patMap[a.patient_id];
+    const sc=statusColours[a.status]||'background:#f5f5f5;color:#757575';
+    return `<tr>
+      <td><strong style="color:var(--teal);">${htmlSafe(a.appt_slot||'—')}</strong></td>
+      <td>${pt?`<strong>${htmlSafe(pt.surname)}, ${htmlSafe(pt.first_name)}</strong>`:'—'}</td>
+      <td style="font-family:monospace;font-size:12px;">${pt?htmlSafe(pt.id_card||'—'):'—'}</td>
+      <td><span style="${sc};padding:3px 10px;border-radius:10px;font-size:10px;font-weight:700;">${htmlSafe(a.status||'booked')}</span></td>
+      <td>
+        <button onclick="setOutcome('${a.id}','attended')" style="padding:3px 8px;border-radius:5px;border:none;background:#e8f5e9;color:#1b5e20;font-size:10px;font-weight:700;cursor:pointer;margin-right:3px;">Attended</button>
+        <button onclick="setOutcome('${a.id}','dna')" style="padding:3px 8px;border-radius:5px;border:none;background:#fff8e1;color:#e65100;font-size:10px;font-weight:700;cursor:pointer;">DNA</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function renderPathwayOverview(patients){
+  const container=document.getElementById('home-pathway-overview');
+  if(!container)return;
+  const stages=PATHWAY_STAGES;
+  const colours=['#e65100','#880e4f','#0d47a1','#1b5e20','#6a1b9a','#757575'];
+  const counts={};
+  stages.forEach(s=>{counts[s]=0;});
+  patients.forEach(p=>{if(counts[p.pathway_status]!==undefined)counts[p.pathway_status]++;});
+  const total=patients.length||1;
+  container.innerHTML=stages.map((s,i)=>{
+    const c=counts[s]||0;
+    const pct=Math.round(c/total*100);
+    return `<div class="pathway-tile" onclick="document.getElementById('pt-pathway-filter').value='${s}';switchSection('patients',document.getElementById('nav-patients'))">
+      <div class="pathway-tile-count">${c}</div>
+      <div class="pathway-tile-label">${s}</div>
+      <div class="pathway-tile-bar" style="background:${colours[i]};opacity:.7;width:${Math.max(pct,4)}%;"></div>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════════
+// PATIENT PROFILE PAGE
+// ══════════════════════════════════════════════════════
+
+let currentPatientId=null;
+
+async function openPatientProfile(id){
+  currentPatientId=id;
+  const{data:p,error}=await SB.from('patients').select('*').eq('id',id).single();
+  if(error||!p){alert('Could not load patient.');return;}
+
+  // Show patient detail nav item
+  const navItem=document.getElementById('nav-patient-detail');
+  if(navItem)navItem.style.display='flex';
+  switchSection('patient-detail',navItem);
+
+  // Title
+  const name=`${p.first_name||''} ${p.surname||''}`.trim();
+  document.getElementById('pd-title').textContent=name;
+  document.getElementById('pd-subtitle').textContent=`${p.stoma_type||'—'} · ${p.patient_type==='inpatient'?'Inpatient':'Outpatient'} · ${p.ward||'No ward'}`;
+  const editBtn=document.getElementById('pd-edit-btn');
+  if(editBtn)editBtn.setAttribute('onclick',`openEditPatientModal('${id}')`);
+
+  // Summary card
+  renderPatientSummary(p);
+
+  // Pathway
+  renderPathwayTimeline(p);
+
+  // Load first tab
+  loadPdTab('reviews',id);
+}
+
+function renderPatientSummary(p){
+  const container=document.getElementById('pd-summary');
+  if(!container)return;
+  const age=p.date_of_birth?Math.floor((new Date()-new Date(p.date_of_birth))/31557600000)+'y':'—';
+  const badge=pathwayBadge(p.pathway_status);
+  container.innerHTML=`
+    <div class="psc-group"><div class="psc-label">Full Name</div><div class="psc-value">${htmlSafe(p.first_name||'')} ${htmlSafe(p.surname||'')}</div></div>
+    <div class="psc-group"><div class="psc-label">ID Card</div><div class="psc-value" style="font-family:monospace;">${htmlSafe(p.id_card||'—')}</div></div>
+    <div class="psc-group"><div class="psc-label">Age / DOB</div><div class="psc-value">${age}${p.date_of_birth?' / '+new Date(p.date_of_birth).toLocaleDateString('en-MT'):''}</div></div>
+    <div class="psc-group"><div class="psc-label">Phone</div><div class="psc-value">${htmlSafe(p.phone_number||'—')}</div></div>
+    <div class="psc-group"><div class="psc-label">Stoma Type</div><div class="psc-value">${htmlSafe(p.stoma_type||'—')}</div></div>
+    <div class="psc-group"><div class="psc-label">Stoma Site</div><div class="psc-value">${htmlSafe(p.stoma_site||'—')}</div></div>
+    <div class="psc-group"><div class="psc-label">Surgery Date</div><div class="psc-value">${p.surgery_date?new Date(p.surgery_date).toLocaleDateString('en-MT'):'—'}</div></div>
+    <div class="psc-group"><div class="psc-label">Ward</div><div class="psc-value">${htmlSafe(p.ward||'—')}</div></div>
+    <div class="psc-group"><div class="psc-label">Consultant</div><div class="psc-value">${htmlSafe(p.consultant||'—')}</div></div>
+    <div class="psc-group"><div class="psc-label">Diagnosis</div><div class="psc-value">${htmlSafe(p.diagnosis||'—')}</div></div>
+    <div class="psc-group"><div class="psc-label">Bag Brand/Size</div><div class="psc-value">${htmlSafe(p.bag_brand||'—')}</div></div>
+    <div class="psc-group"><div class="psc-label">Flange Size</div><div class="psc-value">${htmlSafe(p.flange_size||'—')}</div></div>
+    <div class="psc-group"><div class="psc-label">Output Colour</div><div class="psc-value">${htmlSafe(p.output_colour||'—')}</div></div>
+    <div class="psc-group"><div class="psc-label">Pathway Stage</div><div class="psc-value">${badge}</div></div>
+    <div class="psc-group"><div class="psc-label">Patient Type</div><div class="psc-value">${p.patient_type==='inpatient'?'Inpatient':'Outpatient'}</div></div>
+    <div class="psc-group"><div class="psc-label">Status</div><div class="psc-value">${p.is_active?'<span style="color:#1b5e20;font-weight:700;">Active</span>':'<span style="color:#757575;">Closed</span>'}</div></div>
+  `;
+}
+
+const PATHWAY_ICONS=['📋','🏥','🎓','🏠','🌍','✅'];
+const PATHWAY_CHECKLISTS={
+  'Pre-op teaching':['Stoma site marked by nurse','Pre-op education session completed','Written information pack given','Patient questions addressed','Carer/family informed'],
+  'Post-op Day 1-3':['Stoma observed and documented','Bag change performed by nurse','Output colour and consistency recorded','Skin condition assessed','Pain score recorded','Patient shown stoma for first time'],
+  'Independence check':['Patient able to empty bag independently','Patient able to change bag with supervision','Patient understands skin care routine','Patient able to recognise complications','Dietary advice given','Clothing and lifestyle advice given'],
+  'Discharge ready':['Patient changing bag independently','Discharge prescription written','Community nurse referral made','Follow-up appointment booked','Written discharge instructions given','Emergency contact numbers provided'],
+  'Community follow-up':['First community visit completed','Patient managing independently at home','Any complications reviewed','Outpatient appointment arranged','GP updated'],
+  'Closed/Discharged':['All follow-ups completed','GP letter sent','Patient contact details confirmed','Case notes completed','Patient discharged from service']
+};
+
+function renderPathwayTimeline(p){
+  const container=document.getElementById('pd-pathway');
+  if(!container)return;
+  const currentIdx=PATHWAY_STAGES.indexOf(p.pathway_status);
+  container.innerHTML=PATHWAY_STAGES.map((stage,i)=>{
+    const isCompleted=i<currentIdx;
+    const isActive=i===currentIdx;
+    const cls=isCompleted?'completed':isActive?'active-stage':'';
+    const checks=(PATHWAY_CHECKLISTS[stage]||[]).map(item=>`
+      <div class="pt-check-item ${isCompleted?'done':''}">
+        <span class="pt-check-icon">${isCompleted?'✅':'⬜'}</span>
+        <span>${item}</span>
+      </div>`).join('');
+    const advBtn=isActive&&i<PATHWAY_STAGES.length-1?`<button class="pt-advance-btn" onclick="advancePathway('${p.id}','${stage}','${PATHWAY_STAGES[i+1]}')">Advance →</button>`:'';
+    return `<div class="pt-stage ${cls}">
+      <div class="pt-dot">${PATHWAY_ICONS[i]}</div>
+      <div class="pt-stage-name">${stage}</div>
+      <div class="pt-checklist">${checks}${advBtn}</div>
+    </div>`;
+  }).join('');
+}
+
+async function advancePathway(patId,oldStatus,newStatus){
+  if(!confirm(`Move patient to "${newStatus}"?`))return;
+  const{error}=await SB.from('patients').update({pathway_status:newStatus}).eq('id',patId);
+  if(error){alert('Error: '+error.message);return;}
+  await SB.from('pathway_history').insert({patient_id:patId,changed_by:getLoggedInSubmitterName(),old_status:oldStatus,new_status:newStatus,notes:'Advanced via pathway timeline'});
+  await logAuditTrailAction('update','patients',patId,{description:`Pathway advanced: ${oldStatus} → ${newStatus}`});
+  const{data:p}=await SB.from('patients').select('*').eq('id',patId).single();
+  if(p){renderPathwayTimeline(p);renderPatientSummary(p);}
+}
+
+function switchPdTab(tab,el){
+  document.querySelectorAll('.pd-tab').forEach(t=>t.classList.remove('active'));
+  if(el)el.classList.add('active');
+  loadPdTab(tab,currentPatientId);
+}
+
+async function loadPdTab(tab,patId){
+  const container=document.getElementById('pd-tab-content');
+  if(!container||!patId)return;
+  container.innerHTML='<div style="padding:20px;color:var(--muted);font-size:13px;">Loading...</div>';
+
+  if(tab==='reviews'){
+    const{data}=await SB.from('clinical_reviews').select('*').eq('patient_id',patId).order('review_date',{ascending:false});
+    const rows=(data||[]);
+    container.innerHTML=`
+      <div style="margin-bottom:12px;display:flex;justify-content:flex-end;">
+        <button class="btn-add" onclick="openAddReviewModal('${patId}')">+ New Review</button>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden;">
+        <table class="dt">
+          <thead><tr><th>Date</th><th>By</th><th>Bag Change</th><th>Skin</th><th>Pain</th><th>Output</th><th>Complications</th><th>Pathway</th><th>Notes</th><th></th></tr></thead>
+          <tbody>${rows.length?rows.map(r=>`<tr>
+            <td>${r.review_date?new Date(r.review_date).toLocaleDateString('en-MT'):'—'}</td>
+            <td>${htmlSafe(r.reviewed_by||'—')}</td>
+            <td style="text-align:center;">${r.bag_change?'✅':'—'}</td>
+            <td>${htmlSafe(r.skin_condition||'—')}</td>
+            <td style="${r.pain_score>=7?'color:#c62828;font-weight:700;':r.pain_score>=4?'color:#e65100;font-weight:700;':''}">${r.pain_score!=null?r.pain_score+'/10':'—'}</td>
+            <td>${htmlSafe(r.stoma_output||'—')}</td>
+            <td>${htmlSafe(r.complications||'—')}</td>
+            <td>${pathwayBadge(r.pathway_status)}</td>
+            <td style="max-width:180px;font-size:11px;color:var(--muted);">${htmlSafe(r.free_text_notes||'—')}</td>
+            <td><button onclick="deleteReview('${r.id}')" style="padding:3px 8px;border-radius:5px;border:none;background:#fdecea;color:#b71c1c;font-size:10px;cursor:pointer;">Del</button></td>
+          </tr>`).join(''):'<tr><td colspan="10" class="empty">No reviews yet</td></tr>'}</tbody>
+        </table>
+      </div>`;
+  }
+
+  if(tab==='teaching'){
+    const{data}=await SB.from('teaching_records').select('*').eq('patient_id',patId).order('teaching_date',{ascending:false});
+    const rows=(data||[]);
+    container.innerHTML=`
+      <div style="margin-bottom:12px;display:flex;justify-content:flex-end;">
+        <button class="btn-add" onclick="openAddTeachingModal('${patId}')">+ New Session</button>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden;">
+        <table class="dt">
+          <thead><tr><th>Date</th><th>By</th><th>Topic</th><th>Method</th><th>Response</th><th>Carer</th><th>Notes</th><th></th></tr></thead>
+          <tbody>${rows.length?rows.map(r=>`<tr>
+            <td>${r.teaching_date?new Date(r.teaching_date).toLocaleDateString('en-MT'):'—'}</td>
+            <td>${htmlSafe(r.taught_by||'—')}</td>
+            <td>${htmlSafe(r.topic||'—')}</td>
+            <td>${htmlSafe(r.method||'—')}</td>
+            <td>${htmlSafe(r.patient_response||'—')}</td>
+            <td>${r.carer_involved?`<span style="color:#6a1b9a;font-weight:600;">${htmlSafe(r.carer_name||'Yes')}</span>`:'—'}</td>
+            <td style="max-width:160px;font-size:11px;color:var(--muted);">${htmlSafe(r.notes||'—')}</td>
+            <td><button onclick="deleteTeaching('${r.id}')" style="padding:3px 8px;border-radius:5px;border:none;background:#fdecea;color:#b71c1c;font-size:10px;cursor:pointer;">Del</button></td>
+          </tr>`).join(''):'<tr><td colspan="8" class="empty">No teaching records yet</td></tr>'}</tbody>
+        </table>
+      </div>`;
+  }
+
+  if(tab==='referrals'){
+    const{data}=await SB.from('referrals').select('*').eq('patient_id',patId).order('referral_date',{ascending:false});
+    const rows=(data||[]);
+    const sc={Pending:'background:#fff8e1;color:#e65100;',Accepted:'background:#e3f2fd;color:#0d47a1;',Completed:'background:#e8f5e9;color:#1b5e20;',Declined:'background:#fdecea;color:#b71c1c;'};
+    container.innerHTML=`
+      <div style="margin-bottom:12px;display:flex;justify-content:flex-end;">
+        <button class="btn-add" onclick="openAddReferralModal('${patId}')">+ New Referral</button>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden;">
+        <table class="dt">
+          <thead><tr><th>Date</th><th>Type</th><th>Referred To/From</th><th>Reason</th><th>Status</th><th></th></tr></thead>
+          <tbody>${rows.length?rows.map(r=>{
+            const typeBadge=r.referral_type==='Inbound'?'<span style="background:#e3f2fd;color:#0d47a1;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;">Inbound</span>':'<span style="background:#fce4ec;color:#880e4f;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;">Outbound</span>';
+            const statusStyle=sc[r.status]||'background:#f5f5f5;color:#757575;';
+            return `<tr>
+              <td>${r.referral_date?new Date(r.referral_date).toLocaleDateString('en-MT'):'—'}</td>
+              <td>${typeBadge}</td>
+              <td>${htmlSafe(r.referred_to||'—')}</td>
+              <td>${htmlSafe(r.reason||'—')}</td>
+              <td><span style="${statusStyle}padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;">${htmlSafe(r.status||'Pending')}</span></td>
+              <td><button onclick="updateReferralStatus('${r.id}')" style="padding:3px 8px;border-radius:5px;border:none;background:#f5f5f5;font-size:10px;cursor:pointer;">Update</button></td>
+            </tr>`;
+          }).join(''):'<tr><td colspan="6" class="empty">No referrals yet</td></tr>'}</tbody>
+        </table>
+      </div>`;
+  }
+
+  if(tab==='appts'){
+    const{data}=await SB.from('appointments').select('*').eq('patient_id',patId).order('appt_date',{ascending:false}).limit(50);
+    const rows=(data||[]);
+    const sc2={booked:'background:#e3f2fd;color:#0d47a1',attended:'background:#e8f5e9;color:#1b5e20',dna:'background:#fff8e1;color:#e65100',cancelled:'background:#fdecea;color:#b71c1c'};
+    container.innerHTML=`
+      <div class="card" style="padding:0;overflow:hidden;">
+        <table class="dt">
+          <thead><tr><th>Date</th><th>Time</th><th>Status</th><th>Notes</th></tr></thead>
+          <tbody>${rows.length?rows.map(r=>{
+            const s=sc2[r.status]||'background:#f5f5f5;color:#757575';
+            return `<tr>
+              <td>${r.appt_date?new Date(r.appt_date).toLocaleDateString('en-MT'):'—'}</td>
+              <td><strong style="color:var(--teal);">${htmlSafe(r.appt_slot||'—')}</strong></td>
+              <td><span style="${s};padding:3px 10px;border-radius:10px;font-size:10px;font-weight:700;">${htmlSafe(r.status||'booked')}</span></td>
+              <td style="font-size:12px;color:var(--muted);">${htmlSafe(r.notes||'—')}</td>
+            </tr>`;
+          }).join(''):'<tr><td colspan="4" class="empty">No appointments yet</td></tr>'}</tbody>
+        </table>
+      </div>`;
+  }
+}
+
 
 async function loadHolidays(){
   const{data}=await SB.from('public_holidays').select('*');
@@ -4536,8 +5389,8 @@ async function loadPatients(){
       <td>${htmlSafe(p.ward||'—')}</td>
       <td>${badge}</td>
       <td>
-        <button onclick="openEditPatientModal('${p.id}')" style="padding:4px 10px;border-radius:6px;border:none;background:#e3f2fd;color:#0d47a1;font-size:11px;font-weight:700;cursor:pointer;margin-right:4px;">Edit</button>
-        <button onclick="openPatientPathwayModal('${p.id}','${htmlSafe(p.pathway_status||'')}')" style="padding:4px 10px;border-radius:6px;border:none;background:#e8f5e9;color:#1b5e20;font-size:11px;font-weight:700;cursor:pointer;">Pathway</button>
+        <button onclick="openPatientProfile('${p.id}')" style="padding:4px 10px;border-radius:6px;border:none;background:var(--teal);color:white;font-size:11px;font-weight:700;cursor:pointer;margin-right:4px;">Profile</button>
+        <button onclick="openEditPatientModal('${p.id}')" style="padding:4px 10px;border-radius:6px;border:none;background:#e3f2fd;color:#0d47a1;font-size:11px;font-weight:700;cursor:pointer;">Edit</button>
       </td>
     </tr>`;
   }).join('');
