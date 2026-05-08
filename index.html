@@ -873,15 +873,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
         <button class="btn-add" onclick="loadHomeDashboard();loadPatientCommandCounts();">↻ Refresh</button>
       </div>
 
-      <div class="dashboard-intro">
-        <div class="dashboard-intro-copy">
-          <div class="eyebrow">Main menu</div>
-          <h3>One screen. One decision. Less cognitive strain.</h3>
-          <p>Select the clinical area you need. The system keeps episodes, encounters, KPIs, and audit records organised behind the scenes.</p>
-        </div>
-        <div class="dashboard-intro-mark" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></div>
-      </div>
-
       <div class="command-grid">
         <div class="command-card primary" onclick="switchSection('patients',document.getElementById('nav-patients'))">
           <div class="command-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
@@ -913,14 +904,29 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
         </div>
       </div>
 
-      <div class="command-subhead">Today / safety overview</div>
+      <div class="command-subhead">Overview</div>
       <div class="command-summary">
         <div class="command-stat"><div class="n" id="tile-active-patients">—</div><div class="l">Active Patients</div></div>
-        <div class="command-stat"><div class="n" id="tile-today-appts">—</div><div class="l">Today's Appointments</div></div>
-        <div class="command-stat"><div class="n" id="tile-reviews-today">—</div><div class="l">Reviews Today</div></div>
-        <div class="command-stat"><div class="n" id="tile-pending-refs">—</div><div class="l">Pending Referrals</div></div>
-        <div class="command-stat"><div class="n" id="tile-followups-due">—</div><div class="l">Follow-Ups Due</div></div>
-        <div class="command-stat"><div class="n" id="tile-kpi-events">—</div><div class="l">KPI Events</div></div>
+        <div class="command-stat"><div class="n" id="tile-new-patients-year">—</div><div class="l">New This Year</div></div>
+        <div class="command-stat"><div class="n" id="tile-colostomy">—</div><div class="l">Colostomy</div></div>
+        <div class="command-stat"><div class="n" id="tile-ileostomy">—</div><div class="l">Ileostomy</div></div>
+        <div class="command-stat"><div class="n" id="tile-urostomy">—</div><div class="l">Urostomy</div></div>
+      </div>
+
+      <div class="command-subhead" style="margin-top:16px;">My Patients</div>
+      <div class="command-summary">
+        <div class="command-stat" style="cursor:pointer;border-left:3px solid var(--teal);" onclick="switchSection('patients',null);setPatientNurseFilter('Jason Fenech')">
+          <div class="n" id="tile-nurse-jason">—</div><div class="l">Jason</div>
+        </div>
+        <div class="command-stat" style="cursor:pointer;border-left:3px solid #6a1b9a;" onclick="switchSection('patients',null);setPatientNurseFilter('Jacqueline Sammut')">
+          <div class="n" id="tile-nurse-jacqueline">—</div><div class="l">Jacqueline</div>
+        </div>
+        <div class="command-stat" style="cursor:pointer;border-left:3px solid #1565c0;" onclick="switchSection('patients',null);setPatientNurseFilter('Lorraine Stivala')">
+          <div class="n" id="tile-nurse-lorraine">—</div><div class="l">Lorraine</div>
+        </div>
+        <div class="command-stat" style="cursor:pointer;border-left:3px solid #e65100;" onclick="switchSection('patients',null);setPatientNurseFilter('Common')">
+          <div class="n" id="tile-nurse-common">—</div><div class="l">Common</div>
+        </div>
       </div>
     </div>
 
@@ -2596,18 +2602,29 @@ async function loadHomeDashboard(){
     pts=fallback.data||[];
   }
   const activePts=pts.filter(p=>p.is_active);
+  const thisYear=new Date().getFullYear().toString();
   const setValue=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
   setValue('tile-active-patients',activePts.length);
-  setValue('tile-today-appts',(apptsRes.data||[]).length);
-  setValue('tile-reviews-today',(revsRes.data||[]).length);
-  setValue('tile-pending-refs',(refsRes.data||[]).length);
-  const staffOn=(staffRes.data||[]).filter(r=>['D','working','OT'].includes(r.status)).length;
-  setValue('tile-staff-today',staffOn);
-  setValue('tile-teaching-total',(teachRes.data||[]).length);
-  setValue('tile-appliances-total',(appliancesRes.data||[]).length);
-  setValue('tile-discharge-active',(dischargeRes.data||[]).filter(r=>!r.actual_discharge_date).length);
-  setValue('tile-followups-due',(followupRes.data||[]).filter(r=>String(r.followup_status||'Required')!=='Completed').length);
-  loadHomeKpiTile().catch(()=>{});
+
+  // New patients this year
+  const{data:newPtsYear}=await SB.from('patients_main').select('id',{count:'exact'})
+    .eq('is_deleted',false).gte('created_at',`${thisYear}-01-01`);
+  setValue('tile-new-patients-year',newPtsYear?.length||0);
+
+  // Stoma type counts from stomas_main
+  const{data:stomaData}=await SB.from('stomas_main').select('stoma_type').eq('is_active',true).eq('is_deleted',false);
+  const stomas=stomaData||[];
+  setValue('tile-colostomy',stomas.filter(s=>s.stoma_type==='Colostomy').length);
+  setValue('tile-ileostomy',stomas.filter(s=>s.stoma_type==='Ileostomy').length);
+  setValue('tile-urostomy',stomas.filter(s=>s.stoma_type==='Urostomy').length);
+
+  // Nurse patient counts
+  const{data:nursePts}=await SB.from('patients_main').select('assigned_nurse').eq('is_active',true).eq('is_deleted',false);
+  const np=nursePts||[];
+  setValue('tile-nurse-jason',np.filter(p=>p.assigned_nurse==='Jason Fenech').length);
+  setValue('tile-nurse-jacqueline',np.filter(p=>p.assigned_nurse==='Jacqueline Sammut').length);
+  setValue('tile-nurse-lorraine',np.filter(p=>p.assigned_nurse==='Lorraine Stivala').length);
+  setValue('tile-nurse-common',np.filter(p=>!p.assigned_nurse||p.assigned_nurse==='Common').length);
 
   // Today's clinic
   await loadHomeClinic();
