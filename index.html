@@ -2504,27 +2504,12 @@ async function startApp(){
   }
   document.getElementById('login-screen').style.display='none';
   document.getElementById('app').style.display='block';
-  document.getElementById('ot-date').value=TODAY;
-  document.getElementById('til-date').value=TODAY;
-  document.getElementById('jump-date').value=TODAY;
-  const dailyDate=document.getElementById('daily-date'); if(dailyDate)dailyDate.value=TODAY;
-  loadDailyRecipientSettings();
-  selectedJumpDate=TODAY;
-  await loadHolidays();
-  await syncPhase2StaffingToCompatibility();
-  await loadStaff();
-  updateSignedInUI();
-  renderRoster();
-  loadTodaySnapshot();
-  loadMonthlyAppointmentSnapshot();
-  initAppts();
-  populateCODDropdowns();
-  loadCOD();
-  const ry=document.getElementById('rep-year'); if(ry) ry.value=String(new Date().getFullYear());
-  // Show home dashboard
+
   const now=new Date();
   const tbDate=document.getElementById('tb-date');
   if(tbDate)tbDate.textContent=now.toLocaleDateString('en-MT',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+
+  updateSignedInUI();
   loadHomeDashboard();
 }
 
