@@ -913,19 +913,39 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
         <div class="command-stat"><div class="n" id="tile-urostomy">—</div><div class="l">Urostomy</div></div>
       </div>
 
-      <div class="command-subhead" style="margin-top:16px;">My Patients</div>
-      <div class="command-summary">
-        <div class="command-stat" style="cursor:pointer;border-left:3px solid var(--teal);" onclick="switchSection('patients',null);setPatientNurseFilter('Jason Fenech')">
-          <div class="n" id="tile-nurse-jason">—</div><div class="l">Jason</div>
+      <div class="command-subhead" style="margin-top:16px;">My Patients / Our Patients</div>
+      <div class="command-grid">
+        <div class="command-card" onclick="switchSection('patients',null);setPatientNurseFilter('Jason Fenech')">
+          <div class="command-icon" style="background:linear-gradient(135deg,#0a8f7c,#0cbfa3);" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/></svg></div>
+          <div>
+            <h3>Jason — My Patients</h3>
+            <p>View patients allocated to Jason Fenech.</p>
+            <div style="font-size:22px;font-weight:900;color:var(--navy);margin-top:6px;" id="tile-nurse-jason">—</div>
+          </div>
         </div>
-        <div class="command-stat" style="cursor:pointer;border-left:3px solid #6a1b9a;" onclick="switchSection('patients',null);setPatientNurseFilter('Jacqueline Sammut')">
-          <div class="n" id="tile-nurse-jacqueline">—</div><div class="l">Jacqueline</div>
+        <div class="command-card" onclick="switchSection('patients',null);setPatientNurseFilter('Jacqueline Sammut')">
+          <div class="command-icon" style="background:linear-gradient(135deg,#6a1b9a,#ab47bc);" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/></svg></div>
+          <div>
+            <h3>Jacqueline — My Patients</h3>
+            <p>View patients allocated to Jacqueline Sammut.</p>
+            <div style="font-size:22px;font-weight:900;color:var(--navy);margin-top:6px;" id="tile-nurse-jacqueline">—</div>
+          </div>
         </div>
-        <div class="command-stat" style="cursor:pointer;border-left:3px solid #1565c0;" onclick="switchSection('patients',null);setPatientNurseFilter('Lorraine Stivala')">
-          <div class="n" id="tile-nurse-lorraine">—</div><div class="l">Lorraine</div>
+        <div class="command-card" onclick="switchSection('patients',null);setPatientNurseFilter('Lorraine Stivala')">
+          <div class="command-icon" style="background:linear-gradient(135deg,#1565c0,#42a5f5);" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/></svg></div>
+          <div>
+            <h3>Lorraine — My Patients</h3>
+            <p>View patients allocated to Lorraine Stivala.</p>
+            <div style="font-size:22px;font-weight:900;color:var(--navy);margin-top:6px;" id="tile-nurse-lorraine">—</div>
+          </div>
         </div>
-        <div class="command-stat" style="cursor:pointer;border-left:3px solid #e65100;" onclick="switchSection('patients',null);setPatientNurseFilter('Common')">
-          <div class="n" id="tile-nurse-common">—</div><div class="l">Common</div>
+        <div class="command-card" onclick="switchSection('patients',null);setPatientNurseFilter('Common')">
+          <div class="command-icon" style="background:linear-gradient(135deg,#e65100,#ffa726);" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+          <div>
+            <h3>Common — Our Patients</h3>
+            <p>Shared or unallocated patients for all nurses.</p>
+            <div style="font-size:22px;font-weight:900;color:var(--navy);margin-top:6px;" id="tile-nurse-common">—</div>
+          </div>
         </div>
       </div>
     </div>
