@@ -645,42 +645,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 }
 
 /* ── SIDEBAR LAYOUT ── */
-.sidebar-toggle{background:none;border:none;color:white;font-size:20px;cursor:pointer;padding:4px 8px;border-radius:6px;line-height:1;}
-.sidebar-toggle:hover{background:rgba(255,255,255,.1);}
-.sidebar{
-  position:fixed;top:56px;left:0;bottom:0;width:220px;
-  background:var(--navy);
-  overflow-y:auto;z-index:100;
-  transition:transform .25s ease;
-  border-right:1px solid rgba(255,255,255,.06);
-  padding-bottom:24px;
-}
-.sidebar.collapsed{transform:translateX(-220px);}
-.sidebar::-webkit-scrollbar{width:4px;}
-.sidebar::-webkit-scrollbar-track{background:transparent;}
-.sidebar::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px;}
-.sidebar-section-label{
-  font-size:9.5px;font-weight:700;letter-spacing:1.2px;
-  color:rgba(255,255,255,.3);padding:18px 20px 6px;
-  text-transform:uppercase;
-}
-.nav-item{
-  display:flex;align-items:center;gap:12px;
-  padding:10px 20px;cursor:pointer;
-  color:rgba(255,255,255,.6);font-size:13px;font-weight:500;
-  transition:all .15s;border-left:3px solid transparent;
-  white-space:nowrap;
-}
-.nav-item:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.9);}
-.nav-item.active{background:rgba(20,184,166,.14);color:#ffffff;border-left-color:var(--accent);font-weight:600;}
-.nav-label{overflow:hidden;text-overflow:ellipsis;}
 .main-content{
-  margin-left:220px;padding:28px;
+  margin-left:0;padding:28px;
   min-height:calc(100vh - 56px);
   margin-top:56px;
-  transition:margin-left .25s ease;
+  max-width:1400px;
+  margin-right:auto;
 }
-.main-content.expanded{margin-left:0;}
+
 .section{display:none;animation:fi .22s ease;}
 .section.active{display:block;}
 
@@ -848,9 +820,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .filter-row select:focus,.filter-row input:focus{border-color:var(--teal);}
 
 @media(max-width:900px){
-  .sidebar{transform:translateX(-220px);}
-  .sidebar.mobile-open{transform:translateX(0);}
-  .main-content{margin-left:0;}
+
   .home-tiles{grid-template-columns:repeat(2,1fr);}
   .pathway-timeline{flex-direction:column;gap:16px;}
   .pt-stage::after{display:none;}
@@ -878,82 +848,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   <!-- TOP BAR -->
   <div class="topbar">
     <div style="display:flex;align-items:center;gap:14px;">
-      <button class="sidebar-toggle" onclick="toggleSidebar()" title="Toggle menu">☰</button>
+      <button id="global-back-btn" onclick="switchSection('home',null)" style="display:none;align-items:center;gap:6px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:8px;color:rgba(255,255,255,.8);font-size:12.5px;font-weight:600;padding:6px 14px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;">← Home</button>
       <div class="tb-logo">MDH <span>Stoma Care</span></div>
       <div class="tb-date" id="tb-date"></div>
     </div>
     <div style="display:flex;align-items:center;gap:12px;">
       <div class="tb-user" id="tb-user">Signed in</div>
       <button class="btn-so" onclick="doLogout()">Sign Out</button>
-    </div>
-  </div>
-
-  <!-- SIDEBAR -->
-  <div class="sidebar" id="sidebar">
-    <div class="sidebar-section-label">MAIN</div>
-    <div class="nav-item active" id="nav-home" onclick="switchSection('home',this)">
-      <span class="nav-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span><span class="nav-label">Dashboard</span>
-    </div>
-
-    <div class="sidebar-section-label">CLINICAL</div>
-    <div class="nav-item" id="nav-patients" onclick="switchSection('patients',this)">
-      <span class="nav-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><span class="nav-label">Patient Register</span>
-    </div>
-    <div class="nav-item" id="nav-patient-detail" onclick="switchSection('patient-detail',this)" style="display:none;">
-      <span class="nav-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2.5"/><path d="M5.8 17a4 4 0 0 1 6.4 0"/><path d="M14 8h4"/><path d="M14 12h4"/><path d="M14 16h3"/></svg></span><span class="nav-label">Patient Profile</span>
-    </div>
-    <div class="nav-item" id="nav-clinical-reviews" onclick="switchSection('clinical-reviews',this)">
-      <span class="nav-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4a3 3 0 0 1 6 0"/><path d="M9 4h6"/><path d="m9 13 2 2 4-4"/><path d="M9 18h6"/></svg></span><span class="nav-label">Clinical Reviews</span>
-    </div>
-    <div class="nav-item" id="nav-teaching" onclick="switchSection('teaching',this)">
-      <span class="nav-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5z"/><path d="M8 6h8"/><path d="M8 10h6"/></svg></span><span class="nav-label">Teaching</span>
-    </div>
-    <div class="nav-item" id="nav-referrals" onclick="switchSection('referrals',this)">
-      <span class="nav-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 7h11"/><path d="m12 4 3 3-3 3"/><path d="M20 17H9"/><path d="m12 14-3 3 3 3"/></svg></span><span class="nav-label">Referrals</span>
-    </div>
-    <div class="nav-item" id="nav-appointments" onclick="switchSection('appointments',this)">
-      <span class="nav-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/></svg></span><span class="nav-label">Clinic Appointments</span>
-    </div>
-    <div class="nav-item" id="nav-appliances" onclick="switchSection('appliances',this)">
-      <span class="nav-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="3"/><path d="M9 7h6"/><path d="M9 11h6"/><path d="M9 15h4"/><path d="M17 17l2 2"/><path d="M19 17l-2 2"/></svg></span><span class="nav-label">Appliances</span>
-    </div>
-    <div class="nav-item" id="nav-discharge" onclick="switchSection('discharge',this)">
-      <span class="nav-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-7h6v7"/><path d="M14 9h5"/><path d="m16 6 3 3-3 3"/></svg></span><span class="nav-label">Discharge Planning</span>
-    </div>
-    <div class="nav-item" id="nav-followups" onclick="switchSection('followups',this)">
-      <span class="nav-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="m8 16 2 2 5-5"/><path d="M17 17h2"/></svg></span><span class="nav-label">Follow-Ups</span>
-    </div>
-
-    <div class="sidebar-section-label">STAFF</div>
-    <div class="nav-item" id="nav-roster" onclick="switchSection('roster',this)">
-      <span class="nav-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="M8 15h8"/><path d="M8 18h5"/></svg></span><span class="nav-label">Monthly Roster</span>
-    </div>
-    <!-- Step 12: Change of Duty is intentionally hidden from the staff-facing sidebar.
-         The underlying page/code is kept in the file for backwards compatibility and recovery. -->
-    <div class="nav-item" id="nav-daily-attendance" onclick="switchSection('daily-attendance',this)">
-      <span class="nav-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="m8 12.5 3 3 5-6"/></svg></span><span class="nav-label">Daily Attendance</span>
-    </div>
-
-    <div class="sidebar-section-label">REPORTS</div>
-    <div class="nav-item" id="nav-staff-audit" onclick="switchSection('staff-audit',this)">
-      <span class="nav-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="m16 11 2 2 4-4"/></svg></span><span class="nav-label">Staff Audit</span>
-    </div>
-    <div class="nav-item" id="nav-clinic-audit" onclick="switchSection('clinic-audit',this)">
-      <span class="nav-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V8l7-5 7 5v13"/><path d="M9 21v-6h6v6"/><path d="M10 9h4"/><path d="M12 7v4"/></svg></span><span class="nav-label">Clinic Audit</span>
-    </div>
-    <div class="nav-item" id="nav-reports" onclick="switchSection('reports',this)">
-      <span class="nav-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="5" rx="1"/><rect x="12" y="8" width="3" height="9" rx="1"/><rect x="17" y="5" width="3" height="12" rx="1"/></svg></span><span class="nav-label">Reports & Charts</span>
-    </div>
-    <div class="nav-item" id="nav-kpi-dashboard" onclick="switchSection('kpi-dashboard',this)">
-      <span class="nav-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-5"/><path d="M12 16V8"/><path d="M16 16v-7"/><path d="M20 6l-4 4-3-3-5 5"/></svg></span><span class="nav-label">KPI Dashboard</span>
-    </div>
-    <div class="nav-item" id="nav-audit-trail" onclick="switchSection('audit-trail',this)">
-      <span class="nav-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg></span><span class="nav-label">Audit Trail</span>
-    </div>
-
-    <div class="sidebar-section-label">ACCOUNT</div>
-    <div class="nav-item" id="nav-account" onclick="switchSection('account',this)">
-      <span class="nav-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1A2 2 0 1 1 4.2 17l.1-.1A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.6-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1A2 2 0 1 1 7 4.2l.1.1A1.7 1.7 0 0 0 9 4.6 1.7 1.7 0 0 0 10 3V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1A2 2 0 1 1 19.8 7l-.1.1A1.7 1.7 0 0 0 19.4 9c.2.6.8 1 1.6 1h.1a2 2 0 1 1 0 4H21a1.7 1.7 0 0 0-1.6 1z"/></svg></span><span class="nav-label">My Account</span>
     </div>
   </div>
 
@@ -2631,23 +2532,12 @@ async function startApp(){
 // ══════════════════════════════════════════════════════
 
 let sidebarCollapsed=false;
-function toggleSidebar(){
-  sidebarCollapsed=!sidebarCollapsed;
-  const sb=document.getElementById('sidebar');
-  const mc=document.getElementById('main-content');
-  if(window.innerWidth<=900){
-    sb.classList.toggle('mobile-open',!sidebarCollapsed);
-  } else {
-    sb.classList.toggle('collapsed',sidebarCollapsed);
-    mc.classList.toggle('expanded',sidebarCollapsed);
-  }
-}
+function toggleSidebar(){/* sidebar removed */}
 
 // Map section names to old page IDs for existing content
 const SECTION_PAGE_MAP={
   'roster':'page-roster',
   'appointments':'page-appointments',
-  // Change of Duty remains mapped for compatibility but is hidden from the visible sidebar.
   'cod':'page-cod',
   'daily-attendance':'page-daily-attendance',
   'account':'page-account',
@@ -2658,16 +2548,16 @@ const SECTION_PAGE_MAP={
 };
 
 function switchSection(name, navEl){
-  // Update sections
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   const section=document.getElementById('section-'+name);
   if(section)section.classList.add('active');
-  if(navEl)navEl.classList.add('active');
+
+  // Show/hide back-to-home button
+  const backBtn=document.getElementById('global-back-btn');
+  if(backBtn)backBtn.style.display=name==='home'?'none':'flex';
 
   // For legacy pages - clone content into new section inner div
   const legacyId=SECTION_PAGE_MAP[name];
-  if(legacyId){
     const legacyPage=document.getElementById(legacyId);
     const innerDiv=document.getElementById(legacyId.replace('page-','page-')+'-inner') ||
                    document.getElementById('page-'+name+'-inner');
