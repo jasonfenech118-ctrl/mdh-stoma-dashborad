@@ -2542,29 +2542,7 @@ function switchSection(name, navEl){
   const backBtn=document.getElementById('global-back-btn');
   if(backBtn)backBtn.style.display=name==='home'?'none':'flex';
 
-  // For legacy pages - clone content into new section inner div
-  const legacyId=SECTION_PAGE_MAP[name];
-    const legacyPage=document.getElementById(legacyId);
-    const innerDiv=document.getElementById(legacyId.replace('page-','page-')+'-inner') ||
-                   document.getElementById('page-'+name+'-inner');
-    if(legacyPage && innerDiv && !innerDiv.hasChildNodes()){
-      innerDiv.innerHTML=legacyPage.innerHTML;
-    }
-    if(innerDiv && innerDiv.hasChildNodes()){
-      // Trigger existing load functions
-      if(name==='staff-audit')loadStaffAudit();
-      if(name==='clinic-audit')loadClinicAudit();
-      if(name==='reports')loadReports();
-      if(name==='daily-attendance'){updateSignedInUI();loadDailyAttendance();}
-      if(name==='account')updateSignedInUI();
-      if(name==='audit-trail')loadAuditTrail();
-      if(name==='cod'){populateCODDropdowns();loadCOD();}
-      if(name==='roster')renderRoster();
-      if(name==='appointments')loadTodaySnapshot();
-    }
-  }
-
-  // New sections
+  // Load data for each section
   if(name==='home')loadHomeDashboard();
   if(name==='patients'){loadPatients();loadPatientCommandCounts();}
   if(name==='clinical-reviews'){populatePatientDropdowns();loadReviews();}
@@ -2574,19 +2552,9 @@ function switchSection(name, navEl){
   if(name==='discharge')loadDischargePlans();
   if(name==='followups')loadFollowups();
   if(name==='kpi-dashboard')loadKpiDashboard();
-
-  // Close sidebar on mobile
-  if(window.innerWidth<=900){
-    document.getElementById('sidebar').classList.remove('mobile-open');
-  }
 }
 
-// Keep switchTab working for any legacy calls
-function switchTab(name,el){
-  const navId='nav-'+name;
-  const navEl=document.getElementById(navId)||el;
-  switchSection(name,navEl);
-}
+function switchTab(name,el){switchSection(name,null);}
 
 // ══════════════════════════════════════════════════════
 // HOME DASHBOARD
