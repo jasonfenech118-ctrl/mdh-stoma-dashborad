@@ -851,6 +851,41 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 @media(max-width:900px){.patient-button-grid{grid-template-columns:repeat(2,minmax(0,1fr));}.patient-button-card{min-height:74px;padding:14px;}}
 @media(max-width:620px){.patient-button-grid{grid-template-columns:1fr;}}
 
+
+
+/* v45 — Follow-Ups page only: longitudinal full-width button list */
+#section-followups .patient-button-section{
+  width:100%;
+  margin-top:10px;
+}
+#section-followups .patient-button-grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:12px;
+  width:100%;
+  max-width:1180px;
+  margin:14px auto 22px;
+}
+#section-followups .patient-button-card{
+  width:100%;
+  min-height:78px;
+  padding:18px 24px;
+  border-radius:16px;
+  justify-content:flex-start;
+}
+#section-followups .patient-button-card .command-icon{
+  width:46px;
+  height:46px;
+  border-radius:14px;
+}
+#section-followups .patient-button-card h3{
+  font-size:16px;
+  line-height:1.15;
+}
+@media(max-width:700px){
+  #section-followups .patient-button-card{padding:16px 18px;min-height:72px;}
+}
+
 </style>
 </head>
 <body>
