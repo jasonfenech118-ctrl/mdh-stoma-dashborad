@@ -853,37 +853,67 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 
 
 
-/* v45 — Follow-Ups page only: longitudinal full-width button list */
+/* v46 — Follow-Ups page only: compact tab-style navigation */
 #section-followups .patient-button-section{
   width:100%;
   margin-top:10px;
 }
 #section-followups .patient-button-grid{
   display:grid;
-  grid-template-columns:1fr;
-  gap:12px;
+  grid-template-columns:repeat(5,minmax(145px,1fr));
+  gap:0;
   width:100%;
-  max-width:1180px;
-  margin:14px auto 22px;
+  margin:14px 0 22px;
+  background:#ffffff;
+  border:1px solid var(--border);
+  border-radius:16px;
+  box-shadow:var(--shadow);
+  overflow:hidden;
 }
 #section-followups .patient-button-card{
   width:100%;
-  min-height:78px;
-  padding:18px 24px;
-  border-radius:16px;
-  justify-content:flex-start;
+  min-height:72px;
+  padding:14px 16px;
+  border:none;
+  border-right:1px solid var(--border);
+  border-radius:0;
+  box-shadow:none;
+  background:#ffffff;
+  justify-content:center;
+  flex-direction:column;
+  gap:8px;
+  text-align:center;
+}
+#section-followups .patient-button-card:last-child{border-right:none;}
+#section-followups .patient-button-card:hover{
+  transform:none;
+  box-shadow:none;
+  background:#f0fdfa;
+  border-color:var(--border);
 }
 #section-followups .patient-button-card .command-icon{
-  width:46px;
-  height:46px;
-  border-radius:14px;
+  width:34px;
+  height:34px;
+  border-radius:10px;
+  margin:0 auto;
+}
+#section-followups .patient-button-card .command-icon svg{
+  width:18px;
+  height:18px;
 }
 #section-followups .patient-button-card h3{
-  font-size:16px;
-  line-height:1.15;
+  font-size:13px;
+  line-height:1.1;
+  text-align:center;
 }
-@media(max-width:700px){
-  #section-followups .patient-button-card{padding:16px 18px;min-height:72px;}
+@media(max-width:900px){
+  #section-followups .patient-button-grid{grid-template-columns:repeat(2,minmax(0,1fr));border-radius:14px;}
+  #section-followups .patient-button-card{border-right:1px solid var(--border);border-bottom:1px solid var(--border);}
+  #section-followups .patient-button-card:nth-child(2n){border-right:none;}
+}
+@media(max-width:560px){
+  #section-followups .patient-button-grid{grid-template-columns:1fr;}
+  #section-followups .patient-button-card{border-right:none!important;}
 }
 
 </style>
