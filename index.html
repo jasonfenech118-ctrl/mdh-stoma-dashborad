@@ -1188,24 +1188,36 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     </div>
 
     <!-- ══════════════════════════════════ -->
-    <!-- FOLLOW UPS -->
+    <!-- FOLLOW UP CENTRE -->
     <!-- ══════════════════════════════════ -->
     <div class="section" id="section-followups">
-      <div class="phdr">
-        <div><h2>Follow-Ups</h2><p>Post-discharge, routine, urgent, and long-term monitoring follow-ups</p></div>
-        <button class="btn-add" onclick="openAddFollowupModal()">+ Add Follow-Up</button>
+      <div class="phdr patient-page-title">
+        <div><h2>Follow-Up Centre</h2></div>
       </div>
-      <div class="filter-row">
-        <label>Patient:</label>
-        <select id="followup-patient-filter" onchange="loadFollowups()"><option value="">All Patients</option></select>
-        <label>Status:</label>
-        <select id="followup-status-filter" onchange="loadFollowups()"><option value="">All</option><option>Required</option><option>Booked</option><option>Seen</option><option>DNTU</option><option>Cancelled</option><option>Completed</option></select>
-      </div>
-      <div class="card" style="padding:0;overflow:hidden;">
-        <table class="dt">
-          <thead><tr><th>Due</th><th>Appointment</th><th>Patient</th><th>Type</th><th>Status</th><th>Nurse</th><th>Outcome</th><th>Next</th><th>Actions</th></tr></thead>
-          <tbody id="followups-tbody"><tr><td colspan="9" class="empty">Loading follow-ups...</td></tr></tbody>
-        </table>
+
+      <div class="patient-button-section">
+        <div class="patient-button-grid">
+          <button class="patient-button-card" onclick="switchSection('appointments',null)">
+            <span class="command-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/></svg></span>
+            <span><h3>Patient Appointments</h3></span>
+          </button>
+          <button class="patient-button-card" onclick="openAppointmentOutcomesHub()">
+            <span class="command-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-5"/><path d="M12 16V8"/><path d="M16 16v-7"/><path d="M20 6l-4 4-3-3-5 5"/></svg></span>
+            <span><h3>Appointment Outcomes</h3></span>
+          </button>
+          <button class="patient-button-card" onclick="switchSection('staff-audit',null)">
+            <span class="command-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M17 11h5"/><path d="M19.5 8.5v5"/></svg></span>
+            <span><h3>Staff Audit</h3></span>
+          </button>
+          <button class="patient-button-card" onclick="switchSection('clinic-audit',null)">
+            <span class="command-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="M8 14h8"/><path d="M8 18h5"/></svg></span>
+            <span><h3>Clinic Audit</h3></span>
+          </button>
+          <button class="patient-button-card" onclick="openDntuPatientView()">
+            <span class="command-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></span>
+            <span><h3>DNTU</h3></span>
+          </button>
+        </div>
       </div>
     </div>
 
@@ -2576,6 +2588,23 @@ function switchSection(name, navEl){
 }
 
 function switchTab(name,el){switchSection(name,null);}
+
+function openAppointmentOutcomesHub(){
+  switchSection('clinic-audit',null);
+  setTimeout(()=>{
+    const listCard=document.getElementById('clinic-list-card');
+    if(listCard)listCard.classList.remove('collapsed');
+    const toggle=document.getElementById('clinic-list-toggle');
+    if(toggle)toggle.textContent='Hide full list';
+  },80);
+}
+
+function openDntuPatientView(){
+  switchSection('patients',null);
+  setTimeout(()=>{
+    if(typeof setPatientCommandFilter==='function')setPatientCommandFilter('dntu');
+  },80);
+}
 
 // ══════════════════════════════════════════════════════
 // HOME DASHBOARD
