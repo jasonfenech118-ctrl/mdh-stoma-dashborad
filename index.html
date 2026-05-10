@@ -646,15 +646,18 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 
 /* ── SIDEBAR LAYOUT ── */
 .main-content{
-  margin-left:0;padding:28px;
+  margin-left:0;
+  margin-right:0;
+  padding:28px;
   min-height:calc(100vh - 56px);
   margin-top:56px;
-  max-width:1400px;
-  margin-right:auto;
+  width:100%;
+  max-width:none;
 }
 
 .section{display:none;animation:fi .22s ease;}
-.section.active{display:block;}
+.section.active{display:block;width:100%;}
+.roster-wrap,.card,.patient-command,.daily-shell,.clinic-month-book,.staff-month-book{width:100%;}
 
 
 
