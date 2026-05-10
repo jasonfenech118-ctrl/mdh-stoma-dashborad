@@ -846,6 +846,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .patient-button-card h3{font-size:15px;font-weight:900;color:var(--navy);margin:0;letter-spacing:-.1px;line-height:1.15;}
 .patient-table-card{margin-top:4px;}
 .patient-view-label-hidden{display:none!important;}
+#global-prev-btn{background:rgba(255,255,255,.10)!important;border:1px solid rgba(255,255,255,.22)!important;color:#ffffff!important;box-shadow:0 3px 10px rgba(0,0,0,.12)!important;}
+#global-prev-btn:hover{background:rgba(255,255,255,.18)!important;transform:translateY(-1px);}
 #global-back-btn{background:linear-gradient(135deg,var(--teal2),var(--teal))!important;border:1px solid rgba(255,255,255,.28)!important;color:#ffffff!important;box-shadow:0 3px 12px rgba(20,184,166,.24)!important;}
 #global-back-btn:hover{filter:brightness(1.05);transform:translateY(-1px);}
 @media(max-width:900px){.patient-button-grid{grid-template-columns:repeat(2,minmax(0,1fr));}.patient-button-card{min-height:74px;padding:14px;}}
@@ -939,7 +941,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   <!-- TOP BAR -->
   <div class="topbar">
     <div style="display:flex;align-items:center;gap:14px;">
-      <button id="global-back-btn" onclick="switchSection('home',null)" style="display:none;align-items:center;gap:6px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:8px;color:rgba(255,255,255,.8);font-size:12.5px;font-weight:600;padding:6px 14px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;">← Home</button>
+      <button id="global-prev-btn" onclick="goBackSection()" style="display:none;align-items:center;gap:6px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:8px;color:rgba(255,255,255,.8);font-size:12.5px;font-weight:600;padding:6px 14px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;">← Back</button>
+      <button id="global-back-btn" onclick="switchSection('home',null)" style="display:none;align-items:center;gap:6px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:8px;color:rgba(255,255,255,.8);font-size:12.5px;font-weight:600;padding:6px 14px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;">Home</button>
       <div class="tb-logo">MDH <span>Stoma Care</span></div>
       <div class="tb-date" id="tb-date"></div>
     </div>
@@ -2586,7 +2589,17 @@ async function startApp(){
 // ══════════════════════════════════════════════════════
 
 let sidebarCollapsed=false;
+let sectionHistory=[];
+let currentSectionName='home';
 function toggleSidebar(){/* sidebar removed */}
+function goBackSection(){
+  const previous=sectionHistory.pop();
+  if(previous&&previous!==currentSectionName){
+    switchSection(previous,null,{fromBack:true});
+  }else{
+    switchSection('home',null,{fromBack:true});
+  }
+}
 
 // Map section names to old page IDs for existing content
 const SECTION_PAGE_MAP={
@@ -2629,15 +2642,25 @@ function loadLegacySectionData(name){
   }catch(e){console.warn('Section load skipped:',e?.message||e);}
 }
 
-function switchSection(name, navEl){
+function switchSection(name, navEl, options={}){
+  name=name||'home';
+  if(!options.fromBack && currentSectionName && currentSectionName!==name){
+    sectionHistory.push(currentSectionName);
+    if(sectionHistory.length>25)sectionHistory.shift();
+  }
+  currentSectionName=name;
+
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
   const section=document.getElementById('section-'+name);
   if(section)section.classList.add('active');
   mountLegacySection(name);
 
-  // Show/hide back-to-home button
+  // Show/hide navigation buttons
   const backBtn=document.getElementById('global-back-btn');
-  if(backBtn)backBtn.style.display=name==='home'?'none':'flex';
+  const prevBtn=document.getElementById('global-prev-btn');
+  const showNav=name!=='home';
+  if(backBtn)backBtn.style.display=showNav?'flex':'none';
+  if(prevBtn)prevBtn.style.display=showNav?'flex':'none';
 
   // Load data for each section
   if(name==='home')loadHomeDashboard();
