@@ -1103,6 +1103,34 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   #section-followups .followup-hard-card h3{font-size:15px!important;text-align:center!important;}
   #section-followups .followup-spacer{width:20px!important;height:42px!important;}
 }
+
+/* v54 — Patient Appointments cleanup and full-width daily clinic */
+#page-appointments .phdr{margin-bottom:10px;}
+#page-appointments .appt-date-row.appointment-filter-row{gap:9px;background:#fff;border:1px solid var(--border);border-radius:12px;padding:11px 12px;margin-bottom:10px;box-shadow:var(--shadow);}
+#page-appointments .appointment-filter-row select{padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;background:white;color:var(--navy);font-size:12px;font-weight:700;font-family:'DM Sans',sans-serif;outline:none;}
+#page-appointments .appointment-filter-row select:focus{border-color:var(--teal);}
+#page-appointments .compact-appt-search{padding:10px 12px;margin-bottom:10px;border-radius:12px;}
+#page-appointments .patient-search-head{display:none!important;}
+#page-appointments .appointment-search-row{gap:8px;align-items:stretch;}
+#page-appointments .appointment-search-row input{min-width:260px;max-width:460px;flex:1 1 360px;font-weight:700;color:var(--navy);}
+#page-appointments .appt-search-btn{min-width:88px;padding:8px 16px;border:1.5px solid var(--teal);border-radius:8px;background:var(--teal);color:#fff;font-size:12px;font-weight:900;cursor:pointer;font-family:'DM Sans',sans-serif;text-align:center;}
+#page-appointments .appt-clear-btn{min-width:104px;background:#fff;color:var(--navy);border-color:var(--border);}
+#page-appointments .appt-search-btn:hover{filter:brightness(.96);transform:translateY(-1px);}
+#page-appointments .patient-search-results:empty{display:none!important;}
+#page-appointments #slots-container{width:100%;overflow-x:auto;}
+#page-appointments #slots-container table.daily-appt-grid{width:100%!important;min-width:980px!important;table-layout:fixed!important;border-collapse:separate!important;border-spacing:10px 9px!important;}
+#page-appointments #slots-container table.daily-appt-grid th{width:auto!important;text-align:center!important;}
+#page-appointments #slots-container table.daily-appt-grid td{width:auto!important;}
+.appt-slot-chip{display:inline-flex;align-items:center;justify-content:center;margin-bottom:5px;padding:2px 8px;border-radius:999px;background:#eef6ff;color:#0f3a5f;border:1px solid #bfdbfe;font-size:10px;font-weight:950;line-height:1.15;}
+.btn-book-time{min-height:34px!important;font-size:11.5px!important;font-weight:950!important;color:var(--navy)!important;background:#fff!important;border:2px dashed #cbd5e1!important;border-radius:9px!important;}
+.btn-book-time:hover{border-color:var(--teal)!important;color:var(--teal)!important;background:#f0fdfa!important;}
+.btn-book-time.book-replacement-btn{background:#f0faf9!important;color:#0d7377!important;border-color:#0d7377!important;}
+@media(max-width:760px){
+  #page-appointments .appointment-search-row input{max-width:none;flex-basis:100%;}
+  #page-appointments .appt-search-btn,#page-appointments .appt-clear-btn{flex:1 1 120px;}
+  #page-appointments #slots-container table.daily-appt-grid{min-width:760px!important;}
+}
+
 </style>
 </head>
 <body>
@@ -1652,24 +1680,31 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     <div style="display:none" id="page-appointments">
       <div class="phdr"><div><h2>Patient Appointments</h2><p>08:30 – 13:30 · 30 min slots · One column per nurse working</p></div></div>
       <div id="hban-appt"></div>
-      <div class="appt-date-row">
+      <div class="appt-date-row appointment-filter-row">
         <label>Date:</label>
         <button onclick="apptChangeDay(-1)" style="padding:6px 12px;border:1.5px solid var(--border);border-radius:7px;background:white;font-size:13px;font-weight:700;cursor:pointer;color:var(--navy);">←</button>
         <input type="date" id="appt-date" onchange="loadAppts()"/>
         <button onclick="apptChangeDay(1)" style="padding:6px 12px;border:1.5px solid var(--border);border-radius:7px;background:white;font-size:13px;font-weight:700;cursor:pointer;color:var(--navy);">→</button>
+        <label>Month:</label>
+        <select id="appt-month-filter" onchange="applyApptMonthYearFilter()">
+          <option value="01">January</option><option value="02">February</option><option value="03">March</option>
+          <option value="04">April</option><option value="05">May</option><option value="06">June</option>
+          <option value="07">July</option><option value="08">August</option><option value="09">September</option>
+          <option value="10">October</option><option value="11">November</option><option value="12">December</option>
+        </select>
+        <label>Year:</label>
+        <select id="appt-year-filter" onchange="applyApptMonthYearFilter()">
+          <option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option><option value="2028">2028</option><option value="2029">2029</option><option value="2030">2030</option>
+        </select>
         <span class="sbadge" id="sbadge"></span>
       </div>
-      <div class="patient-search-card">
-        <div class="patient-search-head">
-          <strong>🔎 Search Patient &amp; Rebook</strong>
-          <span class="dntu-note">Search by ID card, name, surname, or phone. ID card is the main patient registry key and history is preserved.</span>
+      <div class="patient-search-card compact-appt-search">
+        <div class="patient-search-row appointment-search-row">
+          <input type="text" id="patient-rebook-search" placeholder="Patient's ID" onkeydown="if(event.key==='Enter')searchPatientsForRebook()"/>
+          <button class="appt-search-btn" onclick="searchPatientsForRebook()">Search</button>
+          <button class="appt-search-btn appt-clear-btn" onclick="clearPatientRebookSearch()">Clear</button>
         </div>
-        <div class="patient-search-row">
-          <input type="text" id="patient-rebook-search" placeholder="Search existing patient by ID card, name, surname, or phone..." onkeydown="if(event.key==='Enter')searchPatientsForRebook()"/>
-          <button onclick="searchPatientsForRebook()">Search</button>
-          <button onclick="clearPatientRebookSearch()" style="background:#edf1f5;color:var(--navy);">Clear</button>
-        </div>
-        <div class="patient-search-results" id="patient-rebook-results"><div class="patient-search-empty">Enter at least 2 characters to search.</div></div>
+        <div class="patient-search-results" id="patient-rebook-results"></div>
       </div>
       <div style="background:white;border-radius:12px;border:1px solid #dde3ea;overflow:hidden;">
         <div style="background:#1a2e4a;color:white;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;">
@@ -4476,6 +4511,30 @@ async function saveHourlyLeave(staffId,date){
 function initAppts(){
   const d=document.getElementById('appt-date');
   if(d&&!d.value)d.value=TODAY;
+  syncApptMonthYearFilters();
+  loadAppts();
+}
+
+function syncApptMonthYearFilters(){
+  const dateEl=document.getElementById('appt-date');
+  const monthEl=document.getElementById('appt-month-filter');
+  const yearEl=document.getElementById('appt-year-filter');
+  const dateStr=dateEl?.value||TODAY;
+  if(monthEl)monthEl.value=String(dateStr).slice(5,7);
+  if(yearEl)yearEl.value=String(dateStr).slice(0,4);
+}
+
+function applyApptMonthYearFilter(){
+  const dateEl=document.getElementById('appt-date');
+  const monthEl=document.getElementById('appt-month-filter');
+  const yearEl=document.getElementById('appt-year-filter');
+  if(!dateEl||!monthEl||!yearEl)return;
+  const year=Number(yearEl.value)||new Date().getFullYear();
+  const month=Number(monthEl.value)||1;
+  const current=new Date((dateEl.value||TODAY)+'T12:00:00');
+  const maxDay=new Date(year,month,0).getDate();
+  const day=String(Math.min(current.getDate()||1,maxDay)).padStart(2,'0');
+  dateEl.value=`${year}-${String(month).padStart(2,'0')}-${day}`;
   loadAppts();
 }
 
@@ -4485,6 +4544,7 @@ function apptChangeDay(dir){
   const d=new Date((el.value||TODAY)+'T12:00:00');
   d.setDate(d.getDate()+dir);
   el.value=fmt(d);
+  syncApptMonthYearFilters();
   loadAppts();
 }
 
@@ -4700,6 +4760,7 @@ function cancelledSlotHistoryHTML(cancelledRows){
 async function loadAppts(){
   const date=document.getElementById('appt-date')?.value;
   if(!date)return;
+  syncApptMonthYearFilters();
 
   const{data:rd}=await SB.from('roster').select('*').eq('roster_date',date);
   const{data:otToday}=await SB.from('bank_staff_assignments').select('*, bank_staff(id,full_name)').eq('work_date',date);
@@ -4770,7 +4831,7 @@ async function loadAppts(){
   if(!con)return;
 
   let html='<table class="daily-appt-grid">';
-  html+='<thead><tr><th style="padding:10px 14px;text-align:left;font-size:11px;font-weight:700;color:#7a8fa6;border-bottom:2px solid #dde3ea;background:#fafafa;min-width:65px;">Time</th>';
+  html+='<thead><tr>';
   nurses.forEach(n=>{
     let nbadge='';
     if(n.type==='ot') nbadge='<span style="font-size:9px;background:#e6a817;color:#fff;padding:1px 6px;border-radius:4px;margin-left:4px;">OT</span>';
@@ -4783,7 +4844,7 @@ async function loadAppts(){
   html+='</tr></thead><tbody>';
 
   SLOTS.forEach(slot=>{
-    html+=`<tr><td style="padding:10px 14px;font-weight:700;color:#0d7377;font-size:13px;border-bottom:1px solid #dde3ea;background:#fafafa;">${slot}</td>`;
+    html+=`<tr>`;
     nurses.forEach(n=>{
       const slotAppts=appointmentsForSlotAndColumn(appts,slot,n);
       const appt=slotAppts.find(a=>a.status!=='cancelled');
@@ -4793,6 +4854,7 @@ async function loadAppts(){
         const bg={booked:'#f0faf9',attended:'#d4edda',cancelled:'#fff5f5',did_not_attend:'#fff3cd'}[appt.status]||'#f0faf9';
         const nm=`${appt.patients?.first_name||''} ${appt.patients?.surname||''}`.trim();
         html+=`<td class="appt-cell-card ${appt.status==='attended'?'attended':appt.status==='did_not_attend'?'dntu':'booked'}" style="padding:8px 10px;background:${bg};vertical-align:top;">
+          <div class="appt-slot-chip">${slot}</div>
           <div class="appt-patient-name">${htmlSafe(nm||'Patient')}</div>
           ${visiblePatientContactHTML(appt.patients)}
           ${(n.type==='absent'||n.type==='ot-booked')?'<div style="font-size:10px;color:#c0392b;font-weight:700;margin-top:3px;">⚠ Nurse not rostered today</div>':''}
@@ -4810,11 +4872,11 @@ async function loadAppts(){
           </div>
         </td>`;
       }else if(n.type==='absent'||n.type==='ot-booked'){
-        html+=`<td style="padding:8px;border-bottom:1px solid #dde3ea;border-left:1px solid #dde3ea;background:${cellBg};text-align:center;color:#c0392b;font-size:10px;border-radius:7px;">Not rostered</td>`;
+        html+=`<td style="padding:8px;border-bottom:1px solid #dde3ea;border-left:1px solid #dde3ea;background:${cellBg};text-align:center;color:#c0392b;font-size:10px;border-radius:7px;"><div class="appt-slot-chip">${slot}</div><div>Not rostered</div></td>`;
       }else{
         html+=`<td class="appt-cell-empty" style="padding:8px;background:${cellBg};vertical-align:top;">
           ${cancelledSlotHistoryHTML(cancelledHere)}
-          <button onclick="bookSlot('${slot}','${date}','${jsSafe(n.id)}','${jsSafe(n.name)}','${jsSafe(n.type)}')" class="${cancelledHere.length?'book-replacement-btn':''}" style="width:100%;padding:6px;margin-top:${cancelledHere.length?'7px':'0'};border:2px dashed #dde3ea;border-radius:7px;background:none;color:#7a8fa6;font-size:11px;cursor:pointer;">${cancelledHere.length?'+ Book new patient in this slot':'+ Book'}</button>
+          <button onclick="bookSlot('${slot}','${date}','${jsSafe(n.id)}','${jsSafe(n.name)}','${jsSafe(n.type)}')" class="btn-book-time ${cancelledHere.length?'book-replacement-btn':''}" style="width:100%;padding:6px;margin-top:${cancelledHere.length?'7px':'0'};cursor:pointer;">+ Book · ${slot}</button>
         </td>`;
       }
     });
@@ -4910,7 +4972,7 @@ async function searchPatientsForRebook(){
   const box=document.getElementById('patient-rebook-results');
   const q=(input?.value||'').trim().toLowerCase();
   if(!box)return;
-  if(q.length<2){box.innerHTML='<div class="patient-search-empty">Enter at least 2 characters to search.</div>';return;}
+  if(q.length<2){box.innerHTML='';return;}
   box.innerHTML='<div class="patient-search-empty">Searching patients...</div>';
   const matches=[];
   try{
@@ -4957,7 +5019,7 @@ function clearPatientRebookSearch(){
   const input=document.getElementById('patient-rebook-search');
   const box=document.getElementById('patient-rebook-results');
   if(input)input.value='';
-  if(box)box.innerHTML='<div class="patient-search-empty">Enter at least 2 characters to search.</div>';
+  if(box)box.innerHTML='';
 }
 async function openPatientRebookModal(patientKeyValue){
   const parsed=parsePatientKey(patientKeyValue);
