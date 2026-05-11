@@ -4,7 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>MDH Stoma Care Clinic — Patient Dashboard</title>
-<!-- Build v53: Follow-Up Centre buttons hard-aligned with inline layout + runtime enforcement; appointment import preserved; dashboard project tables preserved with legacy appointment fallback -->
+<!-- Build v57: Core staff OT displayed on core row; Follow-Up buttons left-icon/center-text aligned; appointments grid fills width -->
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -1235,6 +1235,41 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   #section-followups .followup-hard-card,#section-followups .patient-button-card{height:76px!important;min-height:76px!important;padding:0 16px!important;gap:12px!important;}
   #section-followups .followup-hard-card .command-icon,#section-followups .patient-button-card .command-icon{width:44px!important;height:44px!important;min-width:44px!important;}
   #section-followups .followup-hard-card h3,#section-followups .patient-button-card h3{font-size:16px!important;}
+}
+
+
+
+/* v57 — final correction: core OT row markers, left-icon/center-text buttons, full-width appointments */
+.core-ot-chip{box-shadow:0 0 0 2px rgba(183,121,31,.22),0 3px 8px rgba(183,121,31,.22)!important;}
+#section-followups .followup-hard-grid,
+#section-followups .patient-button-grid{width:min(100%,1080px)!important;max-width:1080px!important;margin:18px auto 32px!important;padding:0 24px!important;gap:18px!important;}
+#section-followups .followup-hard-card,
+#section-followups .patient-button-card{display:grid!important;grid-template-columns:86px minmax(0,1fr) 86px!important;align-items:center!important;justify-items:center!important;gap:0!important;height:84px!important;min-height:84px!important;padding:0 22px!important;text-align:center!important;}
+#section-followups .followup-hard-card .command-icon,
+#section-followups .patient-button-card .command-icon{grid-column:1!important;justify-self:center!important;width:50px!important;height:50px!important;min-width:50px!important;margin:0!important;}
+#section-followups .followup-hard-card > span:nth-child(2),
+#section-followups .patient-button-card > span:last-child{grid-column:2!important;justify-self:center!important;width:100%!important;display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;}
+#section-followups .followup-hard-card h3,
+#section-followups .patient-button-card h3{font-size:18px!important;font-weight:950!important;text-align:center!important;letter-spacing:.01em!important;}
+#section-followups .followup-spacer{display:block!important;grid-column:3!important;width:50px!important;height:50px!important;}
+#section-appointments,#section-appointments #page-appointments-inner,#section-appointments .clinic-wrap,#section-appointments #slots-container,
+#page-appointments,#page-appointments .clinic-wrap,#page-appointments #slots-container{width:100%!important;max-width:none!important;}
+#section-appointments #slots-container,
+#page-appointments #slots-container{display:block!important;overflow-x:auto!important;padding:0 6px 10px!important;}
+#section-appointments #slots-container table.daily-appt-grid,
+#page-appointments #slots-container table.daily-appt-grid{width:100%!important;min-width:100%!important;table-layout:fixed!important;border-collapse:separate!important;border-spacing:12px 10px!important;}
+#section-appointments #slots-container table.daily-appt-grid th,
+#page-appointments #slots-container table.daily-appt-grid th{width:auto!important;text-align:center!important;white-space:normal!important;}
+#section-appointments #slots-container table.daily-appt-grid td,
+#page-appointments #slots-container table.daily-appt-grid td{width:auto!important;min-width:0!important;}
+#section-appointments .btn-book-time,#page-appointments .btn-book-time{min-height:38px!important;font-size:12px!important;font-weight:950!important;}
+@media(max-width:760px){
+  #section-followups .followup-hard-grid,#section-followups .patient-button-grid{padding:0 10px!important;}
+  #section-followups .followup-hard-card,#section-followups .patient-button-card{grid-template-columns:60px minmax(0,1fr) 28px!important;height:76px!important;min-height:76px!important;padding:0 14px!important;}
+  #section-followups .followup-hard-card .command-icon,#section-followups .patient-button-card .command-icon{width:44px!important;height:44px!important;min-width:44px!important;}
+  #section-followups .followup-hard-card h3,#section-followups .patient-button-card h3{font-size:16px!important;}
+  #section-followups .followup-spacer{width:28px!important;height:44px!important;}
+  #section-appointments #slots-container table.daily-appt-grid,#page-appointments #slots-container table.daily-appt-grid{min-width:820px!important;}
 }
 
 </style>
@@ -3014,17 +3049,17 @@ function forceFollowupButtonsStraight(){
     'linear-gradient(135deg,#7c2d12,#c2413b)'
   ];
   cards.forEach((card,idx)=>{
-    Object.assign(card.style,{width:'100%',height:'84px',minHeight:'84px',maxWidth:'none',margin:'0',display:'flex',alignItems:'center',justifyContent:'center',gap:'16px',padding:'0 28px',boxSizing:'border-box',border:'1px solid rgba(15,38,56,.13)',borderLeft:'none',borderRadius:'20px',background:fades[idx]||fades[0],boxShadow:'0 10px 28px rgba(15,38,56,.10)',textAlign:'center',overflow:'hidden'});
+    Object.assign(card.style,{width:'100%',height:'84px',minHeight:'84px',maxWidth:'none',margin:'0',display:'grid',gridTemplateColumns:'86px minmax(0,1fr) 86px',alignItems:'center',justifyItems:'center',gap:'0',padding:'0 22px',boxSizing:'border-box',border:'1px solid rgba(15,38,56,.13)',borderLeft:'none',borderRadius:'20px',background:fades[idx]||fades[0],boxShadow:'0 10px 28px rgba(15,38,56,.10)',textAlign:'center',overflow:'hidden'});
     const icon=card.querySelector('.command-icon');
     if(icon){
-      Object.assign(icon.style,{width:'50px',height:'50px',minWidth:'50px',flex:'0 0 50px',borderRadius:'15px',margin:'0',display:'flex',alignItems:'center',justifyContent:'center',background:iconBg[idx]||iconBg[0],color:'#ffffff',boxShadow:'0 10px 24px rgba(15,38,56,.20)',position:'relative',zIndex:'1'});
+      Object.assign(icon.style,{gridColumn:'1',justifySelf:'center',width:'50px',height:'50px',minWidth:'50px',borderRadius:'15px',margin:'0',display:'flex',alignItems:'center',justifyContent:'center',background:iconBg[idx]||iconBg[0],color:'#ffffff',boxShadow:'0 10px 24px rgba(15,38,56,.20)',position:'relative',zIndex:'1'});
     }
     let label=card.querySelector('span:nth-child(2)')||card.querySelector('span:last-child');
-    if(label){Object.assign(label.style,{display:'flex',alignItems:'center',justifyContent:'center',textAlign:'center',width:'auto',position:'relative',zIndex:'1'});}
+    if(label){Object.assign(label.style,{gridColumn:'2',justifySelf:'center',display:'flex',alignItems:'center',justifyContent:'center',textAlign:'center',width:'100%',position:'relative',zIndex:'1'});}
     const h3=card.querySelector('h3');
     if(h3){Object.assign(h3.style,{margin:'0',fontSize:'18px',fontWeight:'950',lineHeight:'1.2',textAlign:'center',color:'#0f2638'});}
     const spacer=card.querySelector('.followup-spacer');
-    if(spacer)spacer.style.display='none';
+    if(spacer){spacer.style.display='block';spacer.style.gridColumn='3';spacer.style.width='50px';spacer.style.height='50px';}
   });
 }
 if(typeof window!=='undefined'){
@@ -3673,6 +3708,27 @@ async function renderRoster(){
     }
   });
 
+  const bankOTMonth=(bd||[]).filter(b=>!isTilNote(b.notes));
+  const coreOTByCell={};
+  function addCoreOTCell(staffId,date,row){
+    if(!staffId||!date)return;
+    const key=`${staffId}_${date}`;
+    if(!coreOTByCell[key])coreOTByCell[key]=row;
+  }
+  (leaveMonth||[]).filter(l=>String(l.leave_type||'').toLowerCase()==='overtime'&&!isTilNote(l.notes)).forEach(l=>{
+    const start=new Date(l.start_date+'T12:00:00');
+    const end=new Date((l.end_date||l.start_date)+'T12:00:00');
+    for(let cur=new Date(start);cur<=end;cur.setDate(cur.getDate()+1)){
+      const ds=fmt(cur);
+      if(ds<s1||ds>s2)continue;
+      addCoreOTCell(l.staff_id,ds,{...l,_source:'core-leave'});
+    }
+  });
+  bankOTMonth.forEach(b=>{
+    const core=findCoreStaffByNameFlexible(b.bank_staff?.full_name);
+    if(core)addCoreOTCell(core.id,b.work_date,{...b,_source:'bank-assignment',_core_id:core.id});
+  });
+
   const th=isHol(TODAY);
   document.getElementById('hban-roster').innerHTML=th?`<div class="hban">🇲🇹 Today is a Malta Public Holiday: <strong>${th}</strong></div>`:'';
 
@@ -3700,13 +3756,22 @@ async function renderRoster(){
       const tdCls=isSel?'td-sel':isT?'td-today':hol?'td-hol':isSun?'td-sun':'';
       const hourly=(hourlyLeaveByCell[`${st.id}_${ds}`]||[]);
       const mini=hourly.length?`<div class="cell-mini-leave ${leaveMiniClass(hourly[0].leave_type)}" title="${htmlSafe(hourly.map(l=>`${LEAVE_LABELS[l.leave_type]||'Leave'} · ${leaveMiniText(l)} · ${String(l.start_time||'').slice(0,5)}-${String(l.end_time||'').slice(0,5)}${l.notes?' · '+l.notes:''}`).join(' | '))}">${htmlSafe(hourly.map(leaveMiniText).join('+'))}</div>`:'';
-      html+=`<td class="${tdCls}"><div class="dchip dc-${code}" onclick="openShift('${st.id}','${st.full_name}','${ds}')" title="${hol?hol+' — ':''}${ds}">${code}</div>${mini}</td>`;
+      const coreOT=coreOTByCell[`${st.id}_${ds}`];
+      if(coreOT){
+        const otStart=String(coreOT.shift_start||coreOT.start_time||'07:00').slice(0,5);
+        const otEnd=String(coreOT.shift_end||coreOT.end_time||'').slice(0,5)||'—';
+        const otTitle=`Core staff overtime · ${fullDisplayName(st.full_name)} · ${ds} · ${otStart}–${otEnd}`;
+        const otClick=coreOT._source==='bank-assignment'&&coreOT.id?`openOTEdit('${coreOT.id}')`:`openShift('${st.id}','${st.full_name}','${ds}')`;
+        html+=`<td class="${tdCls}"><div class="dchip dc-OT core-ot-chip" onclick="${otClick}" title="${htmlSafe(otTitle)}">OT</div>${mini}</td>`;
+      }else{
+        html+=`<td class="${tdCls}"><div class="dchip dc-${code}" onclick="openShift('${st.id}','${st.full_name}','${ds}')" title="${hol?hol+' — ':''}${ds}">${code}</div>${mini}</td>`;
+      }
     }
     html+='</tr>';
   }
 
   // OT rows — only true overtime rows. TIL rows are kept in the TIL section.
-  const bdOT=(bd||[]).filter(b=>!isTilNote(b.notes));
+  const bdOT=bankOTMonth.filter(b=>!findCoreStaffByNameFlexible(b.bank_staff?.full_name));
   if(bdOT.length>0){
     html+=`<tr class="sr"><td colspan="${days+2}">Overtime Staff</td></tr>`;
     const byS={};
@@ -4661,6 +4726,25 @@ function findCoreStaffByName(name){
   if(!n)return null;
   return (staffList||[]).find(st=>normStaffNameForAppts(st.full_name)===n)||null;
 }
+function normaliseCoreOTMatchName(name){
+  return normStaffNameForAppts(String(name||'')
+    .replace(/\bcore\s*ot\b/gi,' ')
+    .replace(/\bovertime\b/gi,' ')
+    .replace(/\bot\s*nurse\b/gi,' ')
+    .replace(/\bot\b/gi,' ')
+    .replace(/\bbank\s*staff\b/gi,' ')
+  );
+}
+function findCoreStaffByNameFlexible(name){
+  const exact=findCoreStaffByName(name);
+  if(exact)return exact;
+  const n=normaliseCoreOTMatchName(name);
+  if(!n)return null;
+  return (staffList||[]).find(st=>{
+    const s=normaliseCoreOTMatchName(st.full_name);
+    return s===n || (n.includes(s)&&s.length>=5) || (s.includes(n)&&n.length>=5);
+  })||null;
+}
 function isTILNote(notes){
   const n=String(notes||'');
   return n.startsWith('TIL-Off')||n.startsWith('TIL-In');
@@ -4920,7 +5004,7 @@ async function loadAppts(){
   }
   for(const b of(otToday||[])){
     if(b.bank_staff?.full_name){
-      const core=findCoreStaffByName(b.bank_staff.full_name);
+      const core=findCoreStaffByNameFlexible(b.bank_staff.full_name);
       if(core)addNurse({id:core.id,bankId:b.bank_staff.id,name:core.full_name,type:'core-ot'});
       else addNurse({id:b.bank_staff.id,name:b.bank_staff.full_name,type:'ot'});
     }
@@ -4953,7 +5037,7 @@ async function loadAppts(){
   const con=document.getElementById('slots-container');
   if(!con)return;
 
-  let html='<table class="daily-appt-grid">';
+  let html='<table class="daily-appt-grid" style="width:100%;min-width:100%;table-layout:fixed;">';
   html+='<thead><tr>';
   nurses.forEach(n=>{
     let nbadge='';
