@@ -1131,6 +1131,112 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   #page-appointments #slots-container table.daily-appt-grid{min-width:760px!important;}
 }
 
+
+/* v56 — Follow-Up Centre: centred icon + text, stronger colour fade, larger wording */
+#section-followups .followup-hard-grid,
+#section-followups .patient-button-grid{
+  width:min(100%,1080px)!important;
+  max-width:1080px!important;
+  margin:18px auto 32px!important;
+  padding:0 24px!important;
+  gap:18px!important;
+}
+#section-followups .followup-hard-card,
+#section-followups .patient-button-card{
+  height:84px!important;
+  min-height:84px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:16px!important;
+  padding:0 28px!important;
+  text-align:center!important;
+  border-radius:20px!important;
+  border:1px solid rgba(15,38,56,.13)!important;
+  border-left:none!important;
+  box-shadow:0 10px 28px rgba(15,38,56,.10)!important;
+  position:relative!important;
+  overflow:hidden!important;
+}
+#section-followups .followup-hard-card::before,
+#section-followups .patient-button-card::before{
+  content:''!important;
+  position:absolute!important;
+  inset:0!important;
+  width:auto!important;
+  opacity:1!important;
+  pointer-events:none!important;
+  z-index:0!important;
+  background:linear-gradient(90deg,rgba(20,184,166,.38) 0%,rgba(20,184,166,.22) 22%,rgba(20,184,166,.10) 48%,rgba(255,255,255,.92) 72%,#eefbf8 100%)!important;
+}
+#section-followups .followup-hard-card::after,
+#section-followups .patient-button-card::after{
+  content:''!important;
+  position:absolute!important;
+  right:-44px!important;
+  top:50%!important;
+  transform:translateY(-50%)!important;
+  width:150px!important;
+  height:150px!important;
+  border-radius:999px!important;
+  background:rgba(20,184,166,.12)!important;
+  pointer-events:none!important;
+  z-index:0!important;
+}
+#section-followups .followup-hard-card .command-icon,
+#section-followups .patient-button-card .command-icon{
+  position:relative!important;
+  z-index:1!important;
+  width:50px!important;
+  height:50px!important;
+  min-width:50px!important;
+  flex:0 0 50px!important;
+  margin:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  border-radius:15px!important;
+  background:linear-gradient(135deg,#0f2638,#0f766e)!important;
+  color:#fff!important;
+  box-shadow:0 10px 24px rgba(15,38,56,.20)!important;
+}
+#section-followups .followup-hard-card > span:nth-child(2),
+#section-followups .patient-button-card > span:last-child{
+  position:relative!important;
+  z-index:1!important;
+  width:auto!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  text-align:center!important;
+}
+#section-followups .followup-hard-card h3,
+#section-followups .patient-button-card h3{
+  margin:0!important;
+  text-align:center!important;
+  font-size:18px!important;
+  font-weight:950!important;
+  line-height:1.2!important;
+  color:#0f2638!important;
+  letter-spacing:.01em!important;
+}
+#section-followups .followup-spacer{display:none!important;}
+#section-followups .followup-hard-card:nth-child(1)::before,#section-followups .patient-button-card:nth-child(1)::before{background:linear-gradient(90deg,rgba(20,184,166,.42) 0%,rgba(20,184,166,.22) 28%,rgba(20,184,166,.09) 52%,rgba(255,255,255,.93) 74%,#eefbf8 100%)!important;}
+#section-followups .followup-hard-card:nth-child(2)::before,#section-followups .patient-button-card:nth-child(2)::before{background:linear-gradient(90deg,rgba(37,99,235,.36) 0%,rgba(37,99,235,.19) 28%,rgba(20,184,166,.08) 52%,rgba(255,255,255,.93) 74%,#eefbf8 100%)!important;}
+#section-followups .followup-hard-card:nth-child(3)::before,#section-followups .patient-button-card:nth-child(3)::before{background:linear-gradient(90deg,rgba(109,40,217,.34) 0%,rgba(109,40,217,.18) 28%,rgba(15,38,56,.07) 52%,rgba(255,255,255,.93) 74%,#eefbf8 100%)!important;}
+#section-followups .followup-hard-card:nth-child(4)::before,#section-followups .patient-button-card:nth-child(4)::before{background:linear-gradient(90deg,rgba(15,118,110,.38) 0%,rgba(15,118,110,.20) 28%,rgba(15,38,56,.08) 52%,rgba(255,255,255,.93) 74%,#eefbf8 100%)!important;}
+#section-followups .followup-hard-card:nth-child(5)::before,#section-followups .patient-button-card:nth-child(5)::before{background:linear-gradient(90deg,rgba(194,65,59,.34) 0%,rgba(194,65,59,.17) 28%,rgba(180,83,9,.08) 52%,rgba(255,255,255,.93) 74%,#fff7ed 100%)!important;}
+#section-followups .followup-hard-card:nth-child(2) .command-icon,#section-followups .patient-button-card:nth-child(2) .command-icon{background:linear-gradient(135deg,#1d4ed8,#0f766e)!important;}
+#section-followups .followup-hard-card:nth-child(3) .command-icon,#section-followups .patient-button-card:nth-child(3) .command-icon{background:linear-gradient(135deg,#4c1d95,#0f2638)!important;}
+#section-followups .followup-hard-card:nth-child(4) .command-icon,#section-followups .patient-button-card:nth-child(4) .command-icon{background:linear-gradient(135deg,#0f766e,#0f2638)!important;}
+#section-followups .followup-hard-card:nth-child(5) .command-icon,#section-followups .patient-button-card:nth-child(5) .command-icon{background:linear-gradient(135deg,#7c2d12,#c2413b)!important;}
+@media(max-width:760px){
+  #section-followups .followup-hard-grid,#section-followups .patient-button-grid{padding:0 10px!important;gap:13px!important;}
+  #section-followups .followup-hard-card,#section-followups .patient-button-card{height:76px!important;min-height:76px!important;padding:0 16px!important;gap:12px!important;}
+  #section-followups .followup-hard-card .command-icon,#section-followups .patient-button-card .command-icon{width:44px!important;height:44px!important;min-width:44px!important;}
+  #section-followups .followup-hard-card h3,#section-followups .patient-button-card h3{font-size:16px!important;}
+}
+
 </style>
 </head>
 <body>
@@ -2890,34 +2996,35 @@ function forceFollowupButtonsStraight(){
     Object.assign(wrap.style,{width:'100%',margin:'16px auto 0',display:'block',boxSizing:'border-box'});
   }
   if(grid){
-    Object.assign(grid.style,{display:'flex',flexDirection:'column',alignItems:'stretch',justifyContent:'flex-start',gap:'16px',width:'min(100%, 1080px)',maxWidth:'1080px',margin:'14px auto 28px',padding:'0 24px',boxSizing:'border-box'});
+    Object.assign(grid.style,{display:'flex',flexDirection:'column',alignItems:'stretch',justifyContent:'flex-start',gap:'18px',width:'min(100%, 1080px)',maxWidth:'1080px',margin:'18px auto 32px',padding:'0 24px',boxSizing:'border-box'});
   }
   const cards=section.querySelectorAll('.followup-hard-card,.patient-button-card');
+  const fades=[
+    'linear-gradient(90deg,rgba(20,184,166,.42) 0%,rgba(20,184,166,.22) 28%,rgba(20,184,166,.09) 52%,rgba(255,255,255,.93) 74%,#eefbf8 100%)',
+    'linear-gradient(90deg,rgba(37,99,235,.36) 0%,rgba(37,99,235,.19) 28%,rgba(20,184,166,.08) 52%,rgba(255,255,255,.93) 74%,#eefbf8 100%)',
+    'linear-gradient(90deg,rgba(109,40,217,.34) 0%,rgba(109,40,217,.18) 28%,rgba(15,38,56,.07) 52%,rgba(255,255,255,.93) 74%,#eefbf8 100%)',
+    'linear-gradient(90deg,rgba(15,118,110,.38) 0%,rgba(15,118,110,.20) 28%,rgba(15,38,56,.08) 52%,rgba(255,255,255,.93) 74%,#eefbf8 100%)',
+    'linear-gradient(90deg,rgba(194,65,59,.34) 0%,rgba(194,65,59,.17) 28%,rgba(180,83,9,.08) 52%,rgba(255,255,255,.93) 74%,#fff7ed 100%)'
+  ];
+  const iconBg=[
+    'linear-gradient(135deg,#0f2638,#0f766e)',
+    'linear-gradient(135deg,#1d4ed8,#0f766e)',
+    'linear-gradient(135deg,#4c1d95,#0f2638)',
+    'linear-gradient(135deg,#0f766e,#0f2638)',
+    'linear-gradient(135deg,#7c2d12,#c2413b)'
+  ];
   cards.forEach((card,idx)=>{
-    const colors=['#14b8a6','#2563eb','#6d28d9','#0f766e','#c2413b'];
-    Object.assign(card.style,{
-      width:'100%',height:'78px',minHeight:'78px',maxWidth:'none',margin:'0',display:'grid',gridTemplateColumns:'72px minmax(0, 1fr) 72px',alignItems:'center',justifyItems:'center',gap:'0',padding:'0 22px',boxSizing:'border-box',border:'1px solid rgba(15,38,56,.14)',borderLeft:'7px solid '+(colors[idx]||'#14b8a6'),borderRadius:'18px',background:'linear-gradient(135deg,#ffffff 0%,#f8fbfc 62%,#eefbf8 100%)',boxShadow:'0 8px 24px rgba(15,38,56,.08)',textAlign:'center',overflow:'hidden'
-    });
+    Object.assign(card.style,{width:'100%',height:'84px',minHeight:'84px',maxWidth:'none',margin:'0',display:'flex',alignItems:'center',justifyContent:'center',gap:'16px',padding:'0 28px',boxSizing:'border-box',border:'1px solid rgba(15,38,56,.13)',borderLeft:'none',borderRadius:'20px',background:fades[idx]||fades[0],boxShadow:'0 10px 28px rgba(15,38,56,.10)',textAlign:'center',overflow:'hidden'});
     const icon=card.querySelector('.command-icon');
     if(icon){
-      Object.assign(icon.style,{gridColumn:'1',justifySelf:'center',width:'46px',height:'46px',minWidth:'46px',borderRadius:'14px',margin:'0',display:'flex',alignItems:'center',justifyContent:'center',background:idx===4?'linear-gradient(135deg,#7c2d12,#c2413b)':'linear-gradient(135deg,#0f2638,#0f766e)',color:'#ffffff',boxShadow:'0 9px 20px rgba(15,38,56,.18)'});
+      Object.assign(icon.style,{width:'50px',height:'50px',minWidth:'50px',flex:'0 0 50px',borderRadius:'15px',margin:'0',display:'flex',alignItems:'center',justifyContent:'center',background:iconBg[idx]||iconBg[0],color:'#ffffff',boxShadow:'0 10px 24px rgba(15,38,56,.20)',position:'relative',zIndex:'1'});
     }
-    let label=card.querySelector('span:nth-child(2)');
-    if(label){
-      Object.assign(label.style,{gridColumn:'2',justifySelf:'center',textAlign:'center',display:'block',width:'100%'});
-    }
+    let label=card.querySelector('span:nth-child(2)')||card.querySelector('span:last-child');
+    if(label){Object.assign(label.style,{display:'flex',alignItems:'center',justifyContent:'center',textAlign:'center',width:'auto',position:'relative',zIndex:'1'});}
     const h3=card.querySelector('h3');
-    if(h3){
-      Object.assign(h3.style,{margin:'0',fontSize:'16px',fontWeight:'950',lineHeight:'1.2',textAlign:'center',color:'#0f2638'});
-    }
-    let spacer=card.querySelector('.followup-spacer');
-    if(!spacer){
-      spacer=document.createElement('span');
-      spacer.className='followup-spacer';
-      spacer.setAttribute('aria-hidden','true');
-      card.appendChild(spacer);
-    }
-    Object.assign(spacer.style,{gridColumn:'3',width:'46px',height:'46px',display:'block'});
+    if(h3){Object.assign(h3.style,{margin:'0',fontSize:'18px',fontWeight:'950',lineHeight:'1.2',textAlign:'center',color:'#0f2638'});}
+    const spacer=card.querySelector('.followup-spacer');
+    if(spacer)spacer.style.display='none';
   });
 }
 if(typeof window!=='undefined'){
@@ -4774,9 +4881,25 @@ async function loadAppts(){
   const appts=await getDashboardAppointmentsOnDate(date);
 
   const nurses=[];
+  const nursePriority={common:0,core:1,til:2,ot:3,'ot-booked':3,'core-ot':4,absent:1};
   const addNurse=(n)=>{
-    const sameId=nurses.some(x=>String(x.id)===String(n.id) && x.type!=='common' && n.type!=='common');
-    if(!sameId)nurses.push(n);
+    if(!n)return;
+    if(n.type==='common'){
+      if(!nurses.some(x=>x.type==='common'))nurses.push(n);
+      return;
+    }
+    const existing=nurses.find(x=>x.type!=='common' && (
+      String(x.id||'')===String(n.id||'') ||
+      (x.bankId && n.bankId && String(x.bankId)===String(n.bankId)) ||
+      (x.bankId && String(x.bankId)===String(n.id||'')) ||
+      (n.bankId && String(n.bankId)===String(x.id||''))
+    ));
+    if(!existing){nurses.push(n);return;}
+    if((nursePriority[n.type]||0)>(nursePriority[existing.type]||0)){
+      existing.type=n.type;
+    }
+    if(n.bankId)existing.bankId=n.bankId;
+    if(n.name)existing.name=n.name;
   };
 
   for(const st of staffList||[]){
@@ -4808,7 +4931,7 @@ async function loadAppts(){
       const coreStaff=(staffList||[]).find(s=>String(s.id)===String(a.assigned_to));
       addNurse({id:a.assigned_to,name:coreStaff?.full_name||a.staff?.full_name||'Booked Nurse',type:'absent'});
     }
-    if(a.bank_staff_id && !nurses.some(n=>String(n.id)===String(a.bank_staff_id))){
+    if(a.bank_staff_id && !nurses.some(n=>String(n.id||'')===String(a.bank_staff_id) || String(n.bankId||'')===String(a.bank_staff_id))){
       addNurse({id:a.bank_staff_id,name:a.bank_staff?.full_name||'Booked OT/Bank Staff',type:'ot-booked'});
     }
   }
@@ -4834,8 +4957,8 @@ async function loadAppts(){
   html+='<thead><tr>';
   nurses.forEach(n=>{
     let nbadge='';
-    if(n.type==='ot') nbadge='<span style="font-size:9px;background:#e6a817;color:#fff;padding:1px 6px;border-radius:4px;margin-left:4px;">OT</span>';
-    else if(n.type==='core-ot') nbadge='<span style="font-size:9px;background:#e6a817;color:#fff;padding:1px 6px;border-radius:4px;margin-left:4px;">Core OT</span>';
+    if(n.type==='ot') nbadge='<span style="font-size:9px;background:#e6a817;color:#fff;padding:1px 6px;border-radius:4px;margin-left:4px;">Overtime</span>';
+    else if(n.type==='core-ot') nbadge='<span style="font-size:9px;background:#e6a817;color:#fff;padding:1px 6px;border-radius:4px;margin-left:4px;">Overtime</span>';
     else if(n.type==='til') nbadge='<span style="font-size:9px;background:#0d7377;color:#fff;padding:1px 6px;border-radius:4px;margin-left:4px;">TIL</span>';
     else if(n.type==='common') nbadge='<span style="font-size:9px;background:#6c757d;color:#fff;padding:1px 6px;border-radius:4px;margin-left:4px;">General</span>';
     else if(n.type==='absent'||n.type==='ot-booked') nbadge='<span style="font-size:9px;background:#c0392b;color:#fff;padding:1px 6px;border-radius:4px;margin-left:4px;">Booked / Not Working</span>';
@@ -5121,14 +5244,44 @@ async function lookupPatientByIdForBooking(idInputId,firstInputId,surnameInputId
   if(note){note.className='registry-lookup-note new';note.textContent='No saved patient found for this ID card. A new patient record will be saved when you book.';}
   return null;
 }
+function isMissingPatientsMainError(error){
+  const msg=String(error?.message||error||'').toLowerCase();
+  return msg.includes('patients_main') && (msg.includes('could not find') || msg.includes('schema cache') || msg.includes('does not exist') || msg.includes('relation'));
+}
+async function saveOrUpdateLegacyPatientByIdCard(idCard,firstName,surname,phone){
+  const id=normaliseIdCard(idCard);
+  if(!id||!firstName||!surname)return {patient:null,error:{message:'Missing patient details.'}};
+  try{
+    const existing=await SB.from('patients')
+      .select('id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status')
+      .ilike('id_card',id)
+      .maybeSingle();
+    if(existing.error)return {patient:null,error:existing.error};
+    if(existing.data?.id){
+      const updatePayload={first_name:firstName,surname:surname,phone_number:phone||existing.data.phone_number||null,id_card:id};
+      const updated=await SB.from('patients').update(updatePayload).eq('id',existing.data.id).select('id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status').single();
+      if(updated.error)return {patient:normaliseLegacyPatientForAppointment(existing.data),error:updated.error};
+      return {patient:normaliseLegacyPatientForAppointment(updated.data||existing.data),error:null};
+    }
+    const inserted=await SB.from('patients').insert({first_name:firstName,surname:surname,id_card:id,phone_number:phone||null}).select('id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status').single();
+    if(inserted.error)return {patient:null,error:inserted.error};
+    return {patient:normaliseLegacyPatientForAppointment(inserted.data),error:null};
+  }catch(error){return {patient:null,error};}
+}
 async function saveOrUpdatePatientByIdCard(idCard,firstName,surname,phone){
   const id=normaliseIdCard(idCard);
   if(!id||!firstName||!surname)return {patient:null,error:{message:'Missing patient details.'}};
   try{
     const patientId=await findOrCreateAppointmentPatient(firstName,surname,id,phone);
     const patient=await getProjectPatientForAppointment(patientId);
-    return {patient:patient||{id:patientId,first_name:firstName,surname,id_card:id,phone_number:phone},error:null};
-  }catch(error){return {patient:null,error};}
+    if(patient?.id)return {patient,error:null};
+    return {patient:{id:patientId,first_name:firstName,surname,id_card:id,phone_number:phone||'',_source:'project'},error:null};
+  }catch(error){
+    if(isMissingPatientsMainError(error)){
+      return await saveOrUpdateLegacyPatientByIdCard(id,firstName,surname,phone);
+    }
+    return {patient:null,error};
+  }
 }
 
 async function buildNurseAllocationOptions(selectedType,selectedId){
@@ -5174,7 +5327,8 @@ async function doBook(slot,date){
   if(manualNurse.startsWith('core:')) payload.assigned_to=manualNurse.replace('core:','');
   if(manualNurse.startsWith('bank:')) payload.bank_staff_id=manualNurse.replace('bank:','');
 
-  try{await insertDashboardAppointment(payload,'project');}
+  const bookingSource=pat._source==='legacy'?'legacy':'project';
+  try{await insertDashboardAppointment(payload,bookingSource);}
   catch(error){
     const msg=String(error?.message||'');
     if(msg.toLowerCase().includes('duplicate')||msg.toLowerCase().includes('unique')){
@@ -6422,17 +6576,17 @@ async function openModal(type,...args){
 async function saveAppt(slot,date,nurseId){
   const fn=document.getElementById('p-fn').value.trim();
   const sn=document.getElementById('p-sn').value.trim();
-  const idno=document.getElementById('p-id').value.trim();
+  const idno=normaliseIdCard(document.getElementById('p-id').value.trim());
   const phone=document.getElementById('p-phone')?.value.trim()||'';
   if(!fn||!sn||!idno){alert('Please fill in all patient details.');return;}
-  let patId;
-  try{patId=await findOrCreateAppointmentPatient(fn,sn,idno,phone);}
-  catch(e){alert('Error saving patient: '+(e?.message||String(e)));return;}
-  try{await insertProjectAppointment({
-    patient_id:patId,appt_date:date,appt_slot:slot,
+  const saved=await saveOrUpdatePatientByIdCard(idno,fn,sn,phone);
+  if(saved.error||!saved.patient?.id){alert('Error saving patient: '+(saved.error?.message||''));return;}
+  const source=saved.patient._source==='legacy'?'legacy':'project';
+  try{await insertDashboardAppointment({
+    patient_id:saved.patient.id,appt_date:date,appt_slot:slot,
     assigned_to:nurseId&&nurseId!=='undefined'&&nurseId!==''?nurseId:null,
     status:'booked'
-  });}
+  },source);}
   catch(error){alert('Booking error: '+(error.message||String(error)));return;}
   closeModal();loadAppts();loadTodaySnapshot();
 }
