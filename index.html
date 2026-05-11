@@ -4,7 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>MDH Stoma Care Clinic — Patient Dashboard</title>
-<!-- Build v37: clean button wording and matching primary button colour; My Patients / Our Patients left unchanged -->
+<!-- Build v49: Follow-Ups buttons made longitudinal and professional; My Patients / Our Patients left unchanged -->
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -855,79 +855,113 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 
 
 
-/* v48 — Follow-Ups page only: horizontal tab-style buttons */
+/* v49 — Follow-Ups page only: longitudinal professional command buttons */
 #section-followups .patient-button-section{
   width:100%;
-  margin-top:10px;
+  margin-top:12px;
 }
 #section-followups .patient-button-grid{
   display:grid;
-  grid-template-columns:repeat(5,minmax(155px,1fr));
-  gap:0;
+  grid-template-columns:repeat(5,minmax(170px,1fr));
+  gap:12px;
   width:100%;
-  margin:14px 0 22px;
-  background:#ffffff;
-  border:1px solid var(--border);
-  border-radius:16px;
-  box-shadow:var(--shadow);
-  overflow:hidden;
+  margin:14px 0 24px;
+  padding:0;
+  background:transparent;
+  border:none;
+  border-radius:0;
+  box-shadow:none;
+  overflow:visible;
 }
 #section-followups .patient-button-card{
   width:100%;
-  min-height:64px;
-  padding:13px 15px;
-  border:none;
-  border-right:1px solid var(--border);
-  border-radius:0;
-  box-shadow:none;
-  background:#ffffff;
+  min-height:78px;
+  padding:15px 16px;
+  border:1px solid var(--border);
+  border-radius:17px;
+  box-shadow:0 5px 18px rgba(15,38,56,.07);
+  background:linear-gradient(180deg,#ffffff 0%,#f8fbfc 100%);
   justify-content:flex-start;
   flex-direction:row;
-  gap:10px;
-  text-align:left;
-  white-space:nowrap;
-}
-#section-followups .patient-button-card:last-child{border-right:none;}
-#section-followups .patient-button-card:hover{
-  transform:none;
-  box-shadow:none;
-  background:#f0fdfa;
-  border-color:var(--border);
-}
-#section-followups .patient-button-card .command-icon{
-  width:34px;
-  height:34px;
-  border-radius:10px;
-  margin:0;
-  flex:0 0 34px;
-}
-#section-followups .patient-button-card .command-icon svg{
-  width:18px;
-  height:18px;
-}
-#section-followups .patient-button-card h3{
-  font-size:13px;
-  line-height:1.15;
+  align-items:center;
+  gap:12px;
   text-align:left;
   white-space:normal;
+  position:relative;
+  overflow:hidden;
 }
-@media(max-width:1050px){
-  #section-followups .patient-button-grid{grid-template-columns:repeat(3,minmax(0,1fr));border-radius:14px;}
-  #section-followups .patient-button-card{border-right:1px solid var(--border);border-bottom:1px solid var(--border);}
-  #section-followups .patient-button-card:nth-child(3n){border-right:none;}
-  #section-followups .patient-button-card:nth-last-child(-n+2){border-bottom:none;}
+#section-followups .patient-button-card::before{
+  content:'';
+  position:absolute;
+  inset:0 auto 0 0;
+  width:5px;
+  background:linear-gradient(180deg,var(--teal2),var(--teal));
+  opacity:.92;
 }
-@media(max-width:720px){
-  #section-followups .patient-button-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
-  #section-followups .patient-button-card:nth-child(3n){border-right:1px solid var(--border);}
-  #section-followups .patient-button-card:nth-child(2n){border-right:none;}
-  #section-followups .patient-button-card:nth-last-child(-n+2){border-bottom:1px solid var(--border);}
-  #section-followups .patient-button-card:last-child{border-bottom:none;}
+#section-followups .patient-button-card::after{
+  content:'';
+  position:absolute;
+  right:-28px;
+  bottom:-34px;
+  width:86px;
+  height:86px;
+  border-radius:50%;
+  background:rgba(20,184,166,.08);
+  pointer-events:none;
+}
+#section-followups .patient-button-card:hover{
+  transform:translateY(-2px);
+  box-shadow:0 10px 26px rgba(15,38,56,.12);
+  border-color:#99f6e4;
+  background:linear-gradient(180deg,#ffffff 0%,#effdf9 100%);
+}
+#section-followups .patient-button-card:focus-visible{
+  outline:3px solid rgba(20,184,166,.34);
+  outline-offset:3px;
+}
+#section-followups .patient-button-card .command-icon{
+  width:42px;
+  height:42px;
+  border-radius:13px;
+  margin:0 0 0 2px;
+  flex:0 0 42px;
+  background:linear-gradient(135deg,#0f2638,#0f766e);
+  color:#ffffff;
+  box-shadow:0 8px 18px rgba(15,38,56,.16);
+  position:relative;
+  z-index:1;
+}
+#section-followups .patient-button-card .command-icon svg{
+  width:22px;
+  height:22px;
+  stroke-width:2;
+}
+#section-followups .patient-button-card h3{
+  font-size:14px;
+  font-weight:950;
+  line-height:1.18;
+  text-align:left;
+  white-space:normal;
+  color:var(--navy);
+  letter-spacing:-.1px;
+  position:relative;
+  z-index:1;
+}
+#section-followups .patient-button-card:nth-child(2)::before{background:linear-gradient(180deg,#2563eb,#0f766e);}
+#section-followups .patient-button-card:nth-child(3)::before{background:linear-gradient(180deg,#6d28d9,#0f2638);}
+#section-followups .patient-button-card:nth-child(4)::before{background:linear-gradient(180deg,#0f766e,#0f2638);}
+#section-followups .patient-button-card:nth-child(5)::before{background:linear-gradient(180deg,#b45309,#c2413b);}
+#section-followups .patient-button-card:nth-child(5) .command-icon{background:linear-gradient(135deg,#7c2d12,#c2413b);}
+@media(max-width:1180px){
+  #section-followups .patient-button-grid{grid-template-columns:repeat(3,minmax(0,1fr));}
+}
+@media(max-width:820px){
+  #section-followups .patient-button-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
+  #section-followups .patient-button-card{min-height:72px;padding:14px;}
 }
 @media(max-width:520px){
   #section-followups .patient-button-grid{grid-template-columns:1fr;}
-  #section-followups .patient-button-card{border-right:none!important;border-bottom:1px solid var(--border)!important;}
-  #section-followups .patient-button-card:last-child{border-bottom:none!important;}
+  #section-followups .patient-button-card{min-height:68px;}
 }
 
 </style>
