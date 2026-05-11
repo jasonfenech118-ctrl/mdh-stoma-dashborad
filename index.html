@@ -855,14 +855,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 
 
 
-/* v46 — Follow-Ups page only: compact tab-style navigation */
+/* v48 — Follow-Ups page only: horizontal tab-style buttons */
 #section-followups .patient-button-section{
   width:100%;
   margin-top:10px;
 }
 #section-followups .patient-button-grid{
   display:grid;
-  grid-template-columns:repeat(5,minmax(145px,1fr));
+  grid-template-columns:repeat(5,minmax(155px,1fr));
   gap:0;
   width:100%;
   margin:14px 0 22px;
@@ -874,17 +874,18 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 }
 #section-followups .patient-button-card{
   width:100%;
-  min-height:72px;
-  padding:14px 16px;
+  min-height:64px;
+  padding:13px 15px;
   border:none;
   border-right:1px solid var(--border);
   border-radius:0;
   box-shadow:none;
   background:#ffffff;
-  justify-content:center;
-  flex-direction:column;
-  gap:8px;
-  text-align:center;
+  justify-content:flex-start;
+  flex-direction:row;
+  gap:10px;
+  text-align:left;
+  white-space:nowrap;
 }
 #section-followups .patient-button-card:last-child{border-right:none;}
 #section-followups .patient-button-card:hover{
@@ -897,7 +898,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   width:34px;
   height:34px;
   border-radius:10px;
-  margin:0 auto;
+  margin:0;
+  flex:0 0 34px;
 }
 #section-followups .patient-button-card .command-icon svg{
   width:18px;
@@ -905,17 +907,27 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 }
 #section-followups .patient-button-card h3{
   font-size:13px;
-  line-height:1.1;
-  text-align:center;
+  line-height:1.15;
+  text-align:left;
+  white-space:normal;
 }
-@media(max-width:900px){
-  #section-followups .patient-button-grid{grid-template-columns:repeat(2,minmax(0,1fr));border-radius:14px;}
+@media(max-width:1050px){
+  #section-followups .patient-button-grid{grid-template-columns:repeat(3,minmax(0,1fr));border-radius:14px;}
   #section-followups .patient-button-card{border-right:1px solid var(--border);border-bottom:1px solid var(--border);}
-  #section-followups .patient-button-card:nth-child(2n){border-right:none;}
+  #section-followups .patient-button-card:nth-child(3n){border-right:none;}
+  #section-followups .patient-button-card:nth-last-child(-n+2){border-bottom:none;}
 }
-@media(max-width:560px){
+@media(max-width:720px){
+  #section-followups .patient-button-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+  #section-followups .patient-button-card:nth-child(3n){border-right:1px solid var(--border);}
+  #section-followups .patient-button-card:nth-child(2n){border-right:none;}
+  #section-followups .patient-button-card:nth-last-child(-n+2){border-bottom:1px solid var(--border);}
+  #section-followups .patient-button-card:last-child{border-bottom:none;}
+}
+@media(max-width:520px){
   #section-followups .patient-button-grid{grid-template-columns:1fr;}
-  #section-followups .patient-button-card{border-right:none!important;}
+  #section-followups .patient-button-card{border-right:none!important;border-bottom:1px solid var(--border)!important;}
+  #section-followups .patient-button-card:last-child{border-bottom:none!important;}
 }
 
 </style>
