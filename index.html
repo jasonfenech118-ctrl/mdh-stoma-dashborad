@@ -972,6 +972,120 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   #section-followups .patient-button-card h3{text-align:left;}
 }
 
+
+/* v52 — Follow-Up Centre: force one straight, centred, longitudinal button column */
+#section-followups .patient-button-section{
+  width:100% !important;
+  margin:16px auto 0 !important;
+  display:flex !important;
+  justify-content:center !important;
+  align-items:flex-start !important;
+}
+#section-followups .patient-button-grid{
+  display:grid !important;
+  grid-template-columns:minmax(320px,1100px) !important;
+  gap:16px !important;
+  width:100% !important;
+  max-width:1100px !important;
+  margin:14px auto 28px !important;
+  padding:0 6px !important;
+}
+#section-followups .patient-button-card{
+  width:100% !important;
+  height:78px !important;
+  min-height:78px !important;
+  max-width:1100px !important;
+  margin:0 auto !important;
+  padding:0 26px !important;
+  display:grid !important;
+  grid-template-columns:64px minmax(0,1fr) 64px !important;
+  align-items:center !important;
+  justify-content:stretch !important;
+  justify-items:center !important;
+  gap:0 !important;
+  text-align:center !important;
+  border-radius:18px !important;
+  border:1px solid rgba(15,38,56,.14) !important;
+  background:linear-gradient(135deg,#ffffff 0%,#f8fbfc 62%,#eefbf8 100%) !important;
+  box-shadow:0 8px 24px rgba(15,38,56,.08) !important;
+  position:relative !important;
+  overflow:hidden !important;
+}
+#section-followups .patient-button-card::before{
+  content:'' !important;
+  position:absolute !important;
+  left:0 !important;
+  top:0 !important;
+  bottom:0 !important;
+  width:7px !important;
+  background:linear-gradient(180deg,var(--teal2),var(--teal)) !important;
+}
+#section-followups .patient-button-card::after{
+  content:'' !important;
+  position:absolute !important;
+  right:-42px !important;
+  bottom:-54px !important;
+  width:130px !important;
+  height:130px !important;
+  border-radius:50% !important;
+  background:rgba(20,184,166,.075) !important;
+  pointer-events:none !important;
+}
+#section-followups .patient-button-card:hover{
+  transform:translateY(-1px) !important;
+  box-shadow:0 14px 32px rgba(15,38,56,.13) !important;
+  border-color:#99f6e4 !important;
+}
+#section-followups .patient-button-card .command-icon{
+  grid-column:1 !important;
+  grid-row:1 !important;
+  justify-self:center !important;
+  align-self:center !important;
+  width:46px !important;
+  height:46px !important;
+  min-width:46px !important;
+  flex:0 0 46px !important;
+  margin:0 !important;
+  border-radius:14px !important;
+  background:linear-gradient(135deg,#0f2638,#0f766e) !important;
+  color:#ffffff !important;
+  box-shadow:0 9px 20px rgba(15,38,56,.18) !important;
+  position:relative !important;
+  z-index:1 !important;
+}
+#section-followups .patient-button-card > span:last-child{
+  grid-column:2 !important;
+  grid-row:1 !important;
+  width:100% !important;
+  justify-self:stretch !important;
+  align-self:center !important;
+  text-align:center !important;
+  position:relative !important;
+  z-index:1 !important;
+}
+#section-followups .patient-button-card h3{
+  margin:0 !important;
+  width:100% !important;
+  text-align:center !important;
+  font-size:16px !important;
+  font-weight:950 !important;
+  line-height:1.2 !important;
+  color:var(--navy) !important;
+  letter-spacing:-.1px !important;
+}
+#section-followups .patient-button-card:nth-child(2)::before{background:linear-gradient(180deg,#2563eb,#0f766e) !important;}
+#section-followups .patient-button-card:nth-child(3)::before{background:linear-gradient(180deg,#6d28d9,#0f2638) !important;}
+#section-followups .patient-button-card:nth-child(4)::before{background:linear-gradient(180deg,#0f766e,#0f2638) !important;}
+#section-followups .patient-button-card:nth-child(5)::before{background:linear-gradient(180deg,#b45309,#c2413b) !important;}
+#section-followups .patient-button-card:nth-child(5) .command-icon{background:linear-gradient(135deg,#7c2d12,#c2413b) !important;}
+@media(max-width:760px){
+  #section-followups .patient-button-grid{grid-template-columns:minmax(0,1fr) !important;gap:12px !important;padding:0 !important;}
+  #section-followups .patient-button-card{height:72px !important;min-height:72px !important;grid-template-columns:54px minmax(0,1fr) 20px !important;padding:0 14px !important;border-radius:16px !important;}
+  #section-followups .patient-button-card .command-icon{width:42px !important;height:42px !important;min-width:42px !important;}
+  #section-followups .patient-button-card h3{font-size:15px !important;text-align:left !important;}
+  #section-followups .patient-button-card > span:last-child{text-align:left !important;}
+}
+
 </style>
 </head>
 <body>
@@ -1319,23 +1433,23 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 
       <div class="patient-button-section">
         <div class="patient-button-grid">
-          <button class="patient-button-card" onclick="switchSection('appointments',null)">
+          <button type="button" class="patient-button-card" onclick="switchSection('appointments',null)">
             <span class="command-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/></svg></span>
             <span><h3>Patient Appointments</h3></span>
           </button>
-          <button class="patient-button-card" onclick="openAppointmentOutcomesHub()">
+          <button type="button" class="patient-button-card" onclick="openAppointmentOutcomesHub()">
             <span class="command-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-5"/><path d="M12 16V8"/><path d="M16 16v-7"/><path d="M20 6l-4 4-3-3-5 5"/></svg></span>
             <span><h3>Appointment Outcomes</h3></span>
           </button>
-          <button class="patient-button-card" onclick="switchSection('staff-audit',null)">
+          <button type="button" class="patient-button-card" onclick="switchSection('staff-audit',null)">
             <span class="command-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M17 11h5"/><path d="M19.5 8.5v5"/></svg></span>
             <span><h3>Staff Audit</h3></span>
           </button>
-          <button class="patient-button-card" onclick="switchSection('clinic-audit',null)">
+          <button type="button" class="patient-button-card" onclick="switchSection('clinic-audit',null)">
             <span class="command-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="M8 14h8"/><path d="M8 18h5"/></svg></span>
             <span><h3>Clinic Audit</h3></span>
           </button>
-          <button class="patient-button-card" onclick="openDntuPatientView()">
+          <button type="button" class="patient-button-card" onclick="openDntuPatientView()">
             <span class="command-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></span>
             <span><h3>DNTU</h3></span>
           </button>
