@@ -1577,6 +1577,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 #section-home > .command-grid:first-of-type .menu-kpi{--menu-strip:#d97706;--menu-icon:linear-gradient(135deg,#b45309,#fbbf24);--menu-soft-a:rgba(217,119,6,.34);--menu-soft-b:rgba(251,191,36,.20);--menu-soft-c:#fffbeb;--menu-orb:rgba(217,119,6,.13);--menu-border:#fde68a;}
 #section-home > .command-grid:first-of-type .menu-discharge{--menu-strip:#dc2626;--menu-icon:linear-gradient(135deg,#991b1b,#fb7185);--menu-soft-a:rgba(220,38,38,.31);--menu-soft-b:rgba(251,113,133,.17);--menu-soft-c:#fff1f2;--menu-orb:rgba(220,38,38,.11);--menu-border:#fecdd3;}
 #section-home > .command-grid:first-of-type .menu-audit{--menu-strip:#475569;--menu-icon:linear-gradient(135deg,#334155,#06b6d4);--menu-soft-a:rgba(71,85,105,.32);--menu-soft-b:rgba(6,182,212,.16);--menu-soft-c:#ecfeff;--menu-orb:rgba(6,182,212,.12);--menu-border:#a5f3fc;}
+#section-home .menu-patient-outcomes{--menu-strip:#0369a1;--menu-icon:linear-gradient(135deg,#0369a1,#38bdf8);--menu-soft-a:rgba(3,105,161,.38);--menu-soft-b:rgba(56,189,248,.18);--menu-soft-c:#f0f9ff;--menu-orb:rgba(3,105,161,.14);--menu-border:#7dd3fc;}
 
 /* Patients section: teal family for internal command buttons */
 #section-patients .patient-button-card,
@@ -1673,7 +1674,26 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 @media(max-width:900px){.roster-subtab-bar{grid-template-columns:1fr;gap:10px}.roster-subtab{min-height:62px;font-size:14px;justify-content:flex-start;padding:0 18px}.roster-subtab-icon{width:38px;height:38px;}}
 
 
-/* v63 — Follow-Up Centre tabs instead of large buttons */
+/* v64 — DNTU standalone section styles */
+.dntu-controls{background:white;border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:14px;box-shadow:0 2px 6px rgba(0,0,0,.04);}
+.dntu-control-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:8px;}
+.dntu-btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+.dntu-btn{border:1.5px solid var(--border);background:white;color:var(--navy);border-radius:9px;padding:8px 13px;font-size:12px;font-weight:800;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.dntu-btn:hover{border-color:var(--teal);color:var(--teal);}
+.dntu-btn.active{background:var(--teal);border-color:var(--teal);color:white;box-shadow:0 2px 7px rgba(13,115,119,.25);}
+.dntu-note{font-size:11px;color:var(--muted);line-height:1.4;margin-top:2px;}
+.dntu-table-wrap{background:white;border:1px solid var(--border);border-radius:12px;box-shadow:0 2px 6px rgba(0,0,0,.05);overflow:hidden;}
+.dntu-streak{display:inline-flex;align-items:center;justify-content:center;min-width:34px;padding:4px 9px;border-radius:14px;font-size:11px;font-weight:900;background:#fff3cd;color:#856404;}
+.dntu-streak.paused{background:#f8d7da;color:#721c24;}
+.dntu-streak.awaiting{background:#e8eaf6;color:#3949ab;}
+
+/* v64 — grouped menu labels */
+.command-group-box{background:#f8fafc;border:1px solid var(--border);border-radius:18px;padding:16px 16px 4px;margin-bottom:20px;}
+.command-group-label{font-size:10px;font-weight:900;letter-spacing:.9px;text-transform:uppercase;color:var(--muted);margin-bottom:12px;padding-left:2px;}
+.btn-refresh{padding:7px 16px;background:#f0f2f5;border:1px solid var(--border);border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--navy);display:inline-flex;align-items:center;gap:6px;transition:all .16s;}
+.btn-refresh:hover{background:#e8ecf0;border-color:#c8d0d8;}
+.section-refresh-bar{display:flex;align-items:center;justify-content:flex-end;margin-bottom:12px;}
+
 #section-followups .followup-tabs-title{margin-bottom:12px!important;}
 .followup-tabs-shell{
   width:100%;
@@ -2041,7 +2061,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
         </div>
       </div>
 
-      <div class="command-grid">
+      <!-- GROUP: Clinical Management -->
+      <div class="command-subhead" style="margin-top:4px;">Clinical Management</div>
+      <div class="command-grid" style="grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin:10px 0 18px;">
         <div class="command-card primary menu-card menu-patients" onclick="switchSection('patients',null)">
           <div class="command-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
           <div><h3>Patients</h3></div>
@@ -2050,21 +2072,30 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
           <div class="command-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="m8 16 2 2 5-5"/><path d="M17 17h2"/></svg></div>
           <div><h3>Follow-Ups</h3></div>
         </div>
-        <div class="command-card primary menu-card menu-roster" onclick="switchSection('roster',null)">
-          <div class="command-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="M8 15h8"/><path d="M8 18h5"/></svg></div>
-          <div><h3>Rosters</h3></div>
+        <div class="command-card primary menu-card menu-patient-outcomes" onclick="switchSection('patient-outcomes',null)" style="--menu-strip:#0369a1;--menu-icon:linear-gradient(135deg,#0369a1,#38bdf8);--menu-soft-a:rgba(3,105,161,.38);--menu-soft-b:rgba(56,189,248,.18);--menu-soft-c:#f0f9ff;--menu-orb:rgba(3,105,161,.14);--menu-border:#7dd3fc;">
+          <div class="command-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m8 12 3 3 5-6"/></svg></div>
+          <div><h3>Patient Outcomes</h3></div>
         </div>
         <div class="command-card primary menu-card menu-appliances" onclick="switchSection('appliances',null)">
           <div class="command-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="3"/><path d="M9 7h6"/><path d="M9 11h6"/><path d="M9 15h4"/><path d="M17 17l2 2"/><path d="M19 17l-2 2"/></svg></div>
           <div><h3>Appliances</h3></div>
         </div>
-        <div class="command-card primary menu-card menu-kpi" onclick="switchSection('kpi-dashboard',null)">
-          <div class="command-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-5"/><path d="M12 16V8"/><path d="M16 16v-7"/><path d="M20 6l-4 4-3-3-5 5"/></svg></div>
-          <div><h3>KPIs</h3></div>
-        </div>
         <div class="command-card primary menu-card menu-discharge" onclick="switchSection('discharge',null)">
           <div class="command-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8"/><path d="M8 17h6"/><path d="M8 9h2"/></svg></div>
           <div><h3>Discharge Letters</h3></div>
+        </div>
+      </div>
+
+      <!-- GROUP: Staffing & Administration -->
+      <div class="command-subhead">Staffing &amp; Administration</div>
+      <div class="command-grid" style="grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin:10px 0 18px;">
+        <div class="command-card primary menu-card menu-roster" onclick="switchSection('roster',null)">
+          <div class="command-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="M8 15h8"/><path d="M8 18h5"/></svg></div>
+          <div><h3>Rosters</h3></div>
+        </div>
+        <div class="command-card primary menu-card menu-kpi" onclick="switchSection('kpi-dashboard',null)">
+          <div class="command-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-5"/><path d="M12 16V8"/><path d="M16 16v-7"/><path d="M20 6l-4 4-3-3-5 5"/></svg></div>
+          <div><h3>KPIs</h3></div>
         </div>
         <div class="command-card primary menu-card menu-audit" onclick="switchSection('audit-trail',null)">
           <div class="command-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M3 4h18"/><path d="M3 10h18"/><path d="M3 16h10"/><path d="M7 4v16"/><circle cx="17" cy="17" r="3"/><path d="m20 20-1.6-1.6"/></svg></div>
@@ -2072,14 +2103,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
         </div>
       </div>
 
-      <div class="command-subhead">Overview</div>
-      <div class="command-summary">
-        <div class="command-stat"><div class="n" id="tile-active-patients">—</div><div class="l">Active Patients</div></div>
-        <div class="command-stat"><div class="n" id="tile-new-patients-year">—</div><div class="l">New This Year</div></div>
-        <div class="command-stat"><div class="n" id="tile-colostomy">—</div><div class="l">Colostomy</div></div>
-        <div class="command-stat"><div class="n" id="tile-ileostomy">—</div><div class="l">Ileostomy</div></div>
-        <div class="command-stat"><div class="n" id="tile-urostomy">—</div><div class="l">Urostomy</div></div>
-      </div>
+
 
       <div class="command-subhead" style="margin-top:16px;">My Patients / Our Patients</div>
       <div class="command-grid">
@@ -2120,6 +2144,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     <div class="section" id="section-patients">
       <div class="phdr patient-page-title">
         <div><h2>Patient Centre</h2></div>
+        <button class="btn-refresh" onclick="loadPatients();loadPatientCommandCounts();">↻ Refresh</button>
       </div>
 
       <div class="patient-button-grid">
@@ -2145,30 +2170,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
         </div>
       </div>
 
-      <div class="patient-button-heading">Patient Outcomes</div>
-      <div class="patient-button-grid">
-        <div class="patient-button-card" onclick="setPatientCommandFilter('active')">
-          <div class="command-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="m8 12 3 3 5-6"/><circle cx="12" cy="12" r="10"/></svg></div>
-          <div><h3>Active Patients</h3></div>
-        </div>
-        <div class="patient-button-card" onclick="setPatientCommandFilter('relocated')">
-          <div class="command-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M21 10c0 7-9 12-9 12S3 17 3 10a9 9 0 1 1 18 0Z"/><circle cx="12" cy="10" r="3"/></svg></div>
-          <div><h3>Relocated Overseas</h3></div>
-        </div>
-        <div class="patient-button-card" onclick="setPatientCommandFilter('deceased')">
-          <div class="command-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 2v20"/><path d="M5 9h14"/><path d="M6 22h12"/></svg></div>
-          <div><h3>Deceased</h3></div>
-        </div>
-        <div class="patient-button-card" onclick="setPatientCommandFilter('reversal')">
-          <div class="command-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 21v-5h5"/></svg></div>
-          <div><h3>Reversed</h3></div>
-        </div>
-        <div class="patient-button-card" onclick="setPatientCommandFilter('gozo')">
-          <div class="command-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M2 20h20"/><path d="M4 17h16"/><path d="M6 14h12"/><path d="M8 11h8"/><path d="M12 4v7"/><path d="m9 7 3-3 3 3"/></svg></div>
-          <div><h3>Discharged to Gozo</h3></div>
-        </div>
-      </div>
-
       <input type="hidden" id="pt-command-filter" value=""/>
       <input type="hidden" id="pt-nurse-filter" value=""/>
       <input type="hidden" id="pt-search" value=""/>
@@ -2188,7 +2189,51 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     </div>
 
     <!-- ══════════════════════════════════ -->
-    <!-- PATIENT PROFILE (individual) -->
+    <!-- PATIENT OUTCOMES (new top-level) -->
+    <!-- ══════════════════════════════════ -->
+    <div class="section" id="section-patient-outcomes">
+      <div class="phdr patient-page-title">
+        <div><h2>Patient Outcomes</h2><p>Lifecycle status views for all patients</p></div>
+        <button class="btn-refresh" onclick="loadPatients();loadPatientCommandCounts();">↻ Refresh</button>
+      </div>
+
+      <div class="patient-button-grid">
+        <div class="patient-button-card" onclick="switchSection('patients',null);setTimeout(()=>setPatientCommandFilter('active'),60);">
+          <div class="command-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="m8 12 3 3 5-6"/><circle cx="12" cy="12" r="10"/></svg></div>
+          <div><h3>Active Patients</h3></div>
+        </div>
+        <div class="patient-button-card" onclick="switchSection('patients',null);setTimeout(()=>setPatientCommandFilter('inpatient'),60);">
+          <div class="command-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-7h6v7"/></svg></div>
+          <div><h3>Inpatients</h3></div>
+        </div>
+        <div class="patient-button-card" onclick="switchSection('patients',null);setTimeout(()=>setPatientCommandFilter('outpatient'),60);">
+          <div class="command-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/></svg></div>
+          <div><h3>Outpatients</h3></div>
+        </div>
+        <div class="patient-button-card" onclick="switchSection('patients',null);setTimeout(()=>setPatientCommandFilter('handover'),60);">
+          <div class="command-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 7h11"/><path d="m12 4 3 3-3 3"/><path d="M20 17H9"/><path d="m12 14-3 3 3 3"/></svg></div>
+          <div><h3>Handover</h3></div>
+        </div>
+        <div class="patient-button-card" onclick="switchSection('patients',null);setTimeout(()=>setPatientCommandFilter('reversed'),60);">
+          <div class="command-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 21v-5h5"/></svg></div>
+          <div><h3>Reversed</h3></div>
+        </div>
+        <div class="patient-button-card" onclick="switchSection('patients',null);setTimeout(()=>setPatientCommandFilter('deceased'),60);">
+          <div class="command-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 2v20"/><path d="M5 9h14"/><path d="M6 22h12"/></svg></div>
+          <div><h3>Deceased</h3></div>
+        </div>
+        <div class="patient-button-card" onclick="switchSection('patients',null);setTimeout(()=>setPatientCommandFilter('relocated'),60);">
+          <div class="command-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M21 10c0 7-9 12-9 12S3 17 3 10a9 9 0 1 1 18 0Z"/><circle cx="12" cy="10" r="3"/></svg></div>
+          <div><h3>Relocated Overseas</h3></div>
+        </div>
+        <div class="patient-button-card" onclick="switchSection('patients',null);setTimeout(()=>setPatientCommandFilter('gozo'),60);">
+          <div class="command-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M2 20h20"/><path d="M4 17h16"/><path d="M6 14h12"/><path d="M8 11h8"/><path d="M12 4v7"/><path d="m9 7 3-3 3 3"/></svg></div>
+          <div><h3>Discharged to Gozo</h3></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════ -->
     <!-- ══════════════════════════════════ -->
     <div class="section" id="section-patient-detail">
       <div class="phdr">
@@ -2296,7 +2341,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     <div class="section" id="section-appliances">
       <div class="phdr">
         <div><h2>Appliances</h2><p>Current and previous appliance/product records</p></div>
-        <button class="btn-add" onclick="openAddApplianceModal()">+ Add Appliance</button>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button class="btn-refresh" onclick="loadAppliances();">↻ Refresh</button>
+          <button class="btn-add" onclick="openAddApplianceModal()">+ Add Appliance</button>
+        </div>
       </div>
       <div class="filter-row">
         <label>Patient:</label>
@@ -2318,7 +2366,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     <div class="section" id="section-discharge">
       <div class="phdr">
         <div><h2>Discharge Planning</h2><p>Discharge readiness, supplies, community referral, and follow-up planning</p></div>
-        <button class="btn-add" onclick="openAddDischargeModal()">+ Add Discharge Plan</button>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button class="btn-refresh" onclick="loadDischargePlans();">↻ Refresh</button>
+          <button class="btn-add" onclick="openAddDischargeModal()">+ Add Discharge Plan</button>
+        </div>
       </div>
       <div class="filter-row">
         <label>Patient:</label>
@@ -2340,6 +2391,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     <div class="section" id="section-followups">
       <div class="phdr patient-page-title followup-tabs-title">
         <div><h2>Follow-Up Centre</h2></div>
+        <button class="btn-refresh" onclick="loadFollowups();">↻ Refresh</button>
       </div>
 
       <div class="followup-tabs-shell" aria-label="Follow-Up Centre tabs">
@@ -2360,7 +2412,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
             <span class="followup-tab-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="M8 14h8"/><path d="M8 18h5"/></svg></span>
             <span>Clinic Audit</span>
           </button>
-          <button type="button" class="followup-tab tab-dntu" role="tab" onclick="openDntuPatientView()">
+          <button type="button" class="followup-tab tab-dntu" role="tab" onclick="switchSection('dntu',null)">
             <span class="followup-tab-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></span>
             <span>DNTU</span>
           </button>
@@ -2376,7 +2428,36 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     </div>
 
     <!-- ══════════════════════════════════ -->
-    <!-- ROSTER (existing) -->
+    <!-- DNTU (standalone section)         -->
+    <!-- ══════════════════════════════════ -->
+    <div class="section" id="section-dntu">
+      <div class="phdr"><div><h2>DNTU</h2><p>Patient-grouped Did Not Turn Up tracking</p></div><button class="btn-refresh" onclick="loadDntuPolicy();">↻ Refresh</button></div>
+      <div class="srow" id="dntu-stats"></div>
+      <div class="dntu-controls">
+        <div class="dntu-control-title">DNTU selection</div>
+        <div class="dntu-btn-row">
+          <button id="dntu-filter-1" class="dntu-btn active" onclick="setDntuFilter('1')">1 DNTU</button>
+          <button id="dntu-filter-2" class="dntu-btn" onclick="setDntuFilter('2')">2 DNTU</button>
+          <button id="dntu-filter-3" class="dntu-btn" onclick="setDntuFilter('3')">3 DNTU</button>
+        </div>
+        <div class="dntu-control-title">Follow-up owner filters</div>
+        <div class="dntu-btn-row" style="margin-bottom:4px;">
+          <button id="dntu-owner-jason" class="dntu-btn" onclick="setDntuOwner('Jason')">Jason</button>
+          <button id="dntu-owner-lorraine" class="dntu-btn" onclick="setDntuOwner('Lorraine')">Lorraine</button>
+          <button id="dntu-owner-jacqueline" class="dntu-btn" onclick="setDntuOwner('Jacqueline')">Jacqueline</button>
+          <button id="dntu-owner-common" class="dntu-btn" onclick="setDntuOwner('Common')">Common</button>
+        </div>
+        <div class="dntu-note">Click an owner button again to clear that owner filter. Paused and Awaiting Feedback are managed separately in Appointment Outcomes.</div>
+      </div>
+      <div class="dntu-table-wrap">
+        <table class="dt">
+          <thead><tr><th>Patient Name and Surname</th><th>ID Card Number</th><th>Phone Number</th><th>Current DNTU Streak</th><th>Last DNTU Date</th></tr></thead>
+          <tbody id="dntu-tbody"><tr><td colspan="5" class="empty">Loading DNTU patients...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════ -->
     <!-- ══════════════════════════════════ -->
     <div class="section" id="section-roster">
       <div class="roster-hub-shell">
@@ -2385,6 +2466,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
             <h2>Roster Centre</h2>
             <p>Monthly roster, change of duty, and staff audit in one roster workspace</p>
           </div>
+          <button class="btn-refresh" onclick="if(window.currentRosterSubtab==='monthly'){loadStaff().then(renderRoster);}else if(window.currentRosterSubtab==='cod'){loadCOD();}else{loadStaffAudit();}">↻ Refresh</button>
         </div>
         <div class="roster-subtab-bar" role="tablist" aria-label="Roster tabs">
           <button type="button" class="roster-subtab active" id="roster-subtab-monthly" onclick="showRosterSubtab('monthly')">
@@ -2451,6 +2533,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     <!-- KPI DASHBOARD -->
     <!-- ══════════════════════════════════ -->
     <div class="section" id="section-kpi-dashboard">
+      <div class="section-refresh-bar"><button class="btn-refresh" onclick="loadKpiDashboard();">↻ Refresh</button></div>
       <!-- KPI page intentionally emptied for the next safe build step. -->
     </div>
 
@@ -2458,6 +2541,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     <!-- AUDIT TRAIL (existing) -->
     <!-- ══════════════════════════════════ -->
     <div class="section" id="section-audit-trail">
+      <div class="section-refresh-bar"><button class="btn-refresh" onclick="loadAuditTrail();">↻ Refresh</button></div>
       <div id="page-audit-trail-inner"></div>
     </div>
 
@@ -3867,12 +3951,14 @@ function switchSection(name, navEl, options={}){
   // Load data for each section
   if(name==='home')loadHomeDashboard();
   if(name==='patients'){loadPatients();loadPatientCommandCounts();}
+  if(name==='patient-outcomes'){loadPatients();loadPatientCommandCounts();}
   if(name==='clinical-reviews'){populatePatientDropdowns();loadReviews();}
   if(name==='teaching'){populatePatientDropdowns();loadTeaching();}
   if(name==='referrals'){populatePatientDropdowns();loadReferrals();}
   if(name==='appliances')loadAppliances();
   if(name==='discharge')loadDischargePlans();
   if(name==='followups'){loadFollowups();setTimeout(forceFollowupButtonsStraight,0);setTimeout(forceFollowupButtonsStraight,120);}
+  if(name==='dntu')loadDntuPolicy();
   if(name==='kpi-dashboard')loadKpiDashboard();
   loadLegacySectionData(name);
   if(name==='roster'){
@@ -3893,10 +3979,122 @@ function openAppointmentOutcomesHub(){
 }
 
 function openDntuPatientView(){
-  switchSection('patients',null);
-  setTimeout(()=>{
-    if(typeof setPatientCommandFilter==='function')setPatientCommandFilter('dntu');
-  },80);
+  switchSection('dntu',null);
+}
+
+// ══════════════════════════════════════════════════════
+// DNTU STANDALONE LOGIC
+// ══════════════════════════════════════════════════════
+let dntuRows=[];
+let dntuFilter='1';
+let dntuOwner='all';
+
+function setDntuFilter(value){dntuFilter=value;renderDntuPolicy();}
+function setDntuOwner(owner){dntuOwner=(dntuOwner===owner)?'all':owner;renderDntuPolicy();}
+function updateDntuButtons(){
+  ['1','2','3'].forEach(v=>document.getElementById('dntu-filter-'+v)?.classList.toggle('active',dntuFilter===v));
+  ['Jason','Lorraine','Jacqueline','Common'].forEach(o=>document.getElementById('dntu-owner-'+o.toLowerCase())?.classList.toggle('active',dntuOwner===o));
+}
+function dntuOwnerForGroup(rows){
+  const ordered=[...rows].sort((a,b)=>String(b.appt_date||'').localeCompare(String(a.appt_date||''))||String(b.appt_slot||'').localeCompare(String(a.appt_slot||'')));
+  for(const a of ordered){
+    const n=String(a.staff?.full_name||'').toLowerCase();
+    if(n.includes('jason'))return 'Jason';
+    if(n.includes('jacqueline')||n.includes('jacklyn'))return 'Jacqueline';
+    if(n.includes('lorraine'))return 'Lorraine';
+  }
+  return 'Common';
+}
+function calculateCurrentDntuStreak(rows){
+  const completed=[...rows]
+    .filter(a=>a.status!=='booked')
+    .sort((a,b)=>String(b.appt_date||'').localeCompare(String(a.appt_date||''))||String(b.appt_slot||'').localeCompare(String(a.appt_slot||'')));
+  let streak=0;
+  for(const a of completed){
+    if(a.status==='did_not_attend')streak++;
+    else break;
+  }
+  return streak;
+}
+function latestDntuAppointment(rows){
+  return [...rows]
+    .filter(a=>a.status==='did_not_attend')
+    .sort((a,b)=>String(b.appt_date||'').localeCompare(String(a.appt_date||''))||String(b.appt_slot||'').localeCompare(String(a.appt_slot||'')))[0]||null;
+}
+async function loadDntuPolicy(){
+  const tbody=document.getElementById('dntu-tbody');
+  if(tbody)tbody.innerHTML='<tr><td colspan="5" class="empty">Loading DNTU patients...</td></tr>';
+  const{data:raw,error}=await SB.from('appointments').select('*').order('appt_date',{ascending:false}).order('appt_slot',{ascending:false});
+  if(error){console.error('DNTU load error:',error);if(tbody)tbody.innerHTML='<tr><td colspan="5" class="empty">Could not load DNTU records.</td></tr>';return;}
+  const appts=await enrichAppointments(raw||[]);
+  const groups={};
+  appts.forEach(a=>{
+    const key=a.patient_id||a.patients?.id_card||a.id;
+    if(!groups[key])groups[key]=[];
+    groups[key].push(a);
+  });
+  dntuRows=Object.values(groups).map(rows=>{
+    const latestDntu=latestDntuAppointment(rows);
+    const sample=latestDntu||rows[0]||{};
+    const streak=calculateCurrentDntuStreak(rows);
+    return {
+      patientId:sample.patient_id,
+      patientName:clinicPatientName(sample),
+      idCard:sample.patients?.id_card||'',
+      phone:sample.patients?.phone_number||'',
+      streak,
+      lastDntuDate:latestDntu?.appt_date||'',
+      owner:dntuOwnerForGroup(rows),
+      latestDntuId:latestDntu?.id||null,
+    };
+  }).filter(r=>r.streak>0).sort((a,b)=>b.streak-a.streak||String(b.lastDntuDate).localeCompare(String(a.lastDntuDate))||a.patientName.localeCompare(b.patientName));
+  renderDntuPolicy();
+}
+function renderDntuPolicy(){
+  updateDntuButtons();
+  const all=dntuRows||[];
+  const one=all.filter(r=>r.streak===1).length;
+  const two=all.filter(r=>r.streak===2).length;
+  const threePlus=all.filter(r=>r.streak>=3).length;
+  const stats=document.getElementById('dntu-stats');
+  const currentFilterLabel=dntuFilter==='3'?'3+ DNTU':`${dntuFilter} DNTU`;
+  if(stats){stats.innerHTML=`
+    <div class="sbox"><div class="sl">1 DNTU</div><div class="sv">${one}</div><div class="ss">watch</div></div>
+    <div class="sbox"><div class="sl">2 DNTU</div><div class="sv">${two}</div><div class="ss">close watch</div></div>
+    <div class="sbox"><div class="sl">3+ DNTU</div><div class="sv">${threePlus}</div><div class="ss" style="color:var(--orange)">review</div></div>
+    <div class="sbox"><div class="sl">Current Selection</div><div class="sv" style="font-size:24px;">${currentFilterLabel}</div><div class="ss">${dntuOwner==='all'?'all owners':dntuOwner}</div></div>`;}
+  let rows=all.filter(r=>dntuFilter==='3'?r.streak>=3:r.streak===Number(dntuFilter));
+  if(dntuOwner!=='all')rows=rows.filter(r=>r.owner===dntuOwner);
+  const tbody=document.getElementById('dntu-tbody');
+  if(!tbody)return;
+  if(!rows.length){tbody.innerHTML='<tr><td colspan="5" class="empty">No patients match the selected DNTU selection.</td></tr>';return;}
+  tbody.innerHTML=rows.map(r=>`<tr>
+    <td><strong>${htmlSafe(r.patientName)}</strong></td>
+    <td style="font-family:monospace;font-size:12px;">${htmlSafe(r.idCard)}</td>
+    <td>${htmlSafe(r.phone||'—')}</td>
+    <td><span class="dntu-streak">${r.streak}</span></td>
+    <td>${htmlSafe(r.lastDntuDate||'—')}</td>
+  </tr>`).join('');
+}
+async function getPatientCurrentDntuStreak(patientId){
+  if(!patientId)return 0;
+  const{data}=await SB.from('appointments').select('status,appt_date,appt_slot').eq('patient_id',patientId).neq('status','booked').order('appt_date',{ascending:false}).order('appt_slot',{ascending:false});
+  let streak=0;
+  for(const a of(data||[])){
+    if(a.status==='did_not_attend')streak++;
+    else break;
+  }
+  return streak;
+}
+async function checkDntuThresholdForAppointment(apptId){
+  const{data:appt}=await SB.from('appointments').select('patient_id').eq('id',apptId).single();
+  if(!appt?.patient_id)return;
+  const streak=await getPatientCurrentDntuStreak(appt.patient_id);
+  if(streak>=3){
+    const{data:p}=await SB.from('patients').select('first_name,surname,id_card').eq('id',appt.patient_id).single();
+    const name=`${p?.first_name||''} ${p?.surname||''}`.trim()||'This patient';
+    alert(`${name} has reached 3 consecutive DNTUs. DNTU is recorded as an appointment outcome. Paused follow-up status is managed separately in Appointment Outcomes.`);
+  }
 }
 
 // ══════════════════════════════════════════════════════
