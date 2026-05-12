@@ -1507,6 +1507,121 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   #page-appointments .outcome-action-btn{min-width:52px;}
 }
 
+
+
+/* v61 — colourful main menu buttons and matched section button themes */
+#section-home > .command-grid:first-of-type{
+  grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+  gap:16px;
+}
+#section-home > .command-grid:first-of-type .command-card.menu-card{
+  min-height:94px;
+  padding:0 18px;
+  border:1px solid rgba(15,38,56,.12)!important;
+  border-radius:20px;
+  display:grid;
+  grid-template-columns:66px minmax(0,1fr) 40px;
+  align-items:center;
+  justify-items:center;
+  gap:0;
+  text-align:center;
+  color:#0f2638!important;
+  background:linear-gradient(90deg,var(--menu-soft-a) 0%,var(--menu-soft-b) 36%,rgba(255,255,255,.94) 66%,var(--menu-soft-c) 100%)!important;
+  box-shadow:0 10px 28px rgba(15,38,56,.10)!important;
+  overflow:hidden;
+}
+#section-home > .command-grid:first-of-type .command-card.menu-card::before{
+  content:'';
+  position:absolute;
+  left:0;top:0;bottom:0;
+  width:7px;
+  background:var(--menu-strip);
+  border-radius:20px 0 0 20px;
+}
+#section-home > .command-grid:first-of-type .command-card.menu-card::after{
+  right:-38px;bottom:-46px;width:125px;height:125px;
+  background:var(--menu-orb)!important;
+}
+#section-home > .command-grid:first-of-type .command-card.menu-card:hover{
+  transform:translateY(-2px);
+  box-shadow:0 16px 36px rgba(15,38,56,.15)!important;
+  border-color:var(--menu-border)!important;
+}
+#section-home > .command-grid:first-of-type .command-card.menu-card .command-icon{
+  grid-column:1;
+  justify-self:center;
+  width:50px;height:50px;
+  border-radius:15px;
+  background:var(--menu-icon)!important;
+  border:1px solid rgba(255,255,255,.34)!important;
+  color:#fff!important;
+  box-shadow:0 10px 24px rgba(15,38,56,.20)!important;
+  position:relative;z-index:1;
+}
+#section-home > .command-grid:first-of-type .command-card.menu-card h3{
+  grid-column:2;
+  width:100%;
+  color:#0f2638!important;
+  font-size:17px;
+  font-weight:950;
+  line-height:1.15;
+  margin:0;
+  letter-spacing:-.15px;
+  text-align:center;
+  position:relative;z-index:1;
+}
+#section-home > .command-grid:first-of-type .menu-patients{--menu-strip:#0f766e;--menu-icon:linear-gradient(135deg,#0f766e,#14b8a6);--menu-soft-a:rgba(20,184,166,.42);--menu-soft-b:rgba(20,184,166,.20);--menu-soft-c:#e8fffb;--menu-orb:rgba(20,184,166,.16);--menu-border:#99f6e4;}
+#section-home > .command-grid:first-of-type .menu-followups{--menu-strip:#2563eb;--menu-icon:linear-gradient(135deg,#1d4ed8,#38bdf8);--menu-soft-a:rgba(37,99,235,.38);--menu-soft-b:rgba(59,130,246,.18);--menu-soft-c:#eff6ff;--menu-orb:rgba(37,99,235,.14);--menu-border:#bfdbfe;}
+#section-home > .command-grid:first-of-type .menu-roster{--menu-strip:#7c3aed;--menu-icon:linear-gradient(135deg,#5b21b6,#a78bfa);--menu-soft-a:rgba(124,58,237,.34);--menu-soft-b:rgba(167,139,250,.18);--menu-soft-c:#f5f3ff;--menu-orb:rgba(124,58,237,.13);--menu-border:#ddd6fe;}
+#section-home > .command-grid:first-of-type .menu-appliances{--menu-strip:#16a34a;--menu-icon:linear-gradient(135deg,#15803d,#86efac);--menu-soft-a:rgba(22,163,74,.34);--menu-soft-b:rgba(134,239,172,.20);--menu-soft-c:#f0fdf4;--menu-orb:rgba(22,163,74,.13);--menu-border:#bbf7d0;}
+#section-home > .command-grid:first-of-type .menu-kpi{--menu-strip:#d97706;--menu-icon:linear-gradient(135deg,#b45309,#fbbf24);--menu-soft-a:rgba(217,119,6,.34);--menu-soft-b:rgba(251,191,36,.20);--menu-soft-c:#fffbeb;--menu-orb:rgba(217,119,6,.13);--menu-border:#fde68a;}
+#section-home > .command-grid:first-of-type .menu-discharge{--menu-strip:#dc2626;--menu-icon:linear-gradient(135deg,#991b1b,#fb7185);--menu-soft-a:rgba(220,38,38,.31);--menu-soft-b:rgba(251,113,133,.17);--menu-soft-c:#fff1f2;--menu-orb:rgba(220,38,38,.11);--menu-border:#fecdd3;}
+#section-home > .command-grid:first-of-type .menu-audit{--menu-strip:#475569;--menu-icon:linear-gradient(135deg,#334155,#06b6d4);--menu-soft-a:rgba(71,85,105,.32);--menu-soft-b:rgba(6,182,212,.16);--menu-soft-c:#ecfeff;--menu-orb:rgba(6,182,212,.12);--menu-border:#a5f3fc;}
+
+/* Patients section: teal family for internal command buttons */
+#section-patients .patient-button-card,
+#section-patients .patient-action-btn,
+#section-patients .patient-board-btn{
+  border-radius:16px!important;
+  border:1px solid rgba(15,118,110,.18)!important;
+  background:linear-gradient(90deg,rgba(20,184,166,.22) 0%,rgba(20,184,166,.10) 34%,#ffffff 72%,#ecfdf9 100%)!important;
+  box-shadow:0 8px 22px rgba(15,118,110,.08)!important;
+}
+#section-patients .patient-button-card .command-icon,
+#section-patients .patient-action-btn .mini-icon{
+  background:linear-gradient(135deg,#0f766e,#14b8a6)!important;
+  color:#fff!important;
+  border-color:rgba(255,255,255,.28)!important;
+}
+#section-patients .patient-board-btn.active{
+  border-color:#0f766e!important;
+  box-shadow:0 0 0 2px rgba(20,184,166,.16),0 8px 22px rgba(15,118,110,.08)!important;
+}
+
+/* Follow-Up Centre: same button style and same colour family for every button */
+#section-followups .followup-hard-card,
+#section-followups .patient-button-card{
+  border-left:7px solid #2563eb!important;
+  background:linear-gradient(90deg,rgba(37,99,235,.36) 0%,rgba(59,130,246,.18) 32%,rgba(255,255,255,.95) 70%,#eff6ff 100%)!important;
+  border-radius:20px!important;
+  box-shadow:0 10px 28px rgba(15,38,56,.10)!important;
+}
+#section-followups .followup-hard-card .command-icon,
+#section-followups .patient-button-card .command-icon{
+  background:linear-gradient(135deg,#1d4ed8,#38bdf8)!important;
+  color:#fff!important;
+}
+#section-followups .followup-hard-card h3,
+#section-followups .patient-button-card h3{
+  color:#0f2638!important;
+}
+@media(max-width:760px){
+  #section-home > .command-grid:first-of-type{grid-template-columns:1fr;gap:12px;}
+  #section-home > .command-grid:first-of-type .command-card.menu-card{min-height:82px;grid-template-columns:58px minmax(0,1fr) 28px;padding:0 14px;}
+  #section-home > .command-grid:first-of-type .command-card.menu-card .command-icon{width:44px;height:44px;}
+  #section-home > .command-grid:first-of-type .command-card.menu-card h3{font-size:16px;}
+}
+
 </style>
 
 <style>
@@ -1788,29 +1903,33 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
       </div>
 
       <div class="command-grid">
-        <div class="command-card primary" onclick="switchSection('patients',null)">
+        <div class="command-card primary menu-card menu-patients" onclick="switchSection('patients',null)">
           <div class="command-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
           <div><h3>Patients</h3></div>
         </div>
-        <div class="command-card primary" onclick="switchSection('followups',null)">
+        <div class="command-card primary menu-card menu-followups" onclick="switchSection('followups',null)">
           <div class="command-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="m8 16 2 2 5-5"/><path d="M17 17h2"/></svg></div>
           <div><h3>Follow-Ups</h3></div>
         </div>
-        <div class="command-card primary" onclick="switchSection('roster',null)">
+        <div class="command-card primary menu-card menu-roster" onclick="switchSection('roster',null)">
           <div class="command-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="M8 15h8"/><path d="M8 18h5"/></svg></div>
           <div><h3>Rosters</h3></div>
         </div>
-        <div class="command-card primary" onclick="switchSection('appliances',null)">
+        <div class="command-card primary menu-card menu-appliances" onclick="switchSection('appliances',null)">
           <div class="command-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="3"/><path d="M9 7h6"/><path d="M9 11h6"/><path d="M9 15h4"/><path d="M17 17l2 2"/><path d="M19 17l-2 2"/></svg></div>
           <div><h3>Appliances</h3></div>
         </div>
-        <div class="command-card primary" onclick="switchSection('kpi-dashboard',null)">
+        <div class="command-card primary menu-card menu-kpi" onclick="switchSection('kpi-dashboard',null)">
           <div class="command-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-5"/><path d="M12 16V8"/><path d="M16 16v-7"/><path d="M20 6l-4 4-3-3-5 5"/></svg></div>
           <div><h3>KPIs</h3></div>
         </div>
-        <div class="command-card primary" onclick="switchSection('discharge',null)">
+        <div class="command-card primary menu-card menu-discharge" onclick="switchSection('discharge',null)">
           <div class="command-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8"/><path d="M8 17h6"/><path d="M8 9h2"/></svg></div>
           <div><h3>Discharge Letters</h3></div>
+        </div>
+        <div class="command-card primary menu-card menu-audit" onclick="switchSection('audit-trail',null)">
+          <div class="command-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M3 4h18"/><path d="M3 10h18"/><path d="M3 16h10"/><path d="M7 4v16"/><circle cx="17" cy="17" r="3"/><path d="m20 20-1.6-1.6"/></svg></div>
+          <div><h3>Audit Trail</h3></div>
         </div>
       </div>
 
@@ -9079,6 +9198,36 @@ async function loadAppts(){
   });
   html+='</tbody></table>';
   con.innerHTML=html;
+}
+
+
+
+/* v61 — keep Follow-Up buttons aligned, but all in the same blue colour family */
+function forceFollowupButtonsStraight(){
+  const section=document.getElementById('section-followups');
+  if(!section)return;
+  const wrap=section.querySelector('.followup-hard-section,.patient-button-section');
+  const grid=section.querySelector('.followup-hard-grid,.patient-button-grid');
+  if(wrap){
+    Object.assign(wrap.style,{width:'100%',margin:'16px auto 0',display:'block',boxSizing:'border-box'});
+  }
+  if(grid){
+    Object.assign(grid.style,{display:'flex',flexDirection:'column',alignItems:'stretch',justifyContent:'flex-start',gap:'18px',width:'min(100%, 1080px)',maxWidth:'1080px',margin:'18px auto 32px',padding:'0 24px',boxSizing:'border-box'});
+  }
+  const cards=section.querySelectorAll('.followup-hard-card,.patient-button-card');
+  cards.forEach((card)=>{
+    Object.assign(card.style,{width:'100%',height:'84px',minHeight:'84px',maxWidth:'none',margin:'0',display:'grid',gridTemplateColumns:'86px minmax(0,1fr) 86px',alignItems:'center',justifyItems:'center',gap:'0',padding:'0 22px',boxSizing:'border-box',border:'1px solid rgba(15,38,56,.13)',borderLeft:'7px solid #2563eb',borderRadius:'20px',background:'linear-gradient(90deg,rgba(37,99,235,.36) 0%,rgba(59,130,246,.18) 32%,rgba(255,255,255,.95) 70%,#eff6ff 100%)',boxShadow:'0 10px 28px rgba(15,38,56,.10)',textAlign:'center',overflow:'hidden'});
+    const icon=card.querySelector('.command-icon');
+    if(icon){
+      Object.assign(icon.style,{gridColumn:'1',justifySelf:'center',width:'50px',height:'50px',minWidth:'50px',borderRadius:'15px',margin:'0',display:'flex',alignItems:'center',justifyContent:'center',background:'linear-gradient(135deg,#1d4ed8,#38bdf8)',color:'#ffffff',boxShadow:'0 10px 24px rgba(15,38,56,.20)',position:'relative',zIndex:'1'});
+    }
+    const label=card.querySelector('span:nth-child(2)')||card.querySelector('span:last-child');
+    if(label){Object.assign(label.style,{gridColumn:'2',justifySelf:'center',display:'flex',alignItems:'center',justifyContent:'center',textAlign:'center',width:'100%',position:'relative',zIndex:'1'});}
+    const h3=card.querySelector('h3');
+    if(h3){Object.assign(h3.style,{margin:'0',fontSize:'18px',fontWeight:'950',lineHeight:'1.2',textAlign:'center',color:'#0f2638'});}
+    const spacer=card.querySelector('.followup-spacer');
+    if(spacer){spacer.style.display='block';spacer.style.gridColumn='3';spacer.style.width='50px';spacer.style.height='50px';}
+  });
 }
 
 </script>
