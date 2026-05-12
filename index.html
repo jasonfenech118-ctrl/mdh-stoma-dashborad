@@ -3935,6 +3935,29 @@ function switchSection(name, navEl, options={}){
     if(sectionHistory.length>25)sectionHistory.shift();
   }
   currentSectionName=name;
+  const sectionTitles={
+    'home':'MDH Stoma Care — Home',
+    'patients':'MDH Stoma Care — Patients',
+    'patient-outcomes':'MDH Stoma Care — Patient Outcomes',
+    'patient-detail':'MDH Stoma Care — Patient Profile',
+    'followups':'MDH Stoma Care — Follow-Up Centre',
+    'appointments':'MDH Stoma Care — Patient Appointments',
+    'dntu':'MDH Stoma Care — DNTU',
+    'roster':'MDH Stoma Care — Rosters',
+    'appliances':'MDH Stoma Care — Appliances',
+    'discharge':'MDH Stoma Care — Discharge Letters',
+    'kpi-dashboard':'MDH Stoma Care — KPIs',
+    'audit-trail':'MDH Stoma Care — Audit Trail',
+    'clinical-reviews':'MDH Stoma Care — Clinical Reviews',
+    'teaching':'MDH Stoma Care — Teaching',
+    'referrals':'MDH Stoma Care — Referrals',
+    'clinic-audit':'MDH Stoma Care — Clinic Audit',
+    'staff-audit':'MDH Stoma Care — Staff Audit',
+    'reports':'MDH Stoma Care — Reports',
+    'account':'MDH Stoma Care — Account',
+    'daily-attendance':'MDH Stoma Care — Daily Attendance',
+  };
+  document.title=sectionTitles[name]||'MDH Stoma Care';
 
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
   const section=document.getElementById('section-'+name);
@@ -9620,3 +9643,4 @@ function forceFollowupButtonsStraight(){
 </script>
 </body>
 </html>
+                                                                                                                
