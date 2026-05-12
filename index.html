@@ -2252,29 +2252,62 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     <div class="section" id="section-patient-detail">
       <div class="phdr">
         <div>
-          <button onclick="switchSection('patients',document.getElementById('nav-patients'))" style="background:none;border:none;color:var(--teal);font-size:13px;cursor:pointer;padding:0;margin-bottom:6px;font-family:'DM Sans',sans-serif;">← Back to Patient Register</button>
+          <button onclick="switchSection('patients',null)" style="background:none;border:none;color:var(--teal);font-size:13px;cursor:pointer;padding:0;margin-bottom:6px;font-family:'DM Sans',sans-serif;">← Back to Patient Centre</button>
           <h2 id="pd-title">Patient Profile</h2>
-          <p id="pd-subtitle"></p>
+          <p id="pd-subtitle" style="font-size:12px;color:var(--muted);margin-top:3px;"></p>
         </div>
-        <button class="btn-add" id="pd-edit-btn" onclick="">Edit Patient</button>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+          <button class="btn-refresh" id="pd-ai-summary-btn" onclick="generateAiEpisodeSummary()" style="background:linear-gradient(135deg,#5b21b6,#0f766e);color:white;border:none;">✨ AI Episode Summary</button>
+          <button class="btn-refresh" id="pd-ai-full-btn" onclick="generateAiFullPatientSummary()" style="background:linear-gradient(135deg,#0f766e,#14b8a6);color:white;border:none;">✨ AI Full Patient History</button>
+          <button class="btn-add" id="pd-edit-btn" onclick="">Edit Patient</button>
+        </div>
       </div>
 
-      <!-- Summary Card -->
+      <!-- Patient summary card -->
       <div class="patient-summary-card" id="pd-summary"></div>
 
       <!-- Pathway Timeline -->
       <div class="section-heading" style="margin-top:24px;">Patient Pathway</div>
       <div class="pathway-timeline" id="pd-pathway"></div>
 
-      <!-- Sub tabs -->
-      <div class="pd-tabs">
-        <div class="pd-tab active" onclick="switchPdTab('reviews',this)"><span class="tab-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4a3 3 0 0 1 6 0"/><path d="M9 4h6"/><path d="m9 13 2 2 4-4"/><path d="M9 18h6"/></svg></span>Clinical Reviews</div>
-        <div class="pd-tab" onclick="switchPdTab('teaching',this)"><span class="tab-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5z"/><path d="M8 6h8"/><path d="M8 10h6"/></svg></span>Teaching</div>
-        <div class="pd-tab" onclick="switchPdTab('referrals',this)"><span class="tab-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 7h11"/><path d="m12 4 3 3-3 3"/><path d="M20 17H9"/><path d="m12 14-3 3 3 3"/></svg></span>Referrals</div>
-        <div class="pd-tab" onclick="switchPdTab('appts',this)"><span class="tab-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/></svg></span>Appointments</div>
-        <div class="pd-tab" onclick="switchPdTab('appliances',this)"><span class="tab-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="3"/><path d="M9 7h6"/><path d="M9 11h6"/><path d="M9 15h4"/><path d="M17 17l2 2"/><path d="M19 17l-2 2"/></svg></span>Appliances</div>
-        <div class="pd-tab" onclick="switchPdTab('discharge',this)"><span class="tab-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-7h6v7"/><path d="M14 9h5"/><path d="m16 6 3 3-3 3"/></svg></span>Discharge</div>
-        <div class="pd-tab" onclick="switchPdTab('followups',this)"><span class="tab-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="m8 16 2 2 5-5"/><path d="M17 17h2"/></svg></span>Follow-Ups</div>
+      <!-- Power Apps-aligned tabs -->
+      <div class="pd-tabs" style="margin-top:24px;overflow-x:auto;flex-wrap:nowrap;">
+        <div class="pd-tab active" onclick="switchPdTab('patient-info',this)">
+          <span class="tab-icon"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+          Patient Information
+        </div>
+        <div class="pd-tab" onclick="switchPdTab('clinical-history',this)">
+          <span class="tab-icon"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5z"/><path d="M8 6h8"/><path d="M8 10h6"/></svg></span>
+          Clinical History
+        </div>
+        <div class="pd-tab" onclick="switchPdTab('episode-history',this)">
+          <span class="tab-icon"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/></svg></span>
+          Episode History
+        </div>
+        <div class="pd-tab" onclick="switchPdTab('care-outcomes',this)">
+          <span class="tab-icon"><svg class="icon-svg" viewBox="0 0 24 24"><path d="m8 12 3 3 5-6"/><circle cx="12" cy="12" r="10"/></svg></span>
+          Care &amp; Outcomes
+        </div>
+        <div class="pd-tab" onclick="switchPdTab('stoma-timeline',this)">
+          <span class="tab-icon"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg></span>
+          Stoma Timeline
+        </div>
+        <div class="pd-tab" onclick="switchPdTab('appliances',this)">
+          <span class="tab-icon"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="3"/><path d="M9 7h6"/><path d="M9 11h6"/><path d="M9 15h4"/></svg></span>
+          Appliances
+        </div>
+        <div class="pd-tab" onclick="switchPdTab('teaching',this)">
+          <span class="tab-icon"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5z"/><path d="M8 6h8"/><path d="M8 10h6"/></svg></span>
+          Teaching
+        </div>
+        <div class="pd-tab" onclick="switchPdTab('discharge',this)">
+          <span class="tab-icon"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8"/><path d="M8 17h6"/></svg></span>
+          Discharge Letter
+        </div>
+        <div class="pd-tab" onclick="switchPdTab('additional-notes',this)">
+          <span class="tab-icon"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></span>
+          Additional Notes
+        </div>
       </div>
       <div id="pd-tab-content"></div>
     </div>
@@ -4348,7 +4381,7 @@ async function openPatientProfile(id){
 
   renderPatientSummary(p);
   renderPathwayTimeline(p);
-  loadPdTab('reviews',id);
+  loadPdTab('patient-info',id);
 }
 
 function renderPatientSummary(p){
@@ -4438,13 +4471,725 @@ async function advancePathway(patId,oldStatus,newStatus){
 }
 
 
-function switchPdTab(tab,el){
-  document.querySelectorAll('.pd-tab').forEach(t=>t.classList.remove('active'));
-  if(el)el.classList.add('active');
-  loadPdTab(tab,currentPatientId);
+// ══════════════════════════════════════════════════════
+// PATIENT PROFILE TABS v66
+// ══════════════════════════════════════════════════════
+
+async function loadPdTab(tab, patId){
+  const container = document.getElementById('pd-tab-content');
+  if(!container || !patId) return;
+  container.innerHTML = '<div style="padding:24px;color:var(--muted);font-size:13px;">Loading...</div>';
+
+  const p = await getProjectPatientById(patId);
+  if(!p){ container.innerHTML='<div class="card"><div class="empty">Could not load patient.</div></div>'; return; }
+
+  if(tab==='patient-info') renderPdTabPatientInfo(container, p, patId);
+  else if(tab==='clinical-history') renderPdTabClinicalHistory(container, p, patId);
+  else if(tab==='episode-history') await renderPdTabEpisodeHistory(container, patId);
+  else if(tab==='care-outcomes') renderPdTabCareOutcomes(container, p, patId);
+  else if(tab==='stoma-timeline') await renderPdTabStormaTimeline(container, patId);
+  else if(tab==='appliances') await renderPdTabAppliances(container, patId);
+  else if(tab==='teaching') await renderPdTabTeaching(container, patId);
+  else if(tab==='discharge') await renderPdTabDischargeLetter(container, p, patId);
+  else if(tab==='additional-notes') renderPdTabAdditionalNotes(container, p, patId);
+  else {
+    // legacy tabs fallback
+    const legacyTab = tab==='reviews'?'reviews':tab==='referrals'?'referrals':tab==='appts'?'appts':tab==='followups'?'followups':null;
+    if(legacyTab) await loadPdTabLegacy(legacyTab, patId, container);
+    else container.innerHTML='<div class="card"><div class="empty">Tab not found.</div></div>';
+  }
 }
 
-async function loadPdTab(tab,patId){
+function renderPdTabPatientInfo(container, p, patId){
+  const age = p.date_of_birth ? Math.floor((new Date()-new Date(p.date_of_birth))/31557600000)+'y' : '—';
+  container.innerHTML=`
+  <div class="card" style="margin-top:16px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <div class="card-title">Patient Details</div>
+      <button class="btn-refresh" onclick="openEditPatientModal('${patId}')">✎ Edit</button>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;">
+      ${pField('Hospital Number', p.hospital_number)}
+      ${pField('Date of Birth', p.date_of_birth ? new Date(p.date_of_birth).toLocaleDateString('en-MT') : '—')}
+      ${pField('Contact Number', p.contact_number||p.mobile_number||p.phone_number)}
+      ${pField('First Name', p.first_name)}
+      ${pField('Locality', p.locality)}
+      ${pField('Surname', p.surname)}
+      ${pField('Sex', p.sex)}
+      ${pField('ID Card', p.id_card||p.id_card_number)}
+    </div>
+  </div>
+  <div class="card" style="margin-top:14px;">
+    <div class="card-title">Stoma &amp; Care</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:16px;">
+      ${pField('Op Performed & Findings', p.op_performed_findings||p.operation_performed, true)}
+      ${pField('Stoma Type Summary', p.stoma_type_summary||p.stoma_type)}
+      ${pField('Assigned Nurse', p.assigned_nurse)}
+      ${pField('Consultant', p.consultant)}
+      ${pField('Ward', p.ward||p.current_ward)}
+    </div>
+  </div>
+  <div class="card" style="margin-top:14px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+      <div class="card-title">Patient Stomas</div>
+      <button class="btn-add" onclick="openAddStomaModal('${patId}')">+ New Stoma</button>
+    </div>
+    <div id="pd-stomas-list"><div class="empty">Loading stomas...</div></div>
+  </div>`;
+  loadPatientStomas(patId);
+}
+
+function pField(label, value, wide=false){
+  return `<div class="psc-group"${wide?' style="grid-column:1/-1"':''}>
+    <div class="psc-label">${htmlSafe(label)}</div>
+    <div class="psc-value">${htmlSafe(value||'—')}</div>
+  </div>`;
+}
+
+async function loadPatientStomas(patId){
+  const el = document.getElementById('pd-stomas-list');
+  if(!el) return;
+  const {data, error} = await SB.from('stomas').select('*').eq('patient_id', patId).order('formed_date', {ascending:true});
+  if(error||!data||!data.length){ el.innerHTML='<div class="empty">No stoma records found.</div>'; return; }
+  el.innerHTML=`<table class="dt"><thead><tr><th>Stoma Label</th><th>Type</th><th>Formed</th><th>Status</th><th>Rod</th><th>Notes</th></tr></thead><tbody>
+    ${data.map(s=>`<tr>
+      <td><strong>${htmlSafe(s.stoma_label||'—')}</strong>${s.parent_stoma_id?'<br/><span style="font-size:10px;color:var(--muted);">Refashioned</span>':''}</td>
+      <td>${htmlSafe(s.stoma_type||'—')}</td>
+      <td>${s.formed_date?new Date(s.formed_date).toLocaleDateString('en-MT'):'—'}</td>
+      <td><span style="padding:3px 8px;border-radius:999px;font-size:10px;font-weight:800;background:${s.status==='active'?'#d4edda':s.status==='reversed'?'#e3f2fd':'#f8d7da'};color:${s.status==='active'?'#155724':s.status==='reversed'?'#0d47a1':'#721c24'};">${htmlSafe(s.status||'—')}</span></td>
+      <td>${s.rod_in_situ?'Yes'+( s.rod_removal_date?' — remove '+new Date(s.rod_removal_date).toLocaleDateString('en-MT'):''):'—'}</td>
+      <td>${htmlSafe(s.notes||'—')}</td>
+    </tr>`).join('')}
+  </tbody></table>`;
+}
+
+function renderPdTabClinicalHistory(container, p, patId){
+  container.innerHTML=`
+  <div class="card" style="margin-top:16px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <div class="card-title">Medical Background</div>
+      <button class="btn-refresh" onclick="openEditPatientModal('${patId}')">✎ Edit</button>
+    </div>
+    <div style="display:grid;gap:14px;">
+      ${pField('Past Medical History', p.past_medical_history||p.medical_history, true)}
+      ${pField('Social History', p.social_history, true)}
+      ${pField('Drug History', p.drug_history, true)}
+      ${pField('Complications', p.complications, true)}
+    </div>
+  </div>
+  <div class="card" style="margin-top:14px;">
+    <div class="card-title">Episode History</div>
+    <div id="pd-episode-history-mini"><div class="empty">Loading...</div></div>
+  </div>`;
+  renderEpisodeMiniList(patId, 'pd-episode-history-mini');
+}
+
+async function renderPdTabEpisodeHistory(container, patId){
+  container.innerHTML='<div style="padding:16px;color:var(--muted);">Loading episodes...</div>';
+  const {data, error} = await SB.from('episodes').select('*').eq('patient_id', patId).order('opened_date', {ascending:false});
+  if(error){ container.innerHTML=`<div class="card"><div class="empty">Error: ${htmlSafe(error.message)}</div></div>`; return; }
+  const all = data||[];
+  const hospital = all.filter(e=>e.category==='hospital');
+  const followup = all.filter(e=>e.category==='followup');
+  container.innerHTML=`
+  <div style="display:flex;gap:8px;align-items:center;margin:16px 0 12px;flex-wrap:wrap;">
+    <button class="btn-add" onclick="openNewEpisodeModal('${patId}')">+ New Episode</button>
+    <span style="font-size:12px;color:var(--muted);">${all.length} total episode${all.length!==1?'s':''} · ${hospital.length} hospital · ${followup.length} follow-up</span>
+  </div>
+  <div class="card" style="margin-bottom:14px;">
+    <div class="card-title" style="margin-bottom:12px;">🏥 Hospital Episodes (${hospital.length})</div>
+    ${renderEpisodeTable(hospital, patId)}
+  </div>
+  <div class="card">
+    <div class="card-title" style="margin-bottom:12px;">📋 Follow-Up Episodes (${followup.length})</div>
+    ${renderEpisodeTable(followup, patId)}
+  </div>`;
+}
+
+function renderEpisodeTable(episodes, patId){
+  if(!episodes.length) return '<div class="empty">None recorded.</div>';
+  return `<div style="overflow-x:auto;"><table class="dt"><thead><tr><th>Episode ID</th><th>Type</th><th>Opened</th><th>Closed</th><th>Status</th><th>Consultant</th><th>Problem</th><th>Actions</th></tr></thead><tbody>
+    ${episodes.map(e=>`<tr style="cursor:pointer;" onclick="openEpisodeDetail('${e.id}','${patId}')">
+      <td><strong>${htmlSafe(e.episode_id_label||e.id.substring(0,8))}</strong></td>
+      <td>${htmlSafe((e.episode_type||'').replace(/_/g,' '))}</td>
+      <td>${e.opened_date?new Date(e.opened_date).toLocaleDateString('en-MT'):'—'}</td>
+      <td>${e.closed_date?new Date(e.closed_date).toLocaleDateString('en-MT'):'Open'}</td>
+      <td><span style="padding:2px 8px;border-radius:999px;font-size:10px;font-weight:800;background:${e.status==='open'?'#d4edda':'#e3f2fd'};color:${e.status==='open'?'#155724':'#0d47a1'};">${htmlSafe(e.status||'—')}</span></td>
+      <td>${htmlSafe(e.consultant||'—')}</td>
+      <td>${htmlSafe(e.problem_type||'—')}</td>
+      <td onclick="event.stopPropagation()"><button class="ncb-btn" style="background:#e8f5f4;color:var(--teal);" onclick="openEpisodeDetail('${e.id}','${patId}')">View</button></td>
+    </tr>`).join('')}
+  </tbody></table></div>`;
+}
+
+async function renderEpisodeMiniList(patId, containerId){
+  const el = document.getElementById(containerId);
+  if(!el) return;
+  const {data} = await SB.from('episodes').select('episode_id_label,episode_type,opened_date,closed_date,status').eq('patient_id', patId).order('opened_date', {ascending:false}).limit(5);
+  if(!data||!data.length){ el.innerHTML='<div class="empty">No episodes found.</div>'; return; }
+  el.innerHTML=renderEpisodeTable(data, patId);
+}
+
+function renderPdTabCareOutcomes(container, p, patId){
+  container.innerHTML=`
+  <div class="card" style="margin-top:16px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <div class="card-title">Care &amp; Status</div>
+      <button class="btn-refresh" onclick="openEditPatientModal('${patId}')">✎ Edit</button>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;">
+      ${pField('Patient Status', p.patient_status||p.patient_status_label)}
+      ${pField('Last Outcome Date', p.last_outcome_date?new Date(p.last_outcome_date).toLocaleDateString('en-MT'):'—')}
+      ${pField('DNTU Streak', p.dntu_streak||'0')}
+    </div>
+  </div>
+  <div class="card" style="margin-top:14px;">
+    <div class="card-title">Key Dates</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;">
+      ${pField('Surgery Date', p.surgery_date?new Date(p.surgery_date).toLocaleDateString('en-MT'):'—')}
+      ${pField('Discharged Date', p.discharged_date?new Date(p.discharged_date).toLocaleDateString('en-MT'):'—')}
+      ${pField('Proposed Reversal Date', p.proposed_reversal_date?new Date(p.proposed_reversal_date).toLocaleDateString('en-MT'):'—')}
+      ${pField('Reversal Date', p.reversal_date?new Date(p.reversal_date).toLocaleDateString('en-MT'):'—')}
+      ${pField('RIP Date', p.rip_date?new Date(p.rip_date).toLocaleDateString('en-MT'):'—')}
+    </div>
+  </div>
+  <div class="card" style="margin-top:14px;">
+    <div class="card-title">Calculated Fields</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;">
+      ${pField('Surgery Days Till RIP', calcDaysBetween(p.surgery_date, p.rip_date))}
+      ${pField('Stoma Days', calcDaysBetween(p.surgery_date, p.reversal_date||new Date().toISOString().split('T')[0]))}
+      ${pField('Age at Death', calcAgeAtDeath(p.date_of_birth, p.rip_date))}
+    </div>
+  </div>`;
+}
+
+function calcDaysBetween(d1, d2){
+  if(!d1||!d2) return '—';
+  const diff = Math.round((new Date(d2)-new Date(d1))/(1000*60*60*24));
+  return diff >= 0 ? diff+' days' : '—';
+}
+function calcAgeAtDeath(dob, rip){
+  if(!dob||!rip) return '—';
+  return Math.floor((new Date(rip)-new Date(dob))/31557600000)+' years';
+}
+
+async function renderPdTabStormaTimeline(container, patId){
+  container.innerHTML='<div style="padding:16px;color:var(--muted);">Loading stoma timeline...</div>';
+  const {data:stomas} = await SB.from('stomas').select('*').eq('patient_id', patId).order('formed_date');
+  const {data:events} = await SB.from('events').select('*').eq('patient_id', patId).order('event_date').order('event_time');
+  const allEvents = events||[];
+  const allStomas = stomas||[];
+  if(!allStomas.length && !allEvents.length){
+    container.innerHTML='<div class="card" style="margin-top:16px;"><div class="empty">No stoma timeline data recorded.</div></div>';
+    return;
+  }
+  let html = '<div style="margin-top:16px;">';
+  allStomas.forEach(s=>{
+    const stomaEvents = allEvents.filter(e=>e.stoma_id===s.id);
+    html+=`<div class="card" style="margin-bottom:16px;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+        <div style="width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#0f766e,#14b8a6);color:white;display:flex;align-items:center;justify-content:center;font-size:18px;">🔵</div>
+        <div>
+          <div style="font-size:15px;font-weight:900;color:var(--navy);">${htmlSafe(s.stoma_label||'Stoma')}</div>
+          <div style="font-size:12px;color:var(--muted);">${htmlSafe(s.stoma_type||'—')} · Formed ${s.formed_date?new Date(s.formed_date).toLocaleDateString('en-MT'):'unknown'} · <span style="font-weight:800;">${htmlSafe(s.status||'active')}</span></div>
+        </div>
+      </div>
+      ${stomaEvents.length ? `<div style="overflow-x:auto;"><table class="dt"><thead><tr><th>Date</th><th>Time</th><th>Type</th><th>Appearance</th><th>Output</th><th>Skin</th><th>Appliance</th><th>Nurse</th><th>Notes</th></tr></thead><tbody>
+        ${stomaEvents.map(e=>`<tr>
+          <td>${e.event_date?new Date(e.event_date).toLocaleDateString('en-MT'):'—'}</td>
+          <td>${htmlSafe(e.event_time||'—')}</td>
+          <td><span style="font-size:10px;font-weight:800;">${htmlSafe((e.event_type||'').replace(/_/g,' '))}</span></td>
+          <td>${htmlSafe(e.stoma_appearance||'—')}</td>
+          <td>${htmlSafe(e.output_consistency||'—')}</td>
+          <td>${htmlSafe(e.peristomal_skin||'—')}</td>
+          <td>${htmlSafe(e.appliance_type||'')}${e.appliance_size?' · '+e.appliance_size:''}</td>
+          <td>${htmlSafe(e.nurse_name||'—')}</td>
+          <td>${htmlSafe(e.notes||'—')}</td>
+        </tr>`).join('')}
+      </tbody></table></div>` : '<div class="empty">No events recorded for this stoma.</div>'}
+      <div style="margin-top:10px;display:flex;gap:8px;">
+        <button class="btn-add" style="font-size:11px;padding:6px 12px;" onclick="openAddEventModal('${patId}','${s.id}')">+ Add Event</button>
+      </div>
+    </div>`;
+  });
+  html+='</div>';
+  container.innerHTML=html;
+}
+
+async function renderPdTabAppliances(container, patId){
+  const {data, error} = await SB.from('appliances').select('*').eq('patient_id', patId).order('started_date', {ascending:false});
+  const rows = data||[];
+  container.innerHTML=`
+  <div style="display:flex;justify-content:flex-end;margin:16px 0 10px;">
+    <button class="btn-add" onclick="openAddApplianceModal('${patId}')">+ Add Appliance</button>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden;">
+    <table class="dt"><thead><tr><th>Started</th><th>Type</th><th>Brand / Product</th><th>Size</th><th>Product Ref</th><th>Accessory</th><th>Current</th><th>Ended</th><th>Reason for Change</th></tr></thead>
+    <tbody>${rows.length?rows.map(a=>`<tr>
+      <td>${a.started_date?new Date(a.started_date).toLocaleDateString('en-MT'):'—'}</td>
+      <td>${htmlSafe(a.appliance_type||'—')}</td>
+      <td>${htmlSafe(a.brand||'')} ${htmlSafe(a.product_name||'')}</td>
+      <td>${htmlSafe(a.size||'—')}</td>
+      <td style="font-family:monospace;font-size:11px;">${htmlSafe(a.product_reference||'—')}</td>
+      <td>${htmlSafe(a.accessory_type||'—')}</td>
+      <td>${a.is_current?'<span style="color:#155724;font-weight:800;">✓ Yes</span>':'—'}</td>
+      <td>${a.ended_date?new Date(a.ended_date).toLocaleDateString('en-MT'):'—'}</td>
+      <td>${htmlSafe(a.reason_for_change||'—')}</td>
+    </tr>`).join(''):'<tr><td colspan="9" class="empty">No appliances recorded.</td></tr>'}
+    </tbody></table>
+  </div>`;
+}
+
+async function renderPdTabTeaching(container, patId){
+  const {data} = await SB.from('teaching_sessions').select('*').eq('patient_id', patId).order('session_date', {ascending:false});
+  const rows = data||[];
+  const items = ['Patient has seen stoma and first flat change','Able to assemble items needed','Able to remove old bag','Able to remove flange','Able to clean stoma','Able to empty bag','Able to apply new bag with flange','Able to apply flange','Able to dispose of waste'];
+  container.innerHTML=`
+  <div style="display:flex;justify-content:flex-end;margin:16px 0 10px;">
+    <button class="btn-add" onclick="openAddTeachingModal('${patId}')">+ New Teaching Session</button>
+  </div>
+  ${rows.length?rows.map(s=>`
+  <div class="card" style="margin-bottom:14px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+      <div><strong>${s.session_date?new Date(s.session_date).toLocaleDateString('en-MT'):'—'}</strong> · ${htmlSafe(s.nurse_name||'—')}</div>
+      ${s.nurse_signature?`<span style="font-size:11px;color:var(--muted);">Signed: ${htmlSafe(s.nurse_signature)}</span>`:''}
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:8px;">
+      ${items.map((item,i)=>`<div style="display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;background:${s['item_'+(i+1)+'_'+['seen_stoma','assemble_items','remove_old_bag','remove_flange','clean_stoma','empty_bag','apply_bag_with_flange','apply_flange','dispose_waste'][i]]?'#d4edda':'#f8f9fa'};border:1px solid ${s['item_'+(i+1)+'_'+['seen_stoma','assemble_items','remove_old_bag','remove_flange','clean_stoma','empty_bag','apply_bag_with_flange','apply_flange','dispose_waste'][i]]?'#b7dedb':'var(--border)'};">
+        <span style="font-size:16px;">${s['item_'+(i+1)+'_'+['seen_stoma','assemble_items','remove_old_bag','remove_flange','clean_stoma','empty_bag','apply_bag_with_flange','apply_flange','dispose_waste'][i]]?'✅':'⬜'}</span>
+        <span style="font-size:12px;">${htmlSafe(item)}</span>
+      </div>`).join('')}
+    </div>
+    ${s.notes?`<div style="margin-top:10px;font-size:12px;color:var(--muted);">${htmlSafe(s.notes)}</div>`:''}
+  </div>`).join(''):'<div class="card"><div class="empty">No teaching sessions recorded.</div></div>'}`;
+}
+
+async function renderPdTabDischargeLetter(container, p, patId){
+  const {data} = await SB.from('discharge_letters').select('*').eq('patient_id', patId).order('letter_date', {ascending:false});
+  const letters = data||[];
+  container.innerHTML=`
+  <div style="display:flex;gap:8px;justify-content:flex-end;margin:16px 0 10px;flex-wrap:wrap;">
+    <button class="btn-refresh" style="background:linear-gradient(135deg,#5b21b6,#0f766e);color:white;border:none;" onclick="generateAiDischargeLetter('${patId}')">✨ Generate AI Letter</button>
+  </div>
+  ${letters.length?letters.map(l=>`
+  <div class="card" style="margin-bottom:14px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
+      <div><strong>${l.letter_date?new Date(l.letter_date).toLocaleDateString('en-MT'):'—'}</strong> · ${htmlSafe(l.nurse_name||'—')} · <span style="padding:2px 8px;border-radius:999px;font-size:10px;font-weight:800;background:${l.status==='finalised'?'#d4edda':'#fff3cd'};color:${l.status==='finalised'?'#155724':'#856404'};">${htmlSafe(l.status||'draft')}</span></div>
+      <div style="display:flex;gap:6px;">
+        <button class="ncb-btn" style="background:#e8f5f4;color:var(--teal);" onclick="previewDischargeLetter('${l.id}')">Preview</button>
+        <button class="ncb-btn" style="background:#d4edda;color:#155724;" onclick="finaliseDischargeLetter('${l.id}')">Finalise</button>
+      </div>
+    </div>
+    <div style="font-size:12px;color:var(--muted);">${htmlSafe(l.procedure_performed||'—')} · ${htmlSafe(l.appliance_on_discharge||'—')}</div>
+  </div>`).join(''):'<div class="card"><div class="empty">No discharge letters yet. Click Generate AI Letter to create one.</div></div>'}`;
+}
+
+function renderPdTabAdditionalNotes(container, p, patId){
+  container.innerHTML=`
+  <div class="card" style="margin-top:16px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+      <div class="card-title">Additional Notes</div>
+      <button class="btn-refresh" onclick="saveAdditionalNotes('${patId}')">💾 Save</button>
+    </div>
+    <textarea id="pd-additional-notes" style="width:100%;min-height:220px;padding:12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;resize:vertical;" placeholder="Free text notes about this patient...">${htmlSafe(p.additional_notes||p.notes||'')}</textarea>
+  </div>`;
+}
+
+async function saveAdditionalNotes(patId){
+  const val = document.getElementById('pd-additional-notes')?.value||'';
+  const {error} = await SB.from('patients').update({additional_notes:val, updated_at:new Date().toISOString()}).eq('id', patId);
+  if(error){alert('Could not save notes: '+error.message);return;}
+  alert('Notes saved.');
+}
+
+// ── AI SUMMARY FUNCTIONS ──────────────────────────────
+async function generateAiEpisodeSummary(){
+  if(!currentPatientId){alert('No patient loaded.');return;}
+  const btn = document.getElementById('pd-ai-summary-btn');
+  if(btn){btn.textContent='⏳ Generating...';btn.disabled=true;}
+  try{
+    const {data:episodes} = await SB.from('episodes').select('*').eq('patient_id',currentPatientId).order('opened_date',{ascending:false}).limit(1);
+    const {data:events} = await SB.from('events').select('*').eq('patient_id',currentPatientId).order('event_date',{ascending:false}).limit(20);
+    const ep = episodes?.[0];
+    const p = await getProjectPatientById(currentPatientId);
+    const prompt = `You are a stoma care nurse at Mater Dei Hospital, Malta. Write a brief clinical episode summary (3-5 sentences) for community nurses based on the following data. Be factual, clear, and professional.
+
+Patient: ${p?.first_name||''} ${p?.surname||''}, ${p?.date_of_birth?Math.floor((new Date()-new Date(p.date_of_birth))/31557600000)+'y':'unknown age'}
+Stoma type: ${p?.stoma_type_summary||p?.stoma_type||'unknown'}
+Episode type: ${ep?.episode_type?.replace(/_/g,' ')||'unknown'}
+Opened: ${ep?.opened_date||'unknown'}, Status: ${ep?.status||'unknown'}
+Consultant: ${ep?.consultant||'unknown'}
+Recent events: ${(events||[]).slice(0,5).map(e=>`${e.event_date} ${e.event_type?.replace(/_/g,' ')} - appearance: ${e.stoma_appearance||'—'}, output: ${e.output_consistency||'—'}, skin: ${e.peristomal_skin||'—'}`).join('; ')||'none recorded'}
+
+Write only the summary paragraph. No headings.`;
+
+    const resp = await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:400,messages:[{role:'user',content:prompt}]})});
+    const data = await resp.json();
+    const summary = data.content?.[0]?.text||'Could not generate summary.';
+    alert('AI Episode Summary:\n\n'+summary);
+  }catch(e){alert('Error generating summary: '+e.message);}
+  finally{if(btn){btn.textContent='✨ AI Episode Summary';btn.disabled=false;}}
+}
+
+async function generateAiFullPatientSummary(){
+  if(!currentPatientId){alert('No patient loaded.');return;}
+  const btn = document.getElementById('pd-ai-full-btn');
+  if(btn){btn.textContent='⏳ Generating...';btn.disabled=true;}
+  try{
+    const p = await getProjectPatientById(currentPatientId);
+    const {data:episodes} = await SB.from('episodes').select('*').eq('patient_id',currentPatientId).order('opened_date');
+    const {data:stomas} = await SB.from('stomas').select('*').eq('patient_id',currentPatientId).order('formed_date');
+    const {data:appliances} = await SB.from('appliances').select('*').eq('patient_id',currentPatientId).order('started_date');
+    const prompt = `You are a stoma care nurse at Mater Dei Hospital, Malta. Write a comprehensive clinical narrative summary of this patient's complete stoma care journey. Be factual, professional, and suitable for clinical records.
+
+Patient: ${p?.first_name||''} ${p?.surname||''}, DOB: ${p?.date_of_birth||'unknown'}, ID: ${p?.id_card||p?.id_card_number||'unknown'}
+Current status: ${p?.patient_status||'active'}
+Surgery date: ${p?.surgery_date||'unknown'}
+
+Stomas: ${(stomas||[]).map(s=>`${s.stoma_type} formed ${s.formed_date||'unknown'}, status: ${s.status}`).join('; ')||'none recorded'}
+
+Episodes (${(episodes||[]).length}): ${(episodes||[]).map(e=>`${e.episode_type?.replace(/_/g,' ')} opened ${e.opened_date} ${e.status==='closed'?'closed '+e.closed_date:'(open)'}`).join('; ')||'none'}
+
+Appliances: ${(appliances||[]).map(a=>`${a.brand||''} ${a.product_name||''} ${a.size||''} started ${a.started_date||'unknown'}${a.is_current?' (current)':''}`).join('; ')||'none recorded'}
+
+Key dates: surgery ${p?.surgery_date||'—'}, discharge ${p?.discharged_date||'—'}, reversal ${p?.reversal_date||'—'}, RIP ${p?.rip_date||'—'}
+
+Write a structured clinical narrative. Include: admission overview, stoma formation details, clinical progress, discharge status, follow-up status, current situation.`;
+
+    const resp = await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,messages:[{role:'user',content:prompt}]})});
+    const data = await resp.json();
+    const summary = data.content?.[0]?.text||'Could not generate summary.';
+    const mo = document.getElementById('mo');
+    const mb = document.getElementById('mb');
+    if(mo&&mb){
+      mb.innerHTML=`<h2>AI Full Patient History</h2><div class="msub">${htmlSafe(p?.first_name||'')} ${htmlSafe(p?.surname||'')}</div><div style="white-space:pre-wrap;font-size:13px;line-height:1.6;color:var(--text);max-height:60vh;overflow:auto;padding:12px;background:#f8fafc;border-radius:10px;border:1px solid var(--border);">${htmlSafe(summary)}</div><div class="mact"><button class="btn-cancel" onclick="closeMo()">Close</button><button class="btn-save" onclick="navigator.clipboard.writeText(${JSON.stringify(summary)});alert('Copied to clipboard.')">Copy</button></div>`;
+      mo.classList.add('open');
+    }else{alert('AI Full Patient History:\n\n'+summary);}
+  }catch(e){alert('Error generating summary: '+e.message);}
+  finally{if(btn){btn.textContent='✨ AI Full Patient History';btn.disabled=false;}}
+}
+
+// ── AI DISCHARGE LETTER ───────────────────────────────
+async function generateAiDischargeLetter(patId){
+  const btn = document.querySelector('[onclick*="generateAiDischargeLetter"]');
+  if(btn){btn.textContent='⏳ Generating...';btn.disabled=true;}
+  try{
+    const p = await getProjectPatientById(patId);
+    const {data:appliances} = await SB.from('appliances').select('*').eq('patient_id',patId).eq('is_current',true).limit(1);
+    const {data:episodes} = await SB.from('episodes').select('*').eq('patient_id',patId).eq('status','open').limit(1);
+    const {data:events} = await SB.from('events').select('*').eq('patient_id',patId).order('event_date',{ascending:false}).limit(5);
+    const appliance = appliances?.[0];
+    const episode = episodes?.[0];
+    const lastEvent = events?.[0];
+
+    const nurseName = getLoggedInSubmitterName()||'Jason Fenech';
+    const nurseGrade = 'Practice Nurse';
+    const today = new Date().toLocaleDateString('en-MT',{day:'numeric',month:'long',year:'numeric'});
+
+    const prompt = `You are ${nurseName}, ${nurseGrade} at the Stoma Care Clinic, Mater Dei Hospital, Malta. Write an official discharge letter to community nurses for this patient. Follow the exact structure used by MDH Stoma Care Clinic discharge letters.
+
+LETTER STRUCTURE:
+1. Date: ${today}
+2. Patient name and ID card in bold
+3. Opening paragraph: procedure performed, date, consultant name
+4. Second paragraph: stoma condition on discharge, appliance discharged with
+5. Teaching status paragraph
+6. Appliance care plan section with bullet points (bold key terms)
+7. Sign off: ${nurseName}, ${nurseGrade}, Stoma Care Clinic
+
+PATIENT DATA:
+Name: ${p?.first_name||''} ${p?.surname||''}, ID: ${p?.id_card||p?.id_card_number||'unknown'}
+Procedure: ${p?.op_performed_findings||episode?.operation_performed||'procedure not recorded'}
+Surgery date: ${p?.surgery_date||'unknown'}
+Consultant: ${p?.consultant||episode?.consultant||'not recorded'}
+Stoma type: ${p?.stoma_type_summary||p?.stoma_type||'unknown'}
+Stoma condition on discharge: ${lastEvent?.stoma_appearance||'healthy'}, output: ${lastEvent?.output_consistency||'functioning'}, peristomal skin: ${lastEvent?.peristomal_skin||'intact'}
+Appliance discharged with: ${appliance?`${appliance.brand||''} ${appliance.product_name||''} size ${appliance.size||''}`.trim():'not recorded'}
+Appliance type: ${appliance?.appliance_type||'not recorded'}
+Rod in situ: check patient record
+
+CARE PLAN RULES BY APPLIANCE TYPE:
+- Two-piece system (flanges + bags): flange alternate days, bag daily or 1/3 full, adhesive remover small amounts, aperture cut to stoma size, hair removal as needed
+- One-piece closed bag: change 1/3 full once-twice daily, adhesive remover small amounts, wash pat dry, aperture cut to size
+- One-piece drainable (ileostomy): change daily, empty 1/3 full strictly, adhesive remover, wash pat dry, stoma belt always, hair removal
+
+Write the full letter. Use "Dear Nurses" as salutation. Bold key instructions. End with the signature block.`;
+
+    const resp = await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
+    const data = await resp.json();
+    const letterBody = data.content?.[0]?.text||'Could not generate letter.';
+
+    // Save as draft
+    const {data:saved, error} = await SB.from('discharge_letters').insert({
+      patient_id:patId,
+      episode_id:episode?.id||null,
+      letter_date:new Date().toISOString().split('T')[0],
+      nurse_name:nurseName,
+      nurse_grade:nurseGrade,
+      consultant:p?.consultant||episode?.consultant||'',
+      procedure_performed:p?.op_performed_findings||episode?.operation_performed||'',
+      operation_date:p?.surgery_date||null,
+      stoma_status_on_discharge:lastEvent?.stoma_appearance||'',
+      appliance_on_discharge:appliance?`${appliance.brand||''} ${appliance.product_name||''} ${appliance.size||''}`.trim():'',
+      letter_body:letterBody,
+      status:'draft'
+    }).select('id').single();
+
+    if(error){console.warn('Letter save error:',error.message);}
+
+    // Show preview
+    const mo = document.getElementById('mo');
+    const mb = document.getElementById('mb');
+    if(mo&&mb){
+      mb.innerHTML=`<h2>AI Discharge Letter — Draft</h2><div class="msub">Review and amend before finalising</div>
+      <div style="white-space:pre-wrap;font-size:12.5px;line-height:1.7;color:var(--text);max-height:55vh;overflow:auto;padding:14px;background:#fffef9;border-radius:10px;border:1px solid var(--border);font-family:'DM Sans',sans-serif;">${htmlSafe(letterBody)}</div>
+      <div class="mact">
+        <button class="btn-cancel" onclick="closeMo()">Close</button>
+        <button class="btn-save" onclick="navigator.clipboard.writeText(${JSON.stringify(letterBody)});alert('Copied.')">Copy Text</button>
+        ${saved?.id?`<button class="btn-save" style="background:var(--green);" onclick="finaliseDischargeLetter('${saved.id}');closeMo();">Finalise Letter</button>`:''}
+      </div>`;
+      mo.classList.add('open');
+    }
+    // Reload discharge tab
+    await renderPdTabDischargeLetter(document.getElementById('pd-tab-content'), p, patId);
+  }catch(e){alert('Error generating letter: '+e.message);}
+  finally{if(btn){btn.textContent='✨ Generate AI Letter';btn.disabled=false;}}
+}
+
+async function finaliseDischargeLetter(letterId){
+  if(!confirm('Mark this letter as finalised? This cannot be undone.')) return;
+  const {error} = await SB.from('discharge_letters').update({status:'finalised',updated_at:new Date().toISOString()}).eq('id',letterId);
+  if(error){alert('Error: '+error.message);return;}
+  alert('Letter finalised.');
+}
+
+async function previewDischargeLetter(letterId){
+  const {data,error} = await SB.from('discharge_letters').select('*').eq('id',letterId).single();
+  if(error||!data){alert('Could not load letter.');return;}
+  const mo = document.getElementById('mo');
+  const mb = document.getElementById('mb');
+  if(mo&&mb){
+    mb.innerHTML=`<h2>Discharge Letter</h2><div class="msub">${new Date(data.letter_date).toLocaleDateString('en-MT')} · ${htmlSafe(data.nurse_name||'—')} · <strong>${htmlSafe(data.status)}</strong></div>
+    <div style="white-space:pre-wrap;font-size:12.5px;line-height:1.7;color:var(--text);max-height:55vh;overflow:auto;padding:14px;background:#fffef9;border-radius:10px;border:1px solid var(--border);">${htmlSafe(data.letter_body||'No content.')}</div>
+    <div class="mact"><button class="btn-cancel" onclick="closeMo()">Close</button><button class="btn-save" onclick="navigator.clipboard.writeText(${JSON.stringify(data.letter_body||'')});alert('Copied.')">Copy</button></div>`;
+    mo.classList.add('open');
+  }
+}
+
+// ── ADD STOMA MODAL ───────────────────────────────────
+function openAddStomaModal(patId){
+  const mo=document.getElementById('mo');const mb=document.getElementById('mb');
+  if(!mo||!mb)return;
+  mb.innerHTML=`<h2>Add Stoma</h2><div class="msub">New stoma record for this patient</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+    <div class="fg"><label>Stoma Label</label><input id="as-label" placeholder="e.g. Stoma 1"/></div>
+    <div class="fg"><label>Stoma Type *</label><select id="as-type"><option value="">Select...</option>${(STOMA_TYPES||['Colostomy','Ileostomy','Urostomy','Loop Colostomy','Loop Ileostomy','End Colostomy','End Ileostomy','Urostomy / Ileal Conduit']).map(t=>`<option>${t}</option>`).join('')}</select></div>
+    <div class="fg"><label>Date Formed</label><input type="date" id="as-date"/></div>
+    <div class="fg"><label>Status</label><select id="as-status"><option value="active">Active</option><option value="reversed">Reversed</option><option value="refashioned">Refashioned</option></select></div>
+    <div class="fg"><label>Rod in Situ</label><select id="as-rod"><option value="false">No</option><option value="true">Yes</option></select></div>
+    <div class="fg"><label>Rod Removal Date</label><input type="date" id="as-rod-date"/></div>
+  </div>
+  <div class="fg"><label>Notes</label><input id="as-notes" placeholder="Any relevant notes"/></div>
+  <div class="mact"><button class="btn-cancel" onclick="closeMo()">Cancel</button><button class="btn-save" onclick="saveNewStoma('${patId}')">Save Stoma</button></div>`;
+  mo.classList.add('open');
+}
+
+async function saveNewStoma(patId){
+  const type=document.getElementById('as-type')?.value;
+  if(!type){alert('Stoma type is required.');return;}
+  const {error}=await SB.from('stomas').insert({
+    patient_id:patId,
+    stoma_label:document.getElementById('as-label')?.value.trim()||null,
+    stoma_type:type,
+    formed_date:document.getElementById('as-date')?.value||null,
+    status:document.getElementById('as-status')?.value||'active',
+    rod_in_situ:document.getElementById('as-rod')?.value==='true',
+    rod_removal_date:document.getElementById('as-rod-date')?.value||null,
+    notes:document.getElementById('as-notes')?.value.trim()||null
+  });
+  if(error){alert('Error saving stoma: '+error.message);return;}
+  closeMo();
+  loadPatientStomas(patId);
+}
+
+// ── NEW EPISODE MODAL ─────────────────────────────────
+function openNewEpisodeModal(patId){
+  const mo=document.getElementById('mo');const mb=document.getElementById('mb');
+  if(!mo||!mb)return;
+  const episodeTypes=['elective_admission','emergency_admission','readmission_complication','readmission_refashioning','readmission_reversal','bagging_advice_inpatient','outpatient_followup','community_nurse_referral','direct_patient_contact','bagging_advice_outpatient','home_visit'];
+  mb.innerHTML=`<h2>New Episode</h2><div class="msub">Opens a new care period for this patient</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+    <div class="fg"><label>Episode Type *</label><select id="ne-type">${episodeTypes.map(t=>`<option value="${t}">${t.replace(/_/g,' ')}</option>`).join('')}</select></div>
+    <div class="fg"><label>Opened Date *</label><input type="date" id="ne-opened" value="${new Date().toISOString().split('T')[0]}"/></div>
+    <div class="fg"><label>Consultant</label><input id="ne-cons" placeholder="Consultant name"/></div>
+    <div class="fg"><label>Ward</label><input id="ne-ward" placeholder="Ward"/></div>
+    <div class="fg"><label>Problem Type</label><input id="ne-problem" placeholder="e.g. stoma complication"/></div>
+    <div class="fg"><label>Encounter Setting</label><input id="ne-setting" placeholder="e.g. inpatient, outpatient"/></div>
+  </div>
+  <div class="mact"><button class="btn-cancel" onclick="closeMo()">Cancel</button><button class="btn-save" onclick="saveNewEpisode('${patId}')">Open Episode</button></div>`;
+  mo.classList.add('open');
+}
+
+async function saveNewEpisode(patId){
+  const type=document.getElementById('ne-type')?.value;
+  if(!type){alert('Episode type is required.');return;}
+  const epCount = await SB.from('episodes').select('id',{count:'exact'}).eq('patient_id',patId);
+  const label = 'EP-'+new Date().getFullYear()+'-'+String((epCount.count||0)+1).padStart(3,'0');
+  const {error}=await SB.from('episodes').insert({
+    patient_id:patId,
+    episode_id_label:label,
+    episode_type:type,
+    opened_date:document.getElementById('ne-opened')?.value||new Date().toISOString().split('T')[0],
+    consultant:document.getElementById('ne-cons')?.value.trim()||null,
+    ward:document.getElementById('ne-ward')?.value.trim()||null,
+    problem_type:document.getElementById('ne-problem')?.value.trim()||null,
+    encounter_setting:document.getElementById('ne-setting')?.value.trim()||null,
+    status:'open',
+    created_by:getLoggedInSubmitterName()
+  });
+  if(error){alert('Error saving episode: '+error.message);return;}
+  closeMo();
+  await renderPdTabEpisodeHistory(document.getElementById('pd-tab-content'),patId);
+}
+
+// ── OPEN EPISODE DETAIL ───────────────────────────────
+async function openEpisodeDetail(episodeId, patId){
+  const {data:ep,error}=await SB.from('episodes').select('*').eq('id',episodeId).single();
+  if(error||!ep){alert('Could not load episode.');return;}
+  const {data:events}=await SB.from('events').select('*').eq('episode_id',episodeId).order('event_date').order('event_time');
+  const mo=document.getElementById('mo');const mb=document.getElementById('mb');
+  if(!mo||!mb)return;
+  const evRows=(events||[]);
+  mb.innerHTML=`<h2>${htmlSafe((ep.episode_type||'').replace(/_/g,' '))}</h2>
+  <div class="msub">${htmlSafe(ep.episode_id_label||ep.id.substring(0,8))} · Opened ${ep.opened_date||'—'} · <strong>${htmlSafe(ep.status)}</strong></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px;">
+    <div><div style="font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;">Consultant</div><div style="font-size:13px;">${htmlSafe(ep.consultant||'—')}</div></div>
+    <div><div style="font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;">Ward</div><div style="font-size:13px;">${htmlSafe(ep.ward||'—')}</div></div>
+    <div><div style="font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;">Problem Type</div><div style="font-size:13px;">${htmlSafe(ep.problem_type||'—')}</div></div>
+  </div>
+  <div style="font-size:13px;font-weight:800;color:var(--navy);margin-bottom:8px;">Events (${evRows.length})</div>
+  ${evRows.length?`<div style="max-height:280px;overflow:auto;border:1px solid var(--border);border-radius:10px;"><table class="dt"><thead><tr><th>Date</th><th>Type</th><th>Appearance</th><th>Output</th><th>Skin</th><th>Nurse</th><th>Notes</th></tr></thead><tbody>
+    ${evRows.map(e=>`<tr>
+      <td>${e.event_date?new Date(e.event_date).toLocaleDateString('en-MT'):'—'}</td>
+      <td style="font-size:10px;">${htmlSafe((e.event_type||'').replace(/_/g,' '))}</td>
+      <td>${htmlSafe(e.stoma_appearance||'—')}</td>
+      <td>${htmlSafe(e.output_consistency||'—')}</td>
+      <td>${htmlSafe(e.peristomal_skin||'—')}</td>
+      <td>${htmlSafe(e.nurse_name||'—')}</td>
+      <td style="max-width:160px;">${htmlSafe(e.notes||'—')}</td>
+    </tr>`).join('')}
+  </tbody></table></div>`:'<div class="empty">No events recorded in this episode.</div>'}
+  <div class="mact">
+    <button class="btn-cancel" onclick="closeMo()">Close</button>
+    <button class="btn-save" onclick="closeMo();openAddEventModalForEpisode('${patId}','${episodeId}')">+ Add Event</button>
+    ${ep.status==='open'?`<button class="btn-save" style="background:var(--red);" onclick="closeEpisode('${episodeId}','${patId}')">Close Episode</button>`:''}
+  </div>`;
+  mo.classList.add('open');
+}
+
+async function closeEpisode(episodeId, patId){
+  if(!confirm('Close this episode? It will be marked as closed with today\'s date.')) return;
+  const {error}=await SB.from('episodes').update({status:'closed',closed_date:new Date().toISOString().split('T')[0],updated_at:new Date().toISOString()}).eq('id',episodeId);
+  if(error){alert('Error: '+error.message);return;}
+  closeMo();
+  await renderPdTabEpisodeHistory(document.getElementById('pd-tab-content'),patId);
+}
+
+// ── ADD EVENT MODAL ───────────────────────────────────
+function openAddEventModal(patId, stomaId){
+  openAddEventModalForEpisode(patId, null, stomaId);
+}
+function openAddEventModalForEpisode(patId, episodeId, stomaId){
+  const mo=document.getElementById('mo');const mb=document.getElementById('mb');
+  if(!mo||!mb)return;
+  const eventTypes=['daily_review','teaching_session','appliance_change','nurse_visit','bagging_advice','referral','complication_noted','discharge_prep','pre_op_siting','intraop_note','community_advice','direct_contact','general_note'];
+  mb.innerHTML=`<h2>Add Event</h2><div class="msub">Clinical event — append-only audit record</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+    <div class="fg"><label>Event Type *</label><select id="ae-type">${eventTypes.map(t=>`<option value="${t}">${t.replace(/_/g,' ')}</option>`).join('')}</select></div>
+    <div class="fg"><label>Date *</label><input type="date" id="ae-date" value="${new Date().toISOString().split('T')[0]}"/></div>
+    <div class="fg"><label>Time</label><input type="time" id="ae-time"/></div>
+    <div class="fg"><label>Nurse Name</label><input id="ae-nurse" value="${getLoggedInSubmitterName()||''}"/></div>
+    <div class="fg"><label>Stoma Appearance</label><select id="ae-appear"><option value="">—</option><option>Pink / Viable</option><option>Oedematous</option><option>Dusky</option><option>Necrotic</option><option>Slough present</option><option>Retracted</option><option>Prolapsed</option></select></div>
+    <div class="fg"><label>Output Consistency</label><select id="ae-output"><option value="">—</option><option>Liquid</option><option>Loose</option><option>Semi-solid</option><option>Formed</option><option>Solid</option><option>No output</option></select></div>
+    <div class="fg"><label>Peristomal Skin</label><select id="ae-skin"><option value="">—</option><option>Intact</option><option>Excoriated</option><option>Erythematous</option><option>Broken / Raw</option><option>Fungal</option><option>Pustules</option></select></div>
+    <div class="fg"><label>Self-Care Status</label><select id="ae-selfcare"><option value="">—</option><option>Independent</option><option>Needs assistance</option><option>Unable</option></select></div>
+    <div class="fg"><label>Post-Op Day</label><input type="number" id="ae-pod" placeholder="Day number" min="0"/></div>
+    <div class="fg"><label>Appliance Type</label><input id="ae-appl" placeholder="e.g. one-piece drainable"/></div>
+    <div class="fg"><label>Appliance Size</label><input id="ae-size" placeholder="e.g. 57mm"/></div>
+    <div class="fg"><label>Reason for Change</label><input id="ae-reason" placeholder="If appliance changed"/></div>
+  </div>
+  <div class="fg"><label>Notes</label><textarea id="ae-notes" style="width:100%;padding:9px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:'DM Sans',sans-serif;min-height:70px;outline:none;" placeholder="Clinical notes..."></textarea></div>
+  <div class="mact"><button class="btn-cancel" onclick="closeMo()">Cancel</button><button class="btn-save" onclick="saveNewEvent('${patId}','${episodeId||''}','${stomaId||''}')">Save Event</button></div>`;
+  mo.classList.add('open');
+}
+
+async function saveNewEvent(patId, episodeId, stomaId){
+  const type=document.getElementById('ae-type')?.value;
+  if(!type){alert('Event type required.');return;}
+  const {error}=await SB.from('events').insert({
+    patient_id:patId||null,
+    episode_id:episodeId||null,
+    stoma_id:stomaId||null,
+    event_type:type,
+    event_date:document.getElementById('ae-date')?.value||new Date().toISOString().split('T')[0],
+    event_time:document.getElementById('ae-time')?.value||null,
+    nurse_name:document.getElementById('ae-nurse')?.value.trim()||null,
+    stoma_appearance:document.getElementById('ae-appear')?.value||null,
+    output_consistency:document.getElementById('ae-output')?.value||null,
+    peristomal_skin:document.getElementById('ae-skin')?.value||null,
+    self_care_status:document.getElementById('ae-selfcare')?.value||null,
+    post_op_day_number:parseInt(document.getElementById('ae-pod')?.value)||null,
+    appliance_type:document.getElementById('ae-appl')?.value.trim()||null,
+    appliance_size:document.getElementById('ae-size')?.value.trim()||null,
+    reason_for_change:document.getElementById('ae-reason')?.value.trim()||null,
+    notes:document.getElementById('ae-notes')?.value.trim()||null
+  });
+  if(error){alert('Error saving event: '+error.message);return;}
+  closeMo();
+  if(patId) await renderPdTabStormaTimeline(document.getElementById('pd-tab-content'),patId);
+}
+
+// ── TEACHING MODAL ────────────────────────────────────
+function openAddTeachingModal(patId){
+  const mo=document.getElementById('mo');const mb=document.getElementById('mb');
+  if(!mo||!mb)return;
+  const items=[['seen_stoma','Patient has seen stoma and first flat change'],['assemble_items','Able to assemble items needed'],['remove_old_bag','Able to remove old bag'],['remove_flange','Able to remove flange'],['clean_stoma','Able to clean stoma'],['empty_bag','Able to empty bag'],['apply_bag_with_flange','Able to apply new bag with flange'],['apply_flange','Able to apply flange'],['dispose_waste','Able to dispose of waste']];
+  mb.innerHTML=`<h2>New Teaching Session</h2><div class="msub">Stoma self-care teaching checklist</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+    <div class="fg"><label>Date</label><input type="date" id="at-date" value="${new Date().toISOString().split('T')[0]}"/></div>
+    <div class="fg"><label>Nurse Name</label><input id="at-nurse" value="${getLoggedInSubmitterName()||''}"/></div>
+  </div>
+  <div style="display:grid;gap:8px;margin-bottom:12px;">
+    ${items.map(([key,label])=>`<label style="display:flex;align-items:center;gap:10px;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;font-size:13px;"><input type="checkbox" id="at-${key}" style="width:16px;height:16px;"/>${label}</label>`).join('')}
+  </div>
+  <div class="fg"><label>Notes</label><input id="at-notes" placeholder="Session notes"/></div>
+  <div class="fg"><label>Nurse Signature</label><input id="at-sig" placeholder="Nurse signature"/></div>
+  <div class="mact"><button class="btn-cancel" onclick="closeMo()">Cancel</button><button class="btn-save" onclick="saveTeachingSession('${patId}')">Save Session</button></div>`;
+  mo.classList.add('open');
+}
+
+async function saveTeachingSession(patId){
+  const keys=['seen_stoma','assemble_items','remove_old_bag','remove_flange','clean_stoma','empty_bag','apply_bag_with_flange','apply_flange','dispose_waste'];
+  const payload={patient_id:patId,session_date:document.getElementById('at-date')?.value,nurse_name:document.getElementById('at-nurse')?.value.trim()||null,notes:document.getElementById('at-notes')?.value.trim()||null,nurse_signature:document.getElementById('at-sig')?.value.trim()||null};
+  keys.forEach((k,i)=>{payload['item_'+(i+1)+'_'+k]=document.getElementById('at-'+k)?.checked||false;});
+  const {error}=await SB.from('teaching_sessions').insert(payload);
+  if(error){alert('Error: '+error.message);return;}
+  closeMo();
+  await renderPdTabTeaching(document.getElementById('pd-tab-content'),patId);
+}
+
+// Legacy tab fallback
+async function loadPdTabLegacy(tab, patId, container){
+  container.innerHTML='<div style="padding:20px;color:var(--muted);font-size:13px;">Loading...</div>';
+  if(tab==='reviews'){
+    const{data,error}=await SB.from('daily_reviews').select('*').eq('patient_id',patId).eq('is_deleted',false).order('review_date',{ascending:false});
+    const rows=(data||[]);
+    if(error){container.innerHTML=`<div class="card"><div class="empty">Error: ${htmlSafe(error.message)}</div></div>`;return;}
+    container.innerHTML=`<div style="margin-bottom:12px;display:flex;justify-content:flex-end;"><button class="btn-add" onclick="openAddReviewModal('${patId}')">+ New Review</button></div><div class="card" style="padding:0;overflow:hidden;"><table class="dt"><thead><tr><th>Date</th><th>By</th><th>Appearance</th><th>Output</th><th>Skin</th><th>Notes</th></tr></thead><tbody>${rows.length?rows.map(r=>`<tr><td>${r.review_date?new Date(r.review_date).toLocaleDateString('en-MT'):'—'}</td><td>${htmlSafe(r.reviewed_by||'—')}</td><td>${htmlSafe(r.stoma_appearance||'—')}</td><td>${htmlSafe(r.output_type||'—')}</td><td>${htmlSafe(r.peristomal_skin||'—')}</td><td>${htmlSafe(r.notes||'—')}</td></tr>`).join(''):'<tr><td colspan="6" class="empty">No reviews.</td></tr>'}</tbody></table></div>`;
+  }
+}
+
+
   const container=document.getElementById('pd-tab-content');
   if(!container||!patId)return;
   container.innerHTML='<div style="padding:20px;color:var(--muted);font-size:13px;">Loading...</div>';
@@ -8261,7 +9006,84 @@ function pathwayBadge(status){
 }
 
 function openAddPatientModal(){
-  const h=`<h2>Add Patient</h2><div class="msub">New stoma care patient — saves to patients_main, episodes_main and stomas_main</div>
+  const mo=document.getElementById('mo');const mb=document.getElementById('mb');
+  if(!mo||!mb)return;
+  mb.innerHTML=`<h2>Add New Patient</h2><div class="msub">MDH Stoma Care — New patient registration</div>
+  <div style="font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:8px;">Patient Details</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+    <div class="fg"><label>First Name *</label><input id="mp-fn" placeholder="First name"/></div>
+    <div class="fg"><label>Surname *</label><input id="mp-sn" placeholder="Surname"/></div>
+    <div class="fg"><label>Hospital Number *</label><input id="mp-hosp" placeholder="Hospital number"/></div>
+    <div class="fg"><label>Date of Birth</label><input type="date" id="mp-dob"/></div>
+    <div class="fg"><label>Contact Number</label><input id="mp-ph" placeholder="Phone number"/></div>
+    <div class="fg"><label>ID Card</label><input id="mp-id" placeholder="000000M"/></div>
+    <div class="fg"><label>Sex</label><select id="mp-sex"><option value="">—</option><option>Male</option><option>Female</option><option>Other</option></select></div>
+    <div class="fg"><label>Locality</label><input id="mp-locality" placeholder="Locality / Town"/></div>
+  </div>
+  <div style="font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:8px;">Stoma &amp; Care</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+    <div class="fg" style="grid-column:1/-1"><label>Operation Performed &amp; Findings</label><textarea id="mp-opfindings" style="width:100%;padding:9px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:'DM Sans',sans-serif;min-height:60px;outline:none;" placeholder="e.g. AP resection with end colostomy formation"></textarea></div>
+    <div class="fg"><label>Stoma Type</label><select id="mp-stoma"><option value="">Select...</option>${(typeof STOMA_TYPES!=='undefined'?STOMA_TYPES:['Colostomy','Ileostomy','Urostomy','Loop Colostomy','Loop Ileostomy','End Colostomy','End Ileostomy','Urostomy / Ileal Conduit']).map(t=>`<option>${t}</option>`).join('')}</select></div>
+    <div class="fg"><label>Assigned Nurse</label><select id="mp-nurse"><option value="">Select...</option><option>Jason Fenech</option><option>Lorraine Stivala</option><option>Jacqueline Sammut</option><option>Common</option></select></div>
+    <div class="fg"><label>Consultant</label><input id="mp-cons" placeholder="Consultant name"/></div>
+    <div class="fg"><label>Ward</label><input id="mp-ward" placeholder="e.g. SW1"/></div>
+    <div class="fg"><label>Surgery Date</label><input type="date" id="mp-surg"/></div>
+    <div class="fg"><label>Pathway Type</label><select id="mp-pathway"><option value="elective">Elective</option><option value="emergency">Emergency</option><option value="bagging_advice">Bagging Advice</option></select></div>
+    <div class="fg"><label>Patient Status</label><select id="mp-status"><option value="inpatient">Inpatient</option><option value="outpatient">Outpatient</option><option value="active">Active</option></select></div>
+  </div>
+  <div class="mact"><button class="btn-cancel" onclick="closeMo()">Cancel</button><button class="btn-save" onclick="saveNewPatientV66()">Save Patient</button></div>`;
+  mo.classList.add('open');
+}
+
+async function saveNewPatientV66(){
+  const fn=document.getElementById('mp-fn')?.value.trim();
+  const sn=document.getElementById('mp-sn')?.value.trim();
+  const hosp=document.getElementById('mp-hosp')?.value.trim();
+  if(!fn||!sn||!hosp){alert('First name, surname and hospital number are required.');return;}
+  const stomaType=document.getElementById('mp-stoma')?.value||null;
+  const surgDate=document.getElementById('mp-surg')?.value||null;
+  const pathwayType=document.getElementById('mp-pathway')?.value||'elective';
+  const patientPayload={
+    hospital_number:hosp,
+    id_card:document.getElementById('mp-id')?.value.trim()||null,
+    first_name:fn,
+    surname:sn,
+    contact_number:document.getElementById('mp-ph')?.value.trim()||null,
+    dob:document.getElementById('mp-dob')?.value||null,
+    sex:document.getElementById('mp-sex')?.value||null,
+    locality:document.getElementById('mp-locality')?.value.trim()||null,
+    op_performed_findings:document.getElementById('mp-opfindings')?.value.trim()||null,
+    stoma_type_summary:stomaType,
+    assigned_nurse:document.getElementById('mp-nurse')?.value||null,
+    consultant:document.getElementById('mp-cons')?.value.trim()||null,
+    ward:document.getElementById('mp-ward')?.value.trim()||null,
+    surgery_date:surgDate,
+    patient_status:document.getElementById('mp-status')?.value||'inpatient',
+    pathway_type:pathwayType
+  };
+  const {data:p,error:pErr}=await SB.from('patients').insert(patientPayload).select('id').single();
+  if(pErr){
+    // fallback to patients_main if patients table not yet migrated
+    const {data:pm,error:pmErr}=await SB.from('patients_main').insert({
+      hospital_number:hosp,id_card_number:patientPayload.id_card,
+      first_name:fn,surname:sn,mobile_number:patientPayload.contact_number,
+      date_of_birth:patientPayload.dob,patient_status:patientPayload.patient_status,
+      current_ward:patientPayload.ward,is_active:true,created_by:getLoggedInSubmitterName()
+    }).select('id').single();
+    if(pmErr){alert('Error saving patient: '+pmErr.message);return;}
+    closeMo();loadPatients();return;
+  }
+  // Create opening episode
+  const epType=pathwayType==='elective'?'elective_admission':pathwayType==='emergency'?'emergency_admission':'bagging_advice_inpatient';
+  await SB.from('episodes').insert({patient_id:p.id,episode_type:epType,episode_id_label:'EP-'+new Date().getFullYear()+'-001',opened_date:surgDate||new Date().toISOString().split('T')[0],consultant:patientPayload.consultant,ward:patientPayload.ward,status:'open',created_by:getLoggedInSubmitterName()});
+  // Create stoma if type selected
+  if(stomaType){
+    await SB.from('stomas').insert({patient_id:p.id,stoma_label:'Stoma 1',stoma_type:stomaType,formed_date:surgDate,status:'active'});
+  }
+  closeMo();
+  loadPatients();
+  if(typeof logAuditTrailAction==='function') await logAuditTrailAction('insert','patients',p.id,{description:`Patient added: ${fn} ${sn}`});
+}
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
       <div class="fg"><label>First Name *</label><input id="mp-fn" placeholder="First name"/></div>
       <div class="fg"><label>Surname *</label><input id="mp-sn" placeholder="Surname"/></div>
