@@ -2131,7 +2131,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
             <div style="font-size:22px;font-weight:900;color:var(--navy);margin-top:6px;" id="tile-nurse-jacqueline">—</div>
           </div>
         </div>
-        <div class="command-card" onclick="switchSection('patients',null);setPatientNurseFilter('Lorraine Stivala')">
+        <div class="command-card" onclick="switchSection('patients',null);setPatientNurseFilter('Lorraine-Marie Micallef')">
           <div class="command-icon" style="background:linear-gradient(135deg,#1565c0,#42a5f5);" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/></svg></div>
           <div>
             <h3>Lorraine — My Patients</h3>
@@ -2196,7 +2196,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
           </div>
         </div>
         <div style="overflow-x:auto;"><table class="dt">
-          <thead><tr><th>Name</th><th>Hospital No.</th><th>ID Card</th><th>Stoma Type</th><th>Surgery Date</th><th>Consultant</th><th>Allocated Nurse</th><th>Status</th><th>Actions</th></tr></thead>
+          <thead><tr><th>Patient</th><th>ID / Hospital No.</th><th>Contact / Locality</th><th>Stoma Type</th><th>Surgery / Last Outcome</th><th>Follow-Up Due</th><th>Assigned Nurse</th><th>Status</th><th>Actions</th></tr></thead>
           <tbody id="patients-tbody"><tr><td colspan="9" class="empty">Select a view above.</td></tr></tbody>
         </table></div>
       </div>
@@ -3286,7 +3286,7 @@ const LOGIN_PROFILES={
   'stomacare.mdh@gov.mt':{full_name:'Jason Fenech',grade:'Practice Nurse',short_grade:'PN'},
   'jason.fenech@gov.mt':{full_name:'Jason Fenech',grade:'Practice Nurse',short_grade:'PN'},
   'jacklyn.sammut@gov.mt':{full_name:'Jacqueline Sammut',grade:'Practice Nurse',short_grade:'PN'},
-  'lorraine-marie.micallef@gov.mt':{full_name:'Lorraine Stivala',grade:'Staff Nurse',short_grade:'SN'},
+  'lorraine-marie.micallef@gov.mt':{full_name:'Lorraine-Marie Micallef',grade:'Staff Nurse',short_grade:'SN'},
   'tracy.bartolo@gov.mt':{full_name:'Tracey Galea',grade:'Senior Staff Nurse',short_grade:'SSN'}
 };
 const ALLOWED_LOGIN_EMAILS=Object.keys(LOGIN_PROFILES);
@@ -4291,20 +4291,20 @@ async function loadHomeDashboard(){
     .eq('is_deleted',false).gte('created_at',`${thisYear}-01-01`);
   setValue('tile-new-patients-year',newPtsYear?.length||0);
 
-  // Stoma type counts from stomas_main
-  const{data:stomaData}=await SB.from('stomas_main').select('stoma_type').eq('is_active',true).eq('is_deleted',false);
-  const stomas=stomaData||[];
-  setValue('tile-colostomy',stomas.filter(s=>s.stoma_type==='Colostomy').length);
-  setValue('tile-ileostomy',stomas.filter(s=>s.stoma_type==='Ileostomy').length);
-  setValue('tile-urostomy',stomas.filter(s=>s.stoma_type==='Urostomy').length);
+  // Stoma type counts — use stomas_main when available, otherwise the imported Patients.csv stoma summary.
+  let stomas=[];
+  try{const{data:stomaData}=await SB.from('stomas_main').select('stoma_type').eq('is_active',true).eq('is_deleted',false);stomas=stomaData||[];}catch(e){stomas=[];}
+  const stomaSource=stomas.length?stomas.map(s=>s.stoma_type):activePts.map(p=>p.stoma_type||'');
+  setValue('tile-colostomy',stomaSource.filter(s=>String(s).toLowerCase().includes('colostomy')).length);
+  setValue('tile-ileostomy',stomaSource.filter(s=>String(s).toLowerCase().includes('ileostomy')).length);
+  setValue('tile-urostomy',stomaSource.filter(s=>String(s).toLowerCase().includes('urostomy')).length);
 
   // Nurse patient counts
-  const{data:nursePts}=await SB.from('patients_main').select('assigned_nurse').eq('is_active',true).eq('is_deleted',false);
-  const np=nursePts||[];
-  setValue('tile-nurse-jason',np.filter(p=>p.assigned_nurse==='Jason Fenech').length);
-  setValue('tile-nurse-jacqueline',np.filter(p=>p.assigned_nurse==='Jacqueline Sammut').length);
-  setValue('tile-nurse-lorraine',np.filter(p=>p.assigned_nurse==='Lorraine Stivala').length);
-  setValue('tile-nurse-common',np.filter(p=>!p.assigned_nurse||p.assigned_nurse==='Common').length);
+  const np=activePts||[];
+  setValue('tile-nurse-jason',np.filter(p=>patientNurseMatches(p.allocated_nurse||p.assigned_nurse,'Jason')).length);
+  setValue('tile-nurse-jacqueline',np.filter(p=>patientNurseMatches(p.allocated_nurse||p.assigned_nurse,'Jacqueline')).length);
+  setValue('tile-nurse-lorraine',np.filter(p=>patientNurseMatches(p.allocated_nurse||p.assigned_nurse,'Lorraine')).length);
+  setValue('tile-nurse-common',np.filter(p=>patientNurseMatches(p.allocated_nurse||p.assigned_nurse,'Common')).length);
 
   // Today's clinic
   await loadHomeClinic();
@@ -6609,7 +6609,7 @@ function normaliseProjectPatientForAppointment(p){
     surname:p.surname||'',
     id_card:p.id_card_number||p.hospital_number||'',
     phone_number:p.mobile_number||p.home_number||'',
-    followup_owner:p.allocated_nurse||p.followup_owner||'',
+    followup_owner:p.allocated_nurse||p.assigned_nurse||p.followup_owner||'',
     followup_due_month:p.followup_due_month||'',
     followup_year:p.followup_year||'',
     followup_status:p.followup_status||'',
@@ -6634,7 +6634,7 @@ function normaliseLegacyPatientForAppointment(p){
 async function getProjectPatientForAppointment(id){
   if(!id)return null;
   try{
-    const{data,error}=await SB.from('patients_main').select('id,first_name,surname,id_card_number,hospital_number,mobile_number,home_number,allocated_nurse,followup_due_month,followup_year,followup_status').eq('id',id).maybeSingle();
+    const{data,error}=await SB.from('patients_main').select('id,first_name,surname,id_card_number,hospital_number,mobile_number,home_number,allocated_nurse,assigned_nurse,followup_due_month,followup_year,followup_status').eq('id',id).maybeSingle();
     if(error)return null;
     return normaliseProjectPatientForAppointment(data);
   }catch(e){return null;}
@@ -6661,7 +6661,7 @@ async function enrichLegacyAppointmentRows(rows){
     const missing=patientIds.filter(id=>!pmap[id]);
     if(missing.length){
       try{
-        const{data}=await SB.from('patients_main').select('id,first_name,surname,id_card_number,hospital_number,mobile_number,home_number,allocated_nurse,followup_due_month,followup_year,followup_status').in('id',missing);
+        const{data}=await SB.from('patients_main').select('id,first_name,surname,id_card_number,hospital_number,mobile_number,home_number,allocated_nurse,assigned_nurse,followup_due_month,followup_year,followup_status').in('id',missing);
         (data||[]).forEach(p=>pmap[String(p.id)]=normaliseProjectPatientForAppointment(p));
       }catch(e){}
     }
@@ -7018,7 +7018,7 @@ async function searchPatientsForRebook(){
   box.innerHTML='<div class="patient-search-empty">Searching patients...</div>';
   const matches=[];
   try{
-    const{data,error}=await SB.from('patients_main').select('id,first_name,surname,id_card_number,hospital_number,mobile_number,home_number,allocated_nurse,followup_due_month,followup_year,followup_status').order('surname',{ascending:true}).limit(900);
+    const{data,error}=await SB.from('patients_main').select('id,first_name,surname,id_card_number,hospital_number,mobile_number,home_number,allocated_nurse,assigned_nurse,followup_due_month,followup_year,followup_status').order('surname',{ascending:true}).limit(900);
     if(!error)(data||[]).map(normaliseProjectPatientForAppointment).filter(Boolean).forEach(p=>matches.push(p));
   }catch(e){}
   try{
@@ -8726,15 +8726,55 @@ function projectEpisodeStatusFromStage(stage){
   return 'Active';
 }
 function patientTypeFromProject(p,e){
+  if(p?.patient_type)return String(p.patient_type).toLowerCase()==='inpatient'?'inpatient':'outpatient';
   const status=String(p?.patient_status||'').toLowerCase();
   if(status.includes('inpatient'))return 'inpatient';
   if(status.includes('outpatient'))return 'outpatient';
   if(p?.current_ward||e?.admission_ward)return 'inpatient';
   return 'outpatient';
 }
+
+function csvListText(value){
+  if(Array.isArray(value))return value.filter(Boolean).join(', ');
+  const raw=String(value||'').trim();
+  if(!raw)return '';
+  try{
+    const parsed=JSON.parse(raw);
+    if(Array.isArray(parsed))return parsed.filter(Boolean).join(', ');
+  }catch(e){}
+  return raw.replace(/^\[/,'').replace(/\]$/,'').replace(/\"/g,'').replace(/===\s*Others\s*===/gi,'Others').trim();
+}
+function patientDateText(value){
+  if(!value)return '—';
+  const raw=String(value).slice(0,10);
+  const d=new Date(raw+'T12:00:00');
+  if(Number.isNaN(d.getTime()))return raw;
+  return d.toLocaleDateString('en-MT');
+}
+function nurseKey(value){
+  const n=String(value||'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
+  if(!n)return 'common';
+  if(n.includes('jason'))return 'jason';
+  if(n.includes('jacqueline')||n.includes('jacklyn'))return 'jacqueline';
+  if(n.includes('lorraine'))return 'lorraine';
+  if(n.includes('common'))return 'common';
+  if(n.includes('temporary')||n.includes('paused'))return 'temporary paused';
+  if(n.includes('inpatient'))return 'inpatient';
+  if(n.includes('gozo'))return 'gozo';
+  if(n.includes('post operative')||n.includes('post op'))return 'post operative discharge';
+  return n;
+}
+function patientNurseMatches(patientNurse,filter){
+  const pk=nurseKey(patientNurse);
+  const fk=nurseKey(filter);
+  if(fk==='common')return pk==='common'||!pk;
+  return pk===fk;
+}
 function normalizeProjectPatient(p,e={},s={}){
-  const pathway=e?.pathway_stage||'Referral / New Patient';
+  const pathway=e?.pathway_stage||p?.pathway_status||'Long-Term Monitoring';
   const patientType=patientTypeFromProject(p,e);
+  const allocatedNurse=p?.allocated_nurse||p?.assigned_nurse||e?.assigned_nurse||e?.primary_nurse||'Common';
+  const stomaType=csvListText(s?.stoma_type||e?.actual_stoma_type||e?.intended_stoma_type||p?.stoma_type_summary);
   return {
     id:p.id,
     patient_number:p.patient_number,
@@ -8746,11 +8786,13 @@ function normalizeProjectPatient(p,e={},s={}){
     passport_number:p.passport_number,
     phone_number:p.mobile_number||p.home_number,
     date_of_birth:p.date_of_birth,
+    sex:p.sex||'',
+    locality:p.locality||'',
     patient_status:p.patient_status,
     patient_type:patientType,
     patient_type_label:patientType==='inpatient'?'Inpatient':'Outpatient',
     ward:p.current_ward||e?.admission_ward,
-    diagnosis:p.medical_history||e?.operation_performed,
+    diagnosis:p.medical_history||e?.operation_performed||p.patient_notes,
     is_active:p.is_active!==false&&!p.is_deleted,
     created_at:p.created_at,
     created_by:p.created_by,
@@ -8760,21 +8802,30 @@ function normalizeProjectPatient(p,e={},s={}){
     episode_status:e?.episode_status,
     episode_outcome:e?.episode_outcome,
     pathway_status:pathway,
-    allocated_nurse:e?.assigned_nurse||e?.primary_nurse||'Common',
+    allocated_nurse:allocatedNurse,
     primary_nurse:e?.primary_nurse,
-    assigned_nurse:e?.assigned_nurse,
-    discharge_date:e?.discharge_date,
+    assigned_nurse:allocatedNurse,
+    discharge_date:e?.discharge_date||p.discharge_date||p.discharged_date,
     follow_up_required:e?.follow_up_required,
     reversal_applicable:e?.reversal_applicable,
-    reversal_date:e?.reversal_date,
+    reversal_date:e?.reversal_date||p.reversal_date,
+    rip_date:p.rip_date,
     admission_date:e?.admission_date,
     consultant:e?.consultant,
     surgeon:e?.surgeon,
-    surgery_date:s?.surgery_date||e?.surgery_date,
+    surgery_date:s?.surgery_date||e?.surgery_date||p.surgery_date,
+    last_outcome_date:p.last_outcome_date,
+    next_followup_mirror:p.next_followup_mirror,
+    followup_due_month:p.followup_due_month,
+    followup_year:p.followup_year,
     stoma_id:s?.id||null,
     stoma_number:s?.stoma_number,
-    stoma_type:s?.stoma_type||e?.actual_stoma_type||e?.intended_stoma_type,
+    stoma_type:stomaType,
     stoma_site:s?.stoma_site||e?.stoma_site,
+    appliance_used:csvListText(p.appliance_used),
+    accessories:csvListText(p.accessories),
+    complications:csvListText(p.complications),
+    patient_notes:p.patient_notes||'',
     bag_brand:s?.bag_brand,
     flange_size:s?.flange_size,
     output_colour:s?.output_colour
@@ -8941,12 +8992,13 @@ function openAddPatientModalWithPathway(pathwayType){
   },30);
 }
 
+
 async function loadPatients(){
   const tbody=document.getElementById('patients-tbody');
   if(!tbody)return;
   refreshPatientPathwayFilterOptions();
   updatePatientViewLabel();
-  tbody.innerHTML='<tr><td colspan="9" class="empty">Loading patients from Project Bible tables...</td></tr>';
+  tbody.innerHTML='<tr><td colspan="9" class="empty">Loading patients from Supabase...</td></tr>';
   const search=(document.getElementById('pt-search')?.value||'').trim().toLowerCase();
   const typeF=document.getElementById('pt-type-filter')?.value||'';
   const statusF=document.getElementById('pt-status-filter')?.value||'';
@@ -8959,30 +9011,37 @@ async function loadPatients(){
   catch(error){tbody.innerHTML=`<tr><td colspan="9" class="empty">Error loading patients_main: ${htmlSafe(error.message)}</td></tr>`;return;}
   loadPatientCommandCountsFromRows(rows,dntuIds);
   if(commandF)rows=rows.filter(r=>patientMatchesCommandView(r,commandF,dntuIds));
-  if(nurseF){
-    if(nurseF==='Common')rows=rows.filter(r=>!r.allocated_nurse||String(r.allocated_nurse).toLowerCase()==='common');
-    else rows=rows.filter(r=>String(r.allocated_nurse||'').toLowerCase()===nurseF.toLowerCase());
-  }
+  if(nurseF)rows=rows.filter(r=>patientNurseMatches(r.allocated_nurse||r.assigned_nurse,nurseF));
   if(typeF)rows=rows.filter(r=>r.patient_type===typeF);
   if(pathwayF)rows=rows.filter(r=>r.pathway_status===pathwayF);
   if(statusF==='active')rows=rows.filter(r=>r.is_active);
   if(statusF==='inactive')rows=rows.filter(r=>!r.is_active||isDeceasedPatient(r)||isRelocatedPatient(r)||isReversalOrClosedPatient(r));
-  if(search)rows=rows.filter(r=>[r.first_name,r.surname,r.id_card,r.hospital_number,r.patient_number,r.ward,r.stoma_type,r.patient_status,r.allocated_nurse].some(v=>String(v||'').toLowerCase().includes(search)));
+  if(search)rows=rows.filter(r=>[
+    r.first_name,r.surname,r.id_card,r.hospital_number,r.patient_number,r.phone_number,r.locality,
+    r.ward,r.stoma_type,r.patient_status,r.allocated_nurse,r.followup_due_month,r.followup_year,r.appliance_used
+  ].some(v=>String(v||'').toLowerCase().includes(search)));
   if(!rows.length){tbody.innerHTML='<tr><td colspan="9" class="empty">No patients found for this view</td></tr>';return;}
   tbody.innerHTML=rows.map(p=>{
-    const name=`${p.first_name||''} ${p.surname||''}`.trim();
-    const badge=pathwayBadge(p.pathway_status);
-    const typeBadge=p.patient_type==='inpatient'?'<span style="background:#ecfeff;color:#155e75;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:800;">Inpatient</span>':'<span style="background:#ecfdf9;color:#0f766e;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:800;">Outpatient</span>';
-    const warning=isDeceasedPatient(p)?'<br/><span style="font-size:10px;color:#991b1b;font-weight:800;">Deceased</span>':isRelocatedPatient(p)?'<br/><span style="font-size:10px;color:#92400e;font-weight:800;">Relocated overseas</span>':dntuIds.has(String(p.id))?'<br/><span style="font-size:10px;color:#b45309;font-weight:800;">DNTU follow-up</span>':'';
+    const name=`${p.first_name||''} ${p.surname||''}`.trim()||'Unnamed patient';
+    const typeBadge=p.patient_type==='inpatient'
+      ?'<span style="background:#ecfeff;color:#155e75;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:800;">Inpatient</span>'
+      :'<span style="background:#ecfdf9;color:#0f766e;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:800;">Outpatient</span>';
+    const statusText=htmlSafe(p.patient_status||'Active');
+    const statusStyle=isDeceasedPatient(p)?'background:#fee2e2;color:#991b1b;':isReversalOrClosedPatient(p)?'background:#ede9fe;color:#5b21b6;':isRelocatedPatient(p)||isDischargedToGozoPatient(p)?'background:#ffedd5;color:#9a3412;':p.is_active?'background:#dcfce7;color:#166534;':'background:#f1f5f9;color:#334155;';
+    const warning=isDeceasedPatient(p)?'<br/><span style="font-size:10px;color:#991b1b;font-weight:800;">Deceased</span>':isRelocatedPatient(p)?'<br/><span style="font-size:10px;color:#92400e;font-weight:800;">Relocated overseas</span>':isDischargedToGozoPatient(p)?'<br/><span style="font-size:10px;color:#92400e;font-weight:800;">Discharged to Gozo</span>':dntuIds.has(String(p.id))?'<br/><span style="font-size:10px;color:#b45309;font-weight:800;">DNTU follow-up</span>':'';
+    const due=p.followup_due_month?`${htmlSafe(followupMonthName(p.followup_due_month))} ${htmlSafe(p.followup_year||'')}`:(p.next_followup_mirror?patientDateText(p.next_followup_mirror):'—');
+    const stoma=`${htmlSafe(p.stoma_type||'—')}${p.appliance_used?`<br/><span style="font-size:10px;color:var(--muted);line-height:1.25;display:inline-block;margin-top:2px;">${htmlSafe(p.appliance_used)}</span>`:''}`;
+    const contact=`${p.phone_number?`📞 ${htmlSafe(p.phone_number)}`:'—'}${p.locality?`<br/><span style="font-size:10px;color:var(--muted);">${htmlSafe(p.locality)}</span>`:''}${p.sex?`<br/><span style="font-size:10px;color:var(--muted);">${htmlSafe(p.sex)}</span>`:''}`;
+    const surg=`${patientDateText(p.surgery_date)}${p.last_outcome_date?`<br/><span style="font-size:10px;color:var(--muted);">Last: ${patientDateText(p.last_outcome_date)}</span>`:''}`;
     return `<tr>
-      <td><strong>${htmlSafe(name)}</strong><br/><span style="font-size:10px;color:var(--muted);">${htmlSafe(p.patient_number||'')}</span>${warning}</td>
-      <td style="font-family:monospace;font-size:12px;">${htmlSafe(p.id_card||p.hospital_number||'—')}</td>
-      <td>${typeBadge}</td>
-      <td>${htmlSafe(p.stoma_type||'—')}</td>
-      <td>${htmlSafe(p.ward||'—')}</td>
-      <td>${p.surgery_date?new Date(p.surgery_date).toLocaleDateString('en-MT'):'—'}</td>
+      <td><strong>${htmlSafe(name)}</strong><br/><span style="font-size:10px;color:var(--muted);">${typeBadge}</span>${warning}</td>
+      <td style="font-family:monospace;font-size:12px;"><strong>${htmlSafe(p.id_card||p.hospital_number||'—')}</strong><br/><span style="font-size:10px;color:var(--muted);">Hosp: ${htmlSafe(p.hospital_number||'—')}</span></td>
+      <td>${contact}</td>
+      <td style="max-width:230px;white-space:normal;">${stoma}</td>
+      <td>${surg}</td>
+      <td>${due}</td>
       <td><span style="display:inline-block;background:#f8fafc;border:1px solid var(--border);padding:3px 8px;border-radius:999px;font-size:10px;font-weight:800;color:var(--navy);">${htmlSafe(p.allocated_nurse||'Common')}</span></td>
-      <td>${badge}</td>
+      <td><span style="display:inline-block;${statusStyle}padding:3px 10px;border-radius:999px;font-size:10px;font-weight:900;">${statusText}</span><br/><span style="display:inline-block;margin-top:4px;">${pathwayBadge(p.pathway_status)}</span></td>
       <td style="white-space:nowrap;">
         <button onclick="openPatientProfile('${p.id}')" style="padding:4px 10px;border-radius:6px;border:none;background:var(--teal);color:white;font-size:11px;font-weight:700;cursor:pointer;margin-right:4px;">Profile</button>
         <button onclick="openEditPatientModal('${p.id}')" style="padding:4px 10px;border-radius:6px;border:none;background:#e0f2fe;color:#075985;font-size:11px;font-weight:700;cursor:pointer;">Edit</button>
@@ -9024,7 +9083,7 @@ function openAddPatientModal(){
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
     <div class="fg" style="grid-column:1/-1"><label>Operation Performed &amp; Findings</label><textarea id="mp-opfindings" style="width:100%;padding:9px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:'DM Sans',sans-serif;min-height:60px;outline:none;" placeholder="e.g. AP resection with end colostomy formation"></textarea></div>
     <div class="fg"><label>Stoma Type</label><select id="mp-stoma"><option value="">Select...</option>${(typeof STOMA_TYPES!=='undefined'?STOMA_TYPES:['Colostomy','Ileostomy','Urostomy','Loop Colostomy','Loop Ileostomy','End Colostomy','End Ileostomy','Urostomy / Ileal Conduit']).map(t=>`<option>${t}</option>`).join('')}</select></div>
-    <div class="fg"><label>Assigned Nurse</label><select id="mp-nurse"><option value="">Select...</option><option>Jason Fenech</option><option>Lorraine Stivala</option><option>Jacqueline Sammut</option><option>Common</option></select></div>
+    <div class="fg"><label>Assigned Nurse</label><select id="mp-nurse"><option value="">Select...</option><option>Jason Fenech</option><option>Lorraine-Marie Micallef</option><option>Jacqueline Sammut</option><option>Common</option></select></div>
     <div class="fg"><label>Consultant</label><input id="mp-cons" placeholder="Consultant name"/></div>
     <div class="fg"><label>Ward</label><input id="mp-ward" placeholder="e.g. SW1"/></div>
     <div class="fg"><label>Surgery Date</label><input type="date" id="mp-surg"/></div>
