@@ -6,7 +6,145 @@
 <title>MDH Stoma Care Clinic — Patient Dashboard</title>
 <!-- Build v57: Core staff OT displayed on core row; Follow-Up buttons left-icon/center-text aligned; appointments grid fills width -->
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet"/>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+
+/* v58 — override appointment page renderer with roster-style grid */
+function appointmentColumnBadgeHTML(n){
+  if(!n)return '';
+  if(n.type==='common') return '<span class="appt-col-badge general">General</span>';
+  if(n.type==='core-ot') return '<span class="appt-col-badge overtime">Core OT</span>';
+  if(n.type==='ot') return '<span class="appt-col-badge overtime">Overtime</span>';
+  if(n.type==='til') return '<span class="appt-col-badge til">TIL</span>';
+  if(n.type==='absent'||n.type==='ot-booked') return '<span class="appt-col-badge bookedonly">Booked</span>';
+  return '';
+}
+function appointmentCellStatusClass(status){
+  const key=String(status||'booked').toLowerCase();
+  if(key==='attended')return 'status-attended';
+  if(key==='did_not_attend' || key==='dntu' || key==='dna')return 'status-did_not_attend';
+  if(key==='cancelled')return 'status-cancelled';
+  return 'status-booked';
+}
+async function loadAppts(){
+  const date=document.getElementById('appt-date')?.value;
+  if(!date)return;
+  syncApptMonthYearFilters();
+
+  const {data:rd}=await SB.from('roster').select('*').eq('roster_date',date);
+  const {data:otToday}=await SB.from('bank_staff_assignments').select('*, bank_staff(id,full_name)').eq('work_date',date);
+  const {data:tilIn}=await SB.from('leave_records').select('*, staff(id,full_name)').eq('leave_type','overtime').like('notes','TIL-In:%').eq('start_date',date);
+  const {data:coreOTTodayRaw}=await SB.from('leave_records').select('*, staff(id,full_name)').eq('leave_type','overtime').eq('start_date',date);
+  const coreOTToday=(coreOTTodayRaw||[]).filter(r=>!isTILNote(r.notes));
+  const {data:tilOff}=await SB.from('leave_records').select('staff_id').eq('leave_type','overtime').like('notes','TIL-Off:%').eq('start_date',date);
+  const offIds=new Set((tilOff||[]).map(t=>String(t.staff_id)));
+  const OFF_ST=['off','sick_leave','maternity_leave','study_leave','annual_leave','public_holiday'];
+
+  const appts=await getDashboardAppointmentsOnDate(date);
+  const nurses=[];
+  const nursePriority={common:0,core:1,til:2,ot:3,'ot-booked':3,'core-ot':4,absent:1};
+  const addNurse=(n)=>{
+    if(!n)return;
+    if(n.type==='common'){
+      if(!nurses.some(x=>x.type==='common'))nurses.push(n);
+      return;
+    }
+    const existing=nurses.find(x=>x.type!=='common' && (
+      String(x.id||'')===String(n.id||'') ||
+      (x.bankId && n.bankId && String(x.bankId)===String(n.bankId)) ||
+      (x.bankId && String(x.bankId)===String(n.id||'')) ||
+      (n.bankId && String(n.bankId)===String(x.id||''))
+    ));
+    if(!existing){nurses.push(n);return;}
+    if((nursePriority[n.type]||0)>(nursePriority[existing.type]||0))existing.type=n.type;
+    if(n.bankId)existing.bankId=n.bankId;
+    if(n.name)existing.name=n.name;
+  };
+
+  for(const st of (staffList||[])){
+    if(offIds.has(String(st.id)))continue;
+    const e=(rd||[]).find(r=>String(r.staff_id)===String(st.id));
+    if(e){ if(!OFF_ST.includes(e.status)) addNurse({id:st.id,name:st.full_name,type:'core'}); }
+    else if(defaultCode(st,date)==='working') addNurse({id:st.id,name:st.full_name,type:'core'});
+  }
+  for(const t of (tilIn||[])) if(t.staff?.full_name) addNurse({id:t.staff_id,name:t.staff.full_name,type:'til'});
+  for(const o of (coreOTToday||[])) if(o.staff?.full_name) addNurse({id:o.staff_id,name:o.staff.full_name,type:'core-ot'});
+  for(const b of (otToday||[])){
+    if(b.bank_staff?.full_name){
+      const core=findCoreStaffByNameFlexible(b.bank_staff.full_name);
+      if(core) addNurse({id:core.id,bankId:b.bank_staff.id,name:core.full_name,type:'core-ot'});
+      else addNurse({id:b.bank_staff.id,name:b.bank_staff.full_name,type:'ot'});
+    }
+  }
+  for(const a of (appts||[]).filter(x=>x.status!=='cancelled')){
+    if(a.assigned_to && !nurses.some(n=>String(n.id)===String(a.assigned_to))){
+      const coreStaff=(staffList||[]).find(s=>String(s.id)===String(a.assigned_to));
+      addNurse({id:a.assigned_to,name:coreStaff?.full_name||a.staff?.full_name||'Booked Nurse',type:'absent'});
+    }
+    if(a.bank_staff_id && !nurses.some(n=>String(n.id||'')===String(a.bank_staff_id) || String(n.bankId||'')===String(a.bank_staff_id))){
+      addNurse({id:a.bank_staff_id,name:a.bank_staff?.full_name||'Booked OT/Bank Staff',type:'ot-booked'});
+    }
+  }
+  nurses.push({id:'common',name:'Common',type:'common'});
+
+  const workingCount=nurses.filter(n=>!['common','absent','ot-booked'].includes(n.type)).length;
+  const extraCount=nurses.filter(n=>['absent','ot-booked'].includes(n.type)).length;
+  const badge=document.getElementById('sbadge');
+  if(badge){
+    badge.textContent=`${workingCount} nurse${workingCount!==1?'s':''} working${extraCount?` · ${extraCount} booked column${extraCount!==1?'s':''} shown`:''}`;
+    badge.className='sbadge '+(workingCount>=2?'sb-ok':workingCount===1?'sb-warn':'sb-none');
+  }
+
+  const booked=(appts||[]).filter(a=>a.status!=='cancelled').length;
+  const summary=document.getElementById('appt-slot-summary');
+  if(summary)summary.textContent=`${booked} patient${booked!==1?'s':''} booked`;
+
+  const con=document.getElementById('slots-container');
+  if(!con)return;
+  const tableMin=Math.max(760, 88 + (nurses.length*210));
+  let html=`<table class="daily-appt-grid roster-style-grid" style="min-width:${tableMin}px;">`;
+  html+='<thead><tr><th class="time-head">Time</th>';
+  nurses.forEach(n=>{
+    html+=`<th><span class="appt-col-title">${htmlSafe(n.name)} ${appointmentColumnBadgeHTML(n)}</span></th>`;
+  });
+  html+='</tr></thead><tbody>';
+
+  SLOTS.forEach(slot=>{
+    html+=`<tr><td class="appt-time-cell">${slot}</td>`;
+    nurses.forEach(n=>{
+      const slotAppts=appointmentsForSlotAndColumn(appts,slot,n);
+      const appt=slotAppts.find(a=>a.status!=='cancelled');
+      const cancelledHere=slotAppts.filter(a=>a.status==='cancelled');
+      if(appt){
+        const nm=`${appt.patients?.first_name||''} ${appt.patients?.surname||''}`.trim()||'Patient';
+        html+=`<td class="appt-grid-cell">
+          <div class="appt-grid-card ${appointmentCellStatusClass(appt.status)}">
+            <div class="appt-patient-name">${htmlSafe(nm)}</div>
+            ${visiblePatientContactHTML(appt.patients)}
+            <div class="appt-status-line"><span class="appt-status-pill">${appointmentStatusText(appt.status)}</span></div>
+            ${appointmentFollowupStatusBadge(appt.patients?.followup_status)}
+            ${cancelledSlotHistoryHTML(cancelledHere)}
+            <div class="appt-action-row">
+              ${appt.status!=='attended'?`<button class="seen-btn" title="Seen" onclick="setAS('${appt.id}','attended')">✅</button>`:''}
+              ${appt.status!=='did_not_attend'?`<button class="dntu-btn" onclick="setAS('${appt.id}','did_not_attend')">DNTU</button>`:''}
+              ${appt.status!=='cancelled'?`<button class="cancel-btn" title="Cancel" onclick="setAS('${appt.id}','cancelled')">✖</button>`:''}
+              <button class="edit-btn" onclick="editAppointment('${appt.id}')">Edit</button>
+              <button class="delete-btn" title="Delete" onclick="delApp('${appt.id}')">🗑</button>
+            </div>
+          </div>
+        </td>`;
+      }else if(n.type==='absent'||n.type==='ot-booked'){
+        html+=`<td class="appt-grid-cell"><div class="appt-absent-cell"><div class="mini-time">${slot}</div><div>Booked / not rostered</div></div></td>`;
+      }else{
+        html+=`<td class="appt-grid-cell"><div class="appt-empty-cell">${cancelledSlotHistoryHTML(cancelledHere)}<button onclick="bookSlot('${slot}','${date}','${jsSafe(n.id)}','${jsSafe(n.name)}','${jsSafe(n.type)}')" class="btn-book-time ${cancelledHere.length?'book-replacement-btn':''}">+ Book</button></div></td>`;
+      }
+    });
+    html+='</tr>';
+  });
+  html+='</tbody></table>';
+  con.innerHTML=html;
+}
+
+</script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
@@ -1272,6 +1410,102 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   #section-appointments #slots-container table.daily-appt-grid,#page-appointments #slots-container table.daily-appt-grid{min-width:820px!important;}
 }
 
+
+/* v58 — roster-style patient appointments screen and mobile polish */
+#page-appointments .phdr{margin-bottom:8px!important;}
+#page-appointments .phdr h2{font-size:34px;font-family:'DM Serif Display',serif;font-weight:400;line-height:1.05;color:var(--navy);}
+#page-appointments .phdr p{font-size:12px;color:var(--muted);margin-top:4px;}
+#page-appointments .appointment-filter-row{gap:10px!important;background:transparent!important;border:none!important;border-radius:0!important;padding:0!important;box-shadow:none!important;margin-bottom:12px!important;}
+#page-appointments .appointment-filter-row label{font-size:13px;font-weight:700;color:var(--navy);}
+#page-appointments .appointment-filter-row input[type=date],
+#page-appointments .appointment-filter-row select,
+#page-appointments .appointment-filter-row button{height:38px;}
+#page-appointments .appointment-filter-row input[type=date]{padding:8px 10px;border:1.5px solid var(--border);border-radius:9px;background:#fff;font-weight:700;color:var(--navy);}
+#page-appointments .appointment-filter-row select{padding:8px 12px;border:1.5px solid var(--border);border-radius:9px;background:#fff;color:var(--navy);font-size:12px;font-weight:700;}
+#page-appointments .appointment-filter-row button{min-width:38px;padding:0 12px;border:1.5px solid var(--border)!important;border-radius:9px!important;background:#fff!important;color:var(--navy)!important;font-size:13px!important;font-weight:800!important;}
+#page-appointments .appointment-filter-row .sbadge{margin-left:4px;}
+#page-appointments .compact-appt-search{padding:16px;border-radius:16px;border:1px solid var(--border);box-shadow:0 10px 24px rgba(15,38,56,.06);margin-bottom:16px;}
+#page-appointments .appointment-search-head{display:flex!important;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:12px;}
+#page-appointments .appointment-search-head strong{font-size:15px;font-weight:900;color:var(--navy);}
+#page-appointments .patient-search-mini-help{display:block;flex:1 1 380px;text-align:right;color:var(--muted);font-size:11px;line-height:1.4;}
+#page-appointments .appointment-search-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+#page-appointments .appointment-search-row input{flex:1 1 420px;max-width:none;min-height:40px;border-radius:10px;padding:10px 13px;font-size:13px;font-weight:600;color:var(--navy);background:#fff;}
+#page-appointments .appt-search-btn{min-width:95px;min-height:40px;border-radius:10px;border:1px solid var(--teal);background:var(--teal);color:#fff;font-size:12px;font-weight:900;box-shadow:0 4px 10px rgba(13,115,119,.14);}
+#page-appointments .appt-clear-btn{min-width:86px;background:#eef2f7;color:var(--navy);border-color:#eef2f7;box-shadow:none;}
+#page-appointments .patient-search-note{margin-top:12px;font-size:11px;color:var(--muted);font-style:italic;}
+#page-appointments .appointment-clinic-shell{border-radius:18px;overflow:hidden;box-shadow:0 10px 24px rgba(15,38,56,.07);}
+#page-appointments .appointment-clinic-header{padding:16px 20px;background:var(--navy);color:#fff;display:flex;justify-content:space-between;align-items:center;}
+#page-appointments .appointment-clinic-header h3{font-size:16px;font-weight:900;margin:0;}
+#page-appointments .appointment-clinic-header span{font-size:11px;opacity:.78;font-weight:600;}
+#page-appointments #slots-container{width:100%!important;overflow-x:auto!important;padding:10px!important;background:#fff;}
+#page-appointments .daily-appt-grid.roster-style-grid{width:100%;border-collapse:separate;border-spacing:8px 10px;}
+#page-appointments .daily-appt-grid.roster-style-grid th{padding:12px 10px;background:#f7f9fb;color:var(--navy);font-size:12px;font-weight:900;text-align:center;border:1px solid #e4e9ef;border-radius:12px;white-space:normal;vertical-align:middle;}
+#page-appointments .daily-appt-grid.roster-style-grid th.time-head{min-width:88px;width:88px;text-align:left;padding-left:14px;}
+#page-appointments .appt-col-title{display:inline-flex;align-items:center;justify-content:center;gap:5px;flex-wrap:wrap;line-height:1.2;}
+#page-appointments .appt-col-badge{display:inline-flex;align-items:center;justify-content:center;padding:2px 7px;border-radius:999px;font-size:9px;font-weight:900;letter-spacing:.2px;text-transform:uppercase;}
+#page-appointments .appt-col-badge.general{background:#6b7280;color:#fff;}
+#page-appointments .appt-col-badge.overtime{background:#e6a817;color:#fff;}
+#page-appointments .appt-col-badge.til{background:#0d7377;color:#fff;}
+#page-appointments .appt-col-badge.bookedonly{background:#c0392b;color:#fff;}
+#page-appointments .daily-appt-grid.roster-style-grid td{vertical-align:top;}
+#page-appointments .appt-time-cell{min-width:88px;width:88px;padding:16px 14px;background:#f7f7f8;border:1px solid #e1e5ea;border-radius:12px;font-size:14px;font-weight:900;color:#0d7377;line-height:1;vertical-align:middle;text-align:left;}
+#page-appointments .appt-grid-cell{min-width:180px;background:#fff;}
+#page-appointments .appt-grid-card{min-height:126px;border:1px solid #cfe1de;border-left:5px solid #0d7377;border-radius:18px;padding:12px 12px 10px;background:#f0faf9;box-shadow:0 2px 8px rgba(0,0,0,.05);position:relative;overflow:hidden;}
+#page-appointments .appt-grid-card.status-booked{background:#eef7ee;}
+#page-appointments .appt-grid-card.status-attended{background:#dff1e3;}
+#page-appointments .appt-grid-card.status-did_not_attend{background:#f6efd6;}
+#page-appointments .appt-grid-card.status-cancelled{background:#fff5f5;border-left-color:#c0392b;}
+#page-appointments .appt-grid-card .appt-patient-name{font-size:14px!important;font-weight:900!important;color:#13263e!important;line-height:1.15;margin-bottom:8px;}
+#page-appointments .appt-grid-card .appt-contact-row{gap:8px;margin:6px 0 6px 0;}
+#page-appointments .appt-grid-card .appt-contact-pill{padding:5px 10px;border-radius:999px;font-size:11px;font-weight:900;box-shadow:0 1px 3px rgba(0,0,0,.05);}
+#page-appointments .appt-grid-card .appt-contact-pill.phone{background:#ffe7eb;color:#9f1239;border-color:#f7c8d1;}
+#page-appointments .appt-grid-card .appt-action-row{margin-top:8px!important;padding-top:8px;border-top:1px solid rgba(15,38,56,.08);display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
+#page-appointments .appt-grid-card .appt-action-row button{border:none;border-radius:8px;padding:4px 9px;font-size:10px;font-weight:900;line-height:1;cursor:pointer;}
+#page-appointments .appt-grid-card .appt-action-row button.seen-btn{background:#d9efb3;color:#365314;}
+#page-appointments .appt-grid-card .appt-action-row button.dntu-btn{background:#f7e9a5;color:#7c5a05;}
+#page-appointments .appt-grid-card .appt-action-row button.cancel-btn{background:#f4d8dd;color:#7f1d1d;}
+#page-appointments .appt-grid-card .appt-action-row button.edit-btn{background:#dff3f3;color:#0d7377;}
+#page-appointments .appt-grid-card .appt-action-row button.delete-btn{background:#f6dfe6;color:#7f1d1d;}
+#page-appointments .appt-grid-card .appt-status-line{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:2px;}
+#page-appointments .appt-grid-card .appt-status-pill{display:inline-flex;align-items:center;justify-content:center;padding:4px 10px;border-radius:999px;background:rgba(0,0,0,.07);font-size:10px;font-weight:900;color:#243447;}
+#page-appointments .appt-grid-card .followup-status-badge{margin:7px 0 0 0;font-size:9px;}
+#page-appointments .appt-empty-cell{min-height:126px;border:2px dashed #d6dee8;border-radius:18px;padding:10px;background:#fbfcfd;display:flex;flex-direction:column;gap:8px;justify-content:flex-start;}
+#page-appointments .appt-empty-cell .btn-book-time{width:100%;min-height:42px;border:2px dashed #d0d8e1!important;border-radius:14px!important;background:#fff!important;color:#7b8fa6!important;font-size:12px!important;font-weight:900!important;box-shadow:none!important;}
+#page-appointments .appt-empty-cell .btn-book-time:hover{border-color:#0d7377!important;color:#0d7377!important;background:#f0faf9!important;}
+#page-appointments .appt-empty-cell .book-replacement-btn{border-style:dashed!important;border-color:#0d7377!important;color:#0d7377!important;background:#f0faf9!important;}
+#page-appointments .cancel-history-box{margin:0;padding:8px 9px;border-radius:13px;background:#fff8f3;border:1px solid #efc6bf;}
+#page-appointments .cancel-history-title{font-size:9px;}
+#page-appointments .cancel-history-item{padding:6px;border-radius:9px;}
+#page-appointments .appt-absent-cell{min-height:126px;border:1px solid #f0d3d3;border-radius:18px;background:#fff6f6;color:#c0392b;padding:16px 12px;text-align:center;font-size:11px;font-weight:800;display:flex;flex-direction:column;gap:8px;justify-content:center;}
+#page-appointments .appt-absent-cell .mini-time{color:#0d7377;font-size:12px;font-weight:900;}
+@media(max-width:980px){
+  #page-appointments .phdr h2{font-size:28px;}
+  #page-appointments .patient-search-mini-help{text-align:left;flex-basis:100%;}
+}
+@media(max-width:768px){
+  #page-appointments .phdr h2{font-size:20px;}
+  #page-appointments .phdr p{font-size:11px;}
+  #page-appointments .appointment-filter-row{gap:8px!important;}
+  #page-appointments .appointment-filter-row label{font-size:12px;}
+  #page-appointments .appointment-filter-row input[type=date],#page-appointments .appointment-filter-row select,#page-appointments .appointment-filter-row button{height:40px;}
+  #page-appointments .compact-appt-search{padding:14px;border-radius:14px;}
+  #page-appointments .appointment-search-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;}
+  #page-appointments .appointment-search-row input{min-width:0;grid-column:1 / -1;}
+  #page-appointments .appt-search-btn,#page-appointments .appt-clear-btn{min-width:96px;width:100%;}
+  #page-appointments #slots-container{padding:8px;}
+  #page-appointments .daily-appt-grid.roster-style-grid{border-spacing:6px 8px;}
+  #page-appointments .daily-appt-grid.roster-style-grid th{padding:10px 8px;font-size:11px;border-radius:10px;}
+  #page-appointments .appt-time-cell{min-width:80px;width:80px;padding:14px 10px;font-size:13px;border-radius:10px;}
+  #page-appointments .appt-grid-card,#page-appointments .appt-empty-cell,#page-appointments .appt-absent-cell{min-height:118px;border-radius:16px;padding:10px;}
+  #page-appointments .appt-grid-card .appt-patient-name{font-size:13px!important;}
+}
+@media(max-width:520px){
+  #page-appointments .appointment-filter-row .sbadge{order:10;}
+  #page-appointments .appointment-search-row{grid-template-columns:1fr 1fr;}
+  #page-appointments .appointment-search-row input{grid-column:1 / -1;}
+  #page-appointments .appt-clear-btn{grid-column:1 / 2;}
+}
+
 </style>
 </head>
 <body>
@@ -1840,17 +2074,22 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
         <span class="sbadge" id="sbadge"></span>
       </div>
       <div class="patient-search-card compact-appt-search">
+        <div class="patient-search-head appointment-search-head">
+          <strong>🔎 Search Patient &amp; Rebook</strong>
+          <span class="patient-search-mini-help">Search by ID card, name, surname, or phone. ID card is the main patient registry key and history is preserved.</span>
+        </div>
         <div class="patient-search-row appointment-search-row">
-          <input type="text" id="patient-rebook-search" placeholder="Patient's ID" onkeydown="if(event.key==='Enter')searchPatientsForRebook()"/>
+          <input type="text" id="patient-rebook-search" placeholder="Search existing patient by ID card, name, surname, or phone..." onkeydown="if(event.key==='Enter')searchPatientsForRebook()"/>
           <button class="appt-search-btn" onclick="searchPatientsForRebook()">Search</button>
           <button class="appt-search-btn appt-clear-btn" onclick="clearPatientRebookSearch()">Clear</button>
         </div>
+        <div class="patient-search-note">Enter at least 2 characters to search.</div>
         <div class="patient-search-results" id="patient-rebook-results"></div>
       </div>
-      <div style="background:white;border-radius:12px;border:1px solid #dde3ea;overflow:hidden;">
-        <div style="background:#1a2e4a;color:white;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;">
-          <strong style="font-size:15px;">Daily Clinic - 11 Slots</strong>
-          <span id="appt-slot-summary" style="font-size:11px;opacity:.65;"></span>
+      <div class="clinic-wrap appointment-clinic-shell">
+        <div class="clinic-hdr appointment-clinic-header">
+          <h3>Daily Clinic - 11 Slots</h3>
+          <span id="appt-slot-summary"></span>
         </div>
         <div id="slots-container"></div>
       </div>
