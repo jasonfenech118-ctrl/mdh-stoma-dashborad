@@ -3263,7 +3263,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 
 <script>
 const SUPABASE_URL='https://gkixdimdmechujeqzfkl.supabase.co';
-const SUPABASE_PUBLISHABLE_KEY='sb_publishable_o3y-iFcJ80dKRfrHA3mHuw_XI2qqjvS';
+const SUPABASE_PUBLISHABLE_KEY='sb_publishable_8R_L4VcNY_lE5oxF1lz9-g_syFlnGfC';
 const SB=supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
 
 let holidays={},staffList=[],rCache={};
@@ -4027,7 +4027,7 @@ function showFollowupSubtab(tab){
 }
 function refreshFollowupSubtab(){showFollowupSubtab(currentFollowupSubtab);}
 
-
+function showRosterSubtab(tabName, options={}){
   const tab=(tabName==='cod'||tabName==='staff-audit')?tabName:'monthly';
   const legacyName=tab==='monthly'?'roster':tab;
   mountLegacySection(legacyName);
@@ -5189,7 +5189,7 @@ async function loadPdTabLegacy(tab, patId, container){
   }
 }
 
-
+async function loadPdTabLegacyFull(tab, patId){
   const container=document.getElementById('pd-tab-content');
   if(!container||!patId)return;
   container.innerHTML='<div style="padding:20px;color:var(--muted);font-size:13px;">Loading...</div>';
@@ -9084,27 +9084,9 @@ async function saveNewPatientV66(){
   loadPatients();
   if(typeof logAuditTrailAction==='function') await logAuditTrailAction('insert','patients',p.id,{description:`Patient added: ${fn} ${sn}`});
 }
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-      <div class="fg"><label>First Name *</label><input id="mp-fn" placeholder="First name"/></div>
-      <div class="fg"><label>Surname *</label><input id="mp-sn" placeholder="Surname"/></div>
-      <div class="fg"><label>Hospital Number *</label><input id="mp-hosp" placeholder="Hospital / CRN number"/></div>
-      <div class="fg"><label>ID Card</label><input id="mp-id" placeholder="000000M"/></div>
-      <div class="fg"><label>Phone</label><input id="mp-ph" placeholder="Phone number"/></div>
-      <div class="fg"><label>Date of Birth</label><input type="date" id="mp-dob"/></div>
-      <div class="fg"><label>Patient Location</label><select id="mp-type"><option value="inpatient">Inpatient</option><option value="outpatient">Outpatient</option></select></div>
-      <div class="fg"><label>Episode Type</label><select id="mp-episode-type">${EPISODE_TYPES.map(t=>`<option>${t}</option>`).join('')}</select></div>
-      <div class="fg"><label>Stoma Type</label><select id="mp-stoma"><option value="">Select...</option>${STOMA_TYPES.map(t=>`<option>${t}</option>`).join('')}</select></div>
-      <div class="fg"><label>Stoma Site</label><input id="mp-site" placeholder="e.g. Left iliac fossa"/></div>
-      <div class="fg"><label>Surgery Date</label><input type="date" id="mp-surg"/></div>
-      <div class="fg"><label>Admission Date</label><input type="date" id="mp-adm"/></div>
-      <div class="fg"><label>Ward</label><input id="mp-ward" placeholder="e.g. SW1"/></div>
-      <div class="fg"><label>Consultant</label><input id="mp-cons" placeholder="Consultant name"/></div>
-    </div>
-    <div class="fg"><label>Diagnosis / History</label><input id="mp-diag" placeholder="Primary diagnosis or history"/></div>
-    <div class="fg"><label>Pathway Stage</label><select id="mp-pathway">${PATHWAY_STAGES.map(s=>`<option>${s}</option>`).join('')}</select></div>
-    <div class="mact"><button class="btn-cancel" onclick="closeMo()">Cancel</button><button class="btn-save" onclick="saveNewPatient()">Save Patient</button></div>`;
-  document.getElementById('mb').innerHTML=h;
-  document.getElementById('mo').classList.add('open');
+
+function openAddPatientModalLegacy(){
+  openAddPatientModal();
 }
 
 async function saveNewPatient(){
