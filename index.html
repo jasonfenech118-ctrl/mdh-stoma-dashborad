@@ -1674,6 +1674,51 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 @media(max-width:900px){.roster-subtab-bar{grid-template-columns:1fr;gap:10px}.roster-subtab{min-height:62px;font-size:14px;justify-content:flex-start;padding:0 18px}.roster-subtab-icon{width:38px;height:38px;}}
 
 
+/* ── Power Apps aligned patient profile styles ──────── */
+.pa-form{padding:4px 0 20px;}
+.pa-section-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#f8fafc;border:1px solid var(--border);border-radius:10px 10px 0 0;border-bottom:2px solid var(--teal);margin-top:16px;font-size:12px;font-weight:800;color:var(--navy);letter-spacing:.3px;}
+.pa-grid-3{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0;border:1px solid var(--border);border-top:none;border-radius:0 0 10px 10px;overflow:hidden;background:white;}
+.pa-grid-1{display:grid;gap:0;border:1px solid var(--border);border-top:none;border-radius:0 0 10px 10px;overflow:hidden;background:white;}
+.pa-field{padding:10px 14px;border-bottom:1px solid #f1f5f9;border-right:1px solid #f1f5f9;}
+.pa-field-inline{padding:10px 14px;border-bottom:1px solid #f1f5f9;border-right:1px solid #f1f5f9;}
+.pa-field-label{font-size:10px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
+.pa-field-value{font-size:13px;font-weight:500;color:var(--navy);word-break:break-word;min-height:20px;}
+.pa-subgrid-header{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:#f0fdf4;border:1px solid #b7dedb;border-radius:8px 8px 0 0;margin-top:14px;flex-wrap:wrap;gap:6px;}
+.pa-subgrid-title{font-size:12px;font-weight:800;color:var(--navy);}
+.pa-subgrid-count{font-size:11px;color:var(--muted);margin-left:8px;}
+.pa-subgrid-wrap{border:1px solid var(--border);border-top:none;border-radius:0 0 8px 8px;overflow:hidden;background:white;}
+.pa-subgrid-btn{padding:5px 12px;border-radius:6px;border:1.5px solid var(--border);background:white;font-size:11px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--navy);}
+.pa-subgrid-btn:hover{border-color:var(--teal);color:var(--teal);}
+.pa-subgrid-btn.primary{background:var(--teal);border-color:var(--teal);color:white;}
+.pa-subgrid-btn.primary:hover{background:#0a8f7c;}
+.pa-table{width:100%;border-collapse:collapse;font-size:12px;}
+.pa-table thead tr{background:#f8fafc;}
+.pa-table th{padding:8px 12px;text-align:left;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:#64748b;border-bottom:1px solid var(--border);white-space:nowrap;}
+.pa-table td{padding:8px 12px;border-bottom:1px solid #f8fafc;color:var(--text);vertical-align:top;}
+.pa-table tr:hover td{background:#f8fafc;}
+.pa-table tr:last-child td{border-bottom:none;}
+.pa-td-note{max-width:200px;font-size:11px;color:var(--muted);}
+.pa-status-badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:800;}
+.pa-status-active{background:#d4edda;color:#155724;}
+.pa-status-reversed{background:#e3f2fd;color:#0d47a1;}
+.pa-status-closed{background:#f8d7da;color:#721c24;}
+.pa-badge-type{display:inline-block;padding:2px 7px;border-radius:5px;font-size:10px;font-weight:700;background:#f1f5f9;color:#334155;text-transform:capitalize;}
+.pa-badge-warn{display:inline-block;padding:2px 7px;border-radius:5px;font-size:10px;font-weight:700;background:#fff3cd;color:#856404;}
+.pa-badge-grey{display:inline-block;padding:2px 7px;border-radius:5px;font-size:10px;font-weight:700;background:#f1f5f9;color:#475569;margin-left:4px;}
+.pa-badge-active{display:inline-block;padding:2px 7px;border-radius:5px;font-size:10px;font-weight:700;background:#d4edda;color:#155724;}
+.pa-teaching-card{border:1px solid var(--border);border-radius:10px;padding:14px;margin-top:10px;background:white;}
+.pa-teaching-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:6px;}
+.pa-teaching-items{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:6px;}
+.pa-teaching-item{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:7px;background:#f8fafc;border:1px solid #e2e8f0;font-size:12px;}
+.pa-teaching-item.done{background:#f0fdf4;border-color:#b7dedb;}
+.pa-teaching-tick{font-size:14px;flex-shrink:0;color:#94a3b8;}
+.pa-teaching-item.done .pa-teaching-tick{color:#0f766e;}
+.pa-teaching-notes{margin-top:10px;font-size:11px;color:var(--muted);padding:8px 10px;background:#f8fafc;border-radius:6px;}
+.pa-letter-card{border:1px solid var(--border);border-radius:10px;padding:14px;margin-top:10px;background:white;}
+.pa-letter-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;}
+.pa-empty{padding:20px;text-align:center;color:var(--muted);font-size:12px;font-style:italic;}
+.pa-loading{padding:20px;color:var(--muted);font-size:13px;}
+
 /* v66 — audit trail section buttons */
 .audit-section-btn{padding:7px 14px;border-radius:999px;border:1.5px solid var(--border);background:white;font-size:11px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--navy);transition:all .15s;white-space:nowrap;}
 .audit-section-btn:hover{border-color:var(--teal);color:var(--teal);}
@@ -4728,113 +4773,402 @@ async function loadPdTab(tab, patId){
 }
 
 function renderPdTabPatientInfo(container, p, patId){
-  const age = p.date_of_birth ? Math.floor((new Date()-new Date(p.date_of_birth))/31557600000)+'y' : '—';
+  const dob=p.date_of_birth?new Date(p.date_of_birth).toLocaleDateString('en-MT'):'—';
   container.innerHTML=`
-  <div class="card" style="margin-top:16px;">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-      <div class="card-title">Patient Details</div>
+  <div class="pa-form">
+
+    <div class="pa-section-header">
+      <span>Patient Details</span>
       <button class="btn-refresh" onclick="openEditPatientModal('${patId}')">✎ Edit</button>
     </div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;">
-      ${pField('Hospital Number', p.hospital_number)}
-      ${pField('Date of Birth', p.date_of_birth ? new Date(p.date_of_birth).toLocaleDateString('en-MT') : '—')}
-      ${pField('Contact Number', p.contact_number||p.mobile_number||p.phone_number)}
-      ${pField('First Name', p.first_name)}
-      ${pField('Locality', p.locality)}
-      ${pField('Surname', p.surname)}
-      ${pField('Sex', p.sex)}
-      ${pField('ID Card', p.id_card||p.id_card_number)}
+    <div class="pa-grid-3">
+      ${paField('Hospital Number', p.hospital_number||p.patient_number, true)}
+      ${paField('Date of Birth', dob, true)}
+      ${paField('Contact Number', p.contact_number||p.mobile_number||p.phone_number, true)}
+      ${paField('First Name', p.first_name, true)}
+      ${paField('Locality', p.locality, true)}
+      ${paField('Surname', p.surname, true)}
+      ${paField('Sex', p.sex, true)}
+      ${paField('ID Card', p.id_card||p.id_card_number, true)}
     </div>
-  </div>
-  <div class="card" style="margin-top:14px;">
-    <div class="card-title">Stoma &amp; Care</div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:16px;">
-      ${pField('Op Performed & Findings', p.op_performed_findings||p.operation_performed, true)}
-      ${pField('Stoma Type Summary', p.stoma_type_summary||p.stoma_type)}
-      ${pField('Assigned Nurse', p.assigned_nurse)}
-      ${pField('Consultant', p.consultant)}
-      ${pField('Ward', p.ward||p.current_ward)}
+
+    <div class="pa-section-header" style="margin-top:20px;">Stoma &amp; Care</div>
+    <div class="pa-grid-1">
+      ${paField('Op Performed &amp; Findings', p.op_performed_findings||p.operation_performed)}
     </div>
-  </div>
-  <div class="card" style="margin-top:14px;">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-      <div class="card-title">Patient Stomas</div>
-      <div style="display:flex;gap:8px;">
-        ${p.pathway_type==='elective'?`<button class="btn-add" style="background:#0369a1;" onclick="openPreOpSitingModal('${patId}','${p.episode_id||''}')">+ Pre-Op Siting</button>`:''}
-        <button class="btn-add" onclick="openAddStomaModal('${patId}')">+ New Stoma</button>
+    <div class="pa-grid-3" style="margin-top:8px;">
+      ${paField('Stoma Type Summary', p.stoma_type_summary||p.stoma_type, true)}
+      ${paField('Assigned Nurse', p.assigned_nurse, true)}
+      ${paField('Consultant', p.consultant, true)}
+      ${paField('Ward', p.ward||p.current_ward, true)}
+      ${paField('Pathway Type', p.pathway_type?p.pathway_type.replace('_',' '):'—', true)}
+    </div>
+
+    <div class="pa-subgrid-header" style="margin-top:20px;">
+      <div>
+        <span class="pa-subgrid-title">Patient Stomas</span>
+        <span class="pa-subgrid-count" id="pd-stoma-count"></span>
+      </div>
+      <div style="display:flex;gap:6px;">
+        ${p.pathway_type==='elective'?`<button class="pa-subgrid-btn" onclick="openPreOpSitingModal('${patId}','${p.episode_id||''}')">+ Pre-Op Siting</button>`:''}
+        <button class="pa-subgrid-btn primary" onclick="openAddStomaModal('${patId}')">+ New Stoma</button>
       </div>
     </div>
-    <div id="pd-stomas-list"><div class="empty">Loading stomas...</div></div>
+    <div class="pa-subgrid-wrap" id="pd-stomas-list">
+      <div class="empty">Loading stomas...</div>
+    </div>
+
   </div>`;
   loadPatientStomas(patId);
 }
 
-function pField(label, value, wide=false){
-  return `<div class="psc-group"${wide?' style="grid-column:1/-1"':''}>
-    <div class="psc-label">${htmlSafe(label)}</div>
-    <div class="psc-value">${htmlSafe(value||'—')}</div>
+function paField(label, value, inline=false){
+  return `<div class="pa-field${inline?' pa-field-inline':''}">
+    <div class="pa-field-label">${label}</div>
+    <div class="pa-field-value">${htmlSafe(value||'—')}</div>
   </div>`;
 }
 
 async function loadPatientStomas(patId){
-  const el = document.getElementById('pd-stomas-list');
-  if(!el) return;
-  const {data, error} = await SB.from('stomas').select('*').eq('patient_id', patId).order('formed_date', {ascending:true});
-  if(error||!data||!data.length){ el.innerHTML='<div class="empty">No stoma records found.</div>'; return; }
-  el.innerHTML=`<table class="dt"><thead><tr><th>Stoma Label</th><th>Type</th><th>Formed</th><th>Status</th><th>Rod</th><th>Notes</th></tr></thead><tbody>
-    ${data.map(s=>`<tr>
-      <td><strong>${htmlSafe(s.stoma_label||'—')}</strong>${s.parent_stoma_id?'<br/><span style="font-size:10px;color:var(--muted);">Refashioned</span>':''}</td>
+  const el=document.getElementById('pd-stomas-list');
+  const countEl=document.getElementById('pd-stoma-count');
+  if(!el)return;
+  let data=[],error=null;
+  try{const r=await SB.from('stomas').select('*').eq('patient_id',patId).order('formed_date',{ascending:true});data=r.data||[];error=r.error;}catch(e){error=e;}
+  // Also try stomas_main
+  if(!data.length){
+    try{const r=await SB.from('stomas_main').select('*').eq('patient_id',patId).order('created_at',{ascending:true});
+    data=(r.data||[]).map(s=>({...s,stoma_label:s.stoma_label||s.stoma_type,stoma_type:s.stoma_type||s.intended_stoma_type,formed_date:s.surgery_date||s.date_formed,status:s.stoma_status==='Active'?'active':s.stoma_status?.toLowerCase()||'active'}));}catch(e){}
+  }
+  if(countEl)countEl.textContent=data.length?`${data.length} record${data.length!==1?'s':''}` :'';
+  if(!data.length){el.innerHTML='<div class="pa-empty">No stoma records found. Click + New Stoma to add.</div>';return;}
+  el.innerHTML=`<table class="pa-table">
+    <thead><tr>
+      <th>Stoma Label</th><th>Type</th><th>Formed</th><th>Status</th><th>Rod in Situ</th><th>Rod Removal</th><th>Notes</th>
+    </tr></thead>
+    <tbody>${data.map(s=>`<tr>
+      <td><strong>${htmlSafe(s.stoma_label||'—')}</strong>${s.parent_stoma_id?'<span class="pa-badge-grey">Refashioned</span>':''}</td>
       <td>${htmlSafe(s.stoma_type||'—')}</td>
       <td>${s.formed_date?new Date(s.formed_date).toLocaleDateString('en-MT'):'—'}</td>
-      <td><span style="padding:3px 8px;border-radius:999px;font-size:10px;font-weight:800;background:${s.status==='active'?'#d4edda':s.status==='reversed'?'#e3f2fd':'#f8d7da'};color:${s.status==='active'?'#155724':s.status==='reversed'?'#0d47a1':'#721c24'};">${htmlSafe(s.status||'—')}</span></td>
-      <td>${s.rod_in_situ?'Yes'+( s.rod_removal_date?' — remove '+new Date(s.rod_removal_date).toLocaleDateString('en-MT'):''):'—'}</td>
-      <td>${htmlSafe(s.notes||'—')}</td>
-    </tr>`).join('')}
-  </tbody></table>`;
+      <td><span class="pa-status-badge pa-status-${s.status==='active'?'active':s.status==='reversed'?'reversed':'closed'}">${htmlSafe(s.status||'—')}</span></td>
+      <td>${s.rod_in_situ?'<span class="pa-badge-warn">Yes</span>':'—'}</td>
+      <td>${s.rod_removal_date?new Date(s.rod_removal_date).toLocaleDateString('en-MT'):'—'}</td>
+      <td class="pa-td-note">${htmlSafe(s.notes||'—')}</td>
+    </tr>`).join('')}</tbody>
+  </table>`;
 }
 
 function renderPdTabClinicalHistory(container, p, patId){
   container.innerHTML=`
-  <div class="card" style="margin-top:16px;">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-      <div class="card-title">Medical Background</div>
+  <div class="pa-form">
+
+    <div class="pa-section-header">
+      <span>Medical Background</span>
       <button class="btn-refresh" onclick="openEditPatientModal('${patId}')">✎ Edit</button>
     </div>
-    <div style="display:grid;gap:14px;">
-      ${pField('Past Medical History', p.past_medical_history||p.medical_history, true)}
-      ${pField('Social History', p.social_history, true)}
-      ${pField('Drug History', p.drug_history, true)}
-      ${pField('Complications', p.complications, true)}
+    <div class="pa-grid-1">
+      ${paField('Past Medical History', p.past_medical_history||p.medical_history)}
+      ${paField('Social History', p.social_history)}
+      ${paField('Drug History', p.drug_history)}
+      ${paField('Complications', p.complications)}
     </div>
-  </div>
-  <div class="card" style="margin-top:14px;">
-    <div class="card-title">Episode History</div>
-    <div id="pd-episode-history-mini"><div class="empty">Loading...</div></div>
+
+    <div class="pa-subgrid-header" style="margin-top:20px;">
+      <div>
+        <span class="pa-subgrid-title">Episode History</span>
+        <span class="pa-subgrid-count" id="pd-episode-mini-count"></span>
+      </div>
+      <button class="pa-subgrid-btn primary" onclick="switchPdTab('episode-history',document.querySelector('.pd-tab:nth-child(3)'))">View All Episodes</button>
+    </div>
+    <div class="pa-subgrid-wrap" id="pd-episode-history-mini">
+      <div class="empty">Loading...</div>
+    </div>
+
   </div>`;
-  renderEpisodeMiniList(patId, 'pd-episode-history-mini');
+  renderEpisodeMiniList(patId,'pd-episode-history-mini','pd-episode-mini-count');
+}
+
+async function renderEpisodeMiniList(patId, containerId, countId){
+  const el=document.getElementById(containerId);
+  const countEl=countId?document.getElementById(countId):null;
+  if(!el)return;
+  let data=[],error=null;
+  try{const r=await SB.from('episodes').select('*').eq('patient_id',patId).order('opened_date',{ascending:false}).limit(10);data=r.data||[];error=r.error;}catch(e){error=e;}
+  // Fallback to episodes_main
+  if(!data.length){
+    try{const r=await SB.from('episodes_main').select('*').eq('patient_id',patId).eq('is_deleted',false).order('created_at',{ascending:false}).limit(10);
+    data=(r.data||[]).map(e=>({...e,episode_type:e.episode_type,opened_date:e.admission_date||e.created_at?.split('T')[0],status:e.episode_status==='Active'?'open':'closed'}));}catch(e2){}
+  }
+  if(countEl)countEl.textContent=data.length?`${data.length} record${data.length!==1?'s':''}` :'';
+  if(!data.length){el.innerHTML='<div class="pa-empty">No episodes recorded.</div>';return;}
+  el.innerHTML=renderEpisodeSubGrid(data,patId);
+}
+
+function renderEpisodeSubGrid(episodes, patId){
+  return `<table class="pa-table">
+    <thead><tr><th>Episode ID</th><th>Type</th><th>Opened</th><th>Closed</th><th>Status</th><th>Consultant</th><th>Problem Type</th></tr></thead>
+    <tbody>${episodes.map(e=>`<tr style="cursor:pointer;" onclick="openEpisodeDetail('${e.id}','${patId}')">
+      <td><strong>${htmlSafe(e.episode_id_label||e.id?.substring(0,8)||'—')}</strong></td>
+      <td><span class="pa-badge-type">${htmlSafe((e.episode_type||'—').replace(/_/g,' '))}</span></td>
+      <td>${e.opened_date?new Date(e.opened_date).toLocaleDateString('en-MT'):'—'}</td>
+      <td>${e.closed_date?new Date(e.closed_date).toLocaleDateString('en-MT'):'<span style="color:var(--teal);font-weight:700;">Open</span>'}</td>
+      <td><span class="pa-status-badge pa-status-${e.status==='open'?'active':'closed'}">${htmlSafe(e.status||'—')}</span></td>
+      <td>${htmlSafe(e.consultant||'—')}</td>
+      <td>${htmlSafe(e.problem_type||'—')}</td>
+    </tr>`).join('')}</tbody>
+  </table>`;
 }
 
 async function renderPdTabEpisodeHistory(container, patId){
-  container.innerHTML='<div style="padding:16px;color:var(--muted);">Loading episodes...</div>';
-  const {data, error} = await SB.from('episodes').select('*').eq('patient_id', patId).order('opened_date', {ascending:false});
-  if(error){ container.innerHTML=`<div class="card"><div class="empty">Error: ${htmlSafe(error.message)}</div></div>`; return; }
-  const all = data||[];
-  const hospital = all.filter(e=>e.category==='hospital');
-  const followup = all.filter(e=>e.category==='followup');
+  container.innerHTML='<div class="pa-form"><div class="pa-loading">Loading episodes...</div></div>';
+  let all=[],error=null;
+  try{const r=await SB.from('episodes').select('*').eq('patient_id',patId).order('opened_date',{ascending:false});all=r.data||[];error=r.error;}catch(e){error=e;}
+  // Fallback to episodes_main
+  if(!all.length){
+    try{const r=await SB.from('episodes_main').select('*').eq('patient_id',patId).eq('is_deleted',false).order('created_at',{ascending:false});
+    all=(r.data||[]).map(e=>({...e,episode_type:e.episode_type,opened_date:e.admission_date||e.created_at?.split('T')[0],status:e.episode_status==='Active'?'open':'closed',category:['Elective','Emergency','Reversal','Refashion'].includes(e.episode_type)?'hospital':'followup'}));}catch(e2){error=e2;}
+  }
+  const hospital=all.filter(e=>e.category==='hospital');
+  const followup=all.filter(e=>e.category!=='hospital');
   container.innerHTML=`
-  <div style="display:flex;gap:8px;align-items:center;margin:16px 0 12px;flex-wrap:wrap;">
-    <button class="btn-add" onclick="openNewEpisodeModal('${patId}')">+ New Episode</button>
-    <span style="font-size:12px;color:var(--muted);">${all.length} total episode${all.length!==1?'s':''} · ${hospital.length} hospital · ${followup.length} follow-up</span>
-  </div>
-  <div class="card" style="margin-bottom:14px;">
-    <div class="card-title" style="margin-bottom:12px;">🏥 Hospital Episodes (${hospital.length})</div>
-    ${renderEpisodeTable(hospital, patId)}
-  </div>
-  <div class="card">
-    <div class="card-title" style="margin-bottom:12px;">📋 Follow-Up Episodes (${followup.length})</div>
-    ${renderEpisodeTable(followup, patId)}
+  <div class="pa-form">
+    <div class="pa-section-header">
+      <span>Episode History</span>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <span style="font-size:11px;color:var(--muted);">${all.length} total</span>
+        <button class="pa-subgrid-btn primary" onclick="openNewEpisodeModal('${patId}')">+ New Episode</button>
+      </div>
+    </div>
+
+    <div class="pa-subgrid-header" style="margin-top:12px;">
+      <div>
+        <span class="pa-subgrid-title">🏥 Hospital Episodes</span>
+        <span class="pa-subgrid-count">${hospital.length} record${hospital.length!==1?'s':''}</span>
+      </div>
+    </div>
+    <div class="pa-subgrid-wrap">
+      ${hospital.length?renderEpisodeSubGrid(hospital,patId):'<div class="pa-empty">No hospital episodes recorded.</div>'}
+    </div>
+
+    <div class="pa-subgrid-header" style="margin-top:16px;">
+      <div>
+        <span class="pa-subgrid-title">📋 Follow-Up Episodes</span>
+        <span class="pa-subgrid-count">${followup.length} record${followup.length!==1?'s':''}</span>
+      </div>
+    </div>
+    <div class="pa-subgrid-wrap">
+      ${followup.length?renderEpisodeSubGrid(followup,patId):'<div class="pa-empty">No follow-up episodes recorded.</div>'}
+    </div>
   </div>`;
 }
+
+function renderPdTabCareOutcomes(container, p, patId){
+  container.innerHTML=`
+  <div class="pa-form">
+
+    <div class="pa-section-header">
+      <span>Care &amp; Status</span>
+      <button class="btn-refresh" onclick="openEditPatientModal('${patId}')">✎ Edit</button>
+    </div>
+    <div class="pa-grid-3">
+      ${paField('Patient Status', p.patient_status, true)}
+      ${paField('Last Outcome Date', p.last_outcome_date?new Date(p.last_outcome_date).toLocaleDateString('en-MT'):'—', true)}
+      ${paField('DNTU Streak', p.dntu_streak>0?`<span style="color:#b45309;font-weight:900;">${p.dntu_streak} consecutive</span>`:'0', true)}
+    </div>
+
+    <div class="pa-section-header" style="margin-top:20px;">Key Dates</div>
+    <div class="pa-grid-3">
+      ${paField('Surgery Date', p.surgery_date?new Date(p.surgery_date).toLocaleDateString('en-MT'):'—', true)}
+      ${paField('Discharged Date', p.discharged_date?new Date(p.discharged_date).toLocaleDateString('en-MT'):'—', true)}
+      ${paField('Proposed Reversal Date', p.proposed_reversal_date?new Date(p.proposed_reversal_date).toLocaleDateString('en-MT'):'—', true)}
+      ${paField('Reversal Date', p.reversal_date?new Date(p.reversal_date).toLocaleDateString('en-MT'):'—', true)}
+      ${paField('RIP Date', p.rip_date?new Date(p.rip_date).toLocaleDateString('en-MT'):'—', true)}
+    </div>
+
+    <div class="pa-section-header" style="margin-top:20px;">Calculated Fields</div>
+    <div class="pa-grid-3">
+      ${paField('Surgery Days Till RIP', calcDaysBetween(p.surgery_date,p.rip_date), true)}
+      ${paField('Stoma Days', calcDaysBetween(p.surgery_date,p.reversal_date||new Date().toISOString().split('T')[0]), true)}
+      ${paField('Age at Death', calcAgeAtDeath(p.date_of_birth,p.rip_date), true)}
+    </div>
+
+  </div>`;
+}
+
+async function renderPdTabStormaTimeline(container, patId){
+  container.innerHTML='<div class="pa-form"><div class="pa-loading">Loading stoma timeline...</div></div>';
+  const [{data:stomas},{data:events},{data:urgentReviews}]=await Promise.all([
+    SB.from('stomas').select('*').eq('patient_id',patId).order('formed_date').catch(()=>({data:[]})),
+    SB.from('events').select('*').eq('patient_id',patId).order('event_date').order('event_time').catch(()=>({data:[]})),
+    SB.from('urgent_stoma_daily_review').select('*').eq('patient_id',patId).order('review_date').order('review_time').catch(()=>({data:[]}))
+  ]);
+  const allEvents=events||[];
+  const allUrgent=(urgentReviews||[]).map(r=>({...r,event_type:'daily_review',event_date:r.review_date,event_time:r.review_time?new Date(r.review_time).toTimeString().substring(0,5):null,stoma_appearance:r.stoma_appearance,peristomal_skin:r.skin_condition,output_consistency:r.output_consistency_type,_source:'daily_review'}));
+  const merged=[...allEvents,...allUrgent].sort((a,b)=>String(a.event_date).localeCompare(String(b.event_date))||String(a.event_time||'').localeCompare(String(b.event_time||'')));
+  const allStomas=stomas||[];
+  const stomaSections=allStomas.length?allStomas:[{id:null,stoma_label:'Unlinked Events',stoma_type:'',formed_date:null,status:'active'}];
+
+  container.innerHTML=`<div class="pa-form">
+    <div class="pa-section-header">
+      <span>Stoma Timeline</span>
+      <div style="display:flex;gap:6px;">
+        <button class="pa-subgrid-btn" onclick="openUrgentDailyReviewModal('${patId}','')">+ Daily Review</button>
+        <button class="pa-subgrid-btn primary" onclick="openAddEventModal('${patId}','')">+ Event</button>
+      </div>
+    </div>
+    ${stomaSections.map(s=>{
+      const stomaEvents=s.id?merged.filter(e=>e.stoma_id===s.id||(!e.stoma_id&&!allStomas.length)):merged;
+      return `
+      <div class="pa-subgrid-header" style="margin-top:16px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#0f766e,#14b8a6);display:flex;align-items:center;justify-content:center;color:white;font-size:14px;">🔵</div>
+          <div>
+            <span class="pa-subgrid-title">${htmlSafe(s.stoma_label||'Stoma')}</span>
+            <span class="pa-subgrid-count">${htmlSafe(s.stoma_type||'')}${s.formed_date?' · Formed '+new Date(s.formed_date).toLocaleDateString('en-MT'):''}</span>
+          </div>
+          <span class="pa-status-badge pa-status-${s.status==='active'?'active':s.status==='reversed'?'reversed':'closed'}">${htmlSafe(s.status||'active')}</span>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <button class="pa-subgrid-btn" onclick="openUrgentDailyReviewModal('${patId}','')">+ Daily Review</button>
+          <button class="pa-subgrid-btn" onclick="openSimpleTeachingModal('${patId}')">+ Teaching</button>
+          <button class="pa-subgrid-btn primary" onclick="openAddEventModal('${patId}','${s.id||''}')">+ Event</button>
+        </div>
+      </div>
+      <div class="pa-subgrid-wrap">
+        ${stomaEvents.length?`<table class="pa-table">
+          <thead><tr><th>Date</th><th>Time</th><th>Type</th><th>Appearance</th><th>Output</th><th>Skin</th><th>Post-Op Day</th><th>Nurse</th><th>Notes</th></tr></thead>
+          <tbody>${stomaEvents.map(e=>`<tr style="background:${e._source==='daily_review'?'#f0fdf4':''};">
+            <td style="white-space:nowrap;">${e.event_date?new Date(e.event_date).toLocaleDateString('en-MT'):'—'}</td>
+            <td>${htmlSafe(e.event_time||'—')}</td>
+            <td><span class="pa-badge-type">${htmlSafe((e.event_type||'').replace(/_/g,' '))}</span></td>
+            <td>${htmlSafe(e.stoma_appearance||'—')}</td>
+            <td>${htmlSafe(e.output_consistency||e.output_consistency_type||'—')}</td>
+            <td>${htmlSafe(e.peristomal_skin||e.skin_condition||'—')}</td>
+            <td>${e.post_op_day_number!=null?'Day '+e.post_op_day_number:'—'}</td>
+            <td>${htmlSafe(e.nurse_name||e.nurse_signature||'—')}</td>
+            <td class="pa-td-note">${htmlSafe(e.notes||'—')}</td>
+          </tr>`).join('')}</tbody>
+        </table>`:'<div class="pa-empty">No events recorded for this stoma yet.</div>'}
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+async function renderPdTabAppliances(container, patId){
+  container.innerHTML='<div class="pa-form"><div class="pa-loading">Loading appliances...</div></div>';
+  let data=[],err=null;
+  try{const r=await SB.from('appliances').select('*').eq('patient_id',patId).order('started_date',{ascending:false});data=r.data||[];err=r.error;}catch(e){err=e;}
+  if(!data.length){
+    try{const r=await SB.from('appliances_main').select('*').eq('patient_id',patId).eq('is_active',true).order('created_at',{ascending:false});
+    data=(r.data||[]).map(a=>({...a,appliance_type:a.appliance_type,brand:a.manufacturer,product_name:a.product_name,size:a.appliance_size,product_reference:a.product_code,started_date:a.date_started,reason_for_change:a.reason_for_change}));}catch(e2){}
+  }
+  container.innerHTML=`<div class="pa-form">
+    <div class="pa-section-header">
+      <span>Appliances</span>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <span class="pa-subgrid-count">${data.length} record${data.length!==1?'s':''}</span>
+        <button class="pa-subgrid-btn primary" onclick="openAddApplianceModal('${patId}')">+ Add Appliance</button>
+      </div>
+    </div>
+    <div class="pa-subgrid-wrap">
+      ${data.length?`<table class="pa-table">
+        <thead><tr><th>Started</th><th>Type</th><th>Brand / Product</th><th>Size</th><th>Product Ref</th><th>Accessory</th><th>Current</th><th>Ended</th><th>Reason for Change</th></tr></thead>
+        <tbody>${data.map(a=>`<tr>
+          <td style="white-space:nowrap;">${a.started_date?new Date(a.started_date).toLocaleDateString('en-MT'):'—'}</td>
+          <td>${htmlSafe(a.appliance_type||'—')}</td>
+          <td>${htmlSafe(a.brand||'')} ${htmlSafe(a.product_name||'')}</td>
+          <td>${htmlSafe(a.size||a.appliance_size||'—')}</td>
+          <td style="font-family:monospace;font-size:11px;">${htmlSafe(a.product_reference||a.product_code||'—')}</td>
+          <td>${htmlSafe(a.accessory_type||'—')}</td>
+          <td>${a.is_current?'<span class="pa-badge-active">✓ Current</span>':'—'}</td>
+          <td>${a.ended_date?new Date(a.ended_date).toLocaleDateString('en-MT'):'—'}</td>
+          <td class="pa-td-note">${htmlSafe(a.reason_for_change||'—')}</td>
+        </tr>`).join('')}</tbody>
+      </table>`:'<div class="pa-empty">No appliances recorded yet.</div>'}
+    </div>
+  </div>`;
+}
+
+async function renderPdTabTeaching(container, patId){
+  container.innerHTML='<div class="pa-form"><div class="pa-loading">Loading teaching sessions...</div></div>';
+  const {data}=await SB.from('teaching_sessions').select('*').eq('patient_id',patId).order('session_date',{ascending:false}).catch(()=>({data:[]}));
+  const rows=data||[];
+  const items=[['seen_stoma','Patient has seen stoma and first flat change'],['assemble_items','Able to assemble items needed'],['remove_old_bag','Able to remove old bag'],['remove_flange','Able to remove flange'],['clean_stoma','Able to clean stoma'],['empty_bag','Able to empty bag'],['apply_bag_with_flange','Able to apply new bag with flange'],['apply_flange','Able to apply flange'],['dispose_waste','Able to dispose of waste']];
+  container.innerHTML=`<div class="pa-form">
+    <div class="pa-section-header">
+      <span>Teaching Sessions</span>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <span class="pa-subgrid-count">${rows.length} session${rows.length!==1?'s':''}</span>
+        <button class="pa-subgrid-btn primary" onclick="openSimpleTeachingModal('${patId}')">+ New Session</button>
+      </div>
+    </div>
+    ${rows.length?rows.map(s=>{
+      const keys=['seen_stoma','assemble_items','remove_old_bag','remove_flange','clean_stoma','empty_bag','apply_bag_with_flange','apply_flange','dispose_waste'];
+      const done=keys.filter(k=>s['item_'+(keys.indexOf(k)+1)+'_'+k]).length;
+      return `<div class="pa-teaching-card">
+        <div class="pa-teaching-head">
+          <div>
+            <strong>${s.session_date?new Date(s.session_date).toLocaleDateString('en-MT'):'—'}</strong>
+            <span class="pa-subgrid-count" style="margin-left:8px;">Nurse: ${htmlSafe(s.nurse_name||'—')}</span>
+          </div>
+          <span class="pa-status-badge pa-status-${done===9?'active':'closed'}">${done}/9 items complete</span>
+        </div>
+        <div class="pa-teaching-items">
+          ${items.map(([key,label],i)=>{
+            const checked=s['item_'+(i+1)+'_'+key];
+            return `<div class="pa-teaching-item ${checked?'done':''}">
+              <span class="pa-teaching-tick">${checked?'✓':'○'}</span>
+              <span>${htmlSafe(label)}</span>
+            </div>`;
+          }).join('')}
+        </div>
+        ${s.notes?`<div class="pa-teaching-notes">${htmlSafe(s.notes)}</div>`:''}
+      </div>`;
+    }).join(''):`<div class="pa-empty" style="margin-top:8px;">No teaching sessions recorded yet.</div>`}
+  </div>`;
+}
+
+async function renderPdTabDischargeLetter(container, p, patId){
+  container.innerHTML='<div class="pa-form"><div class="pa-loading">Loading discharge letters...</div></div>';
+  const {data}=await SB.from('discharge_letters').select('*').eq('patient_id',patId).order('letter_date',{ascending:false}).catch(()=>({data:[]}));
+  const letters=data||[];
+  container.innerHTML=`<div class="pa-form">
+    <div class="pa-section-header">
+      <span>Discharge Letters</span>
+      <button class="pa-subgrid-btn primary" onclick="generateAiDischargeLetter('${patId}')">✨ Generate AI Letter</button>
+    </div>
+    ${letters.length?letters.map(l=>`
+    <div class="pa-letter-card">
+      <div class="pa-letter-head">
+        <div>
+          <strong>${l.letter_date?new Date(l.letter_date).toLocaleDateString('en-MT'):'—'}</strong>
+          <span class="pa-subgrid-count" style="margin-left:8px;">${htmlSafe(l.nurse_name||'—')}</span>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <span class="pa-status-badge pa-status-${l.status==='finalised'?'active':'closed'}">${htmlSafe(l.status||'draft')}</span>
+          <button class="pa-subgrid-btn" onclick="previewDischargeLetter('${l.id}')">Preview</button>
+          <button class="pa-subgrid-btn" onclick="printDischargeLetter('${l.id}')">🖨 Print</button>
+          ${l.status==='draft'?`<button class="pa-subgrid-btn primary" onclick="finaliseDischargeLetter('${l.id}')">Finalise</button>`:''}
+        </div>
+      </div>
+      <div style="font-size:11px;color:var(--muted);margin-top:6px;">${htmlSafe(l.procedure_performed||'—')} · ${htmlSafe(l.appliance_on_discharge||'—')}</div>
+    </div>`).join(''):`<div class="pa-empty">No discharge letters yet. Click Generate AI Letter to create one.</div>`}
+  </div>`;
+}
+
+function renderPdTabAdditionalNotes(container, p, patId){
+  container.innerHTML=`<div class="pa-form">
+    <div class="pa-section-header">
+      <span>Additional Notes</span>
+      <button class="btn-refresh" onclick="saveAdditionalNotes('${patId}')">💾 Save</button>
+    </div>
+    <textarea id="pd-additional-notes" style="width:100%;min-height:240px;padding:14px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;resize:vertical;background:white;" placeholder="Free text notes about this patient...">${htmlSafe(p.additional_notes||p.notes||'')}</textarea>
+  </div>`;
+}
+
+
+
+
 
 function renderEpisodeTable(episodes, patId){
   if(!episodes.length) return '<div class="empty">None recorded.</div>';
@@ -4852,206 +5186,7 @@ function renderEpisodeTable(episodes, patId){
   </tbody></table></div>`;
 }
 
-async function renderEpisodeMiniList(patId, containerId){
-  const el = document.getElementById(containerId);
-  if(!el) return;
-  const {data} = await SB.from('episodes').select('episode_id_label,episode_type,opened_date,closed_date,status').eq('patient_id', patId).order('opened_date', {ascending:false}).limit(5);
-  if(!data||!data.length){ el.innerHTML='<div class="empty">No episodes found.</div>'; return; }
-  el.innerHTML=renderEpisodeTable(data, patId);
-}
 
-function renderPdTabCareOutcomes(container, p, patId){
-  container.innerHTML=`
-  <div class="card" style="margin-top:16px;">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-      <div class="card-title">Care &amp; Status</div>
-      <button class="btn-refresh" onclick="openEditPatientModal('${patId}')">✎ Edit</button>
-    </div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;">
-      ${pField('Patient Status', p.patient_status||p.patient_status_label)}
-      ${pField('Last Outcome Date', p.last_outcome_date?new Date(p.last_outcome_date).toLocaleDateString('en-MT'):'—')}
-      ${pField('DNTU Streak', p.dntu_streak||'0')}
-    </div>
-  </div>
-  <div class="card" style="margin-top:14px;">
-    <div class="card-title">Key Dates</div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;">
-      ${pField('Surgery Date', p.surgery_date?new Date(p.surgery_date).toLocaleDateString('en-MT'):'—')}
-      ${pField('Discharged Date', p.discharged_date?new Date(p.discharged_date).toLocaleDateString('en-MT'):'—')}
-      ${pField('Proposed Reversal Date', p.proposed_reversal_date?new Date(p.proposed_reversal_date).toLocaleDateString('en-MT'):'—')}
-      ${pField('Reversal Date', p.reversal_date?new Date(p.reversal_date).toLocaleDateString('en-MT'):'—')}
-      ${pField('RIP Date', p.rip_date?new Date(p.rip_date).toLocaleDateString('en-MT'):'—')}
-    </div>
-  </div>
-  <div class="card" style="margin-top:14px;">
-    <div class="card-title">Calculated Fields</div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;">
-      ${pField('Surgery Days Till RIP', calcDaysBetween(p.surgery_date, p.rip_date))}
-      ${pField('Stoma Days', calcDaysBetween(p.surgery_date, p.reversal_date||new Date().toISOString().split('T')[0]))}
-      ${pField('Age at Death', calcAgeAtDeath(p.date_of_birth, p.rip_date))}
-    </div>
-  </div>`;
-}
-
-function calcDaysBetween(d1, d2){
-  if(!d1||!d2) return '—';
-  const diff = Math.round((new Date(d2)-new Date(d1))/(1000*60*60*24));
-  return diff >= 0 ? diff+' days' : '—';
-}
-function calcAgeAtDeath(dob, rip){
-  if(!dob||!rip) return '—';
-  return Math.floor((new Date(rip)-new Date(dob))/31557600000)+' years';
-}
-
-async function renderPdTabStormaTimeline(container, patId){
-  container.innerHTML='<div style="padding:16px;color:var(--muted);">Loading stoma timeline...</div>';
-  const [{data:stomas},{data:events},{data:urgentReviews}] = await Promise.all([
-    SB.from('stomas').select('*').eq('patient_id',patId).order('formed_date'),
-    SB.from('events').select('*').eq('patient_id',patId).order('event_date').order('event_time'),
-    SB.from('urgent_stoma_daily_review').select('*').eq('patient_id',patId).order('review_date').order('review_time')
-  ]);
-  const allEvents = events||[];
-  const allUrgent = (urgentReviews||[]).map(r=>({
-    ...r,
-    event_type:'daily_review',
-    event_date:r.review_date,
-    event_time:r.review_time?new Date(r.review_time).toTimeString().substring(0,5):null,
-    stoma_appearance:r.stoma_appearance,
-    peristomal_skin:r.skin_condition,
-    output_consistency:r.output_consistency_type,
-    nurse_name:null,
-    nurse_signature:r.nurse_signature,
-    _source:'urgent_review'
-  }));
-  // Merge and sort all events chronologically
-  const merged=[...allEvents,...allUrgent].sort((a,b)=>
-    String(a.event_date).localeCompare(String(b.event_date))||
-    String(a.event_time||'').localeCompare(String(b.event_time||''))
-  );
-  const allStomas = stomas||[];
-  if(!allStomas.length && !merged.length){
-    container.innerHTML='<div class="card" style="margin-top:16px;"><div class="empty">No stoma timeline data recorded yet.</div></div>';
-    return;
-  }
-  let html='<div style="margin-top:16px;">';
-  // If no stomas yet, show unlinked events
-  const stomaSections = allStomas.length ? allStomas : [{id:null,stoma_label:'Unassigned Events',stoma_type:'',formed_date:null,status:'active'}];
-  stomaSections.forEach(s=>{
-    const stomaEvents = s.id ? merged.filter(e=>e.stoma_id===s.id||(!e.stoma_id&&s.id===null)) : merged;
-    const unlinked = allStomas.length===0;
-    html+=`<div class="card" style="margin-bottom:16px;">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
-        <div style="width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#0f766e,#14b8a6);color:white;display:flex;align-items:center;justify-content:center;font-size:18px;">🔵</div>
-        <div>
-          <div style="font-size:15px;font-weight:900;color:var(--navy);">${htmlSafe(s.stoma_label||'Stoma')}</div>
-          <div style="font-size:12px;color:var(--muted);">${htmlSafe(s.stoma_type||'—')}${s.formed_date?' · Formed '+new Date(s.formed_date).toLocaleDateString('en-MT'):''} · <span style="font-weight:800;">${htmlSafe(s.status||'active')}</span></div>
-        </div>
-      </div>
-      ${stomaEvents.length?`<div style="overflow-x:auto;"><table class="dt">
-        <thead><tr><th>Date</th><th>Time</th><th>Type</th><th>Appearance</th><th>Output</th><th>Skin</th><th>Post-Op Day</th><th>Nurse</th><th>Notes</th><th>Source</th></tr></thead>
-        <tbody>${stomaEvents.map(e=>`<tr style="background:${e._source==='urgent_review'?'#f0fdf4':'white'};">
-          <td>${e.event_date?new Date(e.event_date).toLocaleDateString('en-MT'):'—'}</td>
-          <td>${htmlSafe(e.event_time||'—')}</td>
-          <td><span style="font-size:10px;font-weight:800;padding:2px 6px;border-radius:6px;background:#f1f5f9;color:#334155;">${htmlSafe((e.event_type||'').replace(/_/g,' '))}</span></td>
-          <td>${htmlSafe(e.stoma_appearance||'—')}</td>
-          <td>${htmlSafe(e.output_consistency||e.output_consistency_type||'—')}</td>
-          <td>${htmlSafe(e.peristomal_skin||e.skin_condition||'—')}</td>
-          <td>${e.post_op_day_number!=null?'Day '+e.post_op_day_number:'—'}</td>
-          <td>${htmlSafe(e.nurse_name||e.nurse_signature||'—')}</td>
-          <td style="max-width:180px;font-size:11px;">${htmlSafe(e.notes||'—')}</td>
-          <td><span style="font-size:9px;color:${e._source==='urgent_review'?'#065f46':'#64748b'};">${e._source==='urgent_review'?'Daily Review':'Event'}</span></td>
-        </tr>`).join('')}</tbody>
-      </table></div>`:'<div class="empty">No events recorded for this stoma.</div>'}
-      <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
-        <button class="btn-add" style="font-size:11px;padding:6px 12px;" onclick="openAddEventModal('${patId}','${s.id||''}')">+ Add Event</button>
-        <button class="btn-add" style="font-size:11px;padding:6px 12px;background:#0f766e;" onclick="openUrgentDailyReviewModal('${patId}','')">+ Daily Review</button>
-        ${s.id?`<button class="btn-add" style="font-size:11px;padding:6px 12px;background:#0369a1;" onclick="openSimpleTeachingModal('${patId}')">+ Teaching Session</button>`:''}
-      </div>
-    </div>`;
-  });
-  html+='</div>';
-  container.innerHTML=html;
-}
-
-async function renderPdTabAppliances(container, patId){
-  const {data, error} = await SB.from('appliances').select('*').eq('patient_id', patId).order('started_date', {ascending:false});
-  const rows = data||[];
-  container.innerHTML=`
-  <div style="display:flex;justify-content:flex-end;margin:16px 0 10px;">
-    <button class="btn-add" onclick="openAddApplianceModal('${patId}')">+ Add Appliance</button>
-  </div>
-  <div class="card" style="padding:0;overflow:hidden;">
-    <table class="dt"><thead><tr><th>Started</th><th>Type</th><th>Brand / Product</th><th>Size</th><th>Product Ref</th><th>Accessory</th><th>Current</th><th>Ended</th><th>Reason for Change</th></tr></thead>
-    <tbody>${rows.length?rows.map(a=>`<tr>
-      <td>${a.started_date?new Date(a.started_date).toLocaleDateString('en-MT'):'—'}</td>
-      <td>${htmlSafe(a.appliance_type||'—')}</td>
-      <td>${htmlSafe(a.brand||'')} ${htmlSafe(a.product_name||'')}</td>
-      <td>${htmlSafe(a.size||'—')}</td>
-      <td style="font-family:monospace;font-size:11px;">${htmlSafe(a.product_reference||'—')}</td>
-      <td>${htmlSafe(a.accessory_type||'—')}</td>
-      <td>${a.is_current?'<span style="color:#155724;font-weight:800;">✓ Yes</span>':'—'}</td>
-      <td>${a.ended_date?new Date(a.ended_date).toLocaleDateString('en-MT'):'—'}</td>
-      <td>${htmlSafe(a.reason_for_change||'—')}</td>
-    </tr>`).join(''):'<tr><td colspan="9" class="empty">No appliances recorded.</td></tr>'}
-    </tbody></table>
-  </div>`;
-}
-
-async function renderPdTabTeaching(container, patId){
-  const {data} = await SB.from('teaching_sessions').select('*').eq('patient_id', patId).order('session_date', {ascending:false});
-  const rows = data||[];
-  const items = ['Patient has seen stoma and first flat change','Able to assemble items needed','Able to remove old bag','Able to remove flange','Able to clean stoma','Able to empty bag','Able to apply new bag with flange','Able to apply flange','Able to dispose of waste'];
-  container.innerHTML=`
-  <div style="display:flex;justify-content:flex-end;margin:16px 0 10px;">
-    <button class="btn-add" onclick="openSimpleTeachingModal('${patId}')">+ New Teaching Session</button>
-  </div>
-  ${rows.length?rows.map(s=>`
-  <div class="card" style="margin-bottom:14px;">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-      <div><strong>${s.session_date?new Date(s.session_date).toLocaleDateString('en-MT'):'—'}</strong> · ${htmlSafe(s.nurse_name||'—')}</div>
-      ${s.nurse_signature?`<span style="font-size:11px;color:var(--muted);">Signed: ${htmlSafe(s.nurse_signature)}</span>`:''}
-    </div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:8px;">
-      ${items.map((item,i)=>`<div style="display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;background:${s['item_'+(i+1)+'_'+['seen_stoma','assemble_items','remove_old_bag','remove_flange','clean_stoma','empty_bag','apply_bag_with_flange','apply_flange','dispose_waste'][i]]?'#d4edda':'#f8f9fa'};border:1px solid ${s['item_'+(i+1)+'_'+['seen_stoma','assemble_items','remove_old_bag','remove_flange','clean_stoma','empty_bag','apply_bag_with_flange','apply_flange','dispose_waste'][i]]?'#b7dedb':'var(--border)'};">
-        <span style="font-size:16px;">${s['item_'+(i+1)+'_'+['seen_stoma','assemble_items','remove_old_bag','remove_flange','clean_stoma','empty_bag','apply_bag_with_flange','apply_flange','dispose_waste'][i]]?'✅':'⬜'}</span>
-        <span style="font-size:12px;">${htmlSafe(item)}</span>
-      </div>`).join('')}
-    </div>
-    ${s.notes?`<div style="margin-top:10px;font-size:12px;color:var(--muted);">${htmlSafe(s.notes)}</div>`:''}
-  </div>`).join(''):'<div class="card"><div class="empty">No teaching sessions recorded.</div></div>'}`;
-}
-
-async function renderPdTabDischargeLetter(container, p, patId){
-  const {data} = await SB.from('discharge_letters').select('*').eq('patient_id', patId).order('letter_date', {ascending:false});
-  const letters = data||[];
-  container.innerHTML=`
-  <div style="display:flex;gap:8px;justify-content:flex-end;margin:16px 0 10px;flex-wrap:wrap;">
-    <button class="btn-refresh" style="background:linear-gradient(135deg,#5b21b6,#0f766e);color:white;border:none;" onclick="generateAiDischargeLetter('${patId}')">✨ Generate AI Letter</button>
-  </div>
-  ${letters.length?letters.map(l=>`
-  <div class="card" style="margin-bottom:14px;">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
-      <div><strong>${l.letter_date?new Date(l.letter_date).toLocaleDateString('en-MT'):'—'}</strong> · ${htmlSafe(l.nurse_name||'—')} · <span style="padding:2px 8px;border-radius:999px;font-size:10px;font-weight:800;background:${l.status==='finalised'?'#d4edda':'#fff3cd'};color:${l.status==='finalised'?'#155724':'#856404'};">${htmlSafe(l.status||'draft')}</span></div>
-      <div style="display:flex;gap:6px;">
-        <button class="ncb-btn" style="background:#e8f5f4;color:var(--teal);" onclick="previewDischargeLetter('${l.id}')">Preview</button>
-        <button class="ncb-btn" style="background:#dbeafe;color:#1e40af;" onclick="printDischargeLetter('${l.id}')">🖨 Print</button>
-        ${l.status==='draft'?`<button class="ncb-btn" style="background:#d4edda;color:#155724;" onclick="finaliseDischargeLetter('${l.id}')">Finalise</button>`:''}
-      </div>
-    </div>
-    <div style="font-size:12px;color:var(--muted);">${htmlSafe(l.procedure_performed||'—')} · ${htmlSafe(l.appliance_on_discharge||'—')}</div>
-  </div>`).join(''):'<div class="card"><div class="empty">No discharge letters yet. Click Generate AI Letter to create one.</div></div>'}`;
-}
-
-function renderPdTabAdditionalNotes(container, p, patId){
-  container.innerHTML=`
-  <div class="card" style="margin-top:16px;">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-      <div class="card-title">Additional Notes</div>
-      <button class="btn-refresh" onclick="saveAdditionalNotes('${patId}')">💾 Save</button>
-    </div>
-    <textarea id="pd-additional-notes" style="width:100%;min-height:220px;padding:12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;resize:vertical;" placeholder="Free text notes about this patient...">${htmlSafe(p.additional_notes||p.notes||'')}</textarea>
-  </div>`;
-}
 
 async function saveAdditionalNotes(patId){
   const val = document.getElementById('pd-additional-notes')?.value||'';
