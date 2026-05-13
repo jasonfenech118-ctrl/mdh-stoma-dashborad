@@ -6203,7 +6203,7 @@ function setPlatformFocusTitle(sectionId, data, backAction){
   const section=document.getElementById(sectionId);if(!section||!data)return;clearPlatformFocusTitle(sectionId);
   const card=document.createElement('div');card.className='platform-title-card';card.style.borderLeftColor=data.colour||'#0f766e';
   card.innerHTML=`<div class="platform-title-icon" style="background:linear-gradient(135deg,#0f2638,${data.colour||'#0f766e'});">${platformIconSvg(data.icon)}</div><div class="platform-title-copy"><div class="eyebrow">${htmlSafe(data.eyebrow||'MDH Stoma Care')}</div><h2>${htmlSafe(data.title||'Selected View')}</h2><p>${htmlSafe(data.subtitle||'')}</p></div><button type="button" class="platform-title-back" onclick="${backAction||'switchSection(\'home\',null)'}">← Back to options</button>`;
-  const firstPanel=section.querySelector('.roster-subtab-panel,.patient-command,.patient-table-card');if(firstPanel)firstPanel.parentNode.insertBefore(card,firstPanel);else section.appendChild(card);
+  const firstPanel=section.querySelector(sectionId==='section-patients'?'.patient-centre-toolbar,.pt-search-bar,.patient-command,.patient-table-card':'.roster-subtab-panel,.patient-command,.patient-table-card');if(firstPanel)firstPanel.parentNode.insertBefore(card,firstPanel);else section.appendChild(card);
 }
 
 // ══════════════════════════════════════════════════════
@@ -11072,7 +11072,37 @@ function buildClinicPrintHtml(rows){
     .p-booked{background:#e3f2fd;border-color:#9bc7ec;color:#0d47a1;}
     .empty-print{border:1px solid #cbd5e1;border-radius:8px;padding:18px;text-align:center;color:#475569;font-weight:700;}
     @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}.no-print{display:none!important;}}
-  </style></head><body>
+  </style>
+<style>
+/* v66-10 — Patient Centre focused pages: selected view opens as its own page */
+#section-patients.platform-focused > .phdr.patient-page-title,
+#section-patients.platform-focused .patient-centre-toolbar,
+#section-patients.platform-focused #patient-subtab-bar,
+#section-patients.platform-focused .patient-owner-panel,
+#section-patients.platform-focused .patient-active-view-pill{
+  display:none!important;
+}
+#section-patients.platform-focused .platform-title-card{
+  display:grid!important;
+  max-width:1120px!important;
+  margin:4px auto 18px!important;
+}
+#section-patients.platform-focused .pt-search-bar{
+  max-width:1120px!important;
+  margin:0 auto 14px!important;
+}
+#section-patients.platform-focused #pt-nurse-filter{
+  display:none!important;
+}
+#section-patients.platform-focused #patient-list-panel{
+  margin-top:0!important;
+}
+#section-patients:not(.platform-focused) .platform-title-card{
+  display:none!important;
+}
+</style>
+
+</head><body>
     <div class="header"><div><h1>MDH Stoma Care Clinic — Appointment Book</h1><div class="sub">Period: <strong>${htmlSafe(period)}</strong>${search}</div></div><div class="meta">Generated: ${htmlSafe(generated)}<br/>Use browser print or Save as PDF</div></div>
     <div class="summary">
       <div class="sum"><div class="n">${sorted.length}</div><div class="l">Total</div></div>
