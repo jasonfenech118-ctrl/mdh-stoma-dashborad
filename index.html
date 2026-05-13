@@ -2778,6 +2778,135 @@ button{font-family:'DM Sans',sans-serif;}
 }
 </style>
 
+
+<style>
+/* v66-8 — Platform-wide main-menu style buttons, picture icons, and focused subpages */
+.section .roster-subtab-bar,
+.section .patient-button-grid,
+.section .patient-action-grid{
+  display:grid!important;
+  grid-template-columns:repeat(auto-fit,minmax(210px,1fr))!important;
+  gap:12px!important;
+  width:100%!important;
+  margin:12px 0 18px!important;
+  align-items:stretch!important;
+}
+.section .roster-subtab,
+.section .patient-button-card,
+.section .patient-action-btn,
+.section .followup-hard-card{
+  display:grid!important;
+  grid-template-columns:48px minmax(0,1fr) 18px!important;
+  grid-template-rows:auto!important;
+  column-gap:12px!important;
+  align-items:center!important;
+  min-height:64px!important;
+  height:auto!important;
+  padding:10px 14px!important;
+  border:1px solid rgba(15,38,56,.13)!important;
+  border-left:5px solid #0f766e!important;
+  border-radius:15px!important;
+  background:linear-gradient(135deg,#ffffff 0%,#f8fbfc 70%,#eefbf8 100%)!important;
+  box-shadow:0 6px 18px rgba(15,38,56,.06)!important;
+  color:var(--navy)!important;
+  text-align:left!important;
+  cursor:pointer!important;
+  position:relative!important;
+  overflow:hidden!important;
+  font-family:'DM Sans',sans-serif!important;
+}
+.section .roster-subtab::after,
+.section .patient-button-card::after,
+.section .patient-action-btn::after,
+.section .followup-hard-card::after{
+  content:'›'!important;
+  grid-column:3!important;
+  justify-self:end!important;
+  align-self:center!important;
+  color:#94a3b8!important;
+  font-size:20px!important;
+  line-height:1!important;
+  font-weight:300!important;
+  position:static!important;
+  transform:none!important;
+  background:transparent!important;
+  width:auto!important;
+  height:auto!important;
+}
+.section .roster-subtab:hover,
+.section .patient-button-card:hover,
+.section .patient-action-btn:hover,
+.section .followup-hard-card:hover{
+  transform:translateY(-1px)!important;
+  border-color:rgba(15,118,110,.26)!important;
+  box-shadow:0 10px 24px rgba(15,38,56,.10)!important;
+  background:linear-gradient(135deg,#ffffff 0%,#f2fffc 100%)!important;
+}
+.section .roster-subtab.active,
+.section .patient-button-card.active,
+.section .patient-action-btn.active,
+.section .followup-hard-card.active{
+  background:linear-gradient(135deg,#ffffff 0%,#ecfdf9 65%,#dffcf6 100%)!important;
+  border-color:#5eead4!important;
+  box-shadow:0 0 0 2px rgba(20,184,166,.14),0 10px 24px rgba(15,38,56,.10)!important;
+}
+.section .roster-subtab-icon,
+.section .patient-button-card .command-icon,
+.section .patient-action-btn .mini-icon,
+.section .followup-hard-card .command-icon{
+  grid-column:1!important;
+  justify-self:start!important;
+  align-self:center!important;
+  width:40px!important;
+  height:40px!important;
+  min-width:40px!important;
+  border-radius:12px!important;
+  background:linear-gradient(135deg,#0f2638,#0f766e)!important;
+  color:white!important;
+  box-shadow:0 8px 18px rgba(15,38,56,.14)!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  margin:0!important;
+  font-size:0!important;
+}
+.section .roster-subtab-icon svg,
+.section .patient-button-card .command-icon svg,
+.section .patient-action-btn .mini-icon svg,
+.section .followup-hard-card .command-icon svg{
+  width:20px!important;height:20px!important;stroke-width:2.1!important;display:block!important;
+}
+.section .roster-subtab > span:not(.roster-subtab-icon),
+.section .patient-button-card h3,
+.section .patient-action-btn strong,
+.section .followup-hard-card h3{
+  grid-column:2!important;color:var(--navy)!important;font-size:14px!important;font-weight:950!important;line-height:1.2!important;margin:0!important;text-align:left!important;justify-self:start!important;
+}
+.section .roster-subtab:nth-child(2),.section .patient-button-card:nth-child(2),.section .patient-action-btn:nth-child(2){border-left-color:#2563eb!important;}
+.section .roster-subtab:nth-child(2) .roster-subtab-icon,.section .patient-button-card:nth-child(2) .command-icon,.section .patient-action-btn:nth-child(2) .mini-icon{background:linear-gradient(135deg,#1d4ed8,#0f766e)!important;}
+.section .roster-subtab:nth-child(3),.section .patient-button-card:nth-child(3),.section .patient-action-btn:nth-child(3){border-left-color:#7c3aed!important;}
+.section .roster-subtab:nth-child(3) .roster-subtab-icon,.section .patient-button-card:nth-child(3) .command-icon,.section .patient-action-btn:nth-child(3) .mini-icon{background:linear-gradient(135deg,#5b21b6,#0f2638)!important;}
+.section .roster-subtab:nth-child(4),.section .patient-button-card:nth-child(4),.section .patient-action-btn:nth-child(4){border-left-color:#b45309!important;}
+.section .roster-subtab:nth-child(4) .roster-subtab-icon,.section .patient-button-card:nth-child(4) .command-icon,.section .patient-action-btn:nth-child(4) .mini-icon{background:linear-gradient(135deg,#92400e,#b45309)!important;}
+.section .roster-subtab:nth-child(5),.section .patient-button-card:nth-child(5),.section .patient-action-btn:nth-child(5){border-left-color:#059669!important;}
+.section .roster-subtab:nth-child(5) .roster-subtab-icon,.section .patient-button-card:nth-child(5) .command-icon,.section .patient-action-btn:nth-child(5) .mini-icon{background:linear-gradient(135deg,#065f46,#0f766e)!important;}
+.section.platform-hub .roster-subtab-panel{display:none!important;}
+.section.platform-focused .roster-subtab-bar{display:none!important;}
+.section.platform-focused .patient-button-grid.platform-menu-grid{display:none!important;}
+.platform-title-card{display:grid;grid-template-columns:54px minmax(0,1fr) auto;gap:14px;align-items:center;margin:8px 0 16px;padding:15px 18px;border:1px solid rgba(15,38,56,.13);border-left:6px solid #0f766e;border-radius:18px;background:linear-gradient(135deg,#ffffff 0%,#f8fbfc 58%,#ecfdf9 100%);box-shadow:0 8px 26px rgba(15,38,56,.08);}
+.platform-title-icon{width:44px;height:44px;border-radius:13px;display:flex;align-items:center;justify-content:center;color:#fff;background:linear-gradient(135deg,#0f2638,#0f766e);box-shadow:0 8px 18px rgba(15,38,56,.16);}
+.platform-title-icon svg{width:23px;height:23px;stroke-width:2.1;}
+.platform-title-copy .eyebrow{font-size:10px;font-weight:950;color:#0f766e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px;}
+.platform-title-copy h2{font-family:'DM Serif Display',serif;font-size:22px;line-height:1.12;font-weight:400;color:var(--navy);margin:0;}
+.platform-title-copy p{font-size:12px;color:var(--muted);line-height:1.35;margin:3px 0 0;}
+.platform-title-back{border:1px solid rgba(15,118,110,.20);background:#ffffff;color:#0f766e;border-radius:12px;padding:8px 12px;font-size:12px;font-weight:950;cursor:pointer;font-family:'DM Sans',sans-serif;box-shadow:0 4px 12px rgba(15,38,56,.06);}
+.platform-title-back:hover{background:#ecfdf9;transform:translateY(-1px);}
+.pathway-search-wrap{background:white;border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);padding:22px!important;margin-top:0;text-align:center;}
+.pathway-search-input{max-width:520px!important;}
+#section-patient-pathways.platform-hub #pathway-tab-bar,#section-followups.platform-hub #followup-subtab-bar,#section-roster.platform-hub .roster-hub-shell > .roster-subtab-bar{display:grid!important;}
+@media(max-width:760px){.platform-title-card{grid-template-columns:46px minmax(0,1fr);gap:11px;padding:13px;}.platform-title-back{grid-column:1 / -1;width:100%;}.section .roster-subtab-bar,.section .patient-button-grid,.section .patient-action-grid{grid-template-columns:1fr!important;}}
+</style>
+
 </head>
 <body>
 
@@ -3025,19 +3154,19 @@ button{font-family:'DM Sans',sans-serif;}
       <!-- Pathway type tabs -->
       <div class="roster-subtab-bar" id="pathway-tab-bar" role="tablist" style="grid-template-columns:repeat(4,1fr);margin-bottom:0;">
         <button type="button" class="roster-subtab active" id="pathway-tab-elective" onclick="showPathwayTab('elective')" style="background:linear-gradient(90deg,rgba(20,184,166,.42) 0%,rgba(20,184,166,.22) 28%,rgba(20,184,166,.09) 52%,rgba(255,255,255,.93) 74%,#eefbf8 100%);">
-          <span class="roster-subtab-icon" style="background:linear-gradient(135deg,#0f766e,#14b8a6);">🟢</span>
+          <span class="roster-subtab-icon" style="background:linear-gradient(135deg,#0f766e,#14b8a6);"><svg class="icon-svg" viewBox="0 0 24 24"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="18" cy="18" r="2"/><path d="M8 6h8"/><path d="M18 8v8"/><path d="M8 6v12h8"/></svg></span>
           <span>Elective</span>
         </button>
         <button type="button" class="roster-subtab" id="pathway-tab-emergency" onclick="showPathwayTab('emergency')" style="background:linear-gradient(90deg,rgba(185,28,28,.34) 0%,rgba(185,28,28,.17) 28%,rgba(15,38,56,.07) 52%,rgba(255,255,255,.93) 74%,#fef2f2 100%);">
-          <span class="roster-subtab-icon" style="background:linear-gradient(135deg,#991b1b,#ef4444);">🔴</span>
+          <span class="roster-subtab-icon" style="background:linear-gradient(135deg,#991b1b,#ef4444);"><svg class="icon-svg" viewBox="0 0 24 24"><path d="m10.29 3.86-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.71-3.14l-8-14a2 2 0 0 0-3.42 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></span>
           <span>Emergency</span>
         </button>
         <button type="button" class="roster-subtab" id="pathway-tab-bagging" onclick="showPathwayTab('bagging')" style="background:linear-gradient(90deg,rgba(109,40,217,.34) 0%,rgba(167,139,250,.18) 28%,rgba(15,38,56,.07) 52%,rgba(255,255,255,.93) 74%,#f5f3ff 100%);">
-          <span class="roster-subtab-icon" style="background:linear-gradient(135deg,#5b21b6,#a78bfa);">🟣</span>
+          <span class="roster-subtab-icon" style="background:linear-gradient(135deg,#5b21b6,#a78bfa);"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 3 4 7v10l8 4 8-4V7z"/><path d="M4 7l8 4 8-4"/><path d="M12 11v10"/></svg></span>
           <span>Bagging Advice</span>
         </button>
         <button type="button" class="roster-subtab" id="pathway-tab-readmission" onclick="showPathwayTab('readmission')" style="background:linear-gradient(90deg,rgba(180,83,9,.34) 0%,rgba(251,191,36,.20) 28%,rgba(15,38,56,.07) 52%,rgba(255,255,255,.93) 74%,#fffbeb 100%);">
-          <span class="roster-subtab-icon" style="background:linear-gradient(135deg,#b45309,#fbbf24);">🟡</span>
+          <span class="roster-subtab-icon" style="background:linear-gradient(135deg,#b45309,#fbbf24);"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M7 7h6a3 3 0 0 1 0 6H7"/><path d="m10 4-3 3 3 3"/><path d="M17 17H11a3 3 0 0 1 0-6h6"/><path d="m14 20 3-3-3-3"/></svg></span>
           <span>Re-admission</span>
         </button>
       </div>
@@ -3314,19 +3443,19 @@ button{font-family:'DM Sans',sans-serif;}
       <!-- Roster-style subtab cards -->
       <div class="roster-subtab-bar" id="followup-subtab-bar" role="tablist" aria-label="Follow-Up tabs" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr));">
         <button type="button" class="roster-subtab active" id="followup-subtab-appointments" onclick="showFollowupSubtab('appointments')" style="background:linear-gradient(90deg,rgba(20,184,166,.42) 0%,rgba(20,184,166,.22) 28%,rgba(20,184,166,.09) 52%,rgba(255,255,255,.93) 74%,#eefbf8 100%);">
-          <span class="roster-subtab-icon" style="background:linear-gradient(135deg,#0f766e,#14b8a6);">📋</span>
+          <span class="roster-subtab-icon" style="background:linear-gradient(135deg,#0f766e,#14b8a6);"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="16" rx="2"/><path d="M9 8h6"/><path d="M9 12h6"/><path d="M9 16h4"/></svg></span>
           <span>Patient Appointments</span>
         </button>
         <button type="button" class="roster-subtab" id="followup-subtab-outcomes" onclick="showFollowupSubtab('outcomes')" style="background:linear-gradient(90deg,rgba(37,99,235,.38) 0%,rgba(59,130,246,.18) 28%,rgba(20,184,166,.08) 52%,rgba(255,255,255,.93) 74%,#eff6ff 100%);">
-          <span class="roster-subtab-icon" style="background:linear-gradient(135deg,#1d4ed8,#0f766e);">📊</span>
+          <span class="roster-subtab-icon" style="background:linear-gradient(135deg,#1d4ed8,#0f766e);"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-5"/><path d="M12 16V8"/><path d="M16 16v-7"/><path d="M20 6l-4 4-3-3-5 5"/></svg></span>
           <span>Appointment Outcomes</span>
         </button>
         <button type="button" class="roster-subtab" id="followup-subtab-clinic" onclick="showFollowupSubtab('clinic')" style="background:linear-gradient(90deg,rgba(109,40,217,.34) 0%,rgba(167,139,250,.18) 28%,rgba(15,38,56,.07) 52%,rgba(255,255,255,.93) 74%,#f5f3ff 100%);">
-          <span class="roster-subtab-icon" style="background:linear-gradient(135deg,#5b21b6,#a78bfa);">🗓</span>
+          <span class="roster-subtab-icon" style="background:linear-gradient(135deg,#5b21b6,#a78bfa);"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="M8 14h8"/><path d="M8 18h5"/></svg></span>
           <span>Clinic Audit</span>
         </button>
         <button type="button" class="roster-subtab" id="followup-subtab-dntu" onclick="showFollowupSubtab('dntu')" style="background:linear-gradient(90deg,rgba(194,65,59,.34) 0%,rgba(194,65,59,.17) 28%,rgba(180,83,9,.08) 52%,rgba(255,255,255,.93) 74%,#fff7ed 100%);">
-          <span class="roster-subtab-icon" style="background:linear-gradient(135deg,#7c2d12,#c2413b);">⚠️</span>
+          <span class="roster-subtab-icon" style="background:linear-gradient(135deg,#7c2d12,#c2413b);"><svg class="icon-svg" viewBox="0 0 24 24"><path d="m10.29 3.86-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.71-3.14l-8-14a2 2 0 0 0-3.42 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></span>
           <span>DNTU</span>
         </button>
       </div>
@@ -3396,15 +3525,15 @@ button{font-family:'DM Sans',sans-serif;}
         </div>
         <div class="roster-subtab-bar" role="tablist" aria-label="Roster tabs">
           <button type="button" class="roster-subtab active" id="roster-subtab-monthly" onclick="showRosterSubtab('monthly')">
-            <span class="roster-subtab-icon">📅</span>
+            <span class="roster-subtab-icon"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="M8 15h8"/><path d="M8 18h5"/></svg></span>
             <span>Monthly Roster</span>
           </button>
           <button type="button" class="roster-subtab" id="roster-subtab-cod" onclick="showRosterSubtab('cod')">
-            <span class="roster-subtab-icon">🔄</span>
+            <span class="roster-subtab-icon"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M7 7h6a3 3 0 0 1 0 6H7"/><path d="m10 4-3 3 3 3"/><path d="M17 17H11a3 3 0 0 1 0-6h6"/><path d="m14 20 3-3-3-3"/></svg></span>
             <span>Change of Duty</span>
           </button>
           <button type="button" class="roster-subtab" id="roster-subtab-staff-audit" onclick="showRosterSubtab('staff-audit')">
-            <span class="roster-subtab-icon">📊</span>
+            <span class="roster-subtab-icon"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-5"/><path d="M12 16V8"/><path d="M16 16v-7"/><path d="M20 6l-4 4-3-3-5 5"/></svg></span>
             <span>Staff Audit</span>
           </button>
         </div>
@@ -5043,14 +5172,23 @@ function syncPatientSubtabActive(view){
 }
 
 function showPatientSubtab(tab){
+  const section=document.getElementById('section-patients');
+  if(section){section.classList.add('platform-focused');section.classList.remove('platform-hub');}
   document.querySelectorAll('#patient-subtab-bar .roster-subtab').forEach(b=>b.classList.remove('active'));
   const btn=document.getElementById('patient-subtab-'+tab);
   if(btn)btn.classList.add('active');
   const labels={'master':'Master List','inpatient':'Inpatients','outpatient':'Outpatients','handover':'Handover'};
   const el=document.getElementById('patient-active-view-label');
   if(el)el.textContent=labels[tab]||'Patients';
+  setPlatformFocusTitle('section-patients', getPlatformTitleData('patient-'+tab), 'showPatientOptionsHub()');
   if(tab==='master'){resetPatientCommandFilters();}
   else{setPatientCommandFilter(tab);}
+}
+
+function showPatientOptionsHub(){
+  const section=document.getElementById('section-patients');
+  if(section){section.classList.remove('platform-focused');section.classList.remove('platform-hub');}
+  clearPlatformFocusTitle('section-patients');
 }
 
 function filterPatientTable(val){
@@ -5062,14 +5200,24 @@ function filterPatientTable(val){
 }
 
 let currentFollowupSubtab='appointments';
+function showFollowupHub(){
+  const section=document.getElementById('section-followups');
+  if(section){section.classList.add('platform-hub');section.classList.remove('platform-focused');}
+  clearPlatformFocusTitle('section-followups');
+  document.querySelectorAll('#followup-subtab-bar .roster-subtab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('#section-followups .roster-subtab-panel').forEach(p=>p.classList.remove('active'));
+}
 function showFollowupSubtab(tab){
   currentFollowupSubtab=tab;
+  const section=document.getElementById('section-followups');
+  if(section){section.classList.remove('platform-hub');section.classList.add('platform-focused');}
   document.querySelectorAll('#followup-subtab-bar .roster-subtab').forEach(b=>b.classList.remove('active'));
   document.querySelectorAll('#section-followups .roster-subtab-panel').forEach(p=>p.classList.remove('active'));
   const btn=document.getElementById('followup-subtab-'+tab);
   const pane=document.getElementById('followup-pane-'+tab);
   if(btn)btn.classList.add('active');
   if(pane)pane.classList.add('active');
+  setPlatformFocusTitle('section-followups', getPlatformTitleData('followup-'+tab), 'showFollowupHub()');
   if(tab==='appointments'){
     const inner=document.getElementById('followup-appointments-inner');
     if(inner&&!inner.dataset.mounted){
@@ -5104,18 +5252,28 @@ function showFollowupSubtab(tab){
     try{loadDntuPolicy();}catch(e){}
   }
 }
-function refreshFollowupSubtab(){showFollowupSubtab(currentFollowupSubtab);}
+function refreshFollowupSubtab(){if(document.getElementById('section-followups')?.classList.contains('platform-hub'))showFollowupHub();else showFollowupSubtab(currentFollowupSubtab);}
 
+function showRosterHub(){
+  const section=document.getElementById('section-roster');
+  if(section){section.classList.add('platform-hub');section.classList.remove('platform-focused');}
+  clearPlatformFocusTitle('section-roster');
+  document.querySelectorAll('#section-roster .roster-subtab').forEach(btn=>btn.classList.remove('active'));
+  document.querySelectorAll('#section-roster .roster-subtab-panel').forEach(panel=>panel.classList.remove('active'));
+}
 function showRosterSubtab(tabName, options={}){
   const tab=(tabName==='cod'||tabName==='staff-audit')?tabName:'monthly';
   const legacyName=tab==='monthly'?'roster':tab;
+  const section=document.getElementById('section-roster');
+  if(section){section.classList.remove('platform-hub');section.classList.add('platform-focused');}
   mountLegacySection(legacyName);
-  document.querySelectorAll('.roster-subtab').forEach(btn=>btn.classList.remove('active'));
-  document.querySelectorAll('.roster-subtab-panel').forEach(panel=>panel.classList.remove('active'));
+  document.querySelectorAll('#section-roster .roster-subtab').forEach(btn=>btn.classList.remove('active'));
+  document.querySelectorAll('#section-roster .roster-subtab-panel').forEach(panel=>panel.classList.remove('active'));
   const btn=document.getElementById('roster-subtab-'+tab);
   const pane=document.getElementById('roster-pane-'+tab);
   if(btn)btn.classList.add('active');
   if(pane)pane.classList.add('active');
+  setPlatformFocusTitle('section-roster', getPlatformTitleData('roster-'+tab), 'showRosterHub()');
   window.currentRosterSubtab=tab;
   if(!options.skipLoad){
     try{loadLegacySectionData(legacyName);}catch(e){console.warn('Roster tab load skipped:',e?.message||e);}
@@ -5137,6 +5295,7 @@ function switchSection(name, navEl, options={}){
   const sectionTitles={
     'home':'MDH Stoma Care — Home',
     'patients':'MDH Stoma Care — Patients',
+    'patient-pathways':'MDH Stoma Care — Patient Pathways',
     'patient-outcomes':'MDH Stoma Care — Patient Outcomes',
     'patient-detail':'MDH Stoma Care — Patient Profile',
     'followups':'MDH Stoma Care — Follow-Up Centre',
@@ -5173,7 +5332,8 @@ function switchSection(name, navEl, options={}){
   // Load data for each section
   if(name==='home')loadHomeDashboard();
   if(name==='account'){setTimeout(()=>renderProfileTab('profile'),0);}
-  if(name==='patients'){loadPatients();loadPatientCommandCounts();}
+  if(name==='patients'){showPatientOptionsHub();loadPatients();loadPatientCommandCounts();}
+  if(name==='patient-pathways')loadPatientPathways();
   if(name==='patient-outcomes'){loadPatients();loadPatientCommandCounts();}
   if(name==='clinical-reviews'){populatePatientDropdowns();loadReviews();}
   if(name==='teaching'){populatePatientDropdowns();loadTeaching();}
@@ -5181,13 +5341,14 @@ function switchSection(name, navEl, options={}){
   if(name==='appliances')loadAppliances();
   if(name==='discharge'){loadGlobalDischargeLetters();loadDischargePlans();}
   if(name==='followups'){
-    setTimeout(()=>{showFollowupSubtab('appointments');},0);
+    setTimeout(()=>{showFollowupHub();},0);
   }
   if(name==='dntu')loadDntuPolicy();
   if(name==='kpi-dashboard')loadKpiDashboard();
   loadLegacySectionData(name);
   if(name==='roster'){
-    setTimeout(()=>showRosterSubtab(options.rosterSubtab||'monthly',{skipLoad:false}),0);
+    if(options.rosterSubtab)setTimeout(()=>showRosterSubtab(options.rosterSubtab,{skipLoad:false}),0);
+    else setTimeout(()=>showRosterHub(),0);
   }
 }
 
@@ -5787,6 +5948,49 @@ document.addEventListener('click',e=>{
   if(wrap&&!wrap.contains(e.target))clearGlobalSearch();
 });
 
+
+function platformIconSvg(key){
+  const icons={
+    patients:'<svg class="icon-svg" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+    pathway:'<svg class="icon-svg" viewBox="0 0 24 24"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="18" cy="18" r="2"/><path d="M8 6h8"/><path d="M18 8v8"/><path d="M8 6v12h8"/></svg>',
+    checklist:'<svg class="icon-svg" viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="16" rx="2"/><path d="M9 8h6"/><path d="M9 12h6"/><path d="M9 16h4"/></svg>',
+    calendar:'<svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="M8 15h8"/><path d="M8 18h5"/></svg>',
+    followup:'<svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="m8 16 2 2 5-5"/></svg>',
+    chart:'<svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-5"/><path d="M12 16V8"/><path d="M16 16v-7"/><path d="M20 6l-4 4-3-3-5 5"/></svg>',
+    warning:'<svg class="icon-svg" viewBox="0 0 24 24"><path d="m10.29 3.86-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.71-3.14l-8-14a2 2 0 0 0-3.42 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>',
+    swap:'<svg class="icon-svg" viewBox="0 0 24 24"><path d="M7 7h6a3 3 0 0 1 0 6H7"/><path d="m10 4-3 3 3 3"/><path d="M17 17H11a3 3 0 0 1 0-6h6"/><path d="m14 20 3-3-3-3"/></svg>',
+    appliance:'<svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 3 4 7v10l8 4 8-4V7z"/><path d="M4 7l8 4 8-4"/><path d="M12 11v10"/></svg>'
+  };
+  return icons[key]||icons.checklist;
+}
+function getPlatformTitleData(key){
+  const map={
+    'pathway-elective':{eyebrow:'Patient Pathways',title:'Elective Admission',subtitle:'Search or add a patient to begin the elective admission pathway.',icon:'pathway',colour:'#2563eb'},
+    'pathway-emergency':{eyebrow:'Patient Pathways',title:'Emergency Admission',subtitle:'Search or add a patient to begin the emergency pathway.',icon:'warning',colour:'#c2413b'},
+    'pathway-bagging':{eyebrow:'Patient Pathways',title:'Bagging Advice',subtitle:'Search or add a patient for appliance, bagging, wound, drain, or fistula advice.',icon:'appliance',colour:'#7c3aed'},
+    'pathway-readmission':{eyebrow:'Patient Pathways',title:'Re-admission',subtitle:'Search or add a patient for re-admission or complication follow-up.',icon:'swap',colour:'#b45309'},
+    'followup-appointments':{eyebrow:'Follow-Up Centre',title:'Patient Appointments',subtitle:'Daily clinic appointment book and patient booking slots.',icon:'followup',colour:'#0f766e'},
+    'followup-outcomes':{eyebrow:'Follow-Up Centre',title:'Appointment Outcomes',subtitle:'Seen, DNTU, cancelled and follow-up status views.',icon:'chart',colour:'#2563eb'},
+    'followup-clinic':{eyebrow:'Follow-Up Centre',title:'Clinic Audit',subtitle:'Monthly appointment calendar and printable clinic activity.',icon:'calendar',colour:'#7c3aed'},
+    'followup-dntu':{eyebrow:'Follow-Up Centre',title:'DNTU',subtitle:'Patient-grouped Did Not Turn Up tracking.',icon:'warning',colour:'#c2413b'},
+    'roster-monthly':{eyebrow:'Roster Centre',title:'Monthly Roster',subtitle:'Monthly duty roster, leave, overtime, TIL and patient snapshot.',icon:'calendar',colour:'#475569'},
+    'roster-cod':{eyebrow:'Roster Centre',title:'Change of Duty',subtitle:'Record duty swaps and update the roster automatically.',icon:'swap',colour:'#2563eb'},
+    'roster-staff-audit':{eyebrow:'Roster Centre',title:'Staff Audit',subtitle:'Staff leave, overtime, TIL and monthly staff audit records.',icon:'chart',colour:'#7c3aed'},
+    'patient-master':{eyebrow:'Patient Centre',title:'Master List',subtitle:'Complete patient register.',icon:'patients',colour:'#0f766e'},
+    'patient-inpatient':{eyebrow:'Patient Centre',title:'Inpatients',subtitle:'Current inpatient workload and ward-based reviews.',icon:'checklist',colour:'#2563eb'},
+    'patient-outpatient':{eyebrow:'Patient Centre',title:'Outpatients',subtitle:'Outpatient and community follow-up patient list.',icon:'followup',colour:'#7c3aed'},
+    'patient-handover':{eyebrow:'Patient Centre',title:'Handover',subtitle:'Patients requiring handover or active follow-up attention.',icon:'swap',colour:'#b45309'}
+  };
+  return map[key]||{eyebrow:'MDH Stoma Care',title:'Selected View',subtitle:'Current workspace',icon:'checklist',colour:'#0f766e'};
+}
+function clearPlatformFocusTitle(sectionId){const existing=document.querySelector(`#${sectionId} .platform-title-card`);if(existing)existing.remove();}
+function setPlatformFocusTitle(sectionId, data, backAction){
+  const section=document.getElementById(sectionId);if(!section||!data)return;clearPlatformFocusTitle(sectionId);
+  const card=document.createElement('div');card.className='platform-title-card';card.style.borderLeftColor=data.colour||'#0f766e';
+  card.innerHTML=`<div class="platform-title-icon" style="background:linear-gradient(135deg,#0f2638,${data.colour||'#0f766e'});">${platformIconSvg(data.icon)}</div><div class="platform-title-copy"><div class="eyebrow">${htmlSafe(data.eyebrow||'MDH Stoma Care')}</div><h2>${htmlSafe(data.title||'Selected View')}</h2><p>${htmlSafe(data.subtitle||'')}</p></div><button type="button" class="platform-title-back" onclick="${backAction||'switchSection(\'home\',null)'}">← Back to options</button>`;
+  const firstPanel=section.querySelector('.roster-subtab-panel,.patient-command,.patient-table-card');if(firstPanel)firstPanel.parentNode.insertBefore(card,firstPanel);else section.appendChild(card);
+}
+
 // ══════════════════════════════════════════════════════
 // PATIENT PATHWAYS
 // ══════════════════════════════════════════════════════
@@ -5794,17 +5998,24 @@ let _currentPathwayTab='elective';
 let _pathwayPatient={};  // keyed by tab: {elective:{id,name,...}, emergency:{...}, ...}
 
 function loadPatientPathways(){
-  showPathwayTab(_currentPathwayTab);
+  const section=document.getElementById('section-patient-pathways');
+  if(section){section.classList.add('platform-hub');section.classList.remove('platform-focused');}
+  clearPlatformFocusTitle('section-patient-pathways');
+  document.querySelectorAll('#pathway-tab-bar .roster-subtab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('#section-patient-pathways .roster-subtab-panel').forEach(p=>p.classList.remove('active'));
 }
 
 function showPathwayTab(tab){
   _currentPathwayTab=tab;
+  const section=document.getElementById('section-patient-pathways');
+  if(section){section.classList.remove('platform-hub');section.classList.add('platform-focused');}
   document.querySelectorAll('#pathway-tab-bar .roster-subtab').forEach(b=>b.classList.remove('active'));
   document.querySelectorAll('#section-patient-pathways .roster-subtab-panel').forEach(p=>p.classList.remove('active'));
   const btn=document.getElementById('pathway-tab-'+tab);
   const pane=document.getElementById('pathway-pane-'+tab);
   if(btn)btn.classList.add('active');
   if(pane)pane.classList.add('active');
+  setPlatformFocusTitle('section-patient-pathways', getPlatformTitleData('pathway-'+tab), 'loadPatientPathways()');
   renderPathwayPane(tab, pane);
 }
 
