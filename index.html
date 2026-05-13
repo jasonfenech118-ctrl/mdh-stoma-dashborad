@@ -2455,6 +2455,32 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
           <div class="home-btn-sub">Full system activity log</div>
         </div>
       </div>
+
+
+      <!-- GROUP: Clinical Workforce -->
+      <div class="home-group-label">Clinical Workforce</div>
+      <div class="home-btn-grid">
+        <div class="home-btn home-btn-violet" onclick="switchSection('patients',null);setTimeout(()=>setPatientNurseFilter('Jacqueline Sammut'),60);">
+          <div class="home-btn-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M19 8v6"/><path d="M16 11h6"/></svg></div>
+          <div class="home-btn-title">Jacqueline My Patients</div>
+          <div class="home-btn-sub"><span id="tile-nurse-jacqueline">—</span> active patients</div>
+        </div>
+        <div class="home-btn home-btn-teal" onclick="switchSection('patients',null);setTimeout(()=>setPatientNurseFilter('Jason Fenech'),60);">
+          <div class="home-btn-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="m16 11 2 2 4-5"/></svg></div>
+          <div class="home-btn-title">Jason My Patients</div>
+          <div class="home-btn-sub"><span id="tile-nurse-jason">—</span> active patients</div>
+        </div>
+        <div class="home-btn home-btn-blue" onclick="switchSection('patients',null);setTimeout(()=>setPatientNurseFilter('Lorraine Stivala'),60);">
+          <div class="home-btn-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M17 11h5"/><path d="M19.5 8.5v5"/></svg></div>
+          <div class="home-btn-title">Lorraine My Patients</div>
+          <div class="home-btn-sub"><span id="tile-nurse-lorraine">—</span> active patients</div>
+        </div>
+        <div class="home-btn home-btn-gold" onclick="switchSection('patients',null);setTimeout(()=>setPatientNurseFilter('Common'),60);">
+          <div class="home-btn-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+          <div class="home-btn-title">Common Our Patients</div>
+          <div class="home-btn-sub"><span id="tile-nurse-common">—</span> active patients</div>
+        </div>
+      </div>
     </div>
 
     <!-- ══════════════════════════════════ -->
@@ -4909,7 +4935,13 @@ async function loadHomeDashboard(){
   const nurseName=currentLoginProfile?.full_name||'';
   const mineEl=document.getElementById('tile-nurse-mine');
   if(mineEl)mineEl.textContent=np.filter(p=>String(p.assigned_nurse||'').toLowerCase()===nurseName.toLowerCase()).length;
-  setValue('tile-nurse-common',np.filter(p=>!p.assigned_nurse||p.assigned_nurse==='Common').length);
+
+  const nurseLabel=p=>String(p.assigned_nurse||p.allocated_nurse||'').trim().toLowerCase();
+  const nurseCount=matcher=>np.filter(p=>matcher(nurseLabel(p))).length;
+  setValue('tile-nurse-jacqueline',nurseCount(n=>n==='jacqueline sammut'||n.includes('jacqueline')||n.includes('jacklyn')));
+  setValue('tile-nurse-jason',nurseCount(n=>n==='jason fenech'||n.includes('jason')));
+  setValue('tile-nurse-lorraine',nurseCount(n=>n==='lorraine stivala'||n.includes('lorraine')));
+  setValue('tile-nurse-common',np.filter(p=>!nurseLabel(p)||nurseLabel(p)==='common').length);
 
   // Today's clinic
   await loadHomeClinic();
