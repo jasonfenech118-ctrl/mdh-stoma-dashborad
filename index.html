@@ -2545,6 +2545,34 @@ button{font-family:'DM Sans',sans-serif;}
     width:38px!important;height:38px!important;min-width:38px!important;
   }
 }
+
+
+/* v66-12 — Patient Outcomes reset properly and title card follows selected outcome colour */
+.platform-title-card{
+  border-left-color:var(--platform-colour,#0f766e)!important;
+}
+.platform-title-icon{
+  background:linear-gradient(135deg,#0f2638,var(--platform-colour,#0f766e))!important;
+}
+.platform-title-copy .eyebrow{
+  color:var(--platform-colour,#0f766e)!important;
+}
+.platform-title-back{
+  color:var(--platform-colour,#0f766e)!important;
+  border-color:rgba(15,38,56,.14)!important;
+}
+#section-patient-outcomes.platform-focused #patient-outcomes-heading,
+#section-patient-outcomes.platform-focused #patient-outcome-hub{
+  display:none!important;
+}
+#section-patient-outcomes:not(.platform-focused) #patient-outcome-page,
+#section-patient-outcomes:not(.platform-focused) .platform-title-card{
+  display:none!important;
+}
+#section-patient-outcomes.platform-focused #patient-outcome-page{
+  display:block!important;
+}
+
 </style>
 
 <style>
@@ -5553,7 +5581,7 @@ function switchSection(name, navEl, options={}){
   if(name==='account'){setTimeout(()=>renderProfileTab('profile'),0);}
   if(name==='patients'){showPatientOptionsHub();loadPatients();loadPatientCommandCounts();}
   if(name==='patient-pathways')loadPatientPathways();
-  if(name==='patient-outcomes'){loadPatients();loadPatientCommandCounts();}
+  if(name==='patient-outcomes'){showPatientOutcomesHub();loadPatients();loadPatientCommandCounts();}
   if(name==='clinical-reviews'){populatePatientDropdowns();loadReviews();}
   if(name==='teaching'){populatePatientDropdowns();loadTeaching();}
   if(name==='referrals'){populatePatientDropdowns();loadReferrals();}
@@ -6207,12 +6235,12 @@ function getPlatformTitleData(key){
   };
   return map[key]||{eyebrow:'MDH Stoma Care',title:'Selected View',subtitle:'Current workspace',icon:'checklist',colour:'#0f766e'};
 }
-function clearPlatformFocusTitle(sectionId){const existing=document.querySelector(`#${sectionId} .platform-title-card`);if(existing)existing.remove();}
+function clearPlatformFocusTitle(sectionId){document.querySelectorAll(`#${sectionId} .platform-title-card`).forEach(el=>el.remove());}
 function setPlatformFocusTitle(sectionId, data, backAction){
   const section=document.getElementById(sectionId);if(!section||!data)return;clearPlatformFocusTitle(sectionId);
-  const card=document.createElement('div');card.className='platform-title-card';card.style.borderLeftColor=data.colour||'#0f766e';
+  const card=document.createElement('div');card.className='platform-title-card';card.style.setProperty('--platform-colour',data.colour||'#0f766e');card.style.borderLeftColor=data.colour||'#0f766e';
   card.innerHTML=`<div class="platform-title-icon" style="background:linear-gradient(135deg,#0f2638,${data.colour||'#0f766e'});">${platformIconSvg(data.icon)}</div><div class="platform-title-copy"><div class="eyebrow">${htmlSafe(data.eyebrow||'MDH Stoma Care')}</div><h2>${htmlSafe(data.title||'Selected View')}</h2><p>${htmlSafe(data.subtitle||'')}</p></div><button type="button" class="platform-title-back" onclick="${backAction||'switchSection(\'home\',null)'}">← Back to options</button>`;
-  const firstPanel=section.querySelector(sectionId==='section-patients'?'.patient-centre-toolbar,.pt-search-bar,.patient-command,.patient-table-card':'.roster-subtab-panel,.patient-command,.patient-table-card');if(firstPanel)firstPanel.parentNode.insertBefore(card,firstPanel);else section.appendChild(card);
+  const firstPanel=section.querySelector(sectionId==='section-patients'?'.patient-centre-toolbar,.pt-search-bar,.patient-command,.patient-table-card':'.patient-outcome-search-bar,.pt-search-bar,.roster-subtab-panel,.patient-command,.patient-table-card');if(firstPanel)firstPanel.parentNode.insertBefore(card,firstPanel);else section.appendChild(card);
 }
 
 // ══════════════════════════════════════════════════════
@@ -13242,9 +13270,9 @@ function showPatientOutcomesHub(){
   const section=document.getElementById('section-patient-outcomes');
   if(section)section.classList.remove('platform-focused');
   clearPlatformFocusTitle('section-patient-outcomes');
-  const page=document.getElementById('patient-outcome-page');if(page)page.style.display='none';
-  const hub=document.getElementById('patient-outcome-hub');if(hub)hub.style.display='block';
-  const heading=document.getElementById('patient-outcomes-heading');if(heading)heading.style.display='flex';
+  const page=document.getElementById('patient-outcome-page');if(page){page.style.display='none';}
+  const hub=document.getElementById('patient-outcome-hub');if(hub){hub.style.display='block';}
+  const heading=document.getElementById('patient-outcomes-heading');if(heading){heading.style.display='flex';}
   currentPatientOutcomeView='';currentPatientOutcomeRows=[];
   const tbody=document.getElementById('patient-outcomes-tbody');if(tbody)tbody.innerHTML='<tr><td colspan="8" class="empty">Choose an outcome view.</td></tr>';
   const search=document.getElementById('patient-outcome-search');if(search)search.value='';
