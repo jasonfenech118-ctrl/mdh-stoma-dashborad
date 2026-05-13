@@ -3211,11 +3211,6 @@ button{font-family:'DM Sans',sans-serif;}
       <!-- GROUP: Patient Management -->
       <div class="home-group-label">Patient Management</div>
       <div class="home-btn-grid">
-        <div class="home-btn home-btn-teal" onclick="switchSection('patients',null)">
-          <div class="home-btn-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
-          <div class="home-btn-title">Patient Centre</div>
-          <div class="home-btn-sub">Master list · Inpatients · Outpatients · Handover</div>
-        </div>
         <div class="home-btn home-btn-blue" onclick="switchSection('patient-pathways',null)">
           <div class="home-btn-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="18" cy="18" r="2"/><path d="M8 6h8"/><path d="M18 8v8"/><path d="M8 6v12h8"/></svg></div>
           <div class="home-btn-title">Patient Pathways</div>
@@ -3301,6 +3296,26 @@ button{font-family:'DM Sans',sans-serif;}
           <div class="home-btn-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
           <div class="home-btn-title">Common Our Patients</div>
           <div class="home-btn-sub"><span id="tile-nurse-common">—</span> active patients</div>
+        </div>
+      </div>
+
+      <!-- GROUP: Patient Center -->
+      <div class="home-group-label">Patient Center</div>
+      <div class="home-btn-grid">
+        <div class="home-btn home-btn-teal" onclick="switchSection('patients',null);setTimeout(()=>showPatientSubtab('master'),80);">
+          <div class="home-btn-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="16" rx="2"/><path d="M9 8h6"/><path d="M9 12h6"/><path d="M9 16h4"/></svg></div>
+          <div class="home-btn-title">Master List</div>
+          <div class="home-btn-sub">Complete patient register</div>
+        </div>
+        <div class="home-btn home-btn-blue" onclick="switchSection('patients',null);setTimeout(()=>showPatientSubtab('inpatient'),80);">
+          <div class="home-btn-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M3 12h18"/><path d="M5 12V8a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v4"/><path d="M7 16v2"/><path d="M17 16v2"/><path d="M9 9h.01"/><path d="M12 6V3"/><path d="M10 4.5h4"/></svg></div>
+          <div class="home-btn-title">Inpatients</div>
+          <div class="home-btn-sub">Current inpatient workload</div>
+        </div>
+        <div class="home-btn home-btn-violet" onclick="switchSection('patients',null);setTimeout(()=>showPatientSubtab('outpatient'),80);">
+          <div class="home-btn-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M13 5h6v6"/><path d="M10 14 19 5"/><path d="M5 7v12h12"/></svg></div>
+          <div class="home-btn-title">Outpatients</div>
+          <div class="home-btn-sub">Outpatient and community list</div>
         </div>
       </div>
     </div>
@@ -3705,6 +3720,10 @@ button{font-family:'DM Sans',sans-serif;}
           <span class="roster-subtab-icon" style="background:linear-gradient(135deg,#7c2d12,#c2413b);"><svg class="icon-svg" viewBox="0 0 24 24"><path d="m10.29 3.86-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.71-3.14l-8-14a2 2 0 0 0-3.42 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></span>
           <span>DNTU</span>
         </button>
+        <button type="button" class="roster-subtab" id="followup-subtab-paused" onclick="showFollowupSubtab('paused')" style="background:linear-gradient(90deg,rgba(217,119,6,.30) 0%,rgba(251,191,36,.15) 28%,rgba(255,255,255,.93) 74%,#fffbeb 100%);">
+          <span class="roster-subtab-icon" style="background:linear-gradient(135deg,#92400e,#d97706);"><svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M10 8v8"/><path d="M14 8v8"/></svg></span>
+          <span>Temporarily Paused Appointments</span>
+        </button>
       </div>
 
       <!-- Subtab panels -->
@@ -3719,6 +3738,9 @@ button{font-family:'DM Sans',sans-serif;}
       </div>
       <div class="roster-subtab-panel" id="followup-pane-dntu">
         <div id="followup-dntu-inner"></div>
+      </div>
+      <div class="roster-subtab-panel" id="followup-pane-paused">
+        <div id="followup-paused-inner"></div>
       </div>
     </div>
 
@@ -5314,6 +5336,14 @@ let sectionHistory=[];
 let currentSectionName='home';
 function toggleSidebar(){/* sidebar removed */}
 function goBackSection(){
+  const focused=document.querySelector('.section.active.platform-focused');
+  if(focused){
+    if(focused.id==='section-patient-outcomes'){showPatientOutcomesHub();return;}
+    if(focused.id==='section-patients'){showPatientOptionsHub();return;}
+    if(focused.id==='section-followups'){showFollowupHub();return;}
+    if(focused.id==='section-patient-pathways'){loadPatientPathways();return;}
+    if(focused.id==='section-roster'){showRosterHub();return;}
+  }
   const previous=sectionHistory.pop();
   if(previous&&previous!==currentSectionName){
     switchSection(previous,null,{fromBack:true});
@@ -5498,7 +5528,33 @@ function showFollowupSubtab(tab){
     }
     try{loadDntuPolicy();}catch(e){}
   }
+  if(tab==='paused'){
+    renderTemporarilyPausedAppointments();
+  }
 }
+
+async function renderTemporarilyPausedAppointments(){
+  const inner=document.getElementById('followup-paused-inner');
+  if(!inner)return;
+  inner.innerHTML='<div class="patient-command patient-table-card" style="max-width:1120px;margin:0 auto;"><div class="empty">Loading temporarily paused appointments...</div></div>';
+  let rows=[];
+  try{
+    const source=await getProjectPatients();
+    rows=(source||[]).filter(p=>String([p.followup_status,p.patient_status,p.pathway_status,p.appointment_status,p.status,p.notes].join(' ')).toLowerCase().includes('paused'));
+  }catch(error){
+    inner.innerHTML=`<div class="patient-command patient-table-card" style="max-width:1120px;margin:0 auto;"><div class="empty">Error loading temporarily paused appointments: ${htmlSafe(error.message)}</div></div>`;
+    return;
+  }
+  const body=rows.length?rows.map(p=>{
+    const name=`${p.first_name||''} ${p.surname||''}`.trim()||'Unnamed patient';
+    const id=p.id_card||p.hospital_number||p.patient_number||'—';
+    const location=[p.ward,p.locality].filter(Boolean).join(' / ')||'—';
+    const nurse=p.allocated_nurse||p.assigned_nurse||'Common';
+    return `<tr><td><strong>${htmlSafe(name)}</strong><br/><span style="font-size:10px;color:var(--muted);">${htmlSafe(p.patient_number||'')}</span></td><td style="font-family:monospace;font-size:12px;">${htmlSafe(id)}</td><td>${htmlSafe(location)}</td><td>${htmlSafe(p.stoma_type||'—')}</td><td>${htmlSafe(nurse)}</td><td><span class="outcome-status-pill paused">Paused</span></td><td><button onclick="openPatientProfile('${p.id}')" style="padding:4px 10px;border-radius:6px;border:none;background:var(--teal);color:white;font-size:11px;font-weight:700;cursor:pointer;margin-right:4px;">Profile</button><button onclick="openEditPatientModal('${p.id}')" style="padding:4px 10px;border-radius:6px;border:none;background:#fff7ed;color:#92400e;font-size:11px;font-weight:700;cursor:pointer;">Edit</button></td></tr>`;
+  }).join(''):'<tr><td colspan="7" class="empty">No temporarily paused appointments found.</td></tr>';
+  inner.innerHTML=`<div class="patient-command patient-table-card" style="max-width:1120px;margin:0 auto;"><div style="overflow-x:auto;"><table class="dt"><thead><tr><th>Patient</th><th>ID Card</th><th>Ward / Locality</th><th>Stoma Type</th><th>Allocated Nurse</th><th>Status</th><th>Actions</th></tr></thead><tbody>${body}</tbody></table></div></div>`;
+}
+
 function refreshFollowupSubtab(){if(document.getElementById('section-followups')?.classList.contains('platform-hub'))showFollowupHub();else showFollowupSubtab(currentFollowupSubtab);}
 
 function showRosterHub(){
@@ -6220,6 +6276,7 @@ function getPlatformTitleData(key){
     'followup-outcomes':{eyebrow:'Follow-Up Centre',title:'Appointment Outcomes',subtitle:'Seen, DNTU, cancelled and follow-up status views.',icon:'chart',colour:'#2563eb'},
     'followup-clinic':{eyebrow:'Follow-Up Centre',title:'Clinic Audit',subtitle:'Monthly appointment calendar and printable clinic activity.',icon:'calendar',colour:'#7c3aed'},
     'followup-dntu':{eyebrow:'Follow-Up Centre',title:'DNTU',subtitle:'Patient-grouped Did Not Turn Up tracking.',icon:'warning',colour:'#c2413b'},
+    'followup-paused':{eyebrow:'Follow-Up Centre',title:'Temporarily Paused Appointments',subtitle:'Patients whose follow-up appointments are temporarily paused or awaiting restart.',icon:'calendar',colour:'#d97706'},
     'roster-monthly':{eyebrow:'Roster Centre',title:'Monthly Roster',subtitle:'Monthly duty roster, leave, overtime, TIL and patient snapshot.',icon:'calendar',colour:'#475569'},
     'roster-cod':{eyebrow:'Roster Centre',title:'Change of Duty',subtitle:'Record duty swaps and update the roster automatically.',icon:'swap',colour:'#2563eb'},
     'roster-staff-audit':{eyebrow:'Roster Centre',title:'Staff Audit',subtitle:'Staff leave, overtime, TIL and monthly staff audit records.',icon:'chart',colour:'#7c3aed'},
@@ -13316,6 +13373,8 @@ async function showPatientOutcomePage(view){
   const heading=document.getElementById('patient-outcomes-heading');if(heading)heading.style.display='none';
   const page=document.getElementById('patient-outcome-page');if(page)page.style.display='block';
   setPlatformFocusTitle('section-patient-outcomes',getPlatformTitleData(data.titleKey),'showPatientOutcomesHub()');
+  const titleCard=document.querySelector('#section-patient-outcomes .platform-title-card');
+  if(titleCard)titleCard.dataset.view=view;
   currentPatientOutcomeView=view;
   const search=document.getElementById('patient-outcome-search');if(search)search.value='';
   await loadPatientOutcomePageRows(view);
@@ -13367,5 +13426,32 @@ function renderPatientOutcomeRows(rows,view){
 }
 
 </script>
+
+
+<style>
+/* v66-13 — final overrides: focus-title colours follow the chosen button and Back returns to options */
+.platform-title-card{
+  border-left-color:var(--platform-colour,#0f766e)!important;
+}
+.platform-title-icon{
+  background:linear-gradient(135deg,#0f2638,var(--platform-colour,#0f766e))!important;
+}
+.platform-title-copy .eyebrow,
+.platform-title-back{
+  color:var(--platform-colour,#0f766e)!important;
+}
+.platform-title-back{
+  border-color:var(--platform-colour,#0f766e)!important;
+}
+.platform-title-back:hover{
+  background:#f8fbfc!important;
+}
+.outcome-status-pill.paused{background:#fffbeb;color:#92400e;border-color:#fde68a;}
+#section-patient-outcomes .platform-title-card[data-view="active"]{border-left-color:#0f766e!important;}
+#section-patient-outcomes .platform-title-card[data-view="reversal"]{border-left-color:#059669!important;}
+#section-patient-outcomes .platform-title-card[data-view="deceased"]{border-left-color:#c2413b!important;}
+#section-patient-outcomes .platform-title-card[data-view="relocated"]{border-left-color:#0284c7!important;}
+#section-patient-outcomes .platform-title-card[data-view="gozo"]{border-left-color:#475569!important;}
+</style>
 </body>
 </html>
