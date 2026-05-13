@@ -3185,8 +3185,8 @@ button{font-family:'DM Sans',sans-serif;}
       <div class="home-btn-grid">
         <div class="home-btn home-btn-teal" onclick="switchSection('patients',null)">
           <div class="home-btn-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
-          <div class="home-btn-title">Patients</div>
-          <div class="home-btn-sub">Master list &amp; records</div>
+          <div class="home-btn-title">Patient Centre</div>
+          <div class="home-btn-sub">Master list · Inpatients · Outpatients · Handover</div>
         </div>
         <div class="home-btn home-btn-blue" onclick="switchSection('patient-pathways',null)">
           <div class="home-btn-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="18" cy="18" r="2"/><path d="M8 6h8"/><path d="M18 8v8"/><path d="M8 6v12h8"/></svg></div>
@@ -3394,46 +3394,50 @@ button{font-family:'DM Sans',sans-serif;}
     </div>
 
     <!-- ══════════════════════════════════ -->
-    <!-- PATIENT OUTCOMES (new top-level) -->
+    <!-- PATIENT OUTCOMES (top-level hub + focused pages) -->
     <!-- ══════════════════════════════════ -->
     <div class="section" id="section-patient-outcomes">
-      <div class="phdr patient-page-title">
+      <div class="phdr patient-page-title" id="patient-outcomes-heading">
         <div><h2>Patient Outcomes</h2><p>Lifecycle status views for all patients</p></div>
-        <button class="btn-refresh" onclick="loadPatients();loadPatientCommandCounts();">↻ Refresh</button>
+        <button class="btn-refresh" onclick="loadPatientOutcomeCounts();">↻ Refresh</button>
       </div>
 
-      <div class="patient-button-grid">
-        <div class="patient-button-card" onclick="switchSection('patients',null);setTimeout(()=>setPatientCommandFilter('active'),60);">
-          <div class="command-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="m8 12 3 3 5-6"/><circle cx="12" cy="12" r="10"/></svg></div>
-          <div><h3>Active Patients</h3></div>
+      <div class="patient-outcome-hub" id="patient-outcome-hub">
+        <div class="patient-button-grid patient-outcome-button-grid">
+          <div class="patient-button-card outcome-card outcome-active" onclick="showPatientOutcomePage('active')">
+            <div class="command-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="m8 12 3 3 5-6"/><circle cx="12" cy="12" r="10"/></svg></div>
+            <div><h3>Active Patients</h3><p><span id="po-count-active">—</span> current active patients</p></div>
+          </div>
+          <div class="patient-button-card outcome-card outcome-reversal" onclick="showPatientOutcomePage('reversal')">
+            <div class="command-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 21v-5h5"/></svg></div>
+            <div><h3>Reversed Patients</h3><p><span id="po-count-reversal">—</span> reversed / closed records</p></div>
+          </div>
+          <div class="patient-button-card outcome-card outcome-deceased" onclick="showPatientOutcomePage('deceased')">
+            <div class="command-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="m10.29 3.86-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.71-3.14l-8-14a2 2 0 0 0-3.42 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></div>
+            <div><h3>Deceased Patients</h3><p><span id="po-count-deceased">—</span> deceased records</p></div>
+          </div>
+          <div class="patient-button-card outcome-card outcome-relocated" onclick="showPatientOutcomePage('relocated')">
+            <div class="command-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M21 10c0 7-9 12-9 12S3 17 3 10a9 9 0 1 1 18 0Z"/><circle cx="12" cy="10" r="3"/></svg></div>
+            <div><h3>Relocated Overseas</h3><p><span id="po-count-relocated">—</span> relocated patients</p></div>
+          </div>
+          <div class="patient-button-card outcome-card outcome-gozo" onclick="showPatientOutcomePage('gozo')">
+            <div class="command-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M2 20h20"/><path d="M4 17h16"/><path d="M6 14h12"/><path d="M8 11h8"/><path d="M12 4v7"/><path d="m9 7 3-3 3 3"/></svg></div>
+            <div><h3>Discharged to Gozo</h3><p><span id="po-count-gozo">—</span> Gozo discharges</p></div>
+          </div>
         </div>
-        <div class="patient-button-card" onclick="switchSection('patients',null);setTimeout(()=>setPatientCommandFilter('inpatient'),60);">
-          <div class="command-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-7h6v7"/></svg></div>
-          <div><h3>Inpatients</h3></div>
+      </div>
+
+      <div class="patient-outcome-page" id="patient-outcome-page" style="display:none;">
+        <div class="pt-search-bar patient-outcome-search-bar">
+          <input type="text" id="patient-outcome-search" placeholder="Search this outcome page by name, ID card, nurse, stoma type, ward, locality..." autocomplete="off" oninput="filterPatientOutcomeRows(this.value)" style="flex:1;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;min-width:0;"/>
+          <button class="btn-refresh" onclick="document.getElementById('patient-outcome-search').value='';filterPatientOutcomeRows('');">✕ Clear</button>
+          <button class="btn-add" onclick="openAddPatientModal()">+ Add New Patient</button>
         </div>
-        <div class="patient-button-card" onclick="switchSection('patients',null);setTimeout(()=>setPatientCommandFilter('outpatient'),60);">
-          <div class="command-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/></svg></div>
-          <div><h3>Outpatients</h3></div>
-        </div>
-        <div class="patient-button-card" onclick="switchSection('patients',null);setTimeout(()=>setPatientCommandFilter('handover'),60);">
-          <div class="command-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 7h11"/><path d="m12 4 3 3-3 3"/><path d="M20 17H9"/><path d="m12 14-3 3 3 3"/></svg></div>
-          <div><h3>Handover</h3></div>
-        </div>
-        <div class="patient-button-card" onclick="switchSection('patients',null);setTimeout(()=>setPatientCommandFilter('reversed'),60);">
-          <div class="command-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 21v-5h5"/></svg></div>
-          <div><h3>Reversed</h3></div>
-        </div>
-        <div class="patient-button-card" onclick="switchSection('patients',null);setTimeout(()=>setPatientCommandFilter('deceased'),60);">
-          <div class="command-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 2v20"/><path d="M5 9h14"/><path d="M6 22h12"/></svg></div>
-          <div><h3>Deceased</h3></div>
-        </div>
-        <div class="patient-button-card" onclick="switchSection('patients',null);setTimeout(()=>setPatientCommandFilter('relocated'),60);">
-          <div class="command-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M21 10c0 7-9 12-9 12S3 17 3 10a9 9 0 1 1 18 0Z"/><circle cx="12" cy="10" r="3"/></svg></div>
-          <div><h3>Relocated Overseas</h3></div>
-        </div>
-        <div class="patient-button-card" onclick="switchSection('patients',null);setTimeout(()=>setPatientCommandFilter('gozo'),60);">
-          <div class="command-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M2 20h20"/><path d="M4 17h16"/><path d="M6 14h12"/><path d="M8 11h8"/><path d="M12 4v7"/><path d="m9 7 3-3 3 3"/></svg></div>
-          <div><h3>Discharged to Gozo</h3></div>
+        <div class="patient-command patient-table-card" id="patient-outcome-list-panel">
+          <div style="overflow-x:auto;"><table class="dt">
+            <thead><tr><th>Name</th><th>ID Card</th><th>Stoma Type</th><th>Ward / Locality</th><th>Surgery Date</th><th>Allocated Nurse</th><th>Outcome Status</th><th>Actions</th></tr></thead>
+            <tbody id="patient-outcomes-tbody"><tr><td colspan="8" class="empty">Choose an outcome view.</td></tr></tbody>
+          </table></div>
         </div>
       </div>
     </div>
@@ -6194,7 +6198,12 @@ function getPlatformTitleData(key){
     'patient-master':{eyebrow:'Patient Centre',title:'Master List',subtitle:'Complete patient register.',icon:'patients',colour:'#0f766e'},
     'patient-inpatient':{eyebrow:'Patient Centre',title:'Inpatients',subtitle:'Current inpatient workload and ward-based reviews.',icon:'checklist',colour:'#2563eb'},
     'patient-outpatient':{eyebrow:'Patient Centre',title:'Outpatients',subtitle:'Outpatient and community follow-up patient list.',icon:'followup',colour:'#7c3aed'},
-    'patient-handover':{eyebrow:'Patient Centre',title:'Handover',subtitle:'Patients requiring handover or active follow-up attention.',icon:'swap',colour:'#b45309'}
+    'patient-handover':{eyebrow:'Patient Centre',title:'Handover',subtitle:'Patients requiring handover or active follow-up attention.',icon:'swap',colour:'#b45309'},
+    'outcome-active':{eyebrow:'Patient Outcomes',title:'Active Patients',subtitle:'Patients currently active under the Stoma Care service.',icon:'checklist',colour:'#0f766e'},
+    'outcome-reversal':{eyebrow:'Patient Outcomes',title:'Reversed Patients',subtitle:'Patients whose stoma has been reversed, refashioned, closed or completed.',icon:'swap',colour:'#059669'},
+    'outcome-deceased':{eyebrow:'Patient Outcomes',title:'Deceased Patients',subtitle:'Patients marked as deceased in the patient record.',icon:'warning',colour:'#c2413b'},
+    'outcome-relocated':{eyebrow:'Patient Outcomes',title:'Relocated Overseas',subtitle:'Patients documented as relocated or moved overseas.',icon:'pathway',colour:'#0284c7'},
+    'outcome-gozo':{eyebrow:'Patient Outcomes',title:'Discharged to Gozo',subtitle:'Patients discharged or transferred to Gozo services.',icon:'calendar',colour:'#475569'}
   };
   return map[key]||{eyebrow:'MDH Stoma Care',title:'Selected View',subtitle:'Current workspace',icon:'checklist',colour:'#0f766e'};
 }
@@ -11102,6 +11111,37 @@ function buildClinicPrintHtml(rows){
 }
 </style>
 
+<style>
+/* v66-11 — Patient Outcomes are their own hub and focused pages */
+#section-patient-outcomes.platform-focused #patient-outcomes-heading,
+#section-patient-outcomes.platform-focused #patient-outcome-hub{display:none!important;}
+#section-patient-outcomes:not(.platform-focused) #patient-outcome-page{display:none!important;}
+#section-patient-outcomes.platform-focused #patient-outcome-page{display:block!important;}
+#section-patient-outcomes .platform-title-card{max-width:1120px!important;margin:4px auto 18px!important;}
+.patient-outcome-hub{max-width:1120px;margin:0 auto;}
+.patient-outcome-button-grid{grid-template-columns:1fr!important;gap:12px!important;}
+.patient-outcome-button-grid .patient-button-card{min-height:76px;}
+.patient-outcome-button-grid .patient-button-card p{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.25;font-weight:700;}
+.patient-outcome-search-bar{max-width:1120px!important;margin:0 auto 14px!important;}
+#patient-outcome-list-panel{max-width:1120px;margin:0 auto!important;}
+.outcome-card.outcome-active{border-left-color:#0f766e!important;}
+.outcome-card.outcome-reversal{border-left-color:#059669!important;}
+.outcome-card.outcome-deceased{border-left-color:#c2413b!important;}
+.outcome-card.outcome-relocated{border-left-color:#0284c7!important;}
+.outcome-card.outcome-gozo{border-left-color:#475569!important;}
+.outcome-card.outcome-active .command-icon{background:linear-gradient(135deg,#0f2638,#0f766e)!important;}
+.outcome-card.outcome-reversal .command-icon{background:linear-gradient(135deg,#064e3b,#059669)!important;}
+.outcome-card.outcome-deceased .command-icon{background:linear-gradient(135deg,#7f1d1d,#c2413b)!important;}
+.outcome-card.outcome-relocated .command-icon{background:linear-gradient(135deg,#075985,#0284c7)!important;}
+.outcome-card.outcome-gozo .command-icon{background:linear-gradient(135deg,#334155,#475569)!important;}
+.outcome-status-pill{display:inline-block;padding:4px 9px;border-radius:999px;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.15px;border:1px solid transparent;white-space:nowrap;}
+.outcome-status-pill.active{background:#ecfdf9;color:#0f766e;border-color:#99f6e4;}
+.outcome-status-pill.reversal{background:#e8f5e9;color:#166534;border-color:#bbf7d0;}
+.outcome-status-pill.deceased{background:#fee2e2;color:#991b1b;border-color:#fecaca;}
+.outcome-status-pill.relocated{background:#e0f2fe;color:#075985;border-color:#bae6fd;}
+.outcome-status-pill.gozo{background:#f1f5f9;color:#334155;border-color:#cbd5e1;}
+</style>
+
 </head><body>
     <div class="header"><div><h1>MDH Stoma Care Clinic — Appointment Book</h1><div class="sub">Period: <strong>${htmlSafe(period)}</strong>${search}</div></div><div class="meta">Generated: ${htmlSafe(generated)}<br/>Use browser print or Save as PDF</div></div>
     <div class="summary">
@@ -13187,6 +13227,117 @@ function appointmentOutcomeBoxHTMLV60(appt){
 // duplicate removed
 /* v61 — keep Follow-Up buttons aligned, but all in the same blue colour family */
 // duplicate removed
+
+// v66-11 — Patient Outcomes hub opens true sub-pages with their own headers and tables
+let currentPatientOutcomeView='';
+let currentPatientOutcomeRows=[];
+const PATIENT_OUTCOME_VIEW_DATA={
+  active:{key:'active',titleKey:'outcome-active',label:'Active Patients',pill:'active'},
+  reversal:{key:'reversal',titleKey:'outcome-reversal',label:'Reversed Patients',pill:'reversal'},
+  deceased:{key:'deceased',titleKey:'outcome-deceased',label:'Deceased Patients',pill:'deceased'},
+  relocated:{key:'relocated',titleKey:'outcome-relocated',label:'Relocated Overseas',pill:'relocated'},
+  gozo:{key:'gozo',titleKey:'outcome-gozo',label:'Discharged to Gozo',pill:'gozo'}
+};
+function showPatientOutcomesHub(){
+  const section=document.getElementById('section-patient-outcomes');
+  if(section)section.classList.remove('platform-focused');
+  clearPlatformFocusTitle('section-patient-outcomes');
+  const page=document.getElementById('patient-outcome-page');if(page)page.style.display='none';
+  const hub=document.getElementById('patient-outcome-hub');if(hub)hub.style.display='block';
+  const heading=document.getElementById('patient-outcomes-heading');if(heading)heading.style.display='flex';
+  currentPatientOutcomeView='';currentPatientOutcomeRows=[];
+  const tbody=document.getElementById('patient-outcomes-tbody');if(tbody)tbody.innerHTML='<tr><td colspan="8" class="empty">Choose an outcome view.</td></tr>';
+  const search=document.getElementById('patient-outcome-search');if(search)search.value='';
+  loadPatientOutcomeCounts();
+}
+function patientOutcomeMatchesView(p,view,dntuIds){
+  if(view==='active')return patientMatchesCommandView(p,'active',dntuIds);
+  if(view==='reversal')return patientMatchesCommandView(p,'reversal',dntuIds)||patientMatchesCommandView(p,'reversed',dntuIds);
+  if(view==='deceased')return patientMatchesCommandView(p,'deceased',dntuIds);
+  if(view==='relocated')return patientMatchesCommandView(p,'relocated',dntuIds);
+  if(view==='gozo')return patientMatchesCommandView(p,'gozo',dntuIds);
+  return true;
+}
+function patientOutcomePill(p,view){
+  const data=PATIENT_OUTCOME_VIEW_DATA[view]||PATIENT_OUTCOME_VIEW_DATA.active;
+  let label=data.label;
+  if(view==='active')label='Active';
+  if(view==='reversal')label='Reversed / Closed';
+  if(view==='deceased')label='Deceased';
+  if(view==='relocated')label='Relocated Overseas';
+  if(view==='gozo')label='Discharged to Gozo';
+  return `<span class="outcome-status-pill ${htmlSafe(data.pill)}">${htmlSafe(label)}</span>`;
+}
+async function loadPatientOutcomeCounts(){
+  try{
+    const rows=await getProjectPatients();
+    const dntu=await getDntuPatientIds();
+    const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=String(v);};
+    set('po-count-active',rows.filter(p=>patientOutcomeMatchesView(p,'active',dntu)).length);
+    set('po-count-reversal',rows.filter(p=>patientOutcomeMatchesView(p,'reversal',dntu)).length);
+    set('po-count-deceased',rows.filter(p=>patientOutcomeMatchesView(p,'deceased',dntu)).length);
+    set('po-count-relocated',rows.filter(p=>patientOutcomeMatchesView(p,'relocated',dntu)).length);
+    set('po-count-gozo',rows.filter(p=>patientOutcomeMatchesView(p,'gozo',dntu)).length);
+  }catch(e){console.warn('Patient outcome counts skipped:',e?.message||e);}
+}
+async function showPatientOutcomePage(view){
+  const data=PATIENT_OUTCOME_VIEW_DATA[view]||PATIENT_OUTCOME_VIEW_DATA.active;
+  const section=document.getElementById('section-patient-outcomes');
+  if(section)section.classList.add('platform-focused');
+  const hub=document.getElementById('patient-outcome-hub');if(hub)hub.style.display='none';
+  const heading=document.getElementById('patient-outcomes-heading');if(heading)heading.style.display='none';
+  const page=document.getElementById('patient-outcome-page');if(page)page.style.display='block';
+  setPlatformFocusTitle('section-patient-outcomes',getPlatformTitleData(data.titleKey),'showPatientOutcomesHub()');
+  currentPatientOutcomeView=view;
+  const search=document.getElementById('patient-outcome-search');if(search)search.value='';
+  await loadPatientOutcomePageRows(view);
+}
+async function loadPatientOutcomePageRows(view){
+  const tbody=document.getElementById('patient-outcomes-tbody');
+  if(!tbody)return;
+  const data=PATIENT_OUTCOME_VIEW_DATA[view]||PATIENT_OUTCOME_VIEW_DATA.active;
+  tbody.innerHTML=`<tr><td colspan="8" class="empty">Loading ${htmlSafe(data.label)}...</td></tr>`;
+  let rows=[];let dntuIds=new Set();
+  try{rows=await getProjectPatients();dntuIds=await getDntuPatientIds();}
+  catch(error){tbody.innerHTML=`<tr><td colspan="8" class="empty">Error loading patient outcomes: ${htmlSafe(error.message)}</td></tr>`;return;}
+  currentPatientOutcomeRows=rows.filter(p=>patientOutcomeMatchesView(p,view,dntuIds));
+  renderPatientOutcomeRows(currentPatientOutcomeRows,view);
+  loadPatientOutcomeCounts();
+}
+function filterPatientOutcomeRows(value){
+  const q=String(value||'').trim().toLowerCase();
+  let rows=currentPatientOutcomeRows||[];
+  if(q){
+    rows=rows.filter(p=>[p.first_name,p.surname,p.id_card,p.hospital_number,p.patient_number,p.ward,p.locality,p.stoma_type,p.patient_status,p.pathway_status,p.allocated_nurse].some(v=>String(v||'').toLowerCase().includes(q)));
+  }
+  renderPatientOutcomeRows(rows,currentPatientOutcomeView||'active');
+}
+function renderPatientOutcomeRows(rows,view){
+  const tbody=document.getElementById('patient-outcomes-tbody');
+  if(!tbody)return;
+  const data=PATIENT_OUTCOME_VIEW_DATA[view]||PATIENT_OUTCOME_VIEW_DATA.active;
+  if(!rows.length){tbody.innerHTML=`<tr><td colspan="8" class="empty">No records found for ${htmlSafe(data.label)}.</td></tr>`;return;}
+  tbody.innerHTML=rows.map(p=>{
+    const name=`${p.first_name||''} ${p.surname||''}`.trim()||'Unnamed patient';
+    const location=[p.ward,p.locality].filter(Boolean).join(' / ')||'—';
+    const surg=p.surgery_date?new Date(p.surgery_date).toLocaleDateString('en-MT'):'—';
+    const id=p.id_card||p.hospital_number||p.patient_number||'—';
+    return `<tr class="patient-outcome-row" data-search="${htmlSafe([name,id,p.stoma_type,location,p.allocated_nurse,p.patient_status,p.pathway_status].join(' ').toLowerCase())}">
+      <td><strong>${htmlSafe(name)}</strong><br/><span style="font-size:10px;color:var(--muted);">${htmlSafe(p.patient_number||'')}</span></td>
+      <td style="font-family:monospace;font-size:12px;">${htmlSafe(id)}</td>
+      <td>${htmlSafe(p.stoma_type||'—')}</td>
+      <td>${htmlSafe(location)}</td>
+      <td>${htmlSafe(surg)}</td>
+      <td><span style="display:inline-block;background:#f8fafc;border:1px solid var(--border);padding:3px 8px;border-radius:999px;font-size:10px;font-weight:800;color:var(--navy);">${htmlSafe(p.allocated_nurse||'Common')}</span></td>
+      <td>${patientOutcomePill(p,view)}<br/><span style="font-size:10px;color:var(--muted);">${htmlSafe(p.patient_status||p.pathway_status||'')}</span></td>
+      <td style="white-space:nowrap;">
+        <button onclick="openPatientProfile('${p.id}')" style="padding:4px 10px;border-radius:6px;border:none;background:var(--teal);color:white;font-size:11px;font-weight:700;cursor:pointer;margin-right:4px;">Profile</button>
+        <button onclick="openEditPatientModal('${p.id}')" style="padding:4px 10px;border-radius:6px;border:none;background:#e0f2fe;color:#075985;font-size:11px;font-weight:700;cursor:pointer;">Edit</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
 </script>
 </body>
 </html>
