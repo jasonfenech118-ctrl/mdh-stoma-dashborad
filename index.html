@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
 <meta charset="UTF-8"/>
+<head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>MDH Stoma Care Clinic — Patient Dashboard</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230f766e'/%3E%3Ctext x='32' y='40' font-size='24' text-anchor='middle' fill='white' font-family='Arial' font-weight='700'%3EMDH%3C/text%3E%3C/svg%3E">
@@ -3226,7 +3226,7 @@ button{font-family:'DM Sans',sans-serif;}
           <div class="home-btn-title">Follow-Ups</div>
           <div class="home-btn-sub">Appointments &amp; DNTU</div>
         </div>
-        <div class="home-btn home-btn-gold" onclick="switchSection('patients',null);setTimeout(()=>setPatientCommandFilter('handover'),60);">
+        <div class="home-btn home-btn-gold" onclick="switchSection('patients',null);setTimeout(()=>showPatientSubtab('handover'),80);">
           <div class="home-btn-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M7 7h6a3 3 0 0 1 0 6H7"/><path d="m10 4-3 3 3 3"/><path d="M17 17H11a3 3 0 0 1 0-6h6"/><path d="m14 20 3-3-3-3"/></svg></div>
           <div class="home-btn-title">Handover</div>
           <div class="home-btn-sub">Patients needing handover</div>
@@ -5344,10 +5344,17 @@ function goBackSection(){
     if(focused.id==='section-patient-pathways'){loadPatientPathways();return;}
     if(focused.id==='section-roster'){showRosterHub();return;}
   }
+  const active=document.querySelector('.section.active');
+  if(active){
+    if(active.id==='section-patient-outcomes'){showPatientOutcomesHub();return;}
+    if(active.id==='section-patients'){showPatientOptionsHub();return;}
+    if(active.id==='section-followups'){showFollowupHub();return;}
+    if(active.id==='section-roster'){showRosterHub();return;}
+  }
   const previous=sectionHistory.pop();
   if(previous&&previous!==currentSectionName){
     switchSection(previous,null,{fromBack:true});
-  }else{
+  }else if(currentSectionName&&currentSectionName!=='home'){
     switchSection('home',null,{fromBack:true});
   }
 }
@@ -6262,7 +6269,14 @@ function platformIconSvg(key){
     chart:'<svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-5"/><path d="M12 16V8"/><path d="M16 16v-7"/><path d="M20 6l-4 4-3-3-5 5"/></svg>',
     warning:'<svg class="icon-svg" viewBox="0 0 24 24"><path d="m10.29 3.86-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.71-3.14l-8-14a2 2 0 0 0-3.42 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>',
     swap:'<svg class="icon-svg" viewBox="0 0 24 24"><path d="M7 7h6a3 3 0 0 1 0 6H7"/><path d="m10 4-3 3 3 3"/><path d="M17 17H11a3 3 0 0 1 0-6h6"/><path d="m14 20 3-3-3-3"/></svg>',
-    appliance:'<svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 3 4 7v10l8 4 8-4V7z"/><path d="M4 7l8 4 8-4"/><path d="M12 11v10"/></svg>'
+    appliance:'<svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 3 4 7v10l8 4 8-4V7z"/><path d="M4 7l8 4 8-4"/><path d="M12 11v10"/></svg>',
+    circleCheck:'<svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m9 12 2 2 4-5"/></svg>',
+    document:'<svg class="icon-svg" viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="16" rx="2"/><path d="M9 8h6"/><path d="M9 12h6"/><path d="M9 16h4"/></svg>',
+    bed:'<svg class="icon-svg" viewBox="0 0 24 24"><path d="M3 12h18"/><path d="M5 12V8a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v4"/><path d="M7 16v2"/><path d="M17 16v2"/><path d="M9 9h.01"/><path d="M12 6V3"/><path d="M10 4.5h4"/></svg>',
+    outpatient:'<svg class="icon-svg" viewBox="0 0 24 24"><path d="M13 5h6v6"/><path d="M10 14 19 5"/><path d="M5 7v12h12"/></svg>',
+    location:'<svg class="icon-svg" viewBox="0 0 24 24"><path d="M21 10c0 7-9 12-9 12S3 17 3 10a9 9 0 1 1 18 0Z"/><circle cx="12" cy="10" r="3"/></svg>',
+    gozo:'<svg class="icon-svg" viewBox="0 0 24 24"><path d="M2 20h20"/><path d="M4 17h16"/><path d="M6 14h12"/><path d="M8 11h8"/><path d="M12 4v7"/><path d="m9 7 3-3 3 3"/></svg>',
+    pause:'<svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M10 8v8"/><path d="M14 8v8"/></svg>'
   };
   return icons[key]||icons.checklist;
 }
@@ -6272,31 +6286,41 @@ function getPlatformTitleData(key){
     'pathway-emergency':{eyebrow:'Patient Pathways',title:'Emergency Admission',subtitle:'Search or add a patient to begin the emergency pathway.',icon:'warning',colour:'#c2413b'},
     'pathway-bagging':{eyebrow:'Patient Pathways',title:'Bagging Advice',subtitle:'Search or add a patient for appliance, bagging, wound, drain, or fistula advice.',icon:'appliance',colour:'#7c3aed'},
     'pathway-readmission':{eyebrow:'Patient Pathways',title:'Old Stoma / New Referral',subtitle:'For patients who already have a stoma and are newly referred to our clinic from abroad, another hospital or another service.',icon:'swap',colour:'#b45309'},
-    'followup-appointments':{eyebrow:'Follow-Up Centre',title:'Patient Appointments',subtitle:'Daily clinic appointment book and patient booking slots.',icon:'followup',colour:'#0f766e'},
-    'followup-outcomes':{eyebrow:'Follow-Up Centre',title:'Appointment Outcomes',subtitle:'Seen, DNTU, cancelled and follow-up status views.',icon:'chart',colour:'#2563eb'},
-    'followup-clinic':{eyebrow:'Follow-Up Centre',title:'Clinic Audit',subtitle:'Monthly appointment calendar and printable clinic activity.',icon:'calendar',colour:'#7c3aed'},
-    'followup-dntu':{eyebrow:'Follow-Up Centre',title:'DNTU',subtitle:'Patient-grouped Did Not Turn Up tracking.',icon:'warning',colour:'#c2413b'},
-    'followup-paused':{eyebrow:'Follow-Up Centre',title:'Temporarily Paused Appointments',subtitle:'Patients whose follow-up appointments are temporarily paused or awaiting restart.',icon:'calendar',colour:'#d97706'},
-    'roster-monthly':{eyebrow:'Roster Centre',title:'Monthly Roster',subtitle:'Monthly duty roster, leave, overtime, TIL and patient snapshot.',icon:'calendar',colour:'#475569'},
-    'roster-cod':{eyebrow:'Roster Centre',title:'Change of Duty',subtitle:'Record duty swaps and update the roster automatically.',icon:'swap',colour:'#2563eb'},
-    'roster-staff-audit':{eyebrow:'Roster Centre',title:'Staff Audit',subtitle:'Staff leave, overtime, TIL and monthly staff audit records.',icon:'chart',colour:'#7c3aed'},
-    'patient-master':{eyebrow:'Patient Centre',title:'Master List',subtitle:'Complete patient register.',icon:'patients',colour:'#0f766e'},
-    'patient-inpatient':{eyebrow:'Patient Centre',title:'Inpatients',subtitle:'Current inpatient workload and ward-based reviews.',icon:'checklist',colour:'#2563eb'},
-    'patient-outpatient':{eyebrow:'Patient Centre',title:'Outpatients',subtitle:'Outpatient and community follow-up patient list.',icon:'followup',colour:'#7c3aed'},
-    'patient-handover':{eyebrow:'Patient Centre',title:'Handover',subtitle:'Patients requiring handover or active follow-up attention.',icon:'swap',colour:'#b45309'},
-    'outcome-active':{eyebrow:'Patient Outcomes',title:'Active Patients',subtitle:'Patients currently active under the Stoma Care service.',icon:'checklist',colour:'#0f766e'},
-    'outcome-reversal':{eyebrow:'Patient Outcomes',title:'Reversed Patients',subtitle:'Patients whose stoma has been reversed, refashioned, closed or completed.',icon:'swap',colour:'#059669'},
-    'outcome-deceased':{eyebrow:'Patient Outcomes',title:'Deceased Patients',subtitle:'Patients marked as deceased in the patient record.',icon:'warning',colour:'#c2413b'},
-    'outcome-relocated':{eyebrow:'Patient Outcomes',title:'Relocated Overseas',subtitle:'Patients documented as relocated or moved overseas.',icon:'pathway',colour:'#0284c7'},
-    'outcome-gozo':{eyebrow:'Patient Outcomes',title:'Discharged to Gozo',subtitle:'Patients discharged or transferred to Gozo services.',icon:'calendar',colour:'#475569'}
+    'followup-appointments':{eyebrow:'Follow-Up Centre',title:'Patient Appointments',subtitle:'Daily clinic appointment book and patient booking slots.',icon:'document',colour:'#0f766e',colourDark:'#0f2638',soft:'#ecfdf9'},
+    'followup-outcomes':{eyebrow:'Follow-Up Centre',title:'Appointment Outcomes',subtitle:'Seen, DNTU, cancelled and follow-up status views.',icon:'chart',colour:'#2563eb',colourDark:'#1d4ed8',soft:'#eff6ff'},
+    'followup-clinic':{eyebrow:'Follow-Up Centre',title:'Clinic Audit',subtitle:'Monthly appointment calendar and printable clinic activity.',icon:'calendar',colour:'#7c3aed',colourDark:'#5b21b6',soft:'#f5f3ff'},
+    'followup-dntu':{eyebrow:'Follow-Up Centre',title:'DNTU',subtitle:'Patient-grouped Did Not Turn Up tracking.',icon:'warning',colour:'#c2413b',colourDark:'#7c2d12',soft:'#fff7ed'},
+    'followup-paused':{eyebrow:'Follow-Up Centre',title:'Temporarily Paused Appointments',subtitle:'Patients whose follow-up appointments are temporarily paused or awaiting restart.',icon:'pause',colour:'#d97706',colourDark:'#92400e',soft:'#fffbeb'},
+    'roster-monthly':{eyebrow:'Roster Centre',title:'Monthly Roster',subtitle:'Monthly duty roster, leave, overtime, TIL and patient snapshot.',icon:'calendar',colour:'#475569',colourDark:'#334155',soft:'#f1f5f9'},
+    'roster-cod':{eyebrow:'Roster Centre',title:'Change of Duty',subtitle:'Record duty swaps and update the roster automatically.',icon:'swap',colour:'#0f766e',colourDark:'#0f2638',soft:'#ecfdf9'},
+    'roster-staff-audit':{eyebrow:'Roster Centre',title:'Staff Audit',subtitle:'Staff leave, overtime, TIL and monthly staff audit records.',icon:'chart',colour:'#7c3aed',colourDark:'#4c1d95',soft:'#f5f3ff'},
+    'patient-master':{eyebrow:'Patient Centre',title:'Master List',subtitle:'Complete patient register.',icon:'document',colour:'#0f766e',colourDark:'#0f2638',soft:'#ecfdf9'},
+    'patient-inpatient':{eyebrow:'Patient Centre',title:'Inpatients',subtitle:'Current inpatient workload and ward-based reviews.',icon:'bed',colour:'#2563eb',colourDark:'#1d4ed8',soft:'#eff6ff'},
+    'patient-outpatient':{eyebrow:'Patient Centre',title:'Outpatients',subtitle:'Outpatient and community follow-up patient list.',icon:'outpatient',colour:'#7c3aed',colourDark:'#5b21b6',soft:'#f5f3ff'},
+    'patient-handover':{eyebrow:'Patient Centre',title:'Handover',subtitle:'Patients requiring handover or active follow-up attention.',icon:'swap',colour:'#b45309',colourDark:'#92400e',soft:'#fffbeb'},
+    'outcome-active':{eyebrow:'Patient Outcomes',title:'Active Patients',subtitle:'Patients currently active under the Stoma Care service.',icon:'circleCheck',colour:'#0f766e',colourDark:'#0f2638',soft:'#ecfdf9'},
+    'outcome-reversal':{eyebrow:'Patient Outcomes',title:'Reversed Patients',subtitle:'Patients whose stoma has been reversed, refashioned, closed or completed.',icon:'swap',colour:'#059669',colourDark:'#064e3b',soft:'#ecfdf5'},
+    'outcome-deceased':{eyebrow:'Patient Outcomes',title:'Deceased Patients',subtitle:'Patients marked as deceased in the patient record.',icon:'warning',colour:'#c2413b',colourDark:'#7f1d1d',soft:'#fff1f2'},
+    'outcome-relocated':{eyebrow:'Patient Outcomes',title:'Relocated Overseas',subtitle:'Patients documented as relocated or moved overseas.',icon:'location',colour:'#0284c7',colourDark:'#075985',soft:'#f0f9ff'},
+    'outcome-gozo':{eyebrow:'Patient Outcomes',title:'Discharged to Gozo',subtitle:'Patients discharged or transferred to Gozo services.',icon:'gozo',colour:'#475569',colourDark:'#334155',soft:'#f1f5f9'}
   };
   return map[key]||{eyebrow:'MDH Stoma Care',title:'Selected View',subtitle:'Current workspace',icon:'checklist',colour:'#0f766e'};
 }
 function clearPlatformFocusTitle(sectionId){document.querySelectorAll(`#${sectionId} .platform-title-card`).forEach(el=>el.remove());}
 function setPlatformFocusTitle(sectionId, data, backAction){
   const section=document.getElementById(sectionId);if(!section||!data)return;clearPlatformFocusTitle(sectionId);
-  const card=document.createElement('div');card.className='platform-title-card';card.style.setProperty('--platform-colour',data.colour||'#0f766e');card.style.borderLeftColor=data.colour||'#0f766e';
-  card.innerHTML=`<div class="platform-title-icon" style="background:linear-gradient(135deg,#0f2638,${data.colour||'#0f766e'});">${platformIconSvg(data.icon)}</div><div class="platform-title-copy"><div class="eyebrow">${htmlSafe(data.eyebrow||'MDH Stoma Care')}</div><h2>${htmlSafe(data.title||'Selected View')}</h2><p>${htmlSafe(data.subtitle||'')}</p></div><button type="button" class="platform-title-back" onclick="${backAction||'switchSection(\'home\',null)'}">← Back to options</button>`;
+  const colour=data.colour||'#0f766e';
+  const dark=data.colourDark||'#0f2638';
+  const iconGradient=data.iconGradient||`linear-gradient(135deg,${dark},${colour})`;
+  const card=document.createElement('div');
+  card.className='platform-title-card';
+  card.style.setProperty('--platform-colour',colour);
+  card.style.setProperty('--platform-colour-dark',dark);
+  card.style.setProperty('--platform-icon-gradient',iconGradient);
+  card.style.setProperty('--platform-soft',data.soft||'#ecfdf9');
+  card.style.borderLeftColor=colour;
+  card.dataset.titleColour=colour;
+  card.innerHTML=`<div class="platform-title-icon">${platformIconSvg(data.icon)}</div><div class="platform-title-copy"><div class="eyebrow">${htmlSafe(data.eyebrow||'MDH Stoma Care')}</div><h2>${htmlSafe(data.title||'Selected View')}</h2><p>${htmlSafe(data.subtitle||'')}</p></div><button type="button" class="platform-title-back" onclick="${backAction||'goBackSection()'}">← Back to options</button>`;
   const firstPanel=section.querySelector(sectionId==='section-patients'?'.patient-centre-toolbar,.pt-search-bar,.patient-command,.patient-table-card':'.patient-outcome-search-bar,.pt-search-bar,.roster-subtab-panel,.patient-command,.patient-table-card');if(firstPanel)firstPanel.parentNode.insertBefore(card,firstPanel);else section.appendChild(card);
 }
 
@@ -13452,6 +13476,40 @@ function renderPatientOutcomeRows(rows,view){
 #section-patient-outcomes .platform-title-card[data-view="deceased"]{border-left-color:#c2413b!important;}
 #section-patient-outcomes .platform-title-card[data-view="relocated"]{border-left-color:#0284c7!important;}
 #section-patient-outcomes .platform-title-card[data-view="gozo"]{border-left-color:#475569!important;}
+
+
+/* v66-14 — exact consistency: subpage title colour and icon match the selected button */
+.platform-title-card{
+  border-left-color:var(--platform-colour,#0f766e)!important;
+  background:linear-gradient(135deg,#ffffff 0%,#f8fbfc 72%,var(--platform-soft,#ecfdf9) 100%)!important;
+}
+.platform-title-icon{
+  background:var(--platform-icon-gradient,linear-gradient(135deg,#0f2638,#0f766e))!important;
+  color:#ffffff!important;
+}
+.platform-title-icon svg{
+  width:22px!important;
+  height:22px!important;
+  stroke-width:2.1!important;
+}
+.platform-title-copy .eyebrow{
+  color:var(--platform-colour,#0f766e)!important;
+}
+.platform-title-back{
+  color:var(--platform-colour,#0f766e)!important;
+  border-color:color-mix(in srgb,var(--platform-colour,#0f766e) 42%,#ffffff)!important;
+  background:#ffffff!important;
+}
+.platform-title-back:hover{
+  background:var(--platform-soft,#ecfdf9)!important;
+  border-color:var(--platform-colour,#0f766e)!important;
+}
+#section-patient-outcomes .platform-title-card[data-view="active"]{--platform-colour:#0f766e;--platform-colour-dark:#0f2638;--platform-icon-gradient:linear-gradient(135deg,#0f2638,#0f766e);--platform-soft:#ecfdf9;}
+#section-patient-outcomes .platform-title-card[data-view="reversal"]{--platform-colour:#059669;--platform-colour-dark:#064e3b;--platform-icon-gradient:linear-gradient(135deg,#064e3b,#059669);--platform-soft:#ecfdf5;}
+#section-patient-outcomes .platform-title-card[data-view="deceased"]{--platform-colour:#c2413b;--platform-colour-dark:#7f1d1d;--platform-icon-gradient:linear-gradient(135deg,#7f1d1d,#c2413b);--platform-soft:#fff1f2;}
+#section-patient-outcomes .platform-title-card[data-view="relocated"]{--platform-colour:#0284c7;--platform-colour-dark:#075985;--platform-icon-gradient:linear-gradient(135deg,#075985,#0284c7);--platform-soft:#f0f9ff;}
+#section-patient-outcomes .platform-title-card[data-view="gozo"]{--platform-colour:#475569;--platform-colour-dark:#334155;--platform-icon-gradient:linear-gradient(135deg,#334155,#475569);--platform-soft:#f1f5f9;}
+
 </style>
 </body>
 </html>
