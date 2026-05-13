@@ -1920,6 +1920,150 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   .followup-tab{padding:0 13px;gap:7px;}
 }
 
+
+
+/* v66-4 — Professional longitudinal main menu and patient owner buttons */
+.home-group-label{
+  max-width:1120px;
+  margin:20px auto 10px!important;
+  color:#334155!important;
+  font-size:11px!important;
+  letter-spacing:.08em!important;
+}
+.home-btn-grid{
+  grid-template-columns:1fr!important;
+  gap:11px!important;
+  max-width:1120px!important;
+  margin:0 auto 18px!important;
+}
+.home-btn{
+  display:grid!important;
+  grid-template-columns:64px minmax(0,1fr) 28px!important;
+  align-items:center!important;
+  min-height:72px!important;
+  padding:0 18px!important;
+  border:1px solid rgba(15,38,56,.13)!important;
+  border-left:6px solid var(--teal)!important;
+  border-radius:16px!important;
+  background:#ffffff!important;
+  box-shadow:0 7px 22px rgba(15,38,56,.07)!important;
+  color:var(--navy)!important;
+  text-align:left!important;
+}
+.home-btn::after{
+  content:'›';
+  justify-self:end;
+  color:#94a3b8;
+  font-size:24px;
+  line-height:1;
+  font-weight:300;
+}
+.home-btn:hover{
+  transform:translateY(-1px)!important;
+  border-color:rgba(15,118,110,.28)!important;
+  box-shadow:0 12px 30px rgba(15,38,56,.11)!important;
+  background:linear-gradient(135deg,#ffffff 0%,#f8fbfc 100%)!important;
+}
+.home-btn-icon{
+  width:42px!important;
+  height:42px!important;
+  border-radius:12px!important;
+  margin:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  font-size:12px!important;
+  font-weight:950!important;
+  letter-spacing:.08em!important;
+  color:white!important;
+  background:linear-gradient(135deg,#0f2638,#0f766e)!important;
+  box-shadow:0 8px 18px rgba(15,38,56,.16)!important;
+}
+.home-btn-title{
+  color:var(--navy)!important;
+  font-size:15px!important;
+  font-weight:900!important;
+  margin:0 0 3px 0!important;
+}
+.home-btn-sub{
+  color:var(--muted)!important;
+  font-size:12px!important;
+  font-weight:600!important;
+}
+.home-btn-teal{border-left-color:#0f766e!important;}
+.home-btn-blue{border-left-color:#2563eb!important;}
+.home-btn-indigo{border-left-color:#4f46e5!important;}
+.home-btn-cyan{border-left-color:#0284c7!important;}
+.home-btn-gold{border-left-color:#b45309!important;}
+.home-btn-emerald{border-left-color:#059669!important;}
+.home-btn-amber{border-left-color:#d97706!important;}
+.home-btn-violet{border-left-color:#7c3aed!important;}
+.home-btn-slate{border-left-color:#475569!important;}
+.home-btn-rose{border-left-color:#e11d48!important;}
+.home-btn-zinc{border-left-color:#52525b!important;}
+.home-btn-blue .home-btn-icon{background:linear-gradient(135deg,#1d4ed8,#0f766e)!important;}
+.home-btn-indigo .home-btn-icon{background:linear-gradient(135deg,#4338ca,#0f2638)!important;}
+.home-btn-cyan .home-btn-icon{background:linear-gradient(135deg,#0369a1,#0f766e)!important;}
+.home-btn-gold .home-btn-icon{background:linear-gradient(135deg,#92400e,#b45309)!important;}
+.home-btn-emerald .home-btn-icon{background:linear-gradient(135deg,#065f46,#0f766e)!important;}
+.home-btn-amber .home-btn-icon{background:linear-gradient(135deg,#92400e,#d97706)!important;}
+.home-btn-violet .home-btn-icon{background:linear-gradient(135deg,#5b21b6,#0f2638)!important;}
+.home-btn-slate .home-btn-icon{background:linear-gradient(135deg,#334155,#0f2638)!important;}
+.home-btn-rose .home-btn-icon{background:linear-gradient(135deg,#9f1239,#c2413b)!important;}
+.home-btn-zinc .home-btn-icon{background:linear-gradient(135deg,#27272a,#52525b)!important;}
+
+.patient-centre-toolbar{
+  margin:0 0 14px 0;
+}
+.patient-owner-panel{
+  background:#ffffff;
+  border:1px solid var(--border);
+  border-radius:14px;
+  box-shadow:var(--shadow);
+  padding:12px 14px;
+  margin-bottom:14px;
+}
+.patient-owner-panel-title{
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--muted);
+  margin-bottom:8px;
+}
+.patient-owner-panel .allocation-strip{margin-top:0;}
+.patient-owner-panel .allocation-btn{
+  border-radius:12px;
+  padding:10px 16px;
+  min-width:112px;
+  text-align:center;
+  font-size:12px;
+  font-weight:900;
+}
+.patient-owner-panel .allocation-btn.active{
+  box-shadow:0 6px 16px rgba(15,118,110,.20);
+}
+.patient-active-view-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:8px 11px;
+  border-radius:999px;
+  background:#ecfdf9;
+  color:#0f766e;
+  border:1px solid #ccfbf1;
+  font-size:11px;
+  font-weight:900;
+  margin-bottom:10px;
+}
+@media(max-width:760px){
+  .home-btn{grid-template-columns:52px minmax(0,1fr) 20px!important;min-height:66px!important;padding:0 14px!important;}
+  .home-btn-icon{width:38px!important;height:38px!important;font-size:11px!important;}
+  .home-btn-title{font-size:14px!important;}
+  .home-btn-sub{font-size:11px!important;}
+  .patient-owner-panel .allocation-btn{min-width:calc(50% - 4px);flex:1;}
+}
+
 </style>
 
 <style>
@@ -2215,24 +2359,29 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
       <div class="home-group-label">Patient Management</div>
       <div class="home-btn-grid">
         <div class="home-btn home-btn-teal" onclick="switchSection('patients',null)">
-          <div class="home-btn-icon">👥</div>
+          <div class="home-btn-icon">PT</div>
           <div class="home-btn-title">Patients</div>
           <div class="home-btn-sub">Master list &amp; records</div>
         </div>
         <div class="home-btn home-btn-blue" onclick="switchSection('patient-pathways',null)">
-          <div class="home-btn-icon">🛤</div>
+          <div class="home-btn-icon">PW</div>
           <div class="home-btn-title">Patient Pathways</div>
           <div class="home-btn-sub">Elective · Emergency · Bagging</div>
         </div>
         <div class="home-btn home-btn-indigo" onclick="switchSection('patient-outcomes',null)">
-          <div class="home-btn-icon">✅</div>
+          <div class="home-btn-icon">OC</div>
           <div class="home-btn-title">Patient Outcomes</div>
           <div class="home-btn-sub">Status &amp; lifecycle views</div>
         </div>
         <div class="home-btn home-btn-cyan" onclick="switchSection('followups',null)">
-          <div class="home-btn-icon">📋</div>
+          <div class="home-btn-icon">FU</div>
           <div class="home-btn-title">Follow-Ups</div>
           <div class="home-btn-sub">Appointments &amp; DNTU</div>
+        </div>
+        <div class="home-btn home-btn-gold" onclick="switchSection('patients',null);setTimeout(()=>setPatientCommandFilter('handover'),60);">
+          <div class="home-btn-icon">HO</div>
+          <div class="home-btn-title">Handover</div>
+          <div class="home-btn-sub">Patients needing handover</div>
         </div>
       </div>
 
@@ -2240,17 +2389,17 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
       <div class="home-group-label">Clinical Tools</div>
       <div class="home-btn-grid">
         <div class="home-btn home-btn-emerald" onclick="switchSection('appliances',null)">
-          <div class="home-btn-icon">🩹</div>
+          <div class="home-btn-icon">AP</div>
           <div class="home-btn-title">Appliances</div>
           <div class="home-btn-sub">Products &amp; appliance history</div>
         </div>
         <div class="home-btn home-btn-amber" onclick="switchSection('discharge',null)">
-          <div class="home-btn-icon">📄</div>
+          <div class="home-btn-icon">DL</div>
           <div class="home-btn-title">Discharge Letters</div>
           <div class="home-btn-sub">AI-generated official letters</div>
         </div>
         <div class="home-btn home-btn-violet" onclick="switchSection('dntu',null)">
-          <div class="home-btn-icon">⚠️</div>
+          <div class="home-btn-icon">DN</div>
           <div class="home-btn-title">DNTU</div>
           <div class="home-btn-sub">Did Not Turn Up tracking</div>
         </div>
@@ -2260,17 +2409,17 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
       <div class="home-group-label">Administration &amp; Reporting</div>
       <div class="home-btn-grid">
         <div class="home-btn home-btn-slate" onclick="switchSection('roster',null)">
-          <div class="home-btn-icon">📅</div>
+          <div class="home-btn-icon">RO</div>
           <div class="home-btn-title">Rosters</div>
           <div class="home-btn-sub">Monthly roster &amp; staff audit</div>
         </div>
         <div class="home-btn home-btn-rose" onclick="switchSection('kpi-dashboard',null)">
-          <div class="home-btn-icon">📊</div>
+          <div class="home-btn-icon">KP</div>
           <div class="home-btn-title">KPIs</div>
           <div class="home-btn-sub">Clinical performance indicators</div>
         </div>
         <div class="home-btn home-btn-zinc" onclick="switchSection('audit-trail',null)">
-          <div class="home-btn-icon">🔍</div>
+          <div class="home-btn-icon">AU</div>
           <div class="home-btn-title">Audit Trail</div>
           <div class="home-btn-sub">Full system activity log</div>
         </div>
@@ -2286,6 +2435,38 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
         <div style="display:flex;gap:8px;align-items:center;">
           <button class="btn-refresh" onclick="loadPatients();loadPatientCommandCounts();">↻ Refresh</button>
           <button class="btn-add" onclick="openAddPatientModal()">+ Add New Patient</button>
+        </div>
+      </div>
+
+      <div class="patient-centre-toolbar">
+        <div class="roster-subtab-bar" id="patient-subtab-bar" role="tablist" aria-label="Patient views" style="grid-template-columns:repeat(auto-fit,minmax(190px,1fr));margin-bottom:12px;">
+          <button type="button" class="roster-subtab active" id="patient-subtab-master" onclick="showPatientSubtab('master')" style="background:linear-gradient(90deg,rgba(20,184,166,.34) 0%,rgba(20,184,166,.16) 30%,rgba(255,255,255,.95) 74%,#eefbf8 100%);">
+            <span class="roster-subtab-icon" style="background:linear-gradient(135deg,#0f766e,#14b8a6);">ML</span>
+            <span>Master List</span>
+          </button>
+          <button type="button" class="roster-subtab" id="patient-subtab-inpatient" onclick="showPatientSubtab('inpatient')" style="background:linear-gradient(90deg,rgba(37,99,235,.30) 0%,rgba(59,130,246,.14) 30%,rgba(255,255,255,.95) 74%,#eff6ff 100%);">
+            <span class="roster-subtab-icon" style="background:linear-gradient(135deg,#1d4ed8,#0f766e);">IN</span>
+            <span>Inpatients</span>
+          </button>
+          <button type="button" class="roster-subtab" id="patient-subtab-outpatient" onclick="showPatientSubtab('outpatient')" style="background:linear-gradient(90deg,rgba(109,40,217,.28) 0%,rgba(167,139,250,.14) 30%,rgba(255,255,255,.95) 74%,#f5f3ff 100%);">
+            <span class="roster-subtab-icon" style="background:linear-gradient(135deg,#5b21b6,#0f2638);">OUT</span>
+            <span>Outpatients</span>
+          </button>
+          <button type="button" class="roster-subtab" id="patient-subtab-handover" onclick="showPatientSubtab('handover')" style="background:linear-gradient(90deg,rgba(180,83,9,.30) 0%,rgba(251,191,36,.14) 30%,rgba(255,255,255,.95) 74%,#fffbeb 100%);">
+            <span class="roster-subtab-icon" style="background:linear-gradient(135deg,#92400e,#b45309);">HO</span>
+            <span>Handover</span>
+          </button>
+        </div>
+        <div class="patient-active-view-pill">View: <span id="patient-active-view-label">Showing all patients</span></div>
+        <div class="patient-owner-panel">
+          <div class="patient-owner-panel-title">Assigned nurse / owner</div>
+          <div class="allocation-strip">
+            <button type="button" class="allocation-btn" data-nurse="Jason Fenech" onclick="setPatientNurseFilter('Jason Fenech')">Jason</button>
+            <button type="button" class="allocation-btn" data-nurse="Lorraine Stivala" onclick="setPatientNurseFilter('Lorraine Stivala')">Lorraine</button>
+            <button type="button" class="allocation-btn" data-nurse="Jacqueline Sammut" onclick="setPatientNurseFilter('Jacqueline Sammut')">Jacqueline</button>
+            <button type="button" class="allocation-btn" data-nurse="Common" onclick="setPatientNurseFilter('Common')">Common</button>
+            <button type="button" class="allocation-btn" data-nurse="" onclick="setPatientNurseFilter('')">All</button>
+          </div>
         </div>
       </div>
 
@@ -2308,7 +2489,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
           <option>Lorraine Stivala</option>
           <option>Common</option>
         </select>
-        <button class="btn-refresh" onclick="document.getElementById('patient-search-input').value='';document.getElementById('pt-status-filter').value='';document.getElementById('pt-nurse-filter').value='';loadPatients();">✕ Clear</button>
+        <button class="btn-refresh" onclick="document.getElementById('patient-search-input').value='';resetPatientCommandFilters();">✕ Clear</button>
       </div>
 
       <input type="hidden" id="pt-command-filter" value=""/>
@@ -4345,6 +4526,14 @@ if(typeof window!=='undefined'){
   setInterval(()=>{const s=document.getElementById('section-followups');if(s&&s.classList.contains('active'))forceFollowupButtonsStraight();},800);
 }
 
+
+
+function syncPatientSubtabActive(view){
+  const tab=(view==='inpatient'||view==='outpatient'||view==='handover')?view:'master';
+  document.querySelectorAll('#patient-subtab-bar .roster-subtab').forEach(b=>b.classList.remove('active'));
+  const btn=document.getElementById('patient-subtab-'+tab);
+  if(btn)btn.classList.add('active');
+}
 
 function showPatientSubtab(tab){
   document.querySelectorAll('#patient-subtab-bar .roster-subtab').forEach(b=>b.classList.remove('active'));
@@ -10215,6 +10404,7 @@ function updatePatientViewLabel(){
 }
 function setPatientCommandFilter(view){
   const el=document.getElementById('pt-command-filter'); if(el)el.value=view||'';
+  syncPatientSubtabActive(view||'master');
   updatePatientViewLabel();
   loadPatients();
 }
@@ -10225,6 +10415,7 @@ function setPatientNurseFilter(nurse){
 }
 function resetPatientCommandFilters(){
   ['pt-command-filter','pt-nurse-filter','pt-search','pt-type-filter','pt-pathway-filter','pt-status-filter'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  syncPatientSubtabActive('master');
   updatePatientViewLabel();
   loadPatients();
 }
@@ -10281,8 +10472,15 @@ async function loadPatients(){
   loadPatientCommandCountsFromRows(rows,dntuIds);
   if(commandF)rows=rows.filter(r=>patientMatchesCommandView(r,commandF,dntuIds));
   if(nurseF){
-    if(nurseF==='Common')rows=rows.filter(r=>!r.allocated_nurse||String(r.allocated_nurse).toLowerCase()==='common');
-    else rows=rows.filter(r=>String(r.allocated_nurse||'').toLowerCase()===nurseF.toLowerCase());
+    const want=String(nurseF||'').toLowerCase();
+    if(want==='common')rows=rows.filter(r=>!r.allocated_nurse||String(r.allocated_nurse).toLowerCase()==='common');
+    else rows=rows.filter(r=>{
+      const got=String(r.allocated_nurse||'').toLowerCase();
+      if(want.includes('jason'))return got.includes('jason');
+      if(want.includes('jacqueline')||want.includes('jacklyn'))return got.includes('jacqueline')||got.includes('jacklyn');
+      if(want.includes('lorraine'))return got.includes('lorraine');
+      return got===want;
+    });
   }
   if(typeF)rows=rows.filter(r=>r.patient_type===typeF);
   if(pathwayF)rows=rows.filter(r=>r.pathway_status===pathwayF);
