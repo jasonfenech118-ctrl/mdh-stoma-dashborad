@@ -6575,7 +6575,7 @@ function renderPathwaySearch(tab){
       </div>
       ${renderPathwayRegistrationTabs(tab)}
       <div class="pathway-form-actions">
-        <div class="pathway-form-note">Step 1 patient details are protected after saving. Use Unlock / Edit only for genuine corrections. Step 2 and clinical tabs can be completed or updated later.</div>
+        <div class="pathway-form-note">Step 1: Adding Patient Details is protected after saving. Use Unlock / Edit only for genuine corrections. Step 2: Adding Stoma & Surgery Details and the clinical tabs can be completed later.</div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
           <button type="button" class="pathway-reset-btn" onclick="resetPathwayRegistrationForm('${tab}')">Clear form</button>
           <button type="button" class="pathway-save-btn" data-pathway-main-save="true" onclick="savePathwayPagePatient('${tab}')">${isSurgeryPathway(tab)?'Save &amp; Lock Patient Details':'Save '+htmlSafe(meta.short)+' Patient'}</button>
@@ -13827,7 +13827,7 @@ function validateAndLockPathwayPatientDetails(tab){
   }
   window._pathwayPatientDetailsLocked[tab]=true;
   applyPathwayPatientLockState(tab);
-  alert('Patient details saved and locked. Proceed to Step 2: Stoma & Surgery Details.');
+  alert('Patient details saved and locked. Proceed to Step 2: Adding Stoma & Surgery Details.');
   switchPathwayRegistrationTab(tab,'stoma');
   return true;
 }
@@ -13864,17 +13864,17 @@ function applyPathwayPatientLockState(tab){
     banner.classList.toggle('locked',locked);
     banner.innerHTML=locked
       ? `<strong>Patient details locked.</strong><span>Protected from accidental changes. Unlock only for a genuine correction and record the reason.</span><button type="button" onclick="unlockPathwayPatientDetails('${tab}')">Unlock / Edit Patient Details</button>`
-      : `<strong>Step 1: Patient Details</strong><span>Save and lock demographics first. Step 2 and clinical tabs can be completed or updated later.</span><button type="button" onclick="validateAndLockPathwayPatientDetails('${tab}')">Save & Lock Patient Details</button>`;
+      : `<strong>Step 1: Adding Patient Details</strong><span>Save and lock patient details first. Then continue to Step 2: Adding Stoma & Surgery Details.</span><button type="button" onclick="validateAndLockPathwayPatientDetails('${tab}')">Save & Lock Patient Details</button>`;
   }
   card.querySelectorAll('.pathway-form-tab[data-needs-lock="true"]').forEach(btn=>btn.classList.toggle('tab-disabled',!locked));
   updatePathwayMainSaveButton(tab);
 }
 
 function pathwayTabConfig(tab){
-  const commonPatient={key:'patient',label:isSurgeryPathway(tab)?'Step 1: Patient Details':'Patient Details',panel:renderPathwayPatientDetailsPanel(tab),requiresLock:false};
+  const commonPatient={key:'patient',label:isSurgeryPathway(tab)?'Step 1: Adding Patient Details':'Patient Details',panel:renderPathwayPatientDetailsPanel(tab),requiresLock:false};
   const tracker={key:'tracker',label:'Episode Dashboard',panel:renderEpisodeTrackerPanel(tab),requiresLock:isSurgeryPathway(tab)};
   const encounters={key:'encounters',label:'Encounters',panel:renderEncountersPlanningPanel(tab),requiresLock:isSurgeryPathway(tab)};
-  const stoma={key:'stoma',label:isSurgeryPathway(tab)?'Step 2: Stoma & Surgery Details':'Stoma & Surgery Details',panel:renderPathwayStomaSurgeryPanel(tab),requiresLock:isSurgeryPathway(tab)};
+  const stoma={key:'stoma',label:isSurgeryPathway(tab)?'Step 2: Adding Stoma & Surgery Details':'Stoma & Surgery Details',panel:renderPathwayStomaSurgeryPanel(tab),requiresLock:isSurgeryPathway(tab)};
   const preop={key:'preop',label:'Pre-operative Stoma Care',panel:renderPreOperativeStomaCarePanel(tab),requiresLock:isSurgeryPathway(tab)};
   const postop={key:'postop',label:'Post-operative Stoma Care',panel:renderPostOperativeStomaCarePanel(tab),requiresLock:isSurgeryPathway(tab)};
   const teaching={key:'teaching',label:'Management & Teaching Plan',panel:renderManagementTeachingPanel(tab),requiresLock:isSurgeryPathway(tab)};
@@ -13898,7 +13898,7 @@ function renderPathwayRegistrationTabs(tab){
 
 window.switchPathwayRegistrationTab=function(tab,panel){
   if(isSurgeryPathway(tab)&&panel!=='patient'&&!window._pathwayPatientDetailsLocked[tab]){
-    alert('Please complete Step 1 Patient Details and press Save & Lock Patient Details before continuing.');
+    alert('Please complete Step 1: Adding Patient Details and press Save & Lock Patient Details before continuing.');
     panel='patient';
   }
   const card=document.getElementById(`pathway-new-form-${tab}`);
@@ -13928,7 +13928,7 @@ window.savePathwayPagePatient=async function(tab){
 
 function renderPathwayPatientDetailsPanel(tab){
   const isSurgery=isSurgeryPathway(tab);
-  return `${isSurgery?`<div class="patient-lock-banner" id="patient-lock-banner-${tab}"><strong>Step 1: Patient Details</strong><span>Save and lock demographics first. Step 2 and clinical tabs can be completed or updated later.</span><button type="button" onclick="validateAndLockPathwayPatientDetails('${tab}')">Save & Lock Patient Details</button></div>`:''}
+  return `${isSurgery?`<div class="patient-lock-banner" id="patient-lock-banner-${tab}"><strong>Step 1: Adding Patient Details</strong><span>Save and lock patient details first. Then continue to Step 2: Adding Stoma & Surgery Details.</span><button type="button" onclick="validateAndLockPathwayPatientDetails('${tab}')">Save & Lock Patient Details</button></div>`:''}
   <input type="hidden" id="pp-${tab}-patient-unlock-reason" data-pathway-extra data-extra-label="Patient details unlock reason">
   <div class="pathway-form-grid">
     <div class="fg"><label>First Name <span class="req">*</span></label><input data-patient-detail="true" id="pp-${tab}-fn" placeholder="First name" autocomplete="off"/></div>
@@ -14498,5 +14498,367 @@ function renderPathwayStepsPanel(tab,patient,steps,completions,col,allDone,total
 @media(max-width:900px){.encounter-form-grid{grid-template-columns:1fr}.pathway-progress-wrap{align-items:flex-start;flex-direction:column}.pathway-progress-label{white-space:normal}}
 
 </style>
+
+<style>
+/* v66-23 — Patient pathway / inpatient workspace implementation */
+.patient-owner-panel,
+#pt-nurse-filter{
+  display:none!important;
+}
+#section-patients.platform-focused .patient-centre-toolbar{
+  display:none!important;
+}
+#section-patients.patient-record-open .patient-centre-toolbar,
+#section-patients.patient-record-open .pt-search-bar,
+#section-patients.patient-record-open #patient-list-panel{
+  display:none!important;
+}
+.patient-row-click{cursor:pointer;}
+.patient-row-click:hover td{background:#f8fafc!important;}
+.pc-table-note{font-size:11px;color:var(--muted);font-weight:700;margin:8px 0 0;}
+.patient-record-page{background:white;border:1px solid var(--border);border-radius:18px;box-shadow:var(--shadow);padding:18px;margin-top:14px;}
+.patient-record-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:12px 0 18px;}
+.patient-record-chip{background:#f8fafc;border:1px solid var(--border);border-radius:12px;padding:10px 12px;}
+.patient-record-chip .label{font-size:10px;font-weight:950;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);}
+.patient-record-chip .value{font-size:13px;font-weight:900;color:var(--navy);margin-top:3px;}
+.episode-card{border:1px solid var(--border);border-radius:15px;background:#fff;margin-bottom:10px;overflow:hidden;box-shadow:0 3px 12px rgba(15,38,56,.04);}
+.episode-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:13px 14px;background:#f8fafc;cursor:pointer;}
+.episode-card-head:hover{background:#f0fdfa;}
+.episode-card-title{font-size:14px;font-weight:950;color:var(--navy);}
+.episode-card-meta{font-size:11px;color:var(--muted);margin-top:3px;line-height:1.35;}
+.episode-card-badge{border-radius:999px;padding:4px 9px;background:#ecfdf9;color:#0f766e;font-size:10px;font-weight:950;text-transform:uppercase;white-space:nowrap;}
+.episode-card-body{display:none;padding:14px;border-top:1px solid var(--border);}
+.episode-card.open .episode-card-body{display:block;}
+.episode-overview-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;margin-bottom:12px;}
+.episode-overview-item{border:1px solid #e2e8f0;background:#f8fafc;border-radius:10px;padding:9px;}
+.episode-overview-item .label{font-size:9.5px;font-weight:950;text-transform:uppercase;color:#64748b;letter-spacing:.04em;}
+.episode-overview-item .value{font-size:12px;font-weight:800;color:#0f2638;margin-top:3px;line-height:1.3;}
+.closed-lock-pill{display:inline-flex;align-items:center;gap:5px;border-radius:999px;background:#f1f5f9;color:#475569;border:1px solid #cbd5e1;padding:4px 8px;font-size:10px;font-weight:950;text-transform:uppercase;}
+.pathway-workspace-tabs{display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--border);margin:14px 0 14px;padding-bottom:10px;}
+.pathway-workspace-tab{border:1.5px solid var(--border);background:#fff;color:var(--muted);border-radius:999px;padding:8px 12px;font-size:12px;font-weight:950;font-family:'DM Sans',sans-serif;cursor:pointer;}
+.pathway-workspace-tab.active{background:var(--pathway-colour,#0f766e);border-color:var(--pathway-colour,#0f766e);color:#fff;}
+.pathway-panel-title{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px;}
+.pathway-panel-title h3{font-size:16px;color:var(--navy);font-weight:950;margin:0;}
+.pathway-panel-title p{font-size:12px;color:var(--muted);margin-top:2px;}
+.pathway-step-note{border:1px solid #fde68a;background:#fffbeb;color:#78350f;border-radius:12px;padding:11px 13px;font-size:12px;font-weight:800;line-height:1.4;margin-bottom:12px;}
+.pathway-step-note.locked{border-color:#bbf7d0;background:#f0fdf4;color:#14532d;}
+.daily-review-card{border:1px solid var(--border);background:#fff;border-radius:14px;padding:14px;margin-bottom:12px;box-shadow:0 3px 12px rgba(15,38,56,.04);}
+.daily-review-card.closed{background:#f8fafc;}
+.daily-review-actions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:10px;}
+.pathway-table-wrap .empty{padding:20px!important;text-align:center;color:var(--muted);}
+.readonly-field{background:#f8fafc!important;color:#475569!important;border-color:#e2e8f0!important;}
+@media(max-width:760px){.pathway-workspace-tabs{overflow-x:auto;flex-wrap:nowrap}.pathway-workspace-tab{white-space:nowrap}.episode-card-head{flex-direction:column}.patient-record-page{padding:14px}}
+</style>
+
+<script>
+/* v66-23 — implements pending pathway, inpatient/outpatient, episode and encounter notes */
+(function(){
+  const todayIso=()=>new Date().toISOString().slice(0,10);
+  const nowTime=()=>new Date().toTimeString().slice(0,5);
+  const currentYear=()=>new Date().getFullYear();
+  const esc=v=>(typeof htmlSafe==='function'?htmlSafe(v):String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])));
+  const getUser=()=>{try{return getLoggedInSubmitterName?.()||currentLoginProfile?.full_name||currentAuthUser?.email||'Logged-in user';}catch(e){return 'Logged-in user';}};
+  const yn='<option value="">Select...</option><option>Yes</option><option>No</option>';
+  const metUnmet='<option value="">Select...</option><option>Met</option><option>Unmet</option><option>Deferred / patient not ready</option><option>Not applicable</option>';
+
+  window._activePathwayWorkspaceTab=window._activePathwayWorkspaceTab||{};
+  window._pathwayEncounterRows=window._pathwayEncounterRows||{};
+  window._patientCentrePrevView=window._patientCentrePrevView||'master';
+
+  function patientFullName(p){return `${p?.first_name||''} ${p?.surname||''}`.trim()||p?.name||'Unnamed patient';}
+  function idCardOf(p){return p?.id_card||p?.id_card_number||p?.hospital_number||p?.patient_number||'—';}
+  function dateFmt(v){if(!v)return '—'; try{return new Date(v).toLocaleDateString('en-MT');}catch(e){return v;}}
+  function val(id){return document.getElementById(id)?.value?.trim()||'';}
+  function opt(list,selected=''){return '<option value="">Select...</option>'+list.map(x=>`<option value="${esc(x)}"${String(x)===String(selected)?' selected':''}>${esc(x)}</option>`).join('');}
+
+  window.pathwayTabConfig=function(tab){
+    const p={key:'patient',label:'Step 1: Adding Patient Details',panel:renderPathwayPatientDetailsPanel(tab)};
+    const s={key:'stoma',label:'Step 2: Adding Stoma & Surgery Details',panel:renderPathwayStomaSurgeryPanel(tab)};
+    const daily={key:'dailyreviews',label:'Daily Reviews',panel:renderPathwayDailyReviewEntryPanel(tab,null,true)};
+    const enc={key:'encounters',label:'Encounters',panel:renderPathwayEncounterRegisterPanel(tab,null,true)};
+    const pre={key:'preop',label:'Pre-operative Stoma Care',panel:renderPreOperativeStomaCarePanel(tab)};
+    const post={key:'postop',label:'Post-operative Stoma Care',panel:renderPostOperativeStomaCarePanel(tab)};
+    const teach={key:'teaching',label:'Management & Teaching Plan',panel:renderManagementTeachingPanel(tab)};
+    const disc={key:'discharge',label:'Discharge / Follow-up Planning',panel:renderDischargePlanningPanel(tab)};
+    if(tab==='elective')return [p,s,daily,enc,pre,post,teach,disc];
+    if(tab==='emergency')return [p,s,daily,enc,post,teach,disc];
+    if(tab==='bagging')return [p,{key:'assessment',label:'Appliance / Bagging Assessment',panel:renderBaggingAssessmentPanel(tab)},{key:'appliance',label:'Appliance in Use',panel:renderApplianceInUsePanel(tab)},{key:'advice',label:'Advice / Teaching Given',panel:renderAdviceTeachingPanel(tab)},{key:'followup',label:'Follow-up Plan',panel:renderFollowupPlanPanel(tab)}];
+    return [p,{key:'existing',label:'Existing Stoma Details',panel:renderExistingStomaDetailsPanel(tab)},{key:'skin',label:'Appliance / Skin Assessment',panel:renderSkinAssessmentPanel(tab)},{key:'appliance',label:'Appliance in Use',panel:renderApplianceInUsePanel(tab)},teach,{key:'handover',label:'Follow-up / Handover Plan',panel:renderHandoverPlanPanel(tab)}];
+  };
+
+  window.renderPathwayRegistrationTabs=function(tab){
+    const tabs=pathwayTabConfig(tab);
+    return `<div class="pathway-form-tabs" role="tablist" aria-label="Pathway form tabs">${tabs.map((t,i)=>`<button type="button" class="pathway-form-tab ${i===0?'active':''}" id="pf-tab-${tab}-${t.key}" onclick="switchPathwayRegistrationTab('${tab}','${t.key}')">${esc(t.label)}</button>`).join('')}</div>${tabs.map((t,i)=>`<div class="pathway-form-panel ${i===0?'active':''}" id="pf-panel-${tab}-${t.key}">${t.panel}</div>`).join('')}`;
+  };
+
+  window.renderPathwayPatientDetailsPanel=function(tab){
+    return `<div class="pathway-step-note"><strong>Step 1: Adding Patient Details.</strong> Save and lock these details first. Once saved, demographic details are protected and should only be unlocked for genuine corrections.</div>
+    <div class="pathway-form-grid">
+      <div class="fg"><label>First Name <span class="req">*</span></label><input id="pp-${tab}-fn" autocomplete="off"></div>
+      <div class="fg"><label>Surname <span class="req">*</span></label><input id="pp-${tab}-sn" autocomplete="off"></div>
+      <div class="fg"><label>ID Card No.</label><input id="pp-${tab}-id" autocomplete="off"></div>
+      <div class="fg"><label>Date of Birth <span class="req">*</span></label><input type="date" id="pp-${tab}-dob"></div>
+      <div class="fg"><label>Gender <span class="req">*</span></label><select id="pp-${tab}-sex"><option value="">Select...</option><option>Male</option><option>Female</option><option>Other</option></select></div>
+      <div class="fg"><label>Telephone No.</label><input id="pp-${tab}-ph" autocomplete="off"></div>
+      <div class="fg"><label>Locality <span class="req">*</span></label><select id="pp-${tab}-locality">${opt(window.PATHWAY_LOCALITY_OPTIONS||[])}</select></div>
+      <div class="fg"><label>Consultant</label><input id="pp-${tab}-cons" autocomplete="off"></div>
+      <div class="fg"><label>Ward <span class="req">*</span></label><select id="pp-${tab}-ward">${opt(window.PATHWAY_WARD_OPTIONS||[])}</select></div>
+    </div>`;
+  };
+
+  window.renderPathwayStomaSurgeryPanel=function(tab){
+    return `<div class="pathway-step-note"><strong>Step 2: Adding Stoma &amp; Surgery Details.</strong> These clinical details can be completed and updated as the admission progresses.</div>
+    <div class="pathway-form-grid">
+      <div class="fg"><label>Date of Surgery <span class="req">*</span></label><input type="date" id="pp-${tab}-surg"></div>
+      <div class="fg"><label>Stoma Type</label><select id="pp-${tab}-stoma">${opt(pathwayStomaOptions())}</select></div>
+      <div class="fg"><label>End / Loop</label><select id="pp-${tab}-endloop" data-pathway-extra data-extra-label="End / Loop"><option value="">Select...</option><option>End</option><option>Loop</option><option>Not applicable</option></select></div>
+      <div class="fg"><label>Rod in situ</label><select id="pp-${tab}-rod" data-pathway-extra data-extra-label="Rod in situ">${yn}</select></div>
+      <div class="fg"><label>Date of rod removal</label><input type="date" id="pp-${tab}-rodremove" data-pathway-extra data-extra-label="Date of rod removal"></div>
+      <div class="fg full"><label>Operation Performed</label><textarea id="pp-${tab}-operation" data-pathway-extra data-extra-label="Operation performed" placeholder="Write the operation/procedure performed"></textarea></div>
+      <div class="fg full"><label>Findings</label><textarea id="pp-${tab}-findings" data-pathway-extra data-extra-label="Findings" placeholder="Write operative/surgical findings"></textarea></div>
+      <div class="fg full"><label>Clinical notes / pathway comments</label><textarea id="pp-${tab}-notes" data-pathway-extra data-extra-label="Pathway comments"></textarea></div>
+    </div>`;
+  };
+
+  window.renderExistingStomaDetailsPanel=function(tab){
+    return `<div class="pathway-form-grid">
+      <div class="fg"><label>Current stoma type</label><select id="pp-${tab}-stoma">${opt(pathwayStomaOptions())}</select></div>
+      <div class="fg"><label>End / Loop</label><select id="pp-${tab}-endloop" data-pathway-extra data-extra-label="End / Loop"><option value="">Select...</option><option>End</option><option>Loop</option><option>Not applicable</option></select></div>
+      <div class="fg"><label>Date of original surgery <span class="req">*</span></label><input type="date" id="pp-${tab}-surg"></div>
+      <div class="fg"><label>Hospital / Country / Source</label><input id="pp-${tab}-source" placeholder="Outside hospital / abroad / community" autocomplete="off"></div>
+      <div class="fg"><label>Consultant</label><input id="pp-${tab}-cons" autocomplete="off"></div>
+      <div class="fg"><label>Ward <span class="req">*</span></label><select id="pp-${tab}-ward">${opt(window.PATHWAY_WARD_OPTIONS||[])}</select></div>
+      <div class="fg full"><label>Operation Performed</label><textarea id="pp-${tab}-operation" data-pathway-extra data-extra-label="Operation performed" placeholder="Known operation / procedure"></textarea></div>
+      <div class="fg full"><label>Findings</label><textarea id="pp-${tab}-findings" data-pathway-extra data-extra-label="Findings" placeholder="Known findings or relevant history"></textarea></div>
+    </div>`;
+  };
+
+  function statusCell(tab,prefix,i){return `<td><select data-pathway-extra data-extra-label="${prefix} ${i} status" id="pp-${tab}-${prefix}-${i}-status" onchange="pathwayAutoDate('${tab}','${prefix}-${i}')">${metUnmet}</select><div class="auto-date" id="pp-${tab}-${prefix}-${i}-auto" style="font-size:10px;color:var(--muted);font-weight:800;margin-top:3px;"></div></td>`;}
+  window.pathwayAutoDate=function(tab,key){const el=document.getElementById(`pp-${tab}-${key}-auto`);if(el&&!el.textContent)el.textContent='Date: '+todayIso();};
+
+  window.renderPreopChecklist=function(tab){
+    const rows=['Introduction and role of the stoma care nurse explained','Assessed present level of understanding regarding surgery','Explanation given of colostomy / ileostomy / urostomy','Figure of stoma and appliance shown','Opportunity to discuss implications of stoma on lifestyle','Waistband noted and marked','Creases, dips or scars noted','Site agreed and visible to patient','Stoma site marked','Other issues discussed'];
+    return `<div class="auto-sign-note">Recorded by logged-in nurse automatically. No manual signature is required.</div><div class="pathway-table-wrap"><table class="pathway-paper-table preop-table"><thead><tr><th>Checklist item</th><th>Status</th><th>Date</th><th>Comments</th></tr></thead><tbody>${rows.map((r,i)=>`<tr><td class="paper-row-label">${i+1}. ${esc(r)}</td>${statusCell(tab,'preop',i+1)}<td><input type="date" data-pathway-extra data-extra-label="Pre-op ${i+1} date" id="pp-${tab}-preop-${i+1}-date"></td><td><textarea data-pathway-extra data-extra-label="Pre-op ${i+1} comments" id="pp-${tab}-preop-${i+1}-comments" placeholder="Comments"></textarea></td></tr>`).join('')}</tbody></table></div>`;
+  };
+
+  window.renderPostOpDayTable=function(tab){
+    const days=['1st','2nd','3rd','4th','5th','6th','7th'];
+    const rows=['Date','STOMA','Pink / healthy','Dusky','Flush / Retracted','Other','STOMA OUTPUT','Haem serous','Green / bilious','Liquid stool','Semi-formed / formed','SKIN CONDITION','Healthy / intact','Red','Broken / excoriated','Time','Comments'];
+    return `<div class="auto-sign-note">Nurse identity is captured automatically from login/audit trail.</div><div class="pathway-table-wrap"><table class="pathway-paper-table postop-table"><thead><tr><th>Post-operative day</th>${days.map(d=>`<th>${d}</th>`).join('')}</tr></thead><tbody>${rows.map((r,ri)=>`<tr class="${String(r).toUpperCase()===r?'section-row':''}"><td class="paper-row-label">${esc(r)}</td>${days.map((d,di)=>`<td><input type="text" data-pathway-extra data-extra-label="Post-op ${r} ${d}" id="pp-${tab}-postop-${ri}-${di}" placeholder="—"></td>`).join('')}</tr>`).join('')}</tbody></table></div><div class="pathway-small-note">Skin condition needs only to be filled when flange is changed.</div>`;
+  };
+
+  window.renderTeachingTable=function(tab){
+    const rows=['Patient has seen stoma and first flange/bag change','Able to assemble items needed','Able to remove old bag','Able to remove flange','Able to clean stoma','Able to empty bag (if drainable pouch)','Able to apply new bag with flange','Able to apply flange','Able to dispose of waste'];
+    return `<div class="auto-sign-note">Teaching is recorded as Met / Unmet. Date and logged-in nurse are captured automatically.</div><div class="pathway-table-wrap"><table class="pathway-paper-table teaching-table"><thead><tr><th>Teaching item</th><th>Status</th><th>Date commenced / achieved</th><th>Comments</th></tr></thead><tbody>${rows.map((r,i)=>`<tr><td class="paper-row-label">${esc(r)}</td>${statusCell(tab,'teach',i+1)}<td><input type="date" data-pathway-extra data-extra-label="Teaching ${r} date" id="pp-${tab}-teach-${i+1}-date"></td><td><textarea data-pathway-extra data-extra-label="Teaching ${r} comments" id="pp-${tab}-teach-${i+1}-comments" placeholder="Patient not ready / refused / partial / supported / independent"></textarea></td></tr>`).join('')}</tbody></table></div>`;
+  };
+
+  window.renderApplianceRows=function(tab){
+    return `<div class="pathway-form-grid">
+      <div class="fg"><label>Appliance system</label><select id="pp-${tab}-appliance-system" data-pathway-extra data-extra-label="Appliance system" onchange="toggleApplianceSystem('${tab}')"><option value="">Select...</option><option value="one">One-piece system</option><option value="two">Two-piece system</option></select></div>
+      <div class="fg appliance-one-${tab}" style="display:none;"><label>One-piece appliance</label><select id="pp-${tab}-one-piece" data-pathway-extra data-extra-label="One-piece appliance"><option value="">Select...</option><option>One-piece appliance option</option><option>Other</option></select></div>
+      <div class="fg appliance-two-${tab}" style="display:none;"><label>Flange / baseplate</label><select id="pp-${tab}-two-flange" data-pathway-extra data-extra-label="Two-piece flange"><option value="">Select...</option><option>Flange / baseplate option</option><option>Other</option></select></div>
+      <div class="fg appliance-two-${tab}" style="display:none;"><label>Bag / pouch</label><select id="pp-${tab}-two-bag" data-pathway-extra data-extra-label="Two-piece bag"><option value="">Select...</option><option>Closed bag</option><option>Drainable bag</option><option>Transparent bag</option><option>Opaque bag</option><option>Other</option></select></div>
+      <div class="fg"><label>Size</label><input id="pp-${tab}-appliance-size" data-pathway-extra data-extra-label="Appliance size" placeholder="Size"></div>
+      <div class="fg"><label>Accessories used</label><input id="pp-${tab}-accessories" data-pathway-extra data-extra-label="Accessories used" placeholder="Rings, paste, powder, belt, remover..."></div>
+      <div class="fg full"><label>Comments</label><textarea id="pp-${tab}-appliance-comments" data-pathway-extra data-extra-label="Appliance comments" placeholder="Fit, leakage, skin issue, reason for change"></textarea></div>
+    </div>`;
+  };
+  window.toggleApplianceSystem=function(tab){
+    const v=document.getElementById(`pp-${tab}-appliance-system`)?.value;
+    document.querySelectorAll(`.appliance-one-${tab}`).forEach(el=>el.style.display=v==='one'?'block':'none');
+    document.querySelectorAll(`.appliance-two-${tab}`).forEach(el=>el.style.display=v==='two'?'block':'none');
+  };
+  window.renderApplianceInUsePanel=function(tab){return `<div class="paper-section-title">Appliance in Use</div>${renderApplianceRows(tab)}`;};
+
+  window.renderDischargePlanningPanel=function(tab){
+    const items=[['dispensing','Discussed appliance dispensing procedure'],['schedule','Schedule V / prescriptions for home supply given'],['supply','Home supply brought'],['info','Discharge advice and clinic contact numbers given'],['clinic','To be followed up in Stoma Clinic']];
+    return `<div class="pathway-yn-grid">${items.map(([id,label])=>`<div class="fg"><label>${esc(label)}</label><select id="pp-${tab}-dc-${id}" data-pathway-extra data-extra-label="${esc(label)}">${yn}</select></div>`).join('')}<div class="fg"><label>Referral for community nurse</label><select id="pp-${tab}-dc-community" data-pathway-extra data-extra-label="Community nurse referral"><option value="">Select...</option><option>Daily</option><option>Bidaily</option><option>No</option></select></div><div class="fg full"><label>Comments / unmet outcomes</label><textarea id="pp-${tab}-dc-comments" data-pathway-extra data-extra-label="Discharge comments" placeholder="Discharge concerns, deferred items, unmet outcomes, handover details"></textarea></div></div>`;
+  };
+
+  window.focusPathwayRequiredTab=function(tab,fieldId){
+    const short=String(fieldId||'').split(`pp-${tab}-`).pop();
+    const step2=['surg','ward','stoma','operation','findings','cons','rod','rodremove'].includes(short);
+    switchPathwayRegistrationTab(tab,step2?(tab==='readmission'?'existing':'stoma'):'patient');
+    const el=document.getElementById(fieldId); if(el){el.focus();el.scrollIntoView({behavior:'smooth',block:'center'});}
+  };
+
+  window.renderPathwaySearch=function(tab){
+    const meta=getPathwayFormMeta(tab);
+    return `<div class="pathway-page-shell" style="--pathway-colour:${meta.colour};"><div class="pathway-form-card" id="pathway-new-form-${tab}"><div class="pathway-form-head" style="padding:18px 18px 0;"><div><h3>Add new ${esc(meta.label)} patient</h3><p>Start the pathway. Patient details are saved and locked first, then the stoma/surgery and review sections can be completed later.</p></div></div>${renderPathwayRegistrationTabs(tab)}<div class="pathway-form-actions"><div class="pathway-form-note">Step 1: Adding Patient Details is protected after saving. The saved pathway appears in Inpatients when the patient is admitted or has an active inpatient pathway.</div><div style="display:flex;gap:8px;flex-wrap:wrap;"><button type="button" class="pathway-reset-btn" onclick="resetPathwayRegistrationForm('${tab}')">Clear form</button><button type="button" class="pathway-save-btn" onclick="savePathwayPagePatient('${tab}')">Save &amp; Lock Patient Details</button></div></div></div></div>`;
+  };
+
+  async function createInitialEncounter(patientId,meta,patientPayload){
+    const no=`ENC-${currentYear()}-0001`;
+    const summary=`Pathway created: ${meta.label}. Patient details saved and locked. Ward: ${patientPayload.ward||'—'}. Surgery date: ${patientPayload.surgery_date||'—'}.`;
+    try{await SB.from('encounters_main').insert({patient_id:patientId,encounter_number:no,encounter_date:todayIso(),encounter_type:'Pathway created',location:patientPayload.ward||null,clinical_summary:summary,reviewed_by:getUser(),created_by:getUser(),encounter_status:'Closed'});}catch(e){console.warn('Initial encounter insert skipped:',e?.message||e);}
+    window._pathwayEncounterRows[patientId]=[{no,date:todayIso(),time:nowTime(),type:'Pathway created',location:patientPayload.ward||'—',priority:'Routine',summary,nurse:getUser(),status:'Closed'}];
+  }
+
+  window.savePathwayPagePatient=async function(tab){
+    const meta=getPathwayFormMeta(tab);
+    const v=id=>val(`pp-${tab}-${id}`);
+    const required=[['fn','First name'],['sn','Surname'],['dob','Date of birth'],['sex','Gender'],['locality','Locality'],['ward','Ward']];
+    if(tab==='elective'||tab==='emergency'||tab==='readmission')required.push(['surg','Date of surgery']);
+    for(const [id,label] of required){if(!v(id)){alert(label+' is required.');focusPathwayRequiredTab(tab,`pp-${tab}-${id}`);return;}}
+    const fn=v('fn'), sn=v('sn'), idCard=v('id');
+    const operation=v('operation')||v('opfindings');
+    const findings=v('findings');
+    const operationAndFindings=[operation?`Operation Performed: ${operation}`:'',findings?`Findings: ${findings}`:''].filter(Boolean).join('\n');
+    const extended=collectPathwayExtendedNotes(tab);
+    const notes=[v('notes'),extended].filter(Boolean).join('\n\n');
+    const patientPayload={hospital_number:idCard||`NO-HOSP-${Date.now()}`,id_card:idCard||null,first_name:fn,surname:sn,contact_number:v('ph')||null,dob:v('dob')||null,sex:v('sex')||null,locality:v('locality')||null,op_performed_findings:operationAndFindings||null,stoma_type_summary:v('stoma')||null,assigned_nurse:v('nurse')||getUser(),consultant:v('cons')||null,ward:v('ward')||null,surgery_date:v('surg')||null,patient_status:(tab==='elective'||tab==='emergency')?'inpatient':'active',pathway_type:meta.pathway,referral_source:v('source')||null,notes:notes||null};
+    let patientId=null, savedIn='patients_main';
+    try{
+      const {data,error}=await SB.from('patients_main').insert({hospital_number:patientPayload.hospital_number,id_card_number:patientPayload.id_card,first_name:fn,surname:sn,mobile_number:patientPayload.contact_number,date_of_birth:patientPayload.dob,sex:patientPayload.sex,locality:patientPayload.locality,patient_status:patientPayload.patient_status,current_ward:patientPayload.ward,medical_history:[operationAndFindings,notes].filter(Boolean).join('\n\n')||null,is_active:true,created_by:getUser()}).select('id').single();
+      if(error)throw error; patientId=data?.id;
+    }catch(primaryError){
+      savedIn='patients';
+      try{const {data,error}=await SB.from('patients').insert({...patientPayload,patient_type:(tab==='elective'||tab==='emergency')?'inpatient':'outpatient'}).select('id').single(); if(error)throw error; patientId=data?.id;}catch(e){alert('Error saving patient: '+(e?.message||primaryError?.message||'Unknown error'));return;}
+    }
+    if(patientId){
+      let episodeId=null;
+      try{const {data:ep}=await SB.from('episodes_main').insert({patient_id:patientId,episode_type:meta.episode,episode_status:'Active',pathway_stage:'Active Pathway',admission_date:todayIso(),admission_ward:patientPayload.ward,consultant:patientPayload.consultant,surgery_date:patientPayload.surgery_date,operation_performed:operation||null,findings:findings||null,intended_stoma_type:patientPayload.stoma_type_summary,actual_stoma_type:patientPayload.stoma_type_summary,assigned_nurse:patientPayload.assigned_nurse,created_by:getUser()}).select('id,episode_number,episode_type,episode_status').single(); episodeId=ep?.id;}catch(e){console.warn('Episode creation skipped:',e?.message||e);}
+      try{if(patientPayload.stoma_type_summary||patientPayload.surgery_date)await SB.from('stomas_main').insert({patient_id:patientId,stoma_type:patientPayload.stoma_type_summary,surgery_date:patientPayload.surgery_date,date_formed:patientPayload.surgery_date,stoma_status:'Active',created_by:getUser()});}catch(e){console.warn('Stoma creation skipped:',e?.message||e);}
+      await createInitialEncounter(patientId,meta,patientPayload);
+      try{await logAuditTrailAction?.('insert',savedIn,patientId,{description:`${meta.label} pathway started: ${fn} ${sn}`});}catch(e){}
+      _pathwayPatient[tab]={id:patientId,name:`${fn} ${sn}`,idCard:idCard||'—',hospNo:'—',episode:{id:episodeId,episode_type:meta.episode,episode_status:'Active',episode_number:'First episode / active pathway'}};
+      alert('Patient details saved and locked. This pathway is now available in Inpatients for ongoing care.');
+      try{await loadPatients();}catch(e){}
+      switchSection('patients',null); setTimeout(()=>showPatientSubtab('inpatient'),80);
+    }
+  };
+
+  function pathwayWorkspaceTabs(tab,active){
+    const cfg=pathwayTabConfig(tab).map(t=>({key:t.key,label:t.label}));
+    return `<div class="pathway-workspace-tabs">${cfg.map(t=>`<button type="button" class="pathway-workspace-tab ${active===t.key?'active':''}" onclick="switchPathwayWorkspaceTab('${tab}','${t.key}')">${esc(t.label)}</button>`).join('')}</div>`;
+  }
+  window.switchPathwayWorkspaceTab=function(tab,key){window._activePathwayWorkspaceTab[tab]=key;const pane=document.getElementById('pathway-pane-'+tab);const patient=window._pathwayPatient?.[tab];if(pane&&patient)renderPathwayForm(tab,pane,patient);};
+
+  function renderLockedPatientSummary(patient){
+    return `<div class="pathway-step-note locked"><strong>Step 1 saved and locked.</strong> Patient demographics are protected. Use the patient record amendment workflow for genuine corrections.</div><div class="patient-record-summary"><div class="patient-record-chip"><div class="label">Patient</div><div class="value">${esc(patient.name||'—')}</div></div><div class="patient-record-chip"><div class="label">ID Card</div><div class="value">${esc(patient.idCard||'—')}</div></div><div class="patient-record-chip"><div class="label">Episode</div><div class="value">${esc(patient.episode?.episode_number||patient.episode?.episode_type||'Active pathway')}</div></div></div>`;
+  }
+
+  window.renderPathwayForm=async function(tab,pane,patient){
+    const meta=getPathwayFormMeta(tab); const col=meta.colour||'#0f766e';
+    const tabs=pathwayTabConfig(tab); window._activePathwayWorkspaceTab[tab]=window._activePathwayWorkspaceTab[tab]||'patient'; const active=window._activePathwayWorkspaceTab[tab];
+    const label=tabs.find(t=>t.key===active)?.label||'Workspace';
+    let panel='';
+    if(active==='patient')panel=renderLockedPatientSummary(patient);
+    else if(active==='dailyreviews')panel=renderPathwayDailyReviewEntryPanel(tab,patient,false);
+    else if(active==='encounters')panel=renderPathwayEncounterRegisterPanel(tab,patient,false);
+    else panel=(tabs.find(t=>t.key===active)?.panel)||'';
+    pane.innerHTML=`<div class="pathway-episode-shell" style="--pathway-colour:${col};"><div class="pathway-patient-header" style="background:linear-gradient(135deg,${col},${col}cc);"><div><div class="pathway-patient-name">${esc(patient.name||'—')}</div><div class="pathway-patient-meta">ID: ${esc(patient.idCard||'—')} · Patient Pathway = first episode · ongoing care continues from Inpatients</div></div><button onclick="clearPathwayPatient('${tab}')" class="pathway-header-btn">Back to pathway creation</button></div>${pathwayWorkspaceTabs(tab,active)}<div class="pathway-panel-title"><div><h3>${esc(label)}</h3><p>${active==='encounters'?'Read-only encounter register with closed daily reviews and critical summaries.':'Document this pathway section. Logged-in nurse is captured automatically where applicable.'}</p></div></div>${panel}</div>`;
+  };
+
+  window.renderPathwayDailyReviewEntryPanel=function(tab,patient,disabled){
+    if(disabled||!patient)return `<div class="pathway-step-note">Daily Reviews become available after Step 1 patient details are saved.</div>`;
+    return `<div class="daily-review-card"><div class="encounter-form-grid">
+      <div class="fg"><label>Review date</label><input type="date" id="enc-${tab}-date" value="${todayIso()}"></div><div class="fg"><label>Time</label><input type="time" id="enc-${tab}-time" value="${nowTime()}"></div><div class="fg"><label>Location / Ward</label><select id="enc-${tab}-location">${opt(window.PATHWAY_WARD_OPTIONS||[])}</select></div>
+      <div class="fg"><label>Review type</label><select id="enc-${tab}-type"><option>Daily ward review</option><option>Post-operative stoma review</option><option>Teaching attempt</option><option>Appliance / leakage issue</option><option>Peristomal skin review</option><option>Discharge planning</option><option>Clinic review</option></select></div><div class="fg"><label>Concern level</label><select id="enc-${tab}-priority"><option>Routine</option><option>Concern</option><option>Urgent / escalated</option></select></div><div class="fg"><label>Post-op day</label><input id="enc-${tab}-pod" placeholder="Day 5 / N/A"></div>
+      <div class="fg"><label>Stoma assessment</label><input id="enc-${tab}-stoma" placeholder="Colour, oedema, flush/retracted, bleeding"></div><div class="fg"><label>Peristomal skin</label><input id="enc-${tab}-skin" placeholder="Healthy, red, broken, excoriated"></div><div class="fg"><label>Output / function</label><input id="enc-${tab}-output" placeholder="Type, volume, frequency, concerns"></div>
+      <div class="fg"><label>Appliance / bagging</label><input id="enc-${tab}-appliance" placeholder="Leakage, fit, product/accessory change"></div><div class="fg"><label>Patient readiness</label><select id="enc-${tab}-readiness"><option>Not assessed</option><option>Not ready</option><option>Refused today</option><option>Observed only</option><option>Practised with support</option><option>Partially independent</option><option>Independent</option></select></div><div class="fg"><label>Teaching</label><select id="enc-${tab}-teaching"><option>No</option><option>Yes - Met</option><option>Yes - Unmet</option><option>Deferred / patient not ready</option></select></div>
+      <div class="fg full"><label>Plan / follow-up</label><textarea id="enc-${tab}-plan" placeholder="Plan, next review, escalation, discharge impact, outstanding issues"></textarea></div><div class="fg full"><label>Comments</label><textarea id="enc-${tab}-comments" placeholder="Clinical comments and context"></textarea></div>
+    </div><div class="daily-review-actions"><button type="button" class="pathway-save-btn" onclick="savePathwayEncounter('${tab}','${patient.id}')">Save &amp; Close Daily Review</button></div></div>`;
+  };
+
+  window.renderPathwayEncounterRegisterPanel=function(tab,patient,disabled){
+    if(disabled||!patient)return `<div class="pathway-step-note">Encounters become available after the patient pathway is saved.</div>`;
+    const rows=window._pathwayEncounterRows[patient.id]||[];
+    return `<div class="auto-sign-note">Encounters are read-only once closed. Any correction should be done as an amendment with a reason and audit trail.</div><div class="pathway-table-wrap"><table class="pathway-paper-table"><thead><tr><th>Encounter No.</th><th>Date / Time</th><th>Type</th><th>Location</th><th>Concern</th><th>Critical summary</th><th>Reviewed By</th><th>Status</th></tr></thead><tbody>${rows.length?rows.map((r,i)=>`<tr><td><strong>${esc(r.no||r.encounter_number||'ENC')}</strong></td><td>${esc(r.date||r.encounter_date||'—')} ${esc(r.time||'')}</td><td>${esc(r.type||r.encounter_type||'—')}</td><td>${esc(r.location||'—')}</td><td>${esc(r.priority||'Routine')}</td><td>${esc(r.summary||r.clinical_summary||'—')}</td><td>${esc(r.nurse||r.reviewed_by||'—')}</td><td><span class="closed-lock-pill">🔒 Closed</span></td></tr>`).join(''):`<tr><td colspan="8" class="empty">No encounters recorded yet. Add reviews from Daily Reviews.</td></tr>`}</tbody></table></div>`;
+  };
+
+  window.savePathwayEncounter=async function(tab,patientId){
+    const v=id=>val(`enc-${tab}-${id}`); const existing=window._pathwayEncounterRows[patientId]||[]; const no=`ENC-${currentYear()}-${String(existing.length+1).padStart(4,'0')}`;
+    const row={no,date:v('date')||todayIso(),time:v('time')||nowTime(),type:v('type')||'Daily review',location:v('location'),priority:v('priority')||'Routine',summary:[v('stoma'),v('skin'),v('output'),v('appliance'),v('readiness'),v('teaching'),v('plan'),v('comments')].filter(Boolean).join(' | '),nurse:getUser(),status:'Closed'};
+    window._pathwayEncounterRows[patientId]=[row,...existing];
+    try{await SB.from('encounters_main').insert({patient_id:patientId,encounter_number:no,encounter_date:row.date,encounter_time:row.time,encounter_type:row.type,location:row.location,concern_level:row.priority,clinical_summary:row.summary,reviewed_by:row.nurse,created_by:row.nurse,encounter_status:'Closed'});}catch(e){console.warn('Encounter insert skipped:',e?.message||e);}
+    try{await logAuditTrailAction?.('insert','encounters_main',patientId,{description:`Closed encounter ${no}: ${row.type}`});}catch(e){}
+    window._activePathwayWorkspaceTab[tab]='encounters'; const pane=document.getElementById('pathway-pane-'+tab); const patient=window._pathwayPatient?.[tab]; if(pane&&patient)renderPathwayForm(tab,pane,patient);
+  };
+
+  async function getLastReviewMap(ids){
+    const map={}; if(!ids?.length)return map;
+    try{const {data}=await SB.from('encounters_main').select('*').in('patient_id',ids).order('encounter_date',{ascending:false}); (data||[]).forEach(e=>{if(e.patient_id&&!map[e.patient_id])map[e.patient_id]=e.encounter_date||e.created_at;});}catch(e){console.warn('Last review lookup skipped:',e?.message||e);}
+    return map;
+  }
+
+  function currentPatientView(){return document.getElementById('pt-command-filter')?.value||'';}
+  window.showPatientSubtab=function(tab){
+    window._patientCentrePrevView=tab||'master';
+    const section=document.getElementById('section-patients'); if(section){section.classList.add('platform-focused');section.classList.remove('platform-hub');section.classList.remove('patient-record-open');}
+    document.getElementById('patient-record-page')?.remove();
+    document.querySelectorAll('#patient-subtab-bar .roster-subtab').forEach(b=>b.classList.remove('active')); document.getElementById('patient-subtab-'+tab)?.classList.add('active');
+    const el=document.getElementById('patient-active-view-label'); if(el)el.textContent={master:'Master List',inpatient:'Inpatients',outpatient:'Outpatients',handover:'Handover'}[tab]||'Patients';
+    setPlatformFocusTitle('section-patients',getPlatformTitleData('patient-'+tab),'showPatientOptionsHub()');
+    const nurse=document.getElementById('pt-nurse-filter'); if(nurse)nurse.value='';
+    const cmd=document.getElementById('pt-command-filter'); if(cmd)cmd.value=(tab==='master')?'':tab;
+    updatePatientViewLabel?.(); loadPatients();
+  };
+
+  window.loadPatients=async function(){
+    const tbody=document.getElementById('patients-tbody'); if(!tbody)return;
+    const panel=document.getElementById('patient-list-panel');
+    const view=currentPatientView(); const colSpan=view==='inpatient'?9:view==='outpatient'?10:9;
+    tbody.innerHTML=`<tr><td colspan="${colSpan}" class="empty">Loading patients...</td></tr>`;
+    const search=(document.getElementById('patient-search-input')?.value||document.getElementById('pt-search')?.value||'').trim().toLowerCase();
+    let rows=[]; let dntuIds=new Set();
+    try{rows=await getProjectPatients(); dntuIds=await getDntuPatientIds();}catch(error){tbody.innerHTML=`<tr><td colspan="${colSpan}" class="empty">Error loading patients: ${esc(error.message)}</td></tr>`;return;}
+    try{loadPatientCommandCountsFromRows?.(rows,dntuIds);}catch(e){}
+    if(view)rows=rows.filter(r=>patientMatchesCommandView(r,view,dntuIds));
+    const statusF=document.getElementById('pt-status-filter')?.value||''; if(statusF&&!['inpatient','outpatient','handover'].includes(statusF)){if(statusF==='active')rows=rows.filter(r=>r.is_active); if(statusF==='inactive')rows=rows.filter(r=>!r.is_active);}
+    if(search)rows=rows.filter(r=>[r.first_name,r.surname,r.id_card,r.hospital_number,r.patient_number,r.ward,r.stoma_type,r.patient_status,r.locality,r.contact_number,r.phone_number].some(v=>String(v||'').toLowerCase().includes(search)));
+    const lastMap=await getLastReviewMap(rows.map(r=>r.id));
+    if(panel){
+      const headers=view==='inpatient'?['ID Card','Name','Surname','Pathway / Case Type','Episode Status / Reason','Date of Surgery','Last Review Date','Ward','Actions']:
+        view==='outpatient'?['ID Card','Name','Surname','Type of Stoma','Appliances Used','Accessories Used','Surgery Date','Latest Outcome','Telephone Number','Locality']:
+        ['ID Card','Name','Surname','Patient Type','Stoma Type','Surgery Date','Locality','Last Review Date','Actions'];
+      panel.querySelector('thead tr').innerHTML=headers.map(h=>`<th>${esc(h)}</th>`).join('');
+    }
+    if(!rows.length){tbody.innerHTML=`<tr><td colspan="${colSpan}" class="empty">No patients found for this view</td></tr>`;return;}
+    tbody.innerHTML=rows.map(p=>{
+      const id=esc(p.id), name=esc(p.first_name||''), sn=esc(p.surname||''), idc=esc(idCardOf(p));
+      const onclick=`onclick="openPatientRecordPage('${id}')"`;
+      if(view==='inpatient'){
+        const caseType=esc(p.episode_type||p.pathway_type||p.pathway_status||'Active pathway');
+        const reason=esc(p.episode_status||p.patient_status||p.pathway_status||'Active inpatient episode');
+        return `<tr class="patient-row-click" ${onclick}><td style="font-family:monospace;font-size:12px;">${idc}</td><td><strong>${name}</strong></td><td><strong>${sn}</strong></td><td>${caseType}</td><td>${reason}</td><td>${dateFmt(p.surgery_date)}</td><td>${dateFmt(lastMap[p.id])}</td><td>${esc(p.ward||'—')}</td><td><button onclick="event.stopPropagation();openPatientRecordPage('${id}')" class="btn-refresh">Open</button></td></tr>`;
+      }
+      if(view==='outpatient'){
+        return `<tr class="patient-row-click" ${onclick}><td style="font-family:monospace;font-size:12px;">${idc}</td><td><strong>${name}</strong></td><td><strong>${sn}</strong></td><td>${esc(p.stoma_type||'—')}</td><td>${esc(p.bag_brand||p.appliance_used||'—')}</td><td>${esc(p.accessories_used||p.flange_size||'—')}</td><td>${dateFmt(p.surgery_date)}</td><td>${esc(p.episode_outcome||p.patient_status||p.pathway_status||'—')}</td><td>${esc(p.phone_number||p.contact_number||p.mobile_number||'—')}</td><td>${esc(p.locality||'—')}</td></tr>`;
+      }
+      const type=p.patient_type||p.patient_status||'—';
+      return `<tr class="patient-row-click" ${onclick}><td style="font-family:monospace;font-size:12px;">${idc}</td><td><strong>${name}</strong></td><td><strong>${sn}</strong></td><td>${esc(type)}</td><td>${esc(p.stoma_type||'—')}</td><td>${dateFmt(p.surgery_date)}</td><td>${esc(p.locality||'—')}</td><td>${dateFmt(lastMap[p.id])}</td><td><button onclick="event.stopPropagation();openPatientRecordPage('${id}')" class="btn-refresh">Open</button></td></tr>`;
+    }).join('');
+  };
+
+  window.openPatientRecordPage=async function(patientId){
+    const section=document.getElementById('section-patients'); if(!section)return; section.classList.add('patient-record-open','platform-focused');
+    document.getElementById('patient-record-page')?.remove();
+    setPlatformFocusTitle('section-patients',{eyebrow:'Patient Record',title:'Patient Episodes & Encounters',subtitle:'Sorted patient episode history with encounter details.',icon:'document',colour:'#0f766e',colourDark:'#0f2638',soft:'#ecfdf9'},'backToPatientList()');
+    const page=document.createElement('div'); page.id='patient-record-page'; page.className='patient-record-page'; page.innerHTML='<div class="empty">Loading patient record...</div>'; section.appendChild(page);
+    let p=null, episodes=[], encounters=[], stomas=[];
+    try{p=await getProjectPatientById(patientId); const ep=await SB.from('episodes_main').select('*').eq('patient_id',patientId).eq('is_deleted',false).order('created_at',{ascending:false}); if(!ep.error)episodes=ep.data||[]; const en=await SB.from('encounters_main').select('*').eq('patient_id',patientId).order('encounter_date',{ascending:false}); if(!en.error)encounters=en.data||[]; const st=await SB.from('stomas_main').select('*').eq('patient_id',patientId).eq('is_deleted',false).order('created_at',{ascending:false}); if(!st.error)stomas=st.data||[];}catch(e){page.innerHTML=`<div class="empty">Error loading record: ${esc(e.message)}</div>`;return;}
+    if(!p){page.innerHTML='<div class="empty">Patient not found.</div>';return;}
+    if(!episodes.length){episodes=[{id:'current',episode_number:'Current record',episode_type:p.episode_type||p.pathway_type||'Patient record',episode_status:p.episode_status||p.patient_status||'Active',pathway_stage:p.pathway_status||'—',admission_date:p.admission_date||p.created_at,surgery_date:p.surgery_date,admission_ward:p.ward,consultant:p.consultant,operation_performed:p.diagnosis||'',episode_summary:p.notes||''}];}
+    const currentStoma=stomas[0]||{};
+    page.innerHTML=`<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;"><div><h3 style="margin:0;color:var(--navy);font-size:18px;">${esc(patientFullName(p))}</h3><div style="font-size:12px;color:var(--muted);margin-top:3px;">ID Card: ${esc(idCardOf(p))}</div></div><button class="platform-title-back" onclick="backToPatientList()">← Back to list</button></div><div class="patient-record-summary"><div class="patient-record-chip"><div class="label">Stoma</div><div class="value">${esc(p.stoma_type||currentStoma.stoma_type||'—')}</div></div><div class="patient-record-chip"><div class="label">Current appliance</div><div class="value">${esc(p.bag_brand||p.appliance_used||'—')}</div></div><div class="patient-record-chip"><div class="label">Accessories</div><div class="value">${esc(p.accessories_used||p.flange_size||'—')}</div></div><div class="patient-record-chip"><div class="label">Locality / Phone</div><div class="value">${esc(p.locality||'—')} · ${esc(p.phone_number||p.contact_number||'—')}</div></div></div><div class="pc-table-note">Click an episode to show its encounter details. Closed encounters are read-only.</div>${episodes.map((ep,i)=>renderEpisodeCard(ep,encounters,currentStoma,i===0)).join('')}`;
+  };
+
+  window.backToPatientList=function(){
+    document.getElementById('patient-record-page')?.remove(); const section=document.getElementById('section-patients'); if(section)section.classList.remove('patient-record-open'); clearPlatformFocusTitle('section-patients'); showPatientSubtab(window._patientCentrePrevView||'master');
+  };
+
+  function renderEpisodeCard(ep,encounters,stoma,open){
+    const related=encounters.filter(e=>!e.episode_id||String(e.episode_id)===String(ep.id)||!ep.id||ep.id==='current');
+    const eid='episode-'+String(ep.id||Math.random()).replace(/[^a-zA-Z0-9_-]/g,'');
+    const overview=[['Reason / type',ep.episode_type||ep.pathway_stage||'—'],['Status',ep.episode_status||ep.status||'—'],['Admitted / referred',dateFmt(ep.admission_date||ep.opened_date||ep.created_at)],['Ward',ep.admission_ward||ep.ward||'—'],['Date of surgery',dateFmt(ep.surgery_date)],['Stoma',ep.actual_stoma_type||ep.intended_stoma_type||stoma.stoma_type||'—'],['Operation',ep.operation_performed||'—'],['Critical information',ep.critical_information||ep.episode_summary||ep.notes||'—']];
+    return `<div class="episode-card ${open?'open':''}" id="${eid}"><div class="episode-card-head" onclick="document.getElementById('${eid}').classList.toggle('open')"><div><div class="episode-card-title">${esc(ep.episode_number||ep.episode_type||'Episode')}</div><div class="episode-card-meta">${esc(ep.episode_type||'Episode')} · ${dateFmt(ep.admission_date||ep.created_at)} · ${related.length} encounter${related.length===1?'':'s'}</div></div><span class="episode-card-badge">${esc(ep.episode_status||ep.status||'Active')}</span></div><div class="episode-card-body"><div class="episode-overview-grid">${overview.map(([a,b])=>`<div class="episode-overview-item"><div class="label">${esc(a)}</div><div class="value">${esc(b)}</div></div>`).join('')}</div><div class="pathway-table-wrap"><table class="pathway-paper-table"><thead><tr><th>Date</th><th>Encounter No.</th><th>Type</th><th>Stoma / Skin / Output / Changes</th><th>Care considerations / plan</th><th>Status</th></tr></thead><tbody>${related.length?related.map(e=>`<tr><td>${dateFmt(e.encounter_date||e.created_at)}</td><td><strong>${esc(e.encounter_number||'—')}</strong></td><td>${esc(e.encounter_type||'Review')}</td><td>${esc(e.clinical_summary||e.stoma_summary||e.notes||'—')}</td><td>${esc(e.plan||e.follow_up_plan||e.care_plan||'—')}</td><td><span class="closed-lock-pill">🔒 ${esc(e.encounter_status||'Closed')}</span></td></tr>`).join(''):`<tr><td colspan="6" class="empty">No encounters recorded for this episode yet.</td></tr>`}</tbody></table></div></div></div>`;
+  }
+
+  // Keep focused Patient Centre free from nurse allocation controls.
+  window.addEventListener('load',()=>{setTimeout(()=>{document.querySelectorAll('.patient-owner-panel').forEach(el=>el.style.display='none'); const nf=document.getElementById('pt-nurse-filter'); if(nf)nf.style.display='none';},200);});
+})();
+</script>
+
 </body>
 </html>
