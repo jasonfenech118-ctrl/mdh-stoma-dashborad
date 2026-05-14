@@ -8036,7 +8036,63 @@ function renderMdhLetterHtml(data, p){
       Tel: (+356) 2545 0000 &nbsp;|&nbsp; Fax: (+356) 2124 0176 &nbsp;|&nbsp; DDI: (+356) 2545 + Ext. No.<br/>
       Ministry of Health, The Elderly and Community Care
     </div>
-  </div></body></html>`;
+  </div>
+
+<style>
+/* v66-24 — Wider Patient Pathway working screens */
+#section-patient-pathways .platform-title-card{
+  width:100%!important;
+  max-width:none!important;
+  margin:8px 0 18px!important;
+}
+#section-patient-pathways .pathway-page-shell,
+#section-patient-pathways .pathway-episode-shell{
+  width:100%!important;
+  max-width:none!important;
+  margin:16px 0 0!important;
+}
+#section-patient-pathways .pathway-form-card,
+#section-patient-pathways .pathway-search-card,
+#section-patient-pathways .daily-review-card,
+#section-patient-pathways .patient-record-page{
+  width:100%!important;
+  max-width:none!important;
+}
+#section-patient-pathways .pathway-form-head{
+  padding-left:22px!important;
+  padding-right:22px!important;
+}
+#section-patient-pathways .pathway-form-panel{
+  padding:22px!important;
+}
+#section-patient-pathways .pathway-form-grid{
+  grid-template-columns:repeat(auto-fit,minmax(285px,1fr))!important;
+  gap:15px 18px!important;
+}
+#section-patient-pathways .pathway-form-grid .full{
+  grid-column:1 / -1!important;
+}
+#section-patient-pathways .pathway-form-grid textarea{
+  min-height:92px!important;
+}
+#section-patient-pathways .pathway-table-wrap{
+  width:100%!important;
+}
+#section-patient-pathways .pathway-paper-table{
+  min-width:980px!important;
+}
+#section-patient-pathways .pathway-form-tabs,
+#section-patient-pathways .pathway-workspace-tabs{
+  width:100%!important;
+}
+@media(max-width:760px){
+  #section-patient-pathways .pathway-form-panel{padding:14px!important;}
+  #section-patient-pathways .pathway-form-grid{grid-template-columns:1fr!important;}
+  #section-patient-pathways .pathway-paper-table{min-width:760px!important;}
+}
+</style>
+
+</body></html>`;
 }
 
 function printDischargeLetter(letterId){
