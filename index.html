@@ -3168,6 +3168,119 @@ button{font-family:'DM Sans',sans-serif;}
   window.dologin=window.loginApp;
 })();
 </script>
+
+<style>
+/* v66-25 — monitor-wide form cards, direct pages, and clinical workforce focus */
+:root{--system-wide-max:calc(100vw - 64px);} 
+.main-content{padding-left:28px!important;padding-right:28px!important;}
+.section.active{width:100%!important;max-width:none!important;}
+.platform-title-card,
+#section-patients.platform-focused .platform-title-card,
+#section-patient-outcomes .platform-title-card,
+#section-followups .platform-title-card,
+#section-roster .platform-title-card,
+#section-patient-pathways .platform-title-card{
+  width:100%!important;
+  max-width:var(--system-wide-max)!important;
+  margin:8px auto 18px!important;
+}
+.card,
+.patient-command,
+.patient-table-card,
+.pt-search-bar,
+.report-card,
+.clinic-wrap,
+.clinic-audit-toolbar,
+.dntu-controls,
+.dntu-table-wrap,
+.roster-wrap,
+.ot-bar,
+.ot-list-wrap,
+.til-list-wrap,
+.pt-snap,
+.cod-section,
+#section-patients.platform-focused .pt-search-bar,
+#section-patients.platform-focused #patient-list-panel,
+#section-patient-outcomes .patient-outcome-search-bar,
+#patient-outcome-list-panel,
+#section-followups .patient-table-card,
+#section-followups .patient-command,
+#section-patient-pathways .pathway-page-shell,
+#section-patient-pathways .pathway-episode-shell,
+#section-patient-pathways .pathway-form-card,
+#section-patient-pathways .pathway-search-card,
+#section-patient-pathways .daily-review-card,
+#section-patient-pathways .patient-record-page,
+.pathway-page-shell,
+.pathway-form-card,
+.pathway-search-card,
+.pathway-episode-shell{
+  width:100%!important;
+  max-width:var(--system-wide-max)!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+  box-sizing:border-box!important;
+}
+#section-patients.platform-focused .patient-centre-toolbar,
+#section-patients.platform-focused #patient-subtab-bar,
+#section-patients.platform-focused .patient-owner-panel,
+#section-patients.platform-focused .patient-active-view-pill,
+#section-patients.platform-focused #pt-nurse-filter,
+#section-patients.platform-focused .phdr.patient-page-title{
+  display:none!important;
+}
+#section-patients.clinical-workforce-focused .patient-centre-toolbar,
+#section-patients.clinical-workforce-focused #patient-subtab-bar,
+#section-patients.clinical-workforce-focused .patient-owner-panel,
+#section-patients.clinical-workforce-focused .patient-active-view-pill,
+#section-patients.clinical-workforce-focused #pt-nurse-filter{
+  display:none!important;
+}
+.platform-title-back,
+.platform-page-back,
+#global-back-btn,
+#global-prev-btn{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:8px!important;
+  min-height:38px!important;
+  padding:9px 16px!important;
+  border-radius:999px!important;
+  border:1.5px solid color-mix(in srgb,var(--platform-colour,#0f766e) 35%,#cbd5e1)!important;
+  background:#ffffff!important;
+  color:var(--platform-colour,#0f766e)!important;
+  font-weight:900!important;
+  font-size:12px!important;
+  box-shadow:0 6px 16px rgba(15,38,56,.06)!important;
+  cursor:pointer!important;
+}
+.platform-title-back:hover,
+.platform-page-back:hover,
+#global-back-btn:hover,
+#global-prev-btn:hover{
+  background:var(--platform-soft,#ecfdf9)!important;
+  transform:translateY(-1px)!important;
+}
+#section-patient-pathways .pathway-form-panel,
+.pathway-form-panel{padding:22px 28px!important;}
+#section-patient-pathways .pathway-form-grid,
+.pathway-form-grid{grid-template-columns:repeat(2,minmax(320px,1fr))!important;gap:18px 22px!important;}
+#section-patient-pathways .pathway-form-grid .full,
+.pathway-form-grid .full{grid-column:1/-1!important;}
+#section-patient-pathways .pathway-paper-table{min-width:1100px!important;}
+#section-patients .dt,
+#section-patient-outcomes .dt{min-width:1050px;}
+@media(max-width:900px){
+  :root{--system-wide-max:calc(100vw - 28px);} 
+  .main-content{padding-left:14px!important;padding-right:14px!important;}
+  .platform-title-card{grid-template-columns:54px minmax(0,1fr)!important;}
+  .platform-title-back{grid-column:1/-1!important;width:100%!important;}
+  #section-patient-pathways .pathway-form-grid,.pathway-form-grid{grid-template-columns:1fr!important;}
+  #section-patient-pathways .pathway-form-panel,.pathway-form-panel{padding:14px!important;}
+}
+</style>
+
 </head>
 <body>
 
@@ -3244,7 +3357,7 @@ button{font-family:'DM Sans',sans-serif;}
           <div class="home-btn-title">Follow-Ups</div>
           <div class="home-btn-sub">Appointments &amp; DNTU</div>
         </div>
-        <div class="home-btn home-btn-gold" onclick="switchSection('patients',null);setTimeout(()=>showPatientSubtab('handover'),80);">
+        <div class="home-btn home-btn-gold" onclick="openPatientCentrePage('handover')">
           <div class="home-btn-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M7 7h6a3 3 0 0 1 0 6H7"/><path d="m10 4-3 3 3 3"/><path d="M17 17H11a3 3 0 0 1 0-6h6"/><path d="m14 20 3-3-3-3"/></svg></div>
           <div class="home-btn-title">Handover</div>
           <div class="home-btn-sub">Patients needing handover</div>
@@ -3295,22 +3408,22 @@ button{font-family:'DM Sans',sans-serif;}
       <!-- GROUP: Clinical Workforce -->
       <div class="home-group-label">Clinical Workforce</div>
       <div class="home-btn-grid">
-        <div class="home-btn home-btn-violet" onclick="switchSection('patients',null);setTimeout(()=>setPatientNurseFilter('Jacqueline Sammut'),60);">
+        <div class="home-btn home-btn-violet" onclick="openClinicalWorkforcePage('jacqueline')">
           <div class="home-btn-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M19 8v6"/><path d="M16 11h6"/></svg></div>
           <div class="home-btn-title">Jacqueline My Patients</div>
           <div class="home-btn-sub"><span id="tile-nurse-jacqueline">—</span> active patients</div>
         </div>
-        <div class="home-btn home-btn-teal" onclick="switchSection('patients',null);setTimeout(()=>setPatientNurseFilter('Jason Fenech'),60);">
+        <div class="home-btn home-btn-teal" onclick="openClinicalWorkforcePage('jason')">
           <div class="home-btn-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="m16 11 2 2 4-5"/></svg></div>
           <div class="home-btn-title">Jason My Patients</div>
           <div class="home-btn-sub"><span id="tile-nurse-jason">—</span> active patients</div>
         </div>
-        <div class="home-btn home-btn-blue" onclick="switchSection('patients',null);setTimeout(()=>setPatientNurseFilter('Lorraine Stivala'),60);">
+        <div class="home-btn home-btn-blue" onclick="openClinicalWorkforcePage('lorraine')">
           <div class="home-btn-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M17 11h5"/><path d="M19.5 8.5v5"/></svg></div>
           <div class="home-btn-title">Lorraine My Patients</div>
           <div class="home-btn-sub"><span id="tile-nurse-lorraine">—</span> active patients</div>
         </div>
-        <div class="home-btn home-btn-gold" onclick="switchSection('patients',null);setTimeout(()=>setPatientNurseFilter('Common'),60);">
+        <div class="home-btn home-btn-gold" onclick="openClinicalWorkforcePage('common')">
           <div class="home-btn-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
           <div class="home-btn-title">Common Our Patients</div>
           <div class="home-btn-sub"><span id="tile-nurse-common">—</span> active patients</div>
@@ -3320,17 +3433,17 @@ button{font-family:'DM Sans',sans-serif;}
       <!-- GROUP: Patient Center -->
       <div class="home-group-label">Patient Center</div>
       <div class="home-btn-grid">
-        <div class="home-btn home-btn-teal" onclick="switchSection('patients',null);setTimeout(()=>showPatientSubtab('master'),80);">
+        <div class="home-btn home-btn-teal" onclick="openPatientCentrePage('master')">
           <div class="home-btn-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="16" rx="2"/><path d="M9 8h6"/><path d="M9 12h6"/><path d="M9 16h4"/></svg></div>
           <div class="home-btn-title">Master List</div>
           <div class="home-btn-sub">Complete patient register</div>
         </div>
-        <div class="home-btn home-btn-blue" onclick="switchSection('patients',null);setTimeout(()=>showPatientSubtab('inpatient'),80);">
+        <div class="home-btn home-btn-blue" onclick="openPatientCentrePage('inpatient')">
           <div class="home-btn-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M3 12h18"/><path d="M5 12V8a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v4"/><path d="M7 16v2"/><path d="M17 16v2"/><path d="M9 9h.01"/><path d="M12 6V3"/><path d="M10 4.5h4"/></svg></div>
           <div class="home-btn-title">Inpatients</div>
           <div class="home-btn-sub">Current inpatient workload</div>
         </div>
-        <div class="home-btn home-btn-violet" onclick="switchSection('patients',null);setTimeout(()=>showPatientSubtab('outpatient'),80);">
+        <div class="home-btn home-btn-violet" onclick="openPatientCentrePage('outpatient')">
           <div class="home-btn-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M13 5h6v6"/><path d="M10 14 19 5"/><path d="M5 7v12h12"/></svg></div>
           <div class="home-btn-title">Outpatients</div>
           <div class="home-btn-sub">Outpatient and community list</div>
@@ -5358,7 +5471,10 @@ function goBackSection(){
   const focused=document.querySelector('.section.active.platform-focused');
   if(focused){
     if(focused.id==='section-patient-outcomes'){showPatientOutcomesHub();return;}
-    if(focused.id==='section-patients'){showPatientOptionsHub();return;}
+    if(focused.id==='section-patients'){
+      if(window.__patientBackTarget==='home'){switchSection('home',null,{fromBack:true});return;}
+      showPatientOptionsHub();return;
+    }
     if(focused.id==='section-followups'){showFollowupHub();return;}
     if(focused.id==='section-patient-pathways'){loadPatientPathways();return;}
     if(focused.id==='section-roster'){showRosterHub();return;}
@@ -5366,7 +5482,10 @@ function goBackSection(){
   const active=document.querySelector('.section.active');
   if(active){
     if(active.id==='section-patient-outcomes'){showPatientOutcomesHub();return;}
-    if(active.id==='section-patients'){showPatientOptionsHub();return;}
+    if(active.id==='section-patients'){
+      if(window.__patientBackTarget==='home'){switchSection('home',null,{fromBack:true});return;}
+      showPatientOptionsHub();return;
+    }
     if(active.id==='section-followups'){showFollowupHub();return;}
     if(active.id==='section-roster'){showRosterHub();return;}
   }
@@ -5474,7 +5593,10 @@ function syncPatientSubtabActive(view){
   if(btn)btn.classList.add('active');
 }
 
-function showPatientSubtab(tab){
+function showPatientSubtab(tab, options={}){
+  window.__patientDirectMode=!!options.direct;
+  window.__patientBackTarget=options.backTarget||'';
+  window.__patientMode=options.mode||'centre';
   const section=document.getElementById('section-patients');
   if(section){section.classList.add('platform-focused');section.classList.remove('platform-hub');}
   document.querySelectorAll('#patient-subtab-bar .roster-subtab').forEach(b=>b.classList.remove('active'));
@@ -5482,15 +5604,63 @@ function showPatientSubtab(tab){
   if(btn)btn.classList.add('active');
   const labels={'master':'Master List','inpatient':'Inpatients','outpatient':'Outpatients','handover':'Handover'};
   const el=document.getElementById('patient-active-view-label');
-  if(el)el.textContent=labels[tab]||'Patients';
-  setPlatformFocusTitle('section-patients', getPlatformTitleData('patient-'+tab), 'showPatientOptionsHub()');
-  if(tab==='master'){resetPatientCommandFilters();}
+  if(el)el.textContent=options.label||labels[tab]||'Patients';
+  const backAction=options.backAction||((options.backTarget==='home')?"switchSection('home',null,{fromBack:true})":'showPatientOptionsHub()');
+  const titleData=options.titleData||getPlatformTitleData('patient-'+tab);
+  setPlatformFocusTitle('section-patients', titleData, backAction);
+  if(tab==='master'){
+    if(options.preserveNurse){
+      const command=document.getElementById('pt-command-filter'); if(command)command.value='';
+      updatePatientViewLabel();
+      loadPatients();
+    }else{
+      resetPatientCommandFilters();
+    }
+  }
   else{setPatientCommandFilter(tab);}
 }
 
+function openPatientCentrePage(tab){
+  window.__patientBackTarget='home';
+  window.__patientMode='centre';
+  switchSection('patients',null,{fromBack:false});
+  setTimeout(()=>showPatientSubtab(tab,{direct:true,backTarget:'home',backAction:"switchSection('home',null,{fromBack:true})"}),0);
+}
+
+function clinicalWorkforceTitleData(key){
+  const map={
+    jacqueline:{eyebrow:'Clinical Workforce',title:'Jacqueline My Patients',subtitle:'Patients linked to Jacqueline for review or follow-up.',icon:'patients',colour:'#7c3aed',colourDark:'#4c1d95',soft:'#f5f3ff',nurse:'Jacqueline Sammut'},
+    jason:{eyebrow:'Clinical Workforce',title:'Jason My Patients',subtitle:'Patients linked to Jason for review or follow-up.',icon:'patients',colour:'#0f766e',colourDark:'#064e3b',soft:'#ecfdf9',nurse:'Jason Fenech'},
+    lorraine:{eyebrow:'Clinical Workforce',title:'Lorraine My Patients',subtitle:'Patients linked to Lorraine for review or follow-up.',icon:'patients',colour:'#2563eb',colourDark:'#1d4ed8',soft:'#eff6ff',nurse:'Lorraine Stivala'},
+    common:{eyebrow:'Clinical Workforce',title:'Common Our Patients',subtitle:'Shared patients not allocated to a single nurse.',icon:'patients',colour:'#b45309',colourDark:'#92400e',soft:'#fffbeb',nurse:'Common'}
+  };
+  return map[key]||map.common;
+}
+
+function openClinicalWorkforcePage(key){
+  const data=clinicalWorkforceTitleData(key);
+  window.__patientBackTarget='home';
+  window.__patientMode='workforce';
+  switchSection('patients',null,{fromBack:false});
+  setTimeout(()=>{
+    const section=document.getElementById('section-patients');
+    if(section){section.classList.add('platform-focused','clinical-workforce-focused');section.classList.remove('platform-hub');}
+    const command=document.getElementById('pt-command-filter'); if(command)command.value='';
+    const nurse=document.getElementById('pt-nurse-filter'); if(nurse)nurse.value=data.nurse||'';
+    const status=document.getElementById('pt-status-filter'); if(status)status.value='active';
+    const el=document.getElementById('patient-active-view-label'); if(el)el.textContent=data.title;
+    setPlatformFocusTitle('section-patients',data,"switchSection('home',null,{fromBack:true})");
+    updatePatientViewLabel();
+    loadPatients();
+  },0);
+}
+
 function showPatientOptionsHub(){
+  window.__patientBackTarget='';
+  window.__patientDirectMode=false;
+  window.__patientMode='centre';
   const section=document.getElementById('section-patients');
-  if(section){section.classList.remove('platform-focused');section.classList.remove('platform-hub');}
+  if(section){section.classList.remove('platform-focused','platform-hub','clinical-workforce-focused');}
   clearPlatformFocusTitle('section-patients');
 }
 
@@ -5661,7 +5831,10 @@ function switchSection(name, navEl, options={}){
   // Load data for each section
   if(name==='home')loadHomeDashboard();
   if(name==='account'){setTimeout(()=>renderProfileTab('profile'),0);}
-  if(name==='patients'){showPatientOptionsHub();loadPatients();loadPatientCommandCounts();}
+  if(name==='patients'){
+    if(!options.keepPatientFocus){showPatientOptionsHub();}
+    loadPatients();loadPatientCommandCounts();
+  }
   if(name==='patient-pathways')loadPatientPathways();
   if(name==='patient-outcomes'){showPatientOutcomesHub();loadPatients();loadPatientCommandCounts();}
   if(name==='clinical-reviews'){populatePatientDropdowns();loadReviews();}
