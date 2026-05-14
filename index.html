@@ -6489,7 +6489,6 @@ function renderPathwayPatientDetailsPanel(tab){
     <div class="fg"><label>Date of Birth <span class="req">*</span></label><input type="date" id="pp-${tab}-dob"/></div>
     <div class="fg"><label>Contact Number</label><input id="pp-${tab}-ph" placeholder="Phone number" autocomplete="off"/></div>
     <div class="fg"><label>Gender <span class="req">*</span></label><select id="pp-${tab}-sex"><option value="">Select...</option><option>Male</option><option>Female</option><option>Other</option></select></div>
-    <div class="fg full"><label>Address</label><textarea id="pp-${tab}-address" data-pathway-extra data-extra-label="Address" placeholder="Address / locality details"></textarea></div>
     <div class="fg full"><label>Locality <span class="req">*</span></label><select id="pp-${tab}-locality">${optionList(PATHWAY_LOCALITY_OPTIONS)}</select></div>
   </div>`;
 }
@@ -6576,10 +6575,10 @@ function renderPathwaySearch(tab){
       </div>
       ${renderPathwayRegistrationTabs(tab)}
       <div class="pathway-form-actions">
-        <div class="pathway-form-note">Required fields: first name, surname, date of birth, gender, locality, date of surgery and ward. Hospital number, patient status and pathway type are intentionally not shown because this page already defines the pathway.</div>
+        <div class="pathway-form-note">Step 1 patient details are protected after saving. Use Unlock / Edit only for genuine corrections. Step 2 and clinical tabs can be completed or updated later.</div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
           <button type="button" class="pathway-reset-btn" onclick="resetPathwayRegistrationForm('${tab}')">Clear form</button>
-          <button type="button" class="pathway-save-btn" onclick="savePathwayPagePatient('${tab}')">Save ${htmlSafe(meta.short)} Patient</button>
+          <button type="button" class="pathway-save-btn" data-pathway-main-save="true" onclick="savePathwayPagePatient('${tab}')">${isSurgeryPathway(tab)?'Save &amp; Lock Patient Details':'Save '+htmlSafe(meta.short)+' Patient'}</button>
         </div>
       </div>
     </div>
@@ -13828,7 +13827,7 @@ function validateAndLockPathwayPatientDetails(tab){
   }
   window._pathwayPatientDetailsLocked[tab]=true;
   applyPathwayPatientLockState(tab);
-  alert('Patient details saved and locked. You can now continue to the clinical details.');
+  alert('Patient details saved and locked. Proceed to Step 2: Stoma & Surgery Details.');
   switchPathwayRegistrationTab(tab,'stoma');
   return true;
 }
@@ -13839,6 +13838,18 @@ function unlockPathwayPatientDetails(tab){
   const audit=document.getElementById(`pp-${tab}-patient-unlock-reason`);
   if(audit)audit.value=`${new Date().toLocaleString('en-MT')} — ${getLoggedInSubmitterName()||'Logged-in user'}: ${reason.trim()}`;
   applyPathwayPatientLockState(tab);
+}
+function updatePathwayMainSaveButton(tab){
+  const card=document.getElementById(`pathway-new-form-${tab}`);
+  if(!card)return;
+  const btn=card.querySelector('[data-pathway-main-save="true"]');
+  if(!btn)return;
+  const meta=getPathwayFormMeta(tab);
+  if(isSurgeryPathway(tab)){
+    btn.textContent=window._pathwayPatientDetailsLocked[tab] ? 'Save Full Pathway Record' : 'Save & Lock Patient Details';
+  }else{
+    btn.textContent=`Save ${meta.short} Patient`;
+  }
 }
 function applyPathwayPatientLockState(tab){
   const card=document.getElementById(`pathway-new-form-${tab}`); if(!card)return;
@@ -13852,10 +13863,11 @@ function applyPathwayPatientLockState(tab){
   if(banner){
     banner.classList.toggle('locked',locked);
     banner.innerHTML=locked
-      ? `<strong>Patient details are locked.</strong><span>These demographics are protected to avoid accidental edits. Use Unlock / Edit Patient Details only for genuine corrections.</span><button type="button" onclick="unlockPathwayPatientDetails('${tab}')">Unlock / Edit Patient Details</button>`
-      : `<strong>Step 1: Patient Details</strong><span>Complete the required demographics, then save and lock them before continuing to surgical/stoma details.</span><button type="button" onclick="validateAndLockPathwayPatientDetails('${tab}')">Save & Lock Patient Details</button>`;
+      ? `<strong>Patient details locked.</strong><span>Protected from accidental changes. Unlock only for a genuine correction and record the reason.</span><button type="button" onclick="unlockPathwayPatientDetails('${tab}')">Unlock / Edit Patient Details</button>`
+      : `<strong>Step 1: Patient Details</strong><span>Save and lock demographics first. Step 2 and clinical tabs can be completed or updated later.</span><button type="button" onclick="validateAndLockPathwayPatientDetails('${tab}')">Save & Lock Patient Details</button>`;
   }
   card.querySelectorAll('.pathway-form-tab[data-needs-lock="true"]').forEach(btn=>btn.classList.toggle('tab-disabled',!locked));
+  updatePathwayMainSaveButton(tab);
 }
 
 function pathwayTabConfig(tab){
@@ -13893,6 +13905,7 @@ window.switchPathwayRegistrationTab=function(tab,panel){
   if(!card)return;
   card.querySelectorAll('.pathway-form-tab').forEach(btn=>btn.classList.toggle('active',btn.id===`pf-tab-${tab}-${panel}`));
   card.querySelectorAll('.pathway-form-panel').forEach(pane=>pane.classList.toggle('active',pane.id===`pf-panel-${tab}-${panel}`));
+  updatePathwayMainSaveButton(tab);
 };
 
 window.resetPathwayRegistrationForm=function(tab){
@@ -13906,9 +13919,8 @@ window.resetPathwayRegistrationForm=function(tab){
 
 window.savePathwayPagePatient=async function(tab){
   if(isSurgeryPathway(tab)&&!window._pathwayPatientDetailsLocked[tab]){
-    alert('Patient details must be saved and locked before saving the full pathway record.');
-    switchPathwayRegistrationTab(tab,'patient');
-    return;
+    // If the nurse presses the main save button while still on Step 1, treat it as Save & Lock Patient Details.
+    return validateAndLockPathwayPatientDetails(tab);
   }
   syncPathwayOperationFindings(tab);
   if(typeof _v6620OriginalSavePathwayPagePatient==='function')return _v6620OriginalSavePathwayPagePatient(tab);
@@ -13916,7 +13928,7 @@ window.savePathwayPagePatient=async function(tab){
 
 function renderPathwayPatientDetailsPanel(tab){
   const isSurgery=isSurgeryPathway(tab);
-  return `${isSurgery?`<div class="patient-lock-banner" id="patient-lock-banner-${tab}"><strong>Step 1: Patient Details</strong><span>Complete the required demographics, then save and lock them before continuing.</span><button type="button" onclick="validateAndLockPathwayPatientDetails('${tab}')">Save & Lock Patient Details</button></div>`:''}
+  return `${isSurgery?`<div class="patient-lock-banner" id="patient-lock-banner-${tab}"><strong>Step 1: Patient Details</strong><span>Save and lock demographics first. Step 2 and clinical tabs can be completed or updated later.</span><button type="button" onclick="validateAndLockPathwayPatientDetails('${tab}')">Save & Lock Patient Details</button></div>`:''}
   <input type="hidden" id="pp-${tab}-patient-unlock-reason" data-pathway-extra data-extra-label="Patient details unlock reason">
   <div class="pathway-form-grid">
     <div class="fg"><label>First Name <span class="req">*</span></label><input data-patient-detail="true" id="pp-${tab}-fn" placeholder="First name" autocomplete="off"/></div>
@@ -13925,7 +13937,6 @@ function renderPathwayPatientDetailsPanel(tab){
     <div class="fg"><label>Date of Birth <span class="req">*</span></label><input data-patient-detail="true" type="date" id="pp-${tab}-dob"/></div>
     <div class="fg"><label>Contact Number</label><input data-patient-detail="true" id="pp-${tab}-ph" placeholder="Phone number" autocomplete="off"/></div>
     <div class="fg"><label>Gender <span class="req">*</span></label><select data-patient-detail="true" id="pp-${tab}-sex"><option value="">Select...</option><option>Male</option><option>Female</option><option>Other</option></select></div>
-    <div class="fg full"><label>Address</label><textarea data-patient-detail="true" id="pp-${tab}-address" data-pathway-extra data-extra-label="Address" placeholder="Address details"></textarea></div>
     <div class="fg full"><label>Locality <span class="req">*</span></label><select data-patient-detail="true" id="pp-${tab}-locality">${optionList(PATHWAY_LOCALITY_OPTIONS)}</select></div>
   </div>`;
 }
