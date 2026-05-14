@@ -3214,7 +3214,7 @@ button{font-family:'DM Sans',sans-serif;}
         <div class="home-btn home-btn-blue" onclick="switchSection('patient-pathways',null)">
           <div class="home-btn-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="18" cy="18" r="2"/><path d="M8 6h8"/><path d="M18 8v8"/><path d="M8 6v12h8"/></svg></div>
           <div class="home-btn-title">Patient Pathways</div>
-          <div class="home-btn-sub">Elective · Emergency · Bagging</div>
+          <div class="home-btn-sub">Elective · Emergency · Fistula/Wounds</div>
         </div>
         <div class="home-btn home-btn-indigo" onclick="switchSection('patient-outcomes',null)">
           <div class="home-btn-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="16" rx="2"/><path d="M9 4.5h6"/><path d="m9 12 2 2 4-4"/><path d="M9 17h6"/></svg></div>
@@ -3420,11 +3420,11 @@ button{font-family:'DM Sans',sans-serif;}
         </button>
         <button type="button" class="roster-subtab" id="pathway-tab-bagging" onclick="showPathwayTab('bagging')" style="background:linear-gradient(90deg,rgba(109,40,217,.34) 0%,rgba(167,139,250,.18) 28%,rgba(15,38,56,.07) 52%,rgba(255,255,255,.93) 74%,#f5f3ff 100%);">
           <span class="roster-subtab-icon" style="background:linear-gradient(135deg,#5b21b6,#a78bfa);"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 3 4 7v10l8 4 8-4V7z"/><path d="M4 7l8 4 8-4"/><path d="M12 11v10"/></svg></span>
-          <span>Bagging Advice</span>
+          <span>Bagging Advice for Fistula and Wounds</span>
         </button>
         <button type="button" class="roster-subtab" id="pathway-tab-readmission" onclick="showPathwayTab('readmission')" style="background:linear-gradient(90deg,rgba(180,83,9,.34) 0%,rgba(251,191,36,.20) 28%,rgba(15,38,56,.07) 52%,rgba(255,255,255,.93) 74%,#fffbeb 100%);">
           <span class="roster-subtab-icon" style="background:linear-gradient(135deg,#b45309,#fbbf24);"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M7 7h6a3 3 0 0 1 0 6H7"/><path d="m10 4-3 3 3 3"/><path d="M17 17H11a3 3 0 0 1 0-6h6"/><path d="m14 20 3-3-3-3"/></svg></span>
-          <span>Old Stoma / New Referral</span>
+          <span>OSH Stoma (Outside Hospital)</span>
         </button>
       </div>
 
@@ -5951,7 +5951,7 @@ function renderPatientSummary(p){
   if(!container)return;
   const age=p.date_of_birth?Math.floor((new Date()-new Date(p.date_of_birth))/31557600000)+'y':'—';
   const badge=pathwayBadge(p.pathway_status);
-  const pathwayTypeLabel={'elective':'🟢 Elective','emergency':'🔴 Emergency','bagging_advice':'🟣 Bagging Advice'}[p.pathway_type]||'—';
+  const pathwayTypeLabel={'elective':'🟢 Elective','emergency':'🔴 Emergency','bagging_advice':'🟣 Bagging Advice for Fistula and Wounds'}[p.pathway_type]||'—';
   const statusColour=p.is_active?'#1b5e20':'#757575';
   const statusText=p.is_active?'Active':'Closed / Archived';
   container.innerHTML=`
@@ -5976,12 +5976,12 @@ function renderPatientSummary(p){
 
 const PATHWAY_ICONS=[`<svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2.5"/><path d="M5.8 17a4 4 0 0 1 6.4 0"/><path d="M14 8h4"/><path d="M14 12h4"/><path d="M14 16h3"/></svg>`,`<svg class="icon-svg" viewBox="0 0 24 24"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="18" cy="18" r="2"/><path d="M8 6h6"/><path d="M18 8v6"/><path d="m15 15 3 3"/></svg>`,`<svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5z"/><path d="M8 6h8"/><path d="M8 10h6"/></svg>`,`<svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/></svg>`,`<svg class="icon-svg" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4a3 3 0 0 1 6 0"/><path d="M9 4h6"/><path d="m9 13 2 2 4-4"/><path d="M9 18h6"/></svg>`,`<svg class="icon-svg" viewBox="0 0 24 24"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg>`,`<svg class="icon-svg" viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V8l7-5 7 5v13"/><path d="M9 21v-6h6v6"/><path d="M10 9h4"/><path d="M12 7v4"/></svg>`,`<svg class="icon-svg" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4a3 3 0 0 1 6 0"/><path d="M9 4h6"/><path d="m9 13 2 2 4-4"/><path d="M9 18h6"/></svg>`,`<svg class="icon-svg" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4a3 3 0 0 1 6 0"/><path d="M9 4h6"/><path d="m9 13 2 2 4-4"/><path d="M9 18h6"/></svg>`,`<svg class="icon-svg" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4a3 3 0 0 1 6 0"/><path d="M9 4h6"/><path d="m9 13 2 2 4-4"/><path d="M9 18h6"/></svg>`,`<svg class="icon-svg" viewBox="0 0 24 24"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg>`,`<svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>`,`<svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5z"/><path d="M8 6h8"/><path d="M8 10h6"/></svg>`,`<svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="m8 12.5 3 3 5-6"/></svg>`,`<svg class="icon-svg" viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V8l7-5 7 5v13"/><path d="M9 21v-6h6v6"/><path d="M10 9h4"/><path d="M12 7v4"/></svg>`,`<svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/></svg>`,`<svg class="icon-svg" viewBox="0 0 24 24"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="5" rx="1"/><rect x="12" y="8" width="3" height="9" rx="1"/><rect x="17" y="5" width="3" height="12" rx="1"/></svg>`,`<svg class="icon-svg" viewBox="0 0 24 24"><path d="M21 12a9 9 0 0 1-15.5 6.2"/><path d="M3 12A9 9 0 0 1 18.5 5.8"/><path d="M18 2v4h4"/><path d="M6 22v-4H2"/></svg>`,`<svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>`];
 const PATHWAY_CHECKLISTS={
-  'Referral / New Patient':['Patient details confirmed','Episode opened','Pathway type selected: Elective / Emergency / Bagging Advice'],
+  'Referral / New Patient':['Patient details confirmed','Episode opened','Pathway type selected: Elective / Emergency / Bagging Advice for Fistula and Wounds'],
   'Elective: Pre-Op Siting':['Abdomen assessed in all positions','Preferred stoma site marked','Alternative site considered','Belt line and skin folds noted','Scars assessed','Patient agreement obtained','Siting record completed'],
   'Elective: Pre-Op Education':['Stoma explained to patient','Appliance demonstrated','Booklet / resources given','Questions answered','Family included if appropriate'],
   'Elective: Awaiting Surgery':['Surgery date confirmed','Ward and consultant recorded','Pre-op plan complete'],
   'Emergency: Admitted':['Emergency admission confirmed','Consultant and ward recorded','Stoma site marked if time allowed','Urgent review completed'],
-  'Bagging Advice: Assessment':['Patient assessed','Drain / fistula / wound assessed','Appliance advice given','Nurse visit recorded','Follow-up plan made'],
+  'Bagging Advice for Fistula and Wounds: Assessment':['Patient assessed','Drain / fistula / wound assessed','Appliance advice given','Nurse visit recorded','Follow-up plan made'],
   'Surgery / Stoma Formed':['Stoma type recorded','Stoma formed date recorded','Consultant and operation recorded','Intra-op note completed'],
   'Post-Op Day 1':['First post-op review completed','Stoma appearance assessed and recorded','Output recorded','Peristomal skin assessed','Appliance checked','Post-op day number recorded'],
   'Daily Reviews':['Daily stoma review completed','Stoma appearance documented','Output type and consistency recorded','Peristomal skin condition documented','Appliance condition reviewed','Post-op day number updated','Nurse signature recorded'],
@@ -5998,7 +5998,7 @@ const PATHWAY_CHECKLISTS={
 const PATHWAY_STAGE_VISIBILITY={
   'elective':['Referral / New Patient','Elective: Pre-Op Siting','Elective: Pre-Op Education','Elective: Awaiting Surgery','Surgery / Stoma Formed','Post-Op Day 1','Daily Reviews','Patient Teaching','Discharge Planning','Discharged','Outpatient Follow-Up','Long-Term Monitoring','Reversal / Refashioning','Closed'],
   'emergency':['Referral / New Patient','Emergency: Admitted','Surgery / Stoma Formed','Post-Op Day 1','Daily Reviews','Patient Teaching','Discharge Planning','Discharged','Outpatient Follow-Up','Long-Term Monitoring','Reversal / Refashioning','Closed'],
-  'bagging_advice':['Referral / New Patient','Bagging Advice: Assessment','Discharged','Closed'],
+  'bagging_advice':['Referral / New Patient','Bagging Advice for Fistula and Wounds: Assessment','Discharged','Closed'],
   'default':['Referral / New Patient','Surgery / Stoma Formed','Post-Op Day 1','Daily Reviews','Patient Teaching','Discharge Planning','Discharged','Outpatient Follow-Up','Closed']
 };
 
@@ -6010,7 +6010,7 @@ function renderPathwayTimeline(p){
   const visibleStages=PATHWAY_STAGE_VISIBILITY[pathwayType]||PATHWAY_STAGE_VISIBILITY['default'];
   let currentIdx=visibleStages.indexOf(p.pathway_status);
   if(currentIdx<0)currentIdx=0;
-  const pathwayLabels={'elective':'Elective Pathway','emergency':'Emergency Pathway','bagging_advice':'Bagging Advice Pathway','default':'Standard Pathway'};
+  const pathwayLabels={'elective':'Elective Pathway','emergency':'Emergency Pathway','bagging_advice':'Bagging Advice for Fistula and Wounds Pathway','default':'Standard Pathway'};
   const pathwayColours={'elective':'#0f766e','emergency':'#b91c1c','bagging_advice':'#7c3aed','default':'#0f766e'};
   const pathwayLabel=pathwayLabels[pathwayType]||'Patient Pathway';
   const pathwayColour=pathwayColours[pathwayType]||'#0f766e';
@@ -6281,10 +6281,10 @@ function platformIconSvg(key){
 }
 function getPlatformTitleData(key){
   const map={
-    'pathway-elective':{eyebrow:'Patient Pathways',title:'Elective Admission',subtitle:'Search or add a patient to begin the elective admission pathway.',icon:'pathway',colour:'#0f766e',colourDark:'#064e3b',soft:'#ecfdf9'},
-    'pathway-emergency':{eyebrow:'Patient Pathways',title:'Emergency Admission',subtitle:'Search or add a patient to begin the emergency pathway.',icon:'warning',colour:'#991b1b',colourDark:'#7f1d1d',soft:'#fef2f2'},
-    'pathway-bagging':{eyebrow:'Patient Pathways',title:'Bagging Advice',subtitle:'Search or add a patient for appliance, bagging, wound, drain, or fistula advice.',icon:'appliance',colour:'#5b21b6',colourDark:'#312e81',soft:'#f5f3ff'},
-    'pathway-readmission':{eyebrow:'Patient Pathways',title:'Old Stoma / New Referral',subtitle:'For patients who already have a stoma and are newly referred to our clinic from abroad, another hospital or another service.',icon:'swap',colour:'#b45309',colourDark:'#92400e',soft:'#fffbeb'},
+    'pathway-elective':{eyebrow:'Patient Pathways',title:'Elective Surgery',subtitle:'Search or add a patient to begin the elective surgery pathway.',icon:'pathway',colour:'#0f766e',colourDark:'#064e3b',soft:'#ecfdf9'},
+    'pathway-emergency':{eyebrow:'Patient Pathways',title:'Emergency Surgery',subtitle:'Search or add a patient to begin the emergency surgery pathway.',icon:'warning',colour:'#991b1b',colourDark:'#7f1d1d',soft:'#fef2f2'},
+    'pathway-bagging':{eyebrow:'Patient Pathways',title:'Bagging Advice for Fistula and Wounds',subtitle:'Search or add a patient for appliance, bagging, wound, drain, or fistula advice.',icon:'appliance',colour:'#5b21b6',colourDark:'#312e81',soft:'#f5f3ff'},
+    'pathway-readmission':{eyebrow:'Patient Pathways',title:'OSH Stoma (Outside Hospital)',subtitle:'For patients who already have a stoma and are newly referred to our clinic from abroad, another hospital or another service.',icon:'swap',colour:'#b45309',colourDark:'#92400e',soft:'#fffbeb'},
     'followup-appointments':{eyebrow:'Follow-Up Centre',title:'Patient Appointments',subtitle:'Daily clinic appointment book and patient booking slots.',icon:'document',colour:'#0f766e',colourDark:'#0f2638',soft:'#ecfdf9'},
     'followup-outcomes':{eyebrow:'Follow-Up Centre',title:'Appointment Outcomes',subtitle:'Seen, DNTU, cancelled and follow-up status views.',icon:'chart',colour:'#2563eb',colourDark:'#1d4ed8',soft:'#eff6ff'},
     'followup-clinic':{eyebrow:'Follow-Up Centre',title:'Clinic Audit',subtitle:'Monthly appointment calendar and printable clinic activity.',icon:'calendar',colour:'#7c3aed',colourDark:'#5b21b6',soft:'#f5f3ff'},
@@ -6368,10 +6368,10 @@ const PATHWAY_LOCALITY_OPTIONS=[
 
 function getPathwayFormMeta(tab){
   const map={
-    elective:{label:'Elective Admission',short:'Elective',colour:'#0f766e',pathway:'elective',status:'inpatient',episode:'Elective',subtitle:'Register a planned elective stoma patient.'},
-    emergency:{label:'Emergency Admission',short:'Emergency',colour:'#991b1b',pathway:'emergency',status:'inpatient',episode:'Emergency',subtitle:'Register an emergency or urgent surgical stoma patient.'},
-    bagging:{label:'Bagging Advice',short:'Bagging Advice',colour:'#5b21b6',pathway:'bagging_advice',status:'outpatient',episode:'Bagging Advice',subtitle:'Register a patient needing appliance, leakage, skin, drain, wound, or bagging support.'},
-    readmission:{label:'Old Stoma / New Referral',short:'Old Stoma / New Referral',colour:'#b45309',pathway:'old_stoma_new_referral',status:'outpatient',episode:'Old Stoma / New Referral',subtitle:'Register a patient with an old or existing stoma newly referred to our clinic.'}
+    elective:{label:'Elective Surgery',short:'Elective',colour:'#0f766e',pathway:'elective',status:'inpatient',episode:'Elective',subtitle:'Register a planned elective stoma patient.'},
+    emergency:{label:'Emergency Surgery',short:'Emergency',colour:'#991b1b',pathway:'emergency',status:'inpatient',episode:'Emergency',subtitle:'Register an emergency or urgent surgical stoma patient.'},
+    bagging:{label:'Bagging Advice for Fistula and Wounds',short:'Bagging Advice for Fistula and Wounds',colour:'#5b21b6',pathway:'bagging_advice',status:'outpatient',episode:'Bagging Advice for Fistula and Wounds',subtitle:'Register a patient needing appliance, leakage, skin, drain, wound, or bagging support.'},
+    readmission:{label:'OSH Stoma (Outside Hospital)',short:'OSH Stoma (Outside Hospital)',colour:'#b45309',pathway:'old_stoma_new_referral',status:'outpatient',episode:'OSH Stoma (Outside Hospital)',subtitle:'Register a patient with an old or existing stoma newly referred to our clinic.'}
   };
   return map[tab]||map.elective;
 }
@@ -11493,7 +11493,7 @@ const PATHWAY_STAGES=[
   'Elective: Pre-Op Education',
   'Elective: Awaiting Surgery',
   'Emergency: Admitted',
-  'Bagging Advice: Assessment',
+  'Bagging Advice for Fistula and Wounds: Assessment',
   'Surgery / Stoma Formed',
   'Post-Op Day 1',
   'Daily Reviews',
@@ -11863,7 +11863,7 @@ function openAddPatientModal(){
     <div class="fg"><label>Consultant</label><input id="mp-cons" placeholder="Consultant name"/></div>
     <div class="fg"><label>Ward</label><input id="mp-ward" placeholder="e.g. SW1"/></div>
     <div class="fg"><label>Surgery Date</label><input type="date" id="mp-surg"/></div>
-    <div class="fg"><label>Pathway Type</label><select id="mp-pathway"><option value="elective">Elective</option><option value="emergency">Emergency</option><option value="bagging_advice">Bagging Advice</option></select></div>
+    <div class="fg"><label>Pathway Type</label><select id="mp-pathway"><option value="elective">Elective</option><option value="emergency">Emergency</option><option value="bagging_advice">Bagging Advice for Fistula and Wounds</option></select></div>
     <div class="fg"><label>Patient Status</label><select id="mp-status"><option value="inpatient">Inpatient</option><option value="outpatient">Outpatient</option><option value="active">Active</option></select></div>
   </div>
   <div class="mact"><button class="btn-cancel" onclick="closeMo()">Cancel</button><button class="btn-save" onclick="saveNewPatientV66()">Save Patient</button></div>`;
@@ -12009,7 +12009,7 @@ async function openEditPatientModal(id){
     <div class="fg"><label>Consultant</label><input id="ep-cons" value="${htmlSafe(p.consultant||'')}"/></div>
     <div class="fg"><label>Ward</label><input id="ep-ward" value="${htmlSafe(p.ward||p.current_ward||'')}"/></div>
     <div class="fg"><label>Surgery Date</label><input type="date" id="ep-surg" value="${p.surgery_date||''}"/></div>
-    <div class="fg"><label>Pathway Type</label><select id="ep-pathway-type"><option value="elective"${p.pathway_type==='elective'?' selected':''}>Elective</option><option value="emergency"${p.pathway_type==='emergency'?' selected':''}>Emergency</option><option value="bagging_advice"${p.pathway_type==='bagging_advice'?' selected':''}>Bagging Advice</option></select></div>
+    <div class="fg"><label>Pathway Type</label><select id="ep-pathway-type"><option value="elective"${p.pathway_type==='elective'?' selected':''}>Elective</option><option value="emergency"${p.pathway_type==='emergency'?' selected':''}>Emergency</option><option value="bagging_advice"${p.pathway_type==='bagging_advice'?' selected':''}>Bagging Advice for Fistula and Wounds</option></select></div>
     <div class="fg"><label>Patient Status</label><select id="ep-status"><option value="inpatient"${p.patient_type==='inpatient'?' selected':''}>Inpatient</option><option value="outpatient"${p.patient_type==='outpatient'?' selected':''}>Outpatient</option><option value="active"${p.patient_status==='active'?' selected':''}>Active</option></select></div>
     <div class="fg"><label>Pathway Stage</label><select id="ep-pathway">${PATHWAY_STAGES.map(s=>`<option${p.pathway_status===s?' selected':''}>${htmlSafe(s)}</option>`).join('')}</select></div>
     <div class="fg"><label>Active</label><select id="ep-active"><option value="true"${p.is_active?' selected':''}>Active</option><option value="false"${!p.is_active?' selected':''}>Closed / Archived</option></select></div>
@@ -12112,7 +12112,7 @@ async function saveEditPatientV66(id){
 
   // 3. Update episodes_main
   const episodePayload={
-    episode_type:pathwayType==='elective'?'Elective':pathwayType==='emergency'?'Emergency':'Bagging Advice',
+    episode_type:pathwayType==='elective'?'Elective':pathwayType==='emergency'?'Emergency':'Bagging Advice for Fistula and Wounds',
     episode_status:projectEpisodeStatusFromStage(pathway),
     pathway_stage:pathway,
     admission_ward:mainPayload.current_ward,
@@ -13346,9 +13346,9 @@ async function loadKpiDashboard(){
         kBlock('Inpatients',active.filter(p=>p.patient_status==='inpatient').length,'currently admitted'),
         kBlock('Outpatients',active.filter(p=>p.patient_status==='outpatient').length,'in outpatient follow-up'),
         kBlock('New This Month',newPatients.length,'registered this month'),
-        kBlock('Elective New',elective.length,'new elective pathway'),
-        kBlock('Emergency New',emergency.length,'new emergency pathway'),
-        kBlock('Bagging Advice New',bagging.length,'new bagging advice only'),
+        kBlock('Elective New',elective.length,'new elective surgery pathway'),
+        kBlock('Emergency New',emergency.length,'new emergency surgery pathway'),
+        kBlock('Bagging Advice for Fistula and Wounds New',bagging.length,'new bagging advice only'),
         kBlock('Pre-Op Sitings',preOpSitings.length,'completed this month')
       )}
       <div style="font-size:13px;font-weight:800;color:var(--navy);margin:14px 0 10px;">Pathway Type Distribution</div>
