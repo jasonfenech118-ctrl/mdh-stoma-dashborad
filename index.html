@@ -6281,10 +6281,10 @@ function platformIconSvg(key){
 }
 function getPlatformTitleData(key){
   const map={
-    'pathway-elective':{eyebrow:'Patient Pathways',title:'Elective Admission',subtitle:'Search or add a patient to begin the elective admission pathway.',icon:'pathway',colour:'#2563eb'},
-    'pathway-emergency':{eyebrow:'Patient Pathways',title:'Emergency Admission',subtitle:'Search or add a patient to begin the emergency pathway.',icon:'warning',colour:'#c2413b'},
-    'pathway-bagging':{eyebrow:'Patient Pathways',title:'Bagging Advice',subtitle:'Search or add a patient for appliance, bagging, wound, drain, or fistula advice.',icon:'appliance',colour:'#7c3aed'},
-    'pathway-readmission':{eyebrow:'Patient Pathways',title:'Old Stoma / New Referral',subtitle:'For patients who already have a stoma and are newly referred to our clinic from abroad, another hospital or another service.',icon:'swap',colour:'#b45309'},
+    'pathway-elective':{eyebrow:'Patient Pathways',title:'Elective Admission',subtitle:'Search or add a patient to begin the elective admission pathway.',icon:'pathway',colour:'#0f766e',colourDark:'#064e3b',soft:'#ecfdf9'},
+    'pathway-emergency':{eyebrow:'Patient Pathways',title:'Emergency Admission',subtitle:'Search or add a patient to begin the emergency pathway.',icon:'warning',colour:'#991b1b',colourDark:'#7f1d1d',soft:'#fef2f2'},
+    'pathway-bagging':{eyebrow:'Patient Pathways',title:'Bagging Advice',subtitle:'Search or add a patient for appliance, bagging, wound, drain, or fistula advice.',icon:'appliance',colour:'#5b21b6',colourDark:'#312e81',soft:'#f5f3ff'},
+    'pathway-readmission':{eyebrow:'Patient Pathways',title:'Old Stoma / New Referral',subtitle:'For patients who already have a stoma and are newly referred to our clinic from abroad, another hospital or another service.',icon:'swap',colour:'#b45309',colourDark:'#92400e',soft:'#fffbeb'},
     'followup-appointments':{eyebrow:'Follow-Up Centre',title:'Patient Appointments',subtitle:'Daily clinic appointment book and patient booking slots.',icon:'document',colour:'#0f766e',colourDark:'#0f2638',soft:'#ecfdf9'},
     'followup-outcomes':{eyebrow:'Follow-Up Centre',title:'Appointment Outcomes',subtitle:'Seen, DNTU, cancelled and follow-up status views.',icon:'chart',colour:'#2563eb',colourDark:'#1d4ed8',soft:'#eff6ff'},
     'followup-clinic':{eyebrow:'Follow-Up Centre',title:'Clinic Audit',subtitle:'Monthly appointment calendar and printable clinic activity.',icon:'calendar',colour:'#7c3aed',colourDark:'#5b21b6',soft:'#f5f3ff'},
@@ -6361,20 +6361,215 @@ function renderPathwayPane(tab, pane){
   renderPathwayForm(tab, pane, patient);
 }
 
+const PATHWAY_WARD_OPTIONS=['SAU1','SAU2','SW1','SW2','SW3','SW4','SW5','SHDU','ITU','Euro1','Euro2','Other'];
+const PATHWAY_LOCALITY_OPTIONS=[
+  'Attard','Balzan','Birgu','Birkirkara','Birzebbuga','Bormla','Dingli','Fgura','Floriana','Gudja','Gzira','Ghaxaq','Hamrun','Iklin','Isla','Kalkara','Kirkop','Lija','Luqa','Marsa','Marsaskala','Marsaxlokk','Mdina','Mellieha','Mgarr','Mosta','Mqabba','Msida','Mtarfa','Naxxar','Paola','Pembroke','Pieta','Qormi','Qrendi','Rabat','Safi','San Gwann','Santa Lucija','Santa Venera','Siggiewi','Sliema','St Julian\'s','St Paul\'s Bay','Swieqi','Ta\' Xbiex','Tarxien','Valletta','Zabbar','Zebbug','Zejtun','Zurrieq','Gozo'
+];
+
+function getPathwayFormMeta(tab){
+  const map={
+    elective:{label:'Elective Admission',short:'Elective',colour:'#0f766e',pathway:'elective',status:'inpatient',episode:'Elective',subtitle:'Register a planned elective stoma patient.'},
+    emergency:{label:'Emergency Admission',short:'Emergency',colour:'#991b1b',pathway:'emergency',status:'inpatient',episode:'Emergency',subtitle:'Register an emergency or urgent surgical stoma patient.'},
+    bagging:{label:'Bagging Advice',short:'Bagging Advice',colour:'#5b21b6',pathway:'bagging_advice',status:'outpatient',episode:'Bagging Advice',subtitle:'Register a patient needing appliance, leakage, skin, drain, wound, or bagging support.'},
+    readmission:{label:'Old Stoma / New Referral',short:'Old Stoma / New Referral',colour:'#b45309',pathway:'old_stoma_new_referral',status:'outpatient',episode:'Old Stoma / New Referral',subtitle:'Register a patient with an old or existing stoma newly referred to our clinic.'}
+  };
+  return map[tab]||map.elective;
+}
+function optionList(options, selected=''){
+  return `<option value="">Select...</option>`+(options||[]).map(v=>`<option value="${htmlSafe(v)}"${String(v)===String(selected)?' selected':''}>${htmlSafe(v)}</option>`).join('');
+}
+
 function renderPathwaySearch(tab){
-  const labels={elective:'Elective Admission',emergency:'Emergency Admission',bagging:'Bagging Advice',readmission:'Old Stoma / New Referral'};
-  const colours={elective:'#0f766e',emergency:'#991b1b',bagging:'#5b21b6',readmission:'#b45309'};
-  const col=colours[tab]||'#0f766e';
-  return `<div class="pathway-search-wrap">
-    <div style="font-size:32px;margin-bottom:12px;">🏥</div>
-    <div style="font-size:16px;font-weight:900;color:var(--navy);margin-bottom:6px;">${labels[tab]||'Patient Pathway'}</div>
-    <div style="font-size:12px;color:var(--muted);margin-bottom:20px;">Search for an existing patient or add a new one to begin this pathway</div>
-    <input type="text" class="pathway-search-input" id="pathway-search-${tab}" placeholder="Search patient name or ID card..." oninput="searchPathwayPatient('${tab}',this.value)"/>
-    <div id="pathway-search-results-${tab}" style="margin-top:8px;"></div>
-    <div style="margin-top:16px;">
-      <button onclick="openAddPatientModalForPathway('${tab}')" style="padding:10px 24px;background:${col};color:white;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;">+ Add New ${labels[tab]} Patient</button>
+  const meta=getPathwayFormMeta(tab);
+  const stomas=(typeof STOMA_TYPES!=='undefined'?STOMA_TYPES:['Colostomy','Ileostomy','Urostomy','Loop Colostomy','Loop Ileostomy','End Colostomy','End Ileostomy','Urostomy / Ileal Conduit']);
+  const nurseOptions=['Jason Fenech','Jacqueline Sammut','Lorraine Stivala','Common'];
+  return `<div class="pathway-page-shell" style="--pathway-colour:${meta.colour};">
+    <div class="pathway-search-card">
+      <div class="pathway-search-head">
+        <div>
+          <h3>Find existing patient</h3>
+          <p>Search first if the patient is already registered. Selecting a patient opens the pathway checklist page.</p>
+        </div>
+      </div>
+      <input type="text" class="pathway-search-input" id="pathway-search-${tab}" placeholder="Search patient name or ID card..." oninput="searchPathwayPatient('${tab}',this.value)"/>
+      <div class="pathway-existing-results" id="pathway-search-results-${tab}"></div>
+    </div>
+
+    <div class="pathway-form-card" id="pathway-new-form-${tab}">
+      <div class="pathway-form-head" style="padding:18px 18px 0;">
+        <div>
+          <h3>Add new ${htmlSafe(meta.label)} patient</h3>
+          <p>${htmlSafe(meta.subtitle)} This is a full page form, not a pop-up window.</p>
+        </div>
+      </div>
+      <div class="pathway-form-tabs" role="tablist" aria-label="${htmlSafe(meta.label)} form tabs">
+        <button type="button" class="pathway-form-tab active" id="pf-tab-${tab}-patient" onclick="switchPathwayRegistrationTab('${tab}','patient')">Patient Details</button>
+        <button type="button" class="pathway-form-tab" id="pf-tab-${tab}-stoma" onclick="switchPathwayRegistrationTab('${tab}','stoma')">Stoma &amp; Surgery Details</button>
+        <button type="button" class="pathway-form-tab" id="pf-tab-${tab}-clinic" onclick="switchPathwayRegistrationTab('${tab}','clinic')">Clinic / Follow-up Details</button>
+      </div>
+
+      <div class="pathway-form-panel active" id="pf-panel-${tab}-patient">
+        <div class="pathway-form-grid">
+          <div class="fg"><label>First Name <span class="req">*</span></label><input id="pp-${tab}-fn" placeholder="First name" autocomplete="off"/></div>
+          <div class="fg"><label>Surname <span class="req">*</span></label><input id="pp-${tab}-sn" placeholder="Surname" autocomplete="off"/></div>
+          <div class="fg"><label>ID Card</label><input id="pp-${tab}-id" placeholder="000000M" autocomplete="off"/></div>
+          <div class="fg"><label>Date of Birth <span class="req">*</span></label><input type="date" id="pp-${tab}-dob"/></div>
+          <div class="fg"><label>Contact Number</label><input id="pp-${tab}-ph" placeholder="Phone number" autocomplete="off"/></div>
+          <div class="fg"><label>Gender <span class="req">*</span></label><select id="pp-${tab}-sex"><option value="">Select...</option><option>Male</option><option>Female</option><option>Other</option></select></div>
+          <div class="fg full"><label>Locality <span class="req">*</span></label><select id="pp-${tab}-locality">${optionList(PATHWAY_LOCALITY_OPTIONS)}</select></div>
+        </div>
+      </div>
+
+      <div class="pathway-form-panel" id="pf-panel-${tab}-stoma">
+        <div class="pathway-form-grid">
+          <div class="fg full"><label>Operation Performed &amp; Findings</label><textarea id="pp-${tab}-opfindings" placeholder="e.g. AP resection with end colostomy formation"></textarea></div>
+          <div class="fg"><label>Stoma Type</label><select id="pp-${tab}-stoma">${optionList(stomas)}</select></div>
+          <div class="fg"><label>Date of Surgery <span class="req">*</span></label><input type="date" id="pp-${tab}-surg"/></div>
+          <div class="fg"><label>Consultant</label><input id="pp-${tab}-cons" placeholder="Consultant name" autocomplete="off"/></div>
+          <div class="fg"><label>Ward <span class="req">*</span></label><select id="pp-${tab}-ward">${optionList(PATHWAY_WARD_OPTIONS)}</select></div>
+        </div>
+      </div>
+
+      <div class="pathway-form-panel" id="pf-panel-${tab}-clinic">
+        <div class="pathway-form-grid">
+          <div class="fg"><label>Assigned Nurse</label><select id="pp-${tab}-nurse">${optionList(nurseOptions)}</select></div>
+          <div class="fg"><label>Source / Referral</label><input id="pp-${tab}-source" placeholder="e.g. MDH, other hospital, abroad, community" autocomplete="off"/></div>
+          <div class="fg full"><label>Notes</label><textarea id="pp-${tab}-notes" placeholder="Any important information for the Stoma Care team"></textarea></div>
+        </div>
+      </div>
+
+      <div class="pathway-form-actions">
+        <div class="pathway-form-note">Required fields: first name, surname, date of birth, gender, locality, date of surgery and ward. Hospital number, patient status and pathway type are intentionally not shown because this page already defines the pathway.</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button type="button" class="pathway-reset-btn" onclick="resetPathwayRegistrationForm('${tab}')">Clear form</button>
+          <button type="button" class="pathway-save-btn" onclick="savePathwayPagePatient('${tab}')">Save ${htmlSafe(meta.short)} Patient</button>
+        </div>
+      </div>
     </div>
   </div>`;
+}
+
+function switchPathwayRegistrationTab(tab, panel){
+  ['patient','stoma','clinic'].forEach(name=>{
+    const btn=document.getElementById(`pf-tab-${tab}-${name}`);
+    const pane=document.getElementById(`pf-panel-${tab}-${name}`);
+    if(btn)btn.classList.toggle('active',name===panel);
+    if(pane)pane.classList.toggle('active',name===panel);
+  });
+}
+function resetPathwayRegistrationForm(tab){
+  const card=document.getElementById(`pathway-new-form-${tab}`);
+  if(!card)return;
+  card.querySelectorAll('input,textarea,select').forEach(el=>{el.value='';});
+  switchPathwayRegistrationTab(tab,'patient');
+}
+function focusPathwayRequiredTab(tab, fieldId){
+  const stomaFields=['surg','ward'];
+  const clinicFields=['nurse','source','notes'];
+  const short=String(fieldId||'').split(`pp-${tab}-`).pop();
+  switchPathwayRegistrationTab(tab, stomaFields.includes(short)?'stoma':clinicFields.includes(short)?'clinic':'patient');
+  const el=document.getElementById(fieldId);
+  if(el){el.focus();el.scrollIntoView({behavior:'smooth',block:'center'});}
+}
+
+async function savePathwayPagePatient(tab){
+  const meta=getPathwayFormMeta(tab);
+  const val=id=>document.getElementById(`pp-${tab}-${id}`)?.value?.trim()||'';
+  const required=[
+    ['fn','First name'],['sn','Surname'],['dob','Date of birth'],['sex','Gender'],['locality','Locality'],['surg','Date of surgery'],['ward','Ward']
+  ];
+  for(const [id,label] of required){
+    if(!val(id)){alert(label+' is required.');focusPathwayRequiredTab(tab,`pp-${tab}-${id}`);return;}
+  }
+  const fn=val('fn'), sn=val('sn'), idCard=val('id');
+  const fallbackHospital=idCard||`NO-HOSP-${Date.now()}`;
+  const patientStatus=meta.status||'active';
+  const patientPayload={
+    hospital_number:null,
+    id_card:idCard||null,
+    first_name:fn,
+    surname:sn,
+    contact_number:val('ph')||null,
+    dob:val('dob')||null,
+    sex:val('sex')||null,
+    locality:val('locality')||null,
+    op_performed_findings:val('opfindings')||null,
+    stoma_type_summary:val('stoma')||null,
+    assigned_nurse:val('nurse')||null,
+    consultant:val('cons')||null,
+    ward:val('ward')||null,
+    surgery_date:val('surg')||null,
+    patient_status:patientStatus,
+    pathway_type:meta.pathway,
+    referral_source:val('source')||null,
+    notes:val('notes')||null
+  };
+  let patientId=null, savedIn='patients';
+  try{
+    const {data,error}=await SB.from('patients').insert({...patientPayload,hospital_number:fallbackHospital}).select('id').single();
+    if(error)throw error;
+    patientId=data?.id;
+  }catch(primaryError){
+    savedIn='patients_main';
+    try{
+      const {data,error}=await SB.from('patients_main').insert({
+        hospital_number:fallbackHospital,
+        id_card_number:idCard||null,
+        first_name:fn,
+        surname:sn,
+        mobile_number:patientPayload.contact_number,
+        date_of_birth:patientPayload.dob,
+        sex:patientPayload.sex,
+        locality:patientPayload.locality,
+        patient_status:patientStatus,
+        current_ward:patientPayload.ward,
+        medical_history:patientPayload.op_performed_findings,
+        is_active:true,
+        created_by:getLoggedInSubmitterName()
+      }).select('id').single();
+      if(error)throw error;
+      patientId=data?.id;
+    }catch(fallbackError){
+      alert('Error saving patient: '+(fallbackError?.message||primaryError?.message||'Unknown error'));
+      return;
+    }
+  }
+  if(patientId){
+    try{
+      await SB.from('episodes_main').insert({
+        patient_id:patientId,
+        episode_type:meta.episode,
+        episode_status:'Active',
+        pathway_stage:meta.label,
+        admission_date:new Date().toISOString().split('T')[0],
+        admission_ward:patientPayload.ward,
+        consultant:patientPayload.consultant,
+        surgery_date:patientPayload.surgery_date,
+        operation_performed:patientPayload.op_performed_findings,
+        intended_stoma_type:patientPayload.stoma_type_summary,
+        actual_stoma_type:patientPayload.stoma_type_summary,
+        assigned_nurse:patientPayload.assigned_nurse||getLoggedInSubmitterName(),
+        created_by:getLoggedInSubmitterName()
+      });
+    }catch(e){console.warn('Episode creation skipped:',e?.message||e);}
+    try{
+      if(patientPayload.stoma_type_summary||patientPayload.surgery_date){
+        await SB.from('stomas_main').insert({
+          patient_id:patientId,
+          stoma_type:patientPayload.stoma_type_summary,
+          surgery_date:patientPayload.surgery_date,
+          date_formed:patientPayload.surgery_date,
+          stoma_status:'Active',
+          created_by:getLoggedInSubmitterName()
+        });
+      }
+    }catch(e){console.warn('Stoma creation skipped:',e?.message||e);}
+    try{await logAuditTrailAction('insert',savedIn,patientId,{description:`${meta.label} patient added: ${fn} ${sn}`});}catch(e){}
+    _pathwayPatient[tab]={id:patientId,name:`${fn} ${sn}`,idCard:idCard||'—',hospNo:'—'};
+    const pane=document.getElementById('pathway-pane-'+tab);
+    if(pane)renderPathwayForm(tab,pane,_pathwayPatient[tab]);
+    if(typeof loadPatients==='function')loadPatients();
+  }
 }
 
 async function searchPathwayPatient(tab, q){
@@ -6402,10 +6597,10 @@ async function selectPathwayPatient(tab, id, name, idCard, hospNo){
 }
 
 function openAddPatientModalForPathway(tab){
-  const pathwayMap={elective:'elective',emergency:'emergency',bagging:'bagging_advice',readmission:'elective'};
-  openAddPatientModal();
-  // Pre-select pathway type after modal opens
-  setTimeout(()=>{const sel=document.getElementById('mp-pathway');if(sel)sel.value=pathwayMap[tab]||'elective';},100);
+  // v66-16: pathway registration is now a full page form, not a modal window.
+  showPathwayTab(tab);
+  const card=document.getElementById(`pathway-new-form-${tab}`);
+  if(card){card.scrollIntoView({behavior:'smooth',block:'start'});}
 }
 
 function clearPathwayPatient(tab){
@@ -13564,6 +13759,151 @@ function renderPatientOutcomeRows(rows,view){
 }
 #section-patient-outcomes #patient-outcome-page .btn-add{display:none!important;}
 
+
+
+/* v66-16 — Patient Pathway full-page registration forms */
+.pathway-page-shell{
+  width:100%;
+  max-width:1180px;
+  margin:16px auto 0;
+  display:grid;
+  gap:16px;
+}
+.pathway-search-card,
+.pathway-form-card{
+  background:#ffffff;
+  border:1px solid var(--border);
+  border-radius:18px;
+  box-shadow:var(--shadow);
+  overflow:hidden;
+}
+.pathway-search-card{
+  padding:18px;
+}
+.pathway-search-head,
+.pathway-form-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-bottom:14px;
+}
+.pathway-search-head h3,
+.pathway-form-head h3{
+  font-size:16px;
+  font-weight:900;
+  color:var(--navy);
+  margin:0 0 4px;
+}
+.pathway-search-head p,
+.pathway-form-head p{
+  font-size:12px;
+  color:var(--muted);
+  margin:0;
+  line-height:1.4;
+}
+.pathway-form-tabs{
+  display:flex;
+  gap:0;
+  border-bottom:1px solid var(--border);
+  background:#f8fafc;
+  overflow-x:auto;
+}
+.pathway-form-tab{
+  appearance:none;
+  border:0;
+  background:transparent;
+  padding:14px 18px;
+  min-height:46px;
+  font-family:'DM Sans',sans-serif;
+  font-size:13px;
+  font-weight:800;
+  color:var(--muted);
+  cursor:pointer;
+  white-space:nowrap;
+  border-bottom:3px solid transparent;
+}
+.pathway-form-tab:hover{color:var(--navy);background:#ffffff;}
+.pathway-form-tab.active{
+  color:var(--navy);
+  background:#ffffff;
+  border-bottom-color:var(--pathway-colour,#0f766e);
+}
+.pathway-form-panel{
+  display:none;
+  padding:18px;
+}
+.pathway-form-panel.active{display:block;animation:fi .18s ease;}
+.pathway-form-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:13px 14px;
+}
+.pathway-form-grid .fg{margin:0;}
+.pathway-form-grid .full{grid-column:1 / -1;}
+.pathway-form-grid label .req{color:#c2413b;font-weight:950;}
+.pathway-form-grid textarea{
+  width:100%;
+  min-height:82px;
+  padding:10px 12px;
+  border:1.5px solid var(--border);
+  border-radius:9px;
+  font-size:13px;
+  font-family:'DM Sans',sans-serif;
+  outline:none;
+  resize:vertical;
+}
+.pathway-form-grid textarea:focus{border-color:var(--pathway-colour,#0f766e);}
+.pathway-form-actions{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+  padding:16px 18px;
+  border-top:1px solid var(--border);
+  background:#fbfcfd;
+}
+.pathway-form-note{
+  font-size:12px;
+  color:var(--muted);
+  line-height:1.35;
+  max-width:620px;
+}
+.pathway-save-btn{
+  border:none;
+  border-radius:11px;
+  padding:11px 22px;
+  background:var(--pathway-colour,#0f766e);
+  color:#ffffff;
+  font-family:'DM Sans',sans-serif;
+  font-size:13px;
+  font-weight:900;
+  cursor:pointer;
+  box-shadow:0 8px 20px rgba(15,38,56,.14);
+}
+.pathway-save-btn:hover{filter:brightness(1.03);transform:translateY(-1px);}
+.pathway-reset-btn{
+  border:1.5px solid var(--border);
+  border-radius:11px;
+  padding:10px 18px;
+  background:#ffffff;
+  color:var(--navy);
+  font-family:'DM Sans',sans-serif;
+  font-size:13px;
+  font-weight:850;
+  cursor:pointer;
+}
+.pathway-existing-results{
+  margin-top:10px;
+}
+@media(max-width:760px){
+  .pathway-form-grid{grid-template-columns:1fr;}
+  .pathway-form-panel{padding:14px;}
+  .pathway-form-actions{align-items:stretch;}
+  .pathway-save-btn,.pathway-reset-btn{width:100%;}
+}
 </style>
 </body>
 </html>
