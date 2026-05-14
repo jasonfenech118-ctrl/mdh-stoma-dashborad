@@ -3425,16 +3425,6 @@ button{font-family:'DM Sans',sans-serif;}
       <!-- GROUP: Clinical Tools -->
       <div class="home-group-label">Clinical Tools</div>
       <div class="home-btn-grid">
-        <div class="home-btn home-btn-emerald" onclick="switchSection('appliances',null)">
-          <div class="home-btn-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 3 4 7v10l8 4 8-4V7z"/><path d="M4 7l8 4 8-4"/><path d="M12 11v10"/></svg></div>
-          <div class="home-btn-title">Appliances</div>
-          <div class="home-btn-sub">Products &amp; appliance history</div>
-        </div>
-        <div class="home-btn home-btn-amber" onclick="switchSection('discharge',null)">
-          <div class="home-btn-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6"/><path d="M9 17h6"/></svg></div>
-          <div class="home-btn-title">Discharge Letters</div>
-          <div class="home-btn-sub">AI-generated official letters</div>
-        </div>
         <div class="home-btn home-btn-violet" onclick="switchSection('dntu',null)">
           <div class="home-btn-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="m10.29 3.86-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.71-3.14l-8-14a2 2 0 0 0-3.42 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></div>
           <div class="home-btn-title">DNTU</div>
@@ -3907,6 +3897,10 @@ button{font-family:'DM Sans',sans-serif;}
           <span class="roster-subtab-icon" style="background:linear-gradient(135deg,#7c2d12,#c2413b);"><svg class="icon-svg" viewBox="0 0 24 24"><path d="m10.29 3.86-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.71-3.14l-8-14a2 2 0 0 0-3.42 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></span>
           <span>DNTU</span>
         </button>
+        <button type="button" class="roster-subtab" id="followup-subtab-appliances" onclick="showFollowupSubtab('appliances')" style="background:linear-gradient(90deg,rgba(15,118,110,.30) 0%,rgba(20,184,166,.15) 28%,rgba(255,255,255,.93) 74%,#ecfdf9 100%);">
+          <span class="roster-subtab-icon" style="background:linear-gradient(135deg,#064e3b,#0f766e);"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 3 4 7v10l8 4 8-4V7z"/><path d="M4 7l8 4 8-4"/><path d="M12 11v10"/></svg></span>
+          <span>Appliances</span>
+        </button>
         <button type="button" class="roster-subtab" id="followup-subtab-paused" onclick="showFollowupSubtab('paused')" style="background:linear-gradient(90deg,rgba(217,119,6,.30) 0%,rgba(251,191,36,.15) 28%,rgba(255,255,255,.93) 74%,#fffbeb 100%);">
           <span class="roster-subtab-icon" style="background:linear-gradient(135deg,#92400e,#d97706);"><svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M10 8v8"/><path d="M14 8v8"/></svg></span>
           <span>Temporarily Paused Appointments</span>
@@ -3925,6 +3919,9 @@ button{font-family:'DM Sans',sans-serif;}
       </div>
       <div class="roster-subtab-panel" id="followup-pane-dntu">
         <div id="followup-dntu-inner"></div>
+      </div>
+      <div class="roster-subtab-panel" id="followup-pane-appliances">
+        <div id="followup-appliances-inner"></div>
       </div>
       <div class="roster-subtab-panel" id="followup-pane-paused">
         <div id="followup-paused-inner"></div>
@@ -5782,6 +5779,15 @@ function showFollowupSubtab(tab){
     }
     try{loadDntuPolicy();}catch(e){}
   }
+  if(tab==='appliances'){
+    const inner=document.getElementById('followup-appliances-inner');
+    const src=document.getElementById('section-appliances');
+    if(inner && src && !inner.dataset.mounted){
+      Array.from(src.children).forEach(child=>inner.appendChild(child));
+      inner.dataset.mounted='true';
+    }
+    try{loadAppliances();}catch(e){}
+  }
   if(tab==='paused'){
     renderTemporarilyPausedAppointments();
   }
@@ -6533,14 +6539,15 @@ function platformIconSvg(key){
 }
 function getPlatformTitleData(key){
   const map={
-    'pathway-elective':{eyebrow:'Patient Pathways',title:'Elective Surgery',subtitle:'Search or add a patient to begin the elective surgery pathway.',icon:'pathway',colour:'#0f766e',colourDark:'#064e3b',soft:'#ecfdf9'},
-    'pathway-emergency':{eyebrow:'Patient Pathways',title:'Emergency Surgery',subtitle:'Search or add a patient to begin the emergency surgery pathway.',icon:'warning',colour:'#991b1b',colourDark:'#7f1d1d',soft:'#fef2f2'},
-    'pathway-bagging':{eyebrow:'Patient Pathways',title:'Bagging Advice for Fistula and Wounds',subtitle:'Search or add a patient for appliance, bagging, wound, drain, or fistula advice.',icon:'appliance',colour:'#5b21b6',colourDark:'#312e81',soft:'#f5f3ff'},
-    'pathway-readmission':{eyebrow:'Patient Pathways',title:'OSH Stoma (Outside Hospital)',subtitle:'For patients who already have a stoma and are newly referred to our clinic from abroad, another hospital or another service.',icon:'swap',colour:'#b45309',colourDark:'#92400e',soft:'#fffbeb'},
+    'pathway-elective':{eyebrow:'Patient Pathways',title:'Elective Surgery',subtitle:'',icon:'pathway',colour:'#0f766e',colourDark:'#064e3b',soft:'#ecfdf9'},
+    'pathway-emergency':{eyebrow:'Patient Pathways',title:'Emergency Surgery',subtitle:'',icon:'warning',colour:'#991b1b',colourDark:'#7f1d1d',soft:'#fef2f2'},
+    'pathway-bagging':{eyebrow:'Patient Pathways',title:'Bagging Advice for Fistula and Wounds',subtitle:'',icon:'appliance',colour:'#5b21b6',colourDark:'#312e81',soft:'#f5f3ff'},
+    'pathway-readmission':{eyebrow:'Patient Pathways',title:'OSH Stoma (Outside Hospital)',subtitle:'',icon:'swap',colour:'#b45309',colourDark:'#92400e',soft:'#fffbeb'},
     'followup-appointments':{eyebrow:'Follow-Up Centre',title:'Patient Appointments',subtitle:'Daily clinic appointment book and patient booking slots.',icon:'document',colour:'#0f766e',colourDark:'#0f2638',soft:'#ecfdf9'},
     'followup-outcomes':{eyebrow:'Follow-Up Centre',title:'Appointment Outcomes',subtitle:'Seen, DNTU, cancelled and follow-up status views.',icon:'chart',colour:'#2563eb',colourDark:'#1d4ed8',soft:'#eff6ff'},
     'followup-clinic':{eyebrow:'Follow-Up Centre',title:'Clinic Audit',subtitle:'Monthly appointment calendar and printable clinic activity.',icon:'calendar',colour:'#7c3aed',colourDark:'#5b21b6',soft:'#f5f3ff'},
     'followup-dntu':{eyebrow:'Follow-Up Centre',title:'DNTU',subtitle:'Patient-grouped Did Not Turn Up tracking.',icon:'warning',colour:'#c2413b',colourDark:'#7c2d12',soft:'#fff7ed'},
+    'followup-appliances':{eyebrow:'Follow-Up Centre',title:'Appliances',subtitle:'Products and appliance history used during follow-up and ongoing care.',icon:'appliance',colour:'#0f766e',colourDark:'#064e3b',soft:'#ecfdf9'},
     'followup-paused':{eyebrow:'Follow-Up Centre',title:'Temporarily Paused Appointments',subtitle:'Patients whose follow-up appointments are temporarily paused or awaiting restart.',icon:'pause',colour:'#d97706',colourDark:'#92400e',soft:'#fffbeb'},
     'roster-monthly':{eyebrow:'Roster Centre',title:'Monthly Roster',subtitle:'Monthly duty roster, leave, overtime, TIL and patient snapshot.',icon:'calendar',colour:'#475569',colourDark:'#334155',soft:'#f1f5f9'},
     'roster-cod':{eyebrow:'Roster Centre',title:'Change of Duty',subtitle:'Record duty swaps and update the roster automatically.',icon:'swap',colour:'#0f766e',colourDark:'#0f2638',soft:'#ecfdf9'},
@@ -14806,6 +14813,15 @@ function renderPathwayStepsPanel(tab,patient,steps,completions,col,allDone,total
   function val(id){return document.getElementById(id)?.value?.trim()||'';}
   function opt(list,selected=''){return '<option value="">Select...</option>'+list.map(x=>`<option value="${esc(x)}"${String(x)===String(selected)?' selected':''}>${esc(x)}</option>`).join('');}
 
+  window.renderPathwayDischargeLettersPanel=function(tab){
+    return `<div class="paper-section-title">Discharge Letters</div>
+      <div class="pathway-form-grid">
+        <div class="fg"><label>Letter status</label><select id="pp-${tab}-letter-status" data-pathway-extra data-extra-label="Discharge letter status"><option value="">Select...</option><option>Not started</option><option>Draft needed</option><option>Draft prepared</option><option>Finalised</option><option>Not applicable</option></select></div>
+        <div class="fg"><label>Letter date</label><input type="date" id="pp-${tab}-letter-date" data-pathway-extra data-extra-label="Discharge letter date"></div>
+        <div class="fg full"><label>Discharge letter notes</label><textarea id="pp-${tab}-letter-notes" data-pathway-extra data-extra-label="Discharge letter notes" placeholder="Drafting notes, discharge summary points, follow-up details, or reason not applicable"></textarea></div>
+      </div>`;
+  };
+
   window.pathwayTabConfig=function(tab){
     const p={key:'patient',label:'Step 1: Adding Patient Details',panel:renderPathwayPatientDetailsPanel(tab)};
     const s={key:'stoma',label:'Step 2: Adding Stoma & Surgery Details',panel:renderPathwayStomaSurgeryPanel(tab)};
@@ -14815,10 +14831,11 @@ function renderPathwayStepsPanel(tab,patient,steps,completions,col,allDone,total
     const post={key:'postop',label:'Post-operative Stoma Care',panel:renderPostOperativeStomaCarePanel(tab)};
     const teach={key:'teaching',label:'Management & Teaching Plan',panel:renderManagementTeachingPanel(tab)};
     const disc={key:'discharge',label:'Discharge / Follow-up Planning',panel:renderDischargePlanningPanel(tab)};
-    if(tab==='elective')return [p,s,daily,enc,pre,post,teach,disc];
-    if(tab==='emergency')return [p,s,daily,enc,post,teach,disc];
-    if(tab==='bagging')return [p,{key:'assessment',label:'Appliance / Bagging Assessment',panel:renderBaggingAssessmentPanel(tab)},{key:'appliance',label:'Appliance in Use',panel:renderApplianceInUsePanel(tab)},{key:'advice',label:'Advice / Teaching Given',panel:renderAdviceTeachingPanel(tab)},{key:'followup',label:'Follow-up Plan',panel:renderFollowupPlanPanel(tab)}];
-    return [p,{key:'existing',label:'Existing Stoma Details',panel:renderExistingStomaDetailsPanel(tab)},{key:'skin',label:'Appliance / Skin Assessment',panel:renderSkinAssessmentPanel(tab)},{key:'appliance',label:'Appliance in Use',panel:renderApplianceInUsePanel(tab)},teach,{key:'handover',label:'Follow-up / Handover Plan',panel:renderHandoverPlanPanel(tab)}];
+    const letters={key:'dischargeletters',label:'Discharge Letters',panel:renderPathwayDischargeLettersPanel(tab)};
+    if(tab==='elective')return [p,s,daily,enc,pre,post,teach,disc,letters];
+    if(tab==='emergency')return [p,s,daily,enc,post,teach,disc,letters];
+    if(tab==='bagging')return [p,{key:'assessment',label:'Appliance / Bagging Assessment',panel:renderBaggingAssessmentPanel(tab)},{key:'appliance',label:'Appliance in Use',panel:renderApplianceInUsePanel(tab)},{key:'advice',label:'Advice / Teaching Given',panel:renderAdviceTeachingPanel(tab)},{key:'followup',label:'Follow-up Plan',panel:renderFollowupPlanPanel(tab)},letters];
+    return [p,{key:'existing',label:'Existing Stoma Details',panel:renderExistingStomaDetailsPanel(tab)},{key:'skin',label:'Appliance / Skin Assessment',panel:renderSkinAssessmentPanel(tab)},{key:'appliance',label:'Appliance in Use',panel:renderApplianceInUsePanel(tab)},teach,{key:'handover',label:'Follow-up / Handover Plan',panel:renderHandoverPlanPanel(tab)},letters];
   };
 
   window.renderPathwayRegistrationTabs=function(tab){
@@ -15094,6 +15111,47 @@ function renderPathwayStepsPanel(tab,patient,steps,completions,col,allDone,total
   window.addEventListener('load',()=>{setTimeout(()=>{document.querySelectorAll('.patient-owner-panel').forEach(el=>el.style.display='none'); const nf=document.getElementById('pt-nurse-filter'); if(nf)nf.style.display='none';},200);});
 })();
 </script>
+
+
+<style>
+/* v66-28 — pathway form card balanced width, wrapped tabs, and menu reorganisation */
+#section-patient-pathways .platform-title-card .platform-title-copy p{display:none!important;}
+#section-patient-pathways .pathway-page-shell,
+#section-patient-pathways.platform-focused .platform-title-card{
+  width:calc(100% - 56px)!important;
+  max-width:1280px!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+}
+#section-patient-pathways .pathway-form-card{
+  width:100%!important;
+  max-width:1280px!important;
+}
+#section-patient-pathways .pathway-form-tabs{
+  flex-wrap:wrap!important;
+  overflow-x:visible!important;
+  align-items:stretch!important;
+  row-gap:0!important;
+}
+#section-patient-pathways .pathway-form-tab{
+  flex:0 1 auto!important;
+  padding:12px 13px!important;
+  min-height:42px!important;
+  font-size:12px!important;
+  line-height:1.15!important;
+}
+#section-patient-pathways .pathway-form-grid{
+  grid-template-columns:repeat(2,minmax(280px,1fr))!important;
+  gap:14px 18px!important;
+}
+#section-patient-pathways .pathway-form-panel{padding:18px 20px!important;}
+#section-patient-pathways .pathway-form-note{max-width:760px!important;}
+@media(max-width:900px){
+  #section-patient-pathways .pathway-page-shell,
+  #section-patient-pathways.platform-focused .platform-title-card{width:calc(100% - 28px)!important;}
+  #section-patient-pathways .pathway-form-grid{grid-template-columns:1fr!important;}
+}
+</style>
 
 </body>
 </html>
