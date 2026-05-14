@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
-<meta charset="UTF-8"/>
 <head>
+<meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>MDH Stoma Care Clinic — Patient Dashboard</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230f766e'/%3E%3Ctext x='32' y='40' font-size='24' text-anchor='middle' fill='white' font-family='Arial' font-weight='700'%3EMDH%3C/text%3E%3C/svg%3E">
@@ -3328,7 +3328,6 @@ button{font-family:'DM Sans',sans-serif;}
         <div><h2>Patient Centre</h2></div>
         <div style="display:flex;gap:8px;align-items:center;">
           <button class="btn-refresh" onclick="loadPatients();loadPatientCommandCounts();">↻ Refresh</button>
-          <button class="btn-add" onclick="openAddPatientModal()">+ Add New Patient</button>
         </div>
       </div>
 
@@ -3474,7 +3473,6 @@ button{font-family:'DM Sans',sans-serif;}
         <div class="pt-search-bar patient-outcome-search-bar">
           <input type="text" id="patient-outcome-search" placeholder="Search this outcome page by name, ID card, nurse, stoma type, ward, locality..." autocomplete="off" oninput="filterPatientOutcomeRows(this.value)" style="flex:1;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;min-width:0;"/>
           <button class="btn-refresh" onclick="document.getElementById('patient-outcome-search').value='';filterPatientOutcomeRows('');">✕ Clear</button>
-          <button class="btn-add" onclick="openAddPatientModal()">+ Add New Patient</button>
         </div>
         <div class="patient-command patient-table-card" id="patient-outcome-list-panel">
           <div style="overflow-x:auto;"><table class="dt">
@@ -3490,7 +3488,7 @@ button{font-family:'DM Sans',sans-serif;}
     <div class="section" id="section-patient-detail">
       <div class="phdr">
         <div>
-          <button onclick="switchSection('patients',null)" style="background:none;border:none;color:var(--teal);font-size:13px;cursor:pointer;padding:0;margin-bottom:6px;font-family:'DM Sans',sans-serif;">← Back to Patient Centre</button>
+          <button onclick="switchSection('patients',null)" class="platform-page-back">← Back to options</button>
           <h2 id="pd-title">Patient Profile</h2>
           <p id="pd-subtitle" style="font-size:12px;color:var(--muted);margin-top:3px;"></p>
         </div>
@@ -6271,6 +6269,7 @@ function platformIconSvg(key){
     swap:'<svg class="icon-svg" viewBox="0 0 24 24"><path d="M7 7h6a3 3 0 0 1 0 6H7"/><path d="m10 4-3 3 3 3"/><path d="M17 17H11a3 3 0 0 1 0-6h6"/><path d="m14 20 3-3-3-3"/></svg>',
     appliance:'<svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 3 4 7v10l8 4 8-4V7z"/><path d="M4 7l8 4 8-4"/><path d="M12 11v10"/></svg>',
     circleCheck:'<svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m9 12 2 2 4-5"/></svg>',
+    refresh:'<svg class="icon-svg" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 21v-5h5"/></svg>',
     document:'<svg class="icon-svg" viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="16" rx="2"/><path d="M9 8h6"/><path d="M9 12h6"/><path d="M9 16h4"/></svg>',
     bed:'<svg class="icon-svg" viewBox="0 0 24 24"><path d="M3 12h18"/><path d="M5 12V8a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v4"/><path d="M7 16v2"/><path d="M17 16v2"/><path d="M9 9h.01"/><path d="M12 6V3"/><path d="M10 4.5h4"/></svg>',
     outpatient:'<svg class="icon-svg" viewBox="0 0 24 24"><path d="M13 5h6v6"/><path d="M10 14 19 5"/><path d="M5 7v12h12"/></svg>',
@@ -6299,10 +6298,10 @@ function getPlatformTitleData(key){
     'patient-outpatient':{eyebrow:'Patient Centre',title:'Outpatients',subtitle:'Outpatient and community follow-up patient list.',icon:'outpatient',colour:'#7c3aed',colourDark:'#5b21b6',soft:'#f5f3ff'},
     'patient-handover':{eyebrow:'Patient Centre',title:'Handover',subtitle:'Patients requiring handover or active follow-up attention.',icon:'swap',colour:'#b45309',colourDark:'#92400e',soft:'#fffbeb'},
     'outcome-active':{eyebrow:'Patient Outcomes',title:'Active Patients',subtitle:'Patients currently active under the Stoma Care service.',icon:'circleCheck',colour:'#0f766e',colourDark:'#0f2638',soft:'#ecfdf9'},
-    'outcome-reversal':{eyebrow:'Patient Outcomes',title:'Reversed Patients',subtitle:'Patients whose stoma has been reversed, refashioned, closed or completed.',icon:'swap',colour:'#059669',colourDark:'#064e3b',soft:'#ecfdf5'},
-    'outcome-deceased':{eyebrow:'Patient Outcomes',title:'Deceased Patients',subtitle:'Patients marked as deceased in the patient record.',icon:'warning',colour:'#c2413b',colourDark:'#7f1d1d',soft:'#fff1f2'},
-    'outcome-relocated':{eyebrow:'Patient Outcomes',title:'Relocated Overseas',subtitle:'Patients documented as relocated or moved overseas.',icon:'location',colour:'#0284c7',colourDark:'#075985',soft:'#f0f9ff'},
-    'outcome-gozo':{eyebrow:'Patient Outcomes',title:'Discharged to Gozo',subtitle:'Patients discharged or transferred to Gozo services.',icon:'gozo',colour:'#475569',colourDark:'#334155',soft:'#f1f5f9'}
+    'outcome-reversal':{eyebrow:'Patient Outcomes',title:'Reversed Patients',subtitle:'Patients whose stoma has been reversed, refashioned, closed or completed.',icon:'refresh',colour:'#2563eb',colourDark:'#1d4ed8',soft:'#eff6ff'},
+    'outcome-deceased':{eyebrow:'Patient Outcomes',title:'Deceased Patients',subtitle:'Patients marked as deceased in the patient record.',icon:'warning',colour:'#7c3aed',colourDark:'#4c1d95',soft:'#f5f3ff'},
+    'outcome-relocated':{eyebrow:'Patient Outcomes',title:'Relocated Overseas',subtitle:'Patients documented as relocated or moved overseas.',icon:'location',colour:'#b45309',colourDark:'#92400e',soft:'#fffbeb'},
+    'outcome-gozo':{eyebrow:'Patient Outcomes',title:'Discharged to Gozo',subtitle:'Patients discharged or transferred to Gozo services.',icon:'gozo',colour:'#0f766e',colourDark:'#065f46',soft:'#ecfdf5'}
   };
   return map[key]||{eyebrow:'MDH Stoma Care',title:'Selected View',subtitle:'Current workspace',icon:'checklist',colour:'#0f766e'};
 }
@@ -11234,21 +11233,21 @@ function buildClinicPrintHtml(rows){
 .patient-outcome-search-bar{max-width:1120px!important;margin:0 auto 14px!important;}
 #patient-outcome-list-panel{max-width:1120px;margin:0 auto!important;}
 .outcome-card.outcome-active{border-left-color:#0f766e!important;}
-.outcome-card.outcome-reversal{border-left-color:#059669!important;}
-.outcome-card.outcome-deceased{border-left-color:#c2413b!important;}
-.outcome-card.outcome-relocated{border-left-color:#0284c7!important;}
-.outcome-card.outcome-gozo{border-left-color:#475569!important;}
+.outcome-card.outcome-reversal{border-left-color:#2563eb!important;}
+.outcome-card.outcome-deceased{border-left-color:#7c3aed!important;}
+.outcome-card.outcome-relocated{border-left-color:#b45309!important;}
+.outcome-card.outcome-gozo{border-left-color:#0f766e!important;}
 .outcome-card.outcome-active .command-icon{background:linear-gradient(135deg,#0f2638,#0f766e)!important;}
-.outcome-card.outcome-reversal .command-icon{background:linear-gradient(135deg,#064e3b,#059669)!important;}
-.outcome-card.outcome-deceased .command-icon{background:linear-gradient(135deg,#7f1d1d,#c2413b)!important;}
-.outcome-card.outcome-relocated .command-icon{background:linear-gradient(135deg,#075985,#0284c7)!important;}
-.outcome-card.outcome-gozo .command-icon{background:linear-gradient(135deg,#334155,#475569)!important;}
+.outcome-card.outcome-reversal .command-icon{background:linear-gradient(135deg,#1d4ed8,#2563eb)!important;}
+.outcome-card.outcome-deceased .command-icon{background:linear-gradient(135deg,#4c1d95,#7c3aed)!important;}
+.outcome-card.outcome-relocated .command-icon{background:linear-gradient(135deg,#92400e,#b45309)!important;}
+.outcome-card.outcome-gozo .command-icon{background:linear-gradient(135deg,#065f46,#0f766e)!important;}
 .outcome-status-pill{display:inline-block;padding:4px 9px;border-radius:999px;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.15px;border:1px solid transparent;white-space:nowrap;}
 .outcome-status-pill.active{background:#ecfdf9;color:#0f766e;border-color:#99f6e4;}
-.outcome-status-pill.reversal{background:#e8f5e9;color:#166534;border-color:#bbf7d0;}
-.outcome-status-pill.deceased{background:#fee2e2;color:#991b1b;border-color:#fecaca;}
-.outcome-status-pill.relocated{background:#e0f2fe;color:#075985;border-color:#bae6fd;}
-.outcome-status-pill.gozo{background:#f1f5f9;color:#334155;border-color:#cbd5e1;}
+.outcome-status-pill.reversal{background:#eff6ff;color:#1d4ed8;border-color:#bfdbfe;}
+.outcome-status-pill.deceased{background:#f5f3ff;color:#5b21b6;border-color:#ddd6fe;}
+.outcome-status-pill.relocated{background:#fffbeb;color:#92400e;border-color:#fde68a;}
+.outcome-status-pill.gozo{background:#ecfdf5;color:#065f46;border-color:#bbf7d0;}
 </style>
 
 </head><body>
@@ -13472,10 +13471,10 @@ function renderPatientOutcomeRows(rows,view){
 }
 .outcome-status-pill.paused{background:#fffbeb;color:#92400e;border-color:#fde68a;}
 #section-patient-outcomes .platform-title-card[data-view="active"]{border-left-color:#0f766e!important;}
-#section-patient-outcomes .platform-title-card[data-view="reversal"]{border-left-color:#059669!important;}
-#section-patient-outcomes .platform-title-card[data-view="deceased"]{border-left-color:#c2413b!important;}
-#section-patient-outcomes .platform-title-card[data-view="relocated"]{border-left-color:#0284c7!important;}
-#section-patient-outcomes .platform-title-card[data-view="gozo"]{border-left-color:#475569!important;}
+#section-patient-outcomes .platform-title-card[data-view="reversal"]{border-left-color:#2563eb!important;}
+#section-patient-outcomes .platform-title-card[data-view="deceased"]{border-left-color:#7c3aed!important;}
+#section-patient-outcomes .platform-title-card[data-view="relocated"]{border-left-color:#b45309!important;}
+#section-patient-outcomes .platform-title-card[data-view="gozo"]{border-left-color:#0f766e!important;}
 
 
 /* v66-14 — exact consistency: subpage title colour and icon match the selected button */
@@ -13505,10 +13504,65 @@ function renderPatientOutcomeRows(rows,view){
   border-color:var(--platform-colour,#0f766e)!important;
 }
 #section-patient-outcomes .platform-title-card[data-view="active"]{--platform-colour:#0f766e;--platform-colour-dark:#0f2638;--platform-icon-gradient:linear-gradient(135deg,#0f2638,#0f766e);--platform-soft:#ecfdf9;}
-#section-patient-outcomes .platform-title-card[data-view="reversal"]{--platform-colour:#059669;--platform-colour-dark:#064e3b;--platform-icon-gradient:linear-gradient(135deg,#064e3b,#059669);--platform-soft:#ecfdf5;}
-#section-patient-outcomes .platform-title-card[data-view="deceased"]{--platform-colour:#c2413b;--platform-colour-dark:#7f1d1d;--platform-icon-gradient:linear-gradient(135deg,#7f1d1d,#c2413b);--platform-soft:#fff1f2;}
-#section-patient-outcomes .platform-title-card[data-view="relocated"]{--platform-colour:#0284c7;--platform-colour-dark:#075985;--platform-icon-gradient:linear-gradient(135deg,#075985,#0284c7);--platform-soft:#f0f9ff;}
-#section-patient-outcomes .platform-title-card[data-view="gozo"]{--platform-colour:#475569;--platform-colour-dark:#334155;--platform-icon-gradient:linear-gradient(135deg,#334155,#475569);--platform-soft:#f1f5f9;}
+#section-patient-outcomes .platform-title-card[data-view="reversal"]{--platform-colour:#2563eb;--platform-colour-dark:#1d4ed8;--platform-icon-gradient:linear-gradient(135deg,#1d4ed8,#2563eb);--platform-soft:#eff6ff;}
+#section-patient-outcomes .platform-title-card[data-view="deceased"]{--platform-colour:#7c3aed;--platform-colour-dark:#4c1d95;--platform-icon-gradient:linear-gradient(135deg,#4c1d95,#7c3aed);--platform-soft:#f5f3ff;}
+#section-patient-outcomes .platform-title-card[data-view="relocated"]{--platform-colour:#b45309;--platform-colour-dark:#92400e;--platform-icon-gradient:linear-gradient(135deg,#92400e,#b45309);--platform-soft:#fffbeb;}
+#section-patient-outcomes .platform-title-card[data-view="gozo"]{--platform-colour:#0f766e;--platform-colour-dark:#065f46;--platform-icon-gradient:linear-gradient(135deg,#065f46,#0f766e);--platform-soft:#ecfdf5;}
+
+
+/* v66-15 — outcome title/card exact colour + same back-button type everywhere */
+:root{
+  --outcome-active:#0f766e;
+  --outcome-active-dark:#0f2638;
+  --outcome-reversal:#2563eb;
+  --outcome-reversal-dark:#1d4ed8;
+  --outcome-deceased:#7c3aed;
+  --outcome-deceased-dark:#4c1d95;
+  --outcome-relocated:#b45309;
+  --outcome-relocated-dark:#92400e;
+  --outcome-gozo:#0f766e;
+  --outcome-gozo-dark:#065f46;
+}
+#section-patient-outcomes .outcome-card.outcome-active{--btn-colour:var(--outcome-active);--btn-dark:var(--outcome-active-dark);border-left-color:var(--btn-colour)!important;}
+#section-patient-outcomes .outcome-card.outcome-reversal{--btn-colour:var(--outcome-reversal);--btn-dark:var(--outcome-reversal-dark);border-left-color:var(--btn-colour)!important;}
+#section-patient-outcomes .outcome-card.outcome-deceased{--btn-colour:var(--outcome-deceased);--btn-dark:var(--outcome-deceased-dark);border-left-color:var(--btn-colour)!important;}
+#section-patient-outcomes .outcome-card.outcome-relocated{--btn-colour:var(--outcome-relocated);--btn-dark:var(--outcome-relocated-dark);border-left-color:var(--btn-colour)!important;}
+#section-patient-outcomes .outcome-card.outcome-gozo{--btn-colour:var(--outcome-gozo);--btn-dark:var(--outcome-gozo-dark);border-left-color:var(--btn-colour)!important;}
+#section-patient-outcomes .outcome-card .command-icon{background:linear-gradient(135deg,var(--btn-dark),var(--btn-colour))!important;color:#ffffff!important;}
+#section-patient-outcomes .platform-title-card[data-view="active"]{--platform-colour:var(--outcome-active)!important;--platform-colour-dark:var(--outcome-active-dark)!important;--platform-icon-gradient:linear-gradient(135deg,var(--outcome-active-dark),var(--outcome-active))!important;--platform-soft:#ecfdf9!important;}
+#section-patient-outcomes .platform-title-card[data-view="reversal"]{--platform-colour:var(--outcome-reversal)!important;--platform-colour-dark:var(--outcome-reversal-dark)!important;--platform-icon-gradient:linear-gradient(135deg,var(--outcome-reversal-dark),var(--outcome-reversal))!important;--platform-soft:#eff6ff!important;}
+#section-patient-outcomes .platform-title-card[data-view="deceased"]{--platform-colour:var(--outcome-deceased)!important;--platform-colour-dark:var(--outcome-deceased-dark)!important;--platform-icon-gradient:linear-gradient(135deg,var(--outcome-deceased-dark),var(--outcome-deceased))!important;--platform-soft:#f5f3ff!important;}
+#section-patient-outcomes .platform-title-card[data-view="relocated"]{--platform-colour:var(--outcome-relocated)!important;--platform-colour-dark:var(--outcome-relocated-dark)!important;--platform-icon-gradient:linear-gradient(135deg,var(--outcome-relocated-dark),var(--outcome-relocated))!important;--platform-soft:#fffbeb!important;}
+#section-patient-outcomes .platform-title-card[data-view="gozo"]{--platform-colour:var(--outcome-gozo)!important;--platform-colour-dark:var(--outcome-gozo-dark)!important;--platform-icon-gradient:linear-gradient(135deg,var(--outcome-gozo-dark),var(--outcome-gozo))!important;--platform-soft:#ecfdf5!important;}
+#section-patient-outcomes .platform-title-card{border-left-color:var(--platform-colour)!important;}
+#section-patient-outcomes .platform-title-icon{background:var(--platform-icon-gradient)!important;}
+.platform-title-back,
+.platform-page-back,
+#global-prev-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  min-height:40px;
+  padding:9px 16px!important;
+  border-radius:999px!important;
+  border:1.5px solid color-mix(in srgb,var(--platform-colour,#0f766e) 38%,#ffffff)!important;
+  background:#ffffff!important;
+  color:var(--platform-colour,#0f766e)!important;
+  font-family:'DM Sans',sans-serif!important;
+  font-size:13px!important;
+  font-weight:950!important;
+  box-shadow:0 4px 14px rgba(15,38,56,.06)!important;
+  cursor:pointer!important;
+}
+.platform-title-back:hover,
+.platform-page-back:hover,
+#global-prev-btn:hover{
+  background:var(--platform-soft,#ecfdf9)!important;
+  border-color:var(--platform-colour,#0f766e)!important;
+  transform:translateY(-1px);
+}
+#section-patient-outcomes #patient-outcome-page .btn-add{display:none!important;}
 
 </style>
 </body>
