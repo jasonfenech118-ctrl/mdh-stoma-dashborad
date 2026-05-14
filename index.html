@@ -6560,6 +6560,8 @@ const PATHWAY_LOCALITY_OPTIONS=[
   'Attard','Balzan','Birgu','Birkirkara','Birzebbuga','Bormla','Dingli','Fgura','Floriana','Gudja','Gzira','Ghaxaq','Hamrun','Iklin','Isla','Kalkara','Kirkop','Lija','Luqa','Marsa','Marsaskala','Marsaxlokk','Mdina','Mellieha','Mgarr','Mosta','Mqabba','Msida','Mtarfa','Naxxar','Paola','Pembroke','Pieta','Qormi','Qrendi','Rabat','Safi','San Gwann','Santa Lucija','Santa Venera','Siggiewi','Sliema','St Julian\'s','St Paul\'s Bay','Swieqi','Ta\' Xbiex','Tarxien','Valletta','Zabbar','Zebbug','Zejtun','Zurrieq','Gozo'
 ];
 
+window.PATHWAY_WARD_OPTIONS = PATHWAY_WARD_OPTIONS;
+window.PATHWAY_LOCALITY_OPTIONS = PATHWAY_LOCALITY_OPTIONS;
 function getPathwayFormMeta(tab){
   const map={
     elective:{label:'Elective Surgery',short:'Elective',colour:'#0f766e',pathway:'elective',status:'inpatient',episode:'Elective',subtitle:'Register a planned elective stoma patient.'},
@@ -6661,7 +6663,7 @@ function renderPathwayPatientDetailsPanel(tab){
     <div class="fg"><label>ID Card</label><input id="pp-${tab}-id" placeholder="000000M" autocomplete="off"/></div>
     <div class="fg"><label>Date of Birth <span class="req">*</span></label><input type="date" id="pp-${tab}-dob"/></div>
     <div class="fg"><label>Contact Number</label><input id="pp-${tab}-ph" placeholder="Phone number" autocomplete="off"/></div>
-    <div class="fg"><label>Gender <span class="req">*</span></label><select id="pp-${tab}-sex"><option value="">Select...</option><option>Male</option><option>Female</option><option>Other</option></select></div>
+    <div class="fg"><label>Gender <span class="req">*</span></label><select id="pp-${tab}-sex"><option value="">Select...</option><option>Male</option><option>Female</option></select></div>
     <div class="fg full"><label>Locality <span class="req">*</span></label><select id="pp-${tab}-locality">${optionList(PATHWAY_LOCALITY_OPTIONS)}</select></div>
   </div>`;
 }
@@ -8264,6 +8266,15 @@ function renderMdhLetterHtml(data, p){
   #section-patient-pathways .pathway-paper-table{min-width:760px!important;}
 }
 </style>
+
+
+<script>
+/* v66-26 safety: ensure pathway dropdown option lists are available to all renderers */
+(function(){
+  window.PATHWAY_WARD_OPTIONS = window.PATHWAY_WARD_OPTIONS || ['SAU1','SAU2','SW1','SW2','SW3','SW4','SW5','SHDU','ITU','Euro1','Euro2','Other'];
+  window.PATHWAY_LOCALITY_OPTIONS = window.PATHWAY_LOCALITY_OPTIONS || ['Attard','Balzan','Birgu','Birkirkara','Birzebbuga','Bormla','Dingli','Fgura','Floriana','Gudja','Gzira','Ghaxaq','Hamrun','Iklin','Isla','Kalkara','Kirkop','Lija','Luqa','Marsa','Marsaskala','Marsaxlokk','Mdina','Mellieha','Mgarr','Mosta','Mqabba','Msida','Mtarfa','Naxxar','Paola','Pembroke','Pieta','Qormi','Qrendi','Rabat','Safi','San Gwann','Santa Lucija','Santa Venera','Siggiewi','Sliema','St Julian\'s','St Paul\'s Bay','Swieqi','Ta\' Xbiex','Tarxien','Valletta','Zabbar','Zebbug','Zejtun','Zurrieq','Gozo'];
+})();
+</script>
 
 </body></html>`;
 }
@@ -12220,7 +12231,7 @@ function openAddPatientModal(){
     <div class="fg"><label>Date of Birth</label><input type="date" id="mp-dob"/></div>
     <div class="fg"><label>Contact Number</label><input id="mp-ph" placeholder="Phone number"/></div>
     <div class="fg"><label>ID Card</label><input id="mp-id" placeholder="000000M"/></div>
-    <div class="fg"><label>Sex</label><select id="mp-sex"><option value="">—</option><option>Male</option><option>Female</option><option>Other</option></select></div>
+    <div class="fg"><label>Sex</label><select id="mp-sex"><option value="">—</option><option>Male</option><option>Female</option></select></div>
     <div class="fg"><label>Locality</label><input id="mp-locality" placeholder="Locality / Town"/></div>
   </div>
   <div style="font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:8px;">Stoma &amp; Care</div>
@@ -14165,7 +14176,7 @@ function renderPathwayPatientDetailsPanel(tab){
     <div class="fg"><label>ID Card</label><input data-patient-detail="true" id="pp-${tab}-id" placeholder="000000M" autocomplete="off"/></div>
     <div class="fg"><label>Date of Birth <span class="req">*</span></label><input data-patient-detail="true" type="date" id="pp-${tab}-dob"/></div>
     <div class="fg"><label>Contact Number</label><input data-patient-detail="true" id="pp-${tab}-ph" placeholder="Phone number" autocomplete="off"/></div>
-    <div class="fg"><label>Gender <span class="req">*</span></label><select data-patient-detail="true" id="pp-${tab}-sex"><option value="">Select...</option><option>Male</option><option>Female</option><option>Other</option></select></div>
+    <div class="fg"><label>Gender <span class="req">*</span></label><select data-patient-detail="true" id="pp-${tab}-sex"><option value="">Select...</option><option>Male</option><option>Female</option></select></div>
     <div class="fg full"><label>Locality <span class="req">*</span></label><select data-patient-detail="true" id="pp-${tab}-locality">${optionList(PATHWAY_LOCALITY_OPTIONS)}</select></div>
   </div>`;
 }
@@ -14827,7 +14838,7 @@ function renderPathwayStepsPanel(tab,patient,steps,completions,col,allDone,total
       <div class="fg"><label>Surname <span class="req">*</span></label><input id="pp-${tab}-sn" autocomplete="off"></div>
       <div class="fg"><label>ID Card No.</label><input id="pp-${tab}-id" autocomplete="off"></div>
       <div class="fg"><label>Date of Birth <span class="req">*</span></label><input type="date" id="pp-${tab}-dob"></div>
-      <div class="fg"><label>Gender <span class="req">*</span></label><select id="pp-${tab}-sex"><option value="">Select...</option><option>Male</option><option>Female</option><option>Other</option></select></div>
+      <div class="fg"><label>Gender <span class="req">*</span></label><select id="pp-${tab}-sex"><option value="">Select...</option><option>Male</option><option>Female</option></select></div>
       <div class="fg"><label>Telephone No.</label><input id="pp-${tab}-ph" autocomplete="off"></div>
       <div class="fg"><label>Locality <span class="req">*</span></label><select id="pp-${tab}-locality">${opt(window.PATHWAY_LOCALITY_OPTIONS||[])}</select></div>
       <div class="fg"><label>Consultant</label><input id="pp-${tab}-cons" autocomplete="off"></div>
