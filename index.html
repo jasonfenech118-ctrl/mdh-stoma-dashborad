@@ -7479,7 +7479,7 @@ function renderPathwayPatientDetailsPanel(tab){
     <div class="fg"><label>ID Card</label><input id="pp-${tab}-id" placeholder="000000M" autocomplete="off"/></div>
     <div class="fg"><label>Date of Birth <span class="req">*</span></label><input type="date" id="pp-${tab}-dob"/></div>
     <div class="fg"><label>Contact Number</label><input id="pp-${tab}-ph" placeholder="Phone number" autocomplete="off"/></div>
-    <div class="fg"><label>Gender <span class="req">*</span></label><select id="pp-${tab}-sex"><option value="">Select...</option><option>Male</option><option>Female</option></select></div>
+    <div class="fg"><label>Gender <span class="req">*</span></label><select data-patient-detail="true" id="pp-${tab}-sex"><option value="">Select...</option><option>Male</option><option>Female</option></select></div>
     <div class="fg full"><label>Locality <span class="req">*</span></label><select id="pp-${tab}-locality">${optionList(PATHWAY_LOCALITY_OPTIONS)}</select></div>
   </div>`;
 }
@@ -15573,7 +15573,7 @@ function renderPathwayStepsPanel(tab,patient,steps,completions,col,allDone,total
 </style>
 
 <script>
-/* v66-23 — implements pending pathway, inpatient/outpatient, episode and encounter notes */
+/* v66-45 — Step 1 patient details can save/lock before Step 2 surgery date; ward remains in Daily Reviews */
 (function(){
   const todayIso=()=>new Date().toISOString().slice(0,10);
   const nowTime=()=>new Date().toTimeString().slice(0,5);
@@ -15643,17 +15643,17 @@ function renderPathwayStepsPanel(tab,patient,steps,completions,col,allDone,total
   };
 
   window.renderPathwayPatientDetailsPanel=function(tab){
-    const wardField = tab==='elective' ? '' : `<div class="fg"><label>Ward <span class="req">*</span></label><select id="pp-${tab}-ward">${opt(window.PATHWAY_WARD_OPTIONS||[])}</select></div>`;
+    const wardField = tab==='elective' ? '' : `<div class="fg"><label>Ward <span class="req">*</span></label><select data-patient-detail="true" id="pp-${tab}-ward">${opt(window.PATHWAY_WARD_OPTIONS||[])}</select></div>`;
     return `<div class="pathway-step-note"><strong>Step 1: Adding Patient Details.</strong> Save and lock these details first. Once saved, demographic details are protected and should only be unlocked for genuine corrections.</div>
     <div class="pathway-form-grid">
-      <div class="fg"><label>First Name <span class="req">*</span></label><input id="pp-${tab}-fn" autocomplete="off"></div>
-      <div class="fg"><label>Surname <span class="req">*</span></label><input id="pp-${tab}-sn" autocomplete="off"></div>
-      <div class="fg"><label>ID Card No.</label><input id="pp-${tab}-id" autocomplete="off"></div>
-      <div class="fg"><label>Date of Birth <span class="req">*</span></label><input type="date" id="pp-${tab}-dob"></div>
-      <div class="fg"><label>Gender <span class="req">*</span></label><select id="pp-${tab}-sex"><option value="">Select...</option><option>Male</option><option>Female</option></select></div>
-      <div class="fg"><label>Telephone No.</label><input id="pp-${tab}-ph" autocomplete="off"></div>
-      <div class="fg"><label>Locality <span class="req">*</span></label><select id="pp-${tab}-locality">${opt(window.PATHWAY_LOCALITY_OPTIONS||[])}</select></div>
-      <div class="fg"><label>Consultant</label><input id="pp-${tab}-cons" autocomplete="off"></div>
+      <div class="fg"><label>First Name <span class="req">*</span></label><input data-patient-detail="true" id="pp-${tab}-fn" autocomplete="off"></div>
+      <div class="fg"><label>Surname <span class="req">*</span></label><input data-patient-detail="true" id="pp-${tab}-sn" autocomplete="off"></div>
+      <div class="fg"><label>ID Card No.</label><input data-patient-detail="true" id="pp-${tab}-id" autocomplete="off"></div>
+      <div class="fg"><label>Date of Birth <span class="req">*</span></label><input data-patient-detail="true" type="date" id="pp-${tab}-dob"></div>
+      <div class="fg"><label>Gender <span class="req">*</span></label><select data-patient-detail="true" id="pp-${tab}-sex"><option value="">Select...</option><option>Male</option><option>Female</option></select></div>
+      <div class="fg"><label>Telephone No.</label><input data-patient-detail="true" id="pp-${tab}-ph" autocomplete="off"></div>
+      <div class="fg"><label>Locality <span class="req">*</span></label><select data-patient-detail="true" id="pp-${tab}-locality">${opt(window.PATHWAY_LOCALITY_OPTIONS||[])}</select></div>
+      <div class="fg"><label>Consultant</label><input data-patient-detail="true" id="pp-${tab}-cons" autocomplete="off"></div>
       ${wardField}
     </div>`;
   };
@@ -15678,8 +15678,8 @@ function renderPathwayStepsPanel(tab,patient,steps,completions,col,allDone,total
       <div class="fg"><label>End / Loop</label><select id="pp-${tab}-endloop" data-pathway-extra data-extra-label="End / Loop"><option value="">Select...</option><option>End</option><option>Loop</option><option>Not applicable</option></select></div>
       <div class="fg"><label>Date of original surgery <span class="req">*</span></label><input type="date" id="pp-${tab}-surg"></div>
       <div class="fg"><label>Hospital / Country / Source</label><input id="pp-${tab}-source" placeholder="Outside hospital / abroad / community" autocomplete="off"></div>
-      <div class="fg"><label>Consultant</label><input id="pp-${tab}-cons" autocomplete="off"></div>
-      <div class="fg"><label>Ward <span class="req">*</span></label><select id="pp-${tab}-ward">${opt(window.PATHWAY_WARD_OPTIONS||[])}</select></div>
+      <div class="fg"><label>Consultant</label><input data-patient-detail="true" id="pp-${tab}-cons" autocomplete="off"></div>
+      <div class="fg"><label>Ward <span class="req">*</span></label><select data-patient-detail="true" id="pp-${tab}-ward">${opt(window.PATHWAY_WARD_OPTIONS||[])}</select></div>
       <div class="fg full"><label>Operation Performed</label><textarea id="pp-${tab}-operation" data-pathway-extra data-extra-label="Operation performed" placeholder="Known operation / procedure"></textarea></div>
       <div class="fg full"><label>Findings</label><textarea id="pp-${tab}-findings" data-pathway-extra data-extra-label="Findings" placeholder="Known findings or relevant history"></textarea></div>
     </div>`;
@@ -15736,7 +15736,7 @@ function renderPathwayStepsPanel(tab,patient,steps,completions,col,allDone,total
 
   window.renderPathwaySearch=function(tab){
     const meta=getPathwayFormMeta(tab);
-    return `<div class="pathway-page-shell" style="--pathway-colour:${meta.colour};"><div class="pathway-form-card" id="pathway-new-form-${tab}"><div class="pathway-form-head" style="padding:18px 18px 0;"><div><h3>Add new ${esc(meta.label)} patient</h3><p>Start the pathway. Patient details are saved and locked first, then the stoma/surgery and review sections can be completed later.</p></div></div>${renderPathwayRegistrationTabs(tab)}<div class="pathway-form-actions"><div class="pathway-form-note">Step 1: Adding Patient Details is protected after saving. The saved pathway appears in Inpatients when the patient is admitted or has an active inpatient pathway.</div><div style="display:flex;gap:8px;flex-wrap:wrap;"><button type="button" class="pathway-reset-btn" onclick="resetPathwayRegistrationForm('${tab}')">Clear form</button><button type="button" class="pathway-save-btn" onclick="savePathwayPagePatient('${tab}')">Save &amp; Lock Patient Details</button></div></div></div></div>`;
+    return `<div class="pathway-page-shell" style="--pathway-colour:${meta.colour};"><div class="pathway-form-card" id="pathway-new-form-${tab}"><div class="pathway-form-head" style="padding:18px 18px 0;"><div><h3>Add new ${esc(meta.label)} patient</h3><p>Start the pathway. Patient details are saved and locked first, then the stoma/surgery and review sections can be completed later.</p></div></div>${renderPathwayRegistrationTabs(tab)}<div class="pathway-form-actions"><div class="pathway-form-note">Step 1: Adding Patient Details is protected after saving. Date of surgery is completed in Step 2. Ward / location is recorded in Daily Reviews when the patient is seen.</div><div style="display:flex;gap:8px;flex-wrap:wrap;"><button type="button" class="pathway-reset-btn" onclick="resetPathwayRegistrationForm('${tab}')">Clear form</button><button type="button" class="pathway-save-btn" data-pathway-main-save="true" onclick="savePathwayPagePatient('${tab}')">Save &amp; Lock Patient Details</button></div></div></div></div>`;
   };
 
   async function createInitialEncounter(patientId,meta,patientPayload){
@@ -15749,6 +15749,19 @@ function renderPathwayStepsPanel(tab,patient,steps,completions,col,allDone,total
   window.savePathwayPagePatient=async function(tab){
     const meta=getPathwayFormMeta(tab);
     const v=id=>val(`pp-${tab}-${id}`);
+    const step1Only=(tab==='elective'||tab==='emergency') && !window._pathwayPatientDetailsLocked?.[tab];
+    if(step1Only){
+      const step1Required=[['fn','First name'],['sn','Surname'],['dob','Date of birth'],['sex','Gender'],['locality','Locality']];
+      for(const [id,label] of step1Required){
+        if(!v(id)){alert(label+' is required before continuing to Step 2.');focusPathwayRequiredTab(tab,`pp-${tab}-${id}`);return;}
+      }
+      window._pathwayPatientDetailsLocked=window._pathwayPatientDetailsLocked||{};
+      window._pathwayPatientDetailsLocked[tab]=true;
+      try{ if(typeof applyPathwayPatientLockState==='function') applyPathwayPatientLockState(tab); }catch(e){}
+      alert('Step 1 patient details saved and locked. Continue to Step 2: Adding Stoma & Surgery Details.');
+      switchPathwayRegistrationTab(tab,'stoma');
+      return;
+    }
     const required=[['fn','First name'],['sn','Surname'],['dob','Date of birth'],['sex','Gender'],['locality','Locality']]; if(tab!=='elective')required.push(['ward','Ward']);
     if(tab==='elective'||tab==='emergency'||tab==='readmission')required.push(['surg','Date of surgery']);
     for(const [id,label] of required){if(!v(id)){alert(label+' is required.');focusPathwayRequiredTab(tab,`pp-${tab}-${id}`);return;}}
