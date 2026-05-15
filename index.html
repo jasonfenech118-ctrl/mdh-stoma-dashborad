@@ -2794,6 +2794,75 @@ button{font-family:'DM Sans',sans-serif;}
   #section-followups #followup-subtab-bar{overflow-x:auto!important;overflow-y:visible!important;}
   #section-followups .followup-roster-dropdown{left:0!important;right:auto!important;width:min(320px,calc(100vw - 42px))!important;min-width:0!important;}
 }
+
+
+/* v66-35 — make every Follow-Up navigation tab use the same dropdown pattern */
+#section-followups .followup-nav-tab-wrap{
+  position:relative!important;
+  display:flex!important;
+  align-items:stretch!important;
+  min-width:190px!important;
+  overflow:visible!important;
+  z-index:450!important;
+}
+#section-followups #followup-subtab-bar .followup-nav-tab-wrap .roster-subtab{
+  width:100%!important;
+  min-width:190px!important;
+  justify-content:flex-start!important;
+}
+#section-followups .followup-nav-tab-wrap:hover{z-index:900!important;}
+#section-followups .followup-mini-dropdown{
+  position:absolute!important;
+  top:calc(100% + 8px)!important;
+  left:0!important;
+  right:auto!important;
+  width:320px!important;
+  min-width:300px!important;
+  background:#ffffff!important;
+  border:1px solid #dbe3ea!important;
+  border-left:4px solid var(--dropdown-colour,#475569)!important;
+  border-radius:14px!important;
+  box-shadow:0 20px 46px rgba(15,38,56,.22)!important;
+  padding:8px!important;
+  display:none!important;
+  z-index:99999!important;
+}
+#section-followups .followup-mini-dropdown.open,
+#section-followups .followup-nav-tab-wrap:hover .followup-mini-dropdown{
+  display:grid!important;
+  gap:6px!important;
+}
+#section-followups .followup-mini-dropdown button{
+  width:100%!important;
+  display:grid!important;
+  grid-template-columns:34px 1fr!important;
+  gap:9px!important;
+  align-items:center!important;
+  text-align:left!important;
+  min-height:48px!important;
+  border:1px solid transparent!important;
+  background:#fff!important;
+  border-radius:11px!important;
+  padding:9px 10px!important;
+  cursor:pointer!important;
+  font-family:'DM Sans',sans-serif!important;
+  color:var(--navy)!important;
+}
+#section-followups .followup-mini-dropdown button:hover{
+  background:linear-gradient(135deg,#fff 0%,var(--dropdown-soft,#f8fafc) 100%)!important;
+  border-color:#cbd5e1!important;
+}
+#section-followups .followup-mini-dropdown strong{display:block!important;font-size:12px!important;font-weight:950!important;letter-spacing:.01em!important;color:#0f2638!important;}
+#section-followups .followup-mini-dropdown small{display:block!important;font-size:10.5px!important;font-weight:650!important;color:#64748b!important;margin-top:1px!important;}
+.mini-roster-icon.teal{background:linear-gradient(135deg,#064e3b,#0f766e)!important;}
+.mini-roster-icon.red{background:linear-gradient(135deg,#7c2d12,#c2413b)!important;}
+.mini-roster-icon.amber{background:linear-gradient(135deg,#92400e,#d97706)!important;}
+#section-followups .followup-nav-tab-wrap .roster-subtab.active{box-shadow:inset 0 -3px 0 var(--dropdown-colour,#0f766e)!important;}
+@media(max-width:760px){
+  #section-followups .followup-nav-tab-wrap{min-width:220px!important;}
+  #section-followups .followup-mini-dropdown{left:0!important;right:auto!important;width:min(320px,calc(100vw - 42px))!important;min-width:0!important;}
+}
+
 </style>
 
 <style>
@@ -4377,35 +4446,59 @@ button{font-family:'DM Sans',sans-serif;}
         <button class="btn-refresh" onclick="refreshFollowupSubtab();">↻ Refresh</button>
       </div>
 
-      <!-- Roster-style subtab cards -->
-      <div class="roster-subtab-bar" id="followup-subtab-bar" role="tablist" aria-label="Follow-Up tabs" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr));">
-        <button type="button" class="roster-subtab active" id="followup-subtab-appointments" onclick="showFollowupSubtab('appointments')" style="background:linear-gradient(90deg,rgba(20,184,166,.42) 0%,rgba(20,184,166,.22) 28%,rgba(20,184,166,.09) 52%,rgba(255,255,255,.93) 74%,#eefbf8 100%);">
-          <span class="roster-subtab-icon" style="background:linear-gradient(135deg,#0f766e,#14b8a6);"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="16" rx="2"/><path d="M9 8h6"/><path d="M9 12h6"/><path d="M9 16h4"/></svg></span>
-          <span>Patient Appointments</span>
-        </button>
-        <button type="button" class="roster-subtab" id="followup-subtab-outcomes" onclick="showFollowupSubtab('outcomes')" style="background:linear-gradient(90deg,rgba(37,99,235,.38) 0%,rgba(59,130,246,.18) 28%,rgba(20,184,166,.08) 52%,rgba(255,255,255,.93) 74%,#eff6ff 100%);">
-          <span class="roster-subtab-icon" style="background:linear-gradient(135deg,#1d4ed8,#0f766e);"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-5"/><path d="M12 16V8"/><path d="M16 16v-7"/><path d="M20 6l-4 4-3-3-5 5"/></svg></span>
-          <span>Appointment Outcomes</span>
-        </button>
-        <button type="button" class="roster-subtab" id="followup-subtab-clinic" onclick="showFollowupSubtab('clinic')" style="background:linear-gradient(90deg,rgba(109,40,217,.34) 0%,rgba(167,139,250,.18) 28%,rgba(15,38,56,.07) 52%,rgba(255,255,255,.93) 74%,#f5f3ff 100%);">
-          <span class="roster-subtab-icon" style="background:linear-gradient(135deg,#5b21b6,#a78bfa);"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="M8 14h8"/><path d="M8 18h5"/></svg></span>
-          <span>Clinic Audit</span>
-        </button>
-        <button type="button" class="roster-subtab" id="followup-subtab-dntu" onclick="showFollowupSubtab('dntu')" style="background:linear-gradient(90deg,rgba(194,65,59,.34) 0%,rgba(194,65,59,.17) 28%,rgba(180,83,9,.08) 52%,rgba(255,255,255,.93) 74%,#fff7ed 100%);">
-          <span class="roster-subtab-icon" style="background:linear-gradient(135deg,#7c2d12,#c2413b);"><svg class="icon-svg" viewBox="0 0 24 24"><path d="m10.29 3.86-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.71-3.14l-8-14a2 2 0 0 0-3.42 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></span>
-          <span>DNTU</span>
-        </button>
-        <button type="button" class="roster-subtab" id="followup-subtab-paused" onclick="showFollowupSubtab('paused')" style="background:linear-gradient(90deg,rgba(217,119,6,.30) 0%,rgba(251,191,36,.15) 28%,rgba(255,255,255,.93) 74%,#fffbeb 100%);">
-          <span class="roster-subtab-icon" style="background:linear-gradient(135deg,#92400e,#d97706);"><svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M10 8v8"/><path d="M14 8v8"/></svg></span>
-          <span>Temporarily Paused Appointments</span>
-        </button>
-        <div class="followup-roster-tab-wrap">
+      <!-- Compact Follow-Up navigation tabs with matching dropdowns -->
+      <div class="roster-subtab-bar" id="followup-subtab-bar" role="tablist" aria-label="Follow-Up tabs" style="grid-template-columns:repeat(auto-fit,minmax(190px,1fr));">
+        <div class="followup-nav-tab-wrap" style="--dropdown-colour:#0f766e;--dropdown-dark:#064e3b;--dropdown-soft:#ecfdf9;">
+          <button type="button" class="roster-subtab active" id="followup-subtab-appointments" onclick="toggleFollowupMiniDropdown(event,'appointments')" style="background:linear-gradient(90deg,rgba(20,184,166,.42) 0%,rgba(20,184,166,.22) 28%,rgba(20,184,166,.09) 52%,rgba(255,255,255,.93) 74%,#eefbf8 100%);">
+            <span class="roster-subtab-icon" style="background:linear-gradient(135deg,#0f766e,#14b8a6);"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="16" rx="2"/><path d="M9 8h6"/><path d="M9 12h6"/><path d="M9 16h4"/></svg></span>
+            <span>Patient Appointments</span><span class="followup-roster-caret" aria-hidden="true">▾</span>
+          </button>
+          <div class="followup-mini-dropdown" id="followup-appointments-dropdown" aria-label="Patient appointment options">
+            <button type="button" onclick="selectFollowupTabFromDropdown('appointments')"><span class="mini-roster-icon teal"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="16" rx="2"/><path d="M9 8h6"/><path d="M9 12h6"/><path d="M9 16h4"/></svg></span><span><strong>Patient Appointments</strong><small>Daily clinic slots and booking</small></span></button>
+          </div>
+        </div>
+        <div class="followup-nav-tab-wrap" style="--dropdown-colour:#2563eb;--dropdown-dark:#1d4ed8;--dropdown-soft:#eff6ff;">
+          <button type="button" class="roster-subtab" id="followup-subtab-outcomes" onclick="toggleFollowupMiniDropdown(event,'outcomes')" style="background:linear-gradient(90deg,rgba(37,99,235,.38) 0%,rgba(59,130,246,.18) 28%,rgba(20,184,166,.08) 52%,rgba(255,255,255,.93) 74%,#eff6ff 100%);">
+            <span class="roster-subtab-icon" style="background:linear-gradient(135deg,#1d4ed8,#0f766e);"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-5"/><path d="M12 16V8"/><path d="M16 16v-7"/><path d="M20 6l-4 4-3-3-5 5"/></svg></span>
+            <span>Appointment Outcomes</span><span class="followup-roster-caret" aria-hidden="true">▾</span>
+          </button>
+          <div class="followup-mini-dropdown" id="followup-outcomes-dropdown" aria-label="Appointment outcome options">
+            <button type="button" onclick="selectFollowupTabFromDropdown('outcomes')"><span class="mini-roster-icon blue"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-5"/><path d="M12 16V8"/><path d="M16 16v-7"/><path d="M20 6l-4 4-3-3-5 5"/></svg></span><span><strong>Appointment Outcomes</strong><small>Seen, DNTU and cancellation outcomes</small></span></button>
+          </div>
+        </div>
+        <div class="followup-nav-tab-wrap" style="--dropdown-colour:#7c3aed;--dropdown-dark:#5b21b6;--dropdown-soft:#f5f3ff;">
+          <button type="button" class="roster-subtab" id="followup-subtab-clinic" onclick="toggleFollowupMiniDropdown(event,'clinic')" style="background:linear-gradient(90deg,rgba(109,40,217,.34) 0%,rgba(167,139,250,.18) 28%,rgba(15,38,56,.07) 52%,rgba(255,255,255,.93) 74%,#f5f3ff 100%);">
+            <span class="roster-subtab-icon" style="background:linear-gradient(135deg,#5b21b6,#a78bfa);"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="M8 14h8"/><path d="M8 18h5"/></svg></span>
+            <span>Clinic Audit</span><span class="followup-roster-caret" aria-hidden="true">▾</span>
+          </button>
+          <div class="followup-mini-dropdown" id="followup-clinic-dropdown" aria-label="Clinic audit options">
+            <button type="button" onclick="selectFollowupTabFromDropdown('clinic')"><span class="mini-roster-icon violet"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="M8 14h8"/><path d="M8 18h5"/></svg></span><span><strong>Clinic Audit</strong><small>Monthly clinical activity overview</small></span></button>
+          </div>
+        </div>
+        <div class="followup-nav-tab-wrap" style="--dropdown-colour:#c2413b;--dropdown-dark:#7c2d12;--dropdown-soft:#fff7ed;">
+          <button type="button" class="roster-subtab" id="followup-subtab-dntu" onclick="toggleFollowupMiniDropdown(event,'dntu')" style="background:linear-gradient(90deg,rgba(194,65,59,.34) 0%,rgba(194,65,59,.17) 28%,rgba(180,83,9,.08) 52%,rgba(255,255,255,.93) 74%,#fff7ed 100%);">
+            <span class="roster-subtab-icon" style="background:linear-gradient(135deg,#7c2d12,#c2413b);"><svg class="icon-svg" viewBox="0 0 24 24"><path d="m10.29 3.86-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.71-3.14l-8-14a2 2 0 0 0-3.42 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></span>
+            <span>DNTU</span><span class="followup-roster-caret" aria-hidden="true">▾</span>
+          </button>
+          <div class="followup-mini-dropdown" id="followup-dntu-dropdown" aria-label="DNTU options">
+            <button type="button" onclick="selectFollowupTabFromDropdown('dntu')"><span class="mini-roster-icon red"><svg class="icon-svg" viewBox="0 0 24 24"><path d="m10.29 3.86-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.71-3.14l-8-14a2 2 0 0 0-3.42 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></span><span><strong>DNTU</strong><small>Did Not Turn Up tracking</small></span></button>
+          </div>
+        </div>
+        <div class="followup-nav-tab-wrap" style="--dropdown-colour:#d97706;--dropdown-dark:#92400e;--dropdown-soft:#fffbeb;">
+          <button type="button" class="roster-subtab" id="followup-subtab-paused" onclick="toggleFollowupMiniDropdown(event,'paused')" style="background:linear-gradient(90deg,rgba(217,119,6,.30) 0%,rgba(251,191,36,.15) 28%,rgba(255,255,255,.93) 74%,#fffbeb 100%);">
+            <span class="roster-subtab-icon" style="background:linear-gradient(135deg,#92400e,#d97706);"><svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M10 8v8"/><path d="M14 8v8"/></svg></span>
+            <span>Temporarily Paused Appointments</span><span class="followup-roster-caret" aria-hidden="true">▾</span>
+          </button>
+          <div class="followup-mini-dropdown" id="followup-paused-dropdown" aria-label="Temporarily paused appointment options">
+            <button type="button" onclick="selectFollowupTabFromDropdown('paused')"><span class="mini-roster-icon amber"><svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M10 8v8"/><path d="M14 8v8"/></svg></span><span><strong>Temporarily Paused Appointments</strong><small>Paused patients awaiting restart</small></span></button>
+          </div>
+        </div>
+        <div class="followup-nav-tab-wrap followup-roster-tab-wrap" style="--dropdown-colour:#475569;--dropdown-dark:#0f2638;--dropdown-soft:#f8fafc;">
           <button type="button" class="roster-subtab" id="followup-subtab-rosters" onclick="toggleFollowupRosterDropdown(event)" style="background:linear-gradient(90deg,rgba(71,85,105,.28) 0%,rgba(15,38,56,.12) 30%,rgba(255,255,255,.95) 74%,#f8fafc 100%);">
             <span class="roster-subtab-icon" style="background:linear-gradient(135deg,#0f2638,#475569);"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="M8 15h8"/><path d="M8 18h5"/></svg></span>
-            <span>Rosters</span>
-            <span class="followup-roster-caret" aria-hidden="true">▾</span>
+            <span>Rosters</span><span class="followup-roster-caret" aria-hidden="true">▾</span>
           </button>
-          <div class="followup-roster-dropdown" id="followup-roster-dropdown" aria-label="Roster options">
+          <div class="followup-roster-dropdown followup-mini-dropdown" id="followup-roster-dropdown" aria-label="Roster options">
             <button type="button" onclick="selectFollowupRosterFromTab('monthly')"><span class="mini-roster-icon"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="M8 15h8"/><path d="M8 18h5"/></svg></span><span><strong>Monthly Roster</strong><small>Roster calendar and OT/TIL</small></span></button>
             <button type="button" onclick="selectFollowupRosterFromTab('cod')"><span class="mini-roster-icon blue"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M7 7h6a3 3 0 0 1 0 6H7"/><path d="m10 4-3 3 3 3"/><path d="M17 17H11a3 3 0 0 1 0-6h6"/><path d="m14 20 3-3-3-3"/></svg></span><span><strong>Change of Duty</strong><small>COD records and changes</small></span></button>
             <button type="button" onclick="selectFollowupRosterFromTab('staff-audit')"><span class="mini-roster-icon violet"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-5"/><path d="M12 16V8"/><path d="M16 16v-7"/><path d="M20 6l-4 4-3-3-5 5"/></svg></span><span><strong>Staff Audit</strong><small>Staff leave and roster audit</small></span></button>
@@ -6340,29 +6433,48 @@ function showFollowupSubtab(tab){
   }
 }
 
+function closeFollowupDropdowns(){
+  document.querySelectorAll('#section-followups .followup-mini-dropdown.open').forEach(menu=>menu.classList.remove('open'));
+  document.querySelectorAll('#followup-subtab-bar .roster-subtab[aria-expanded="true"]').forEach(tab=>tab.setAttribute('aria-expanded','false'));
+}
+function toggleFollowupMiniDropdown(event,tab){
+  if(event){event.preventDefault();event.stopPropagation();}
+  showFollowupSubtab(tab);
+  const menu=document.getElementById('followup-'+tab+'-dropdown');
+  const tabBtn=document.getElementById('followup-subtab-'+tab);
+  const wasOpen=menu?.classList.contains('open');
+  closeFollowupDropdowns();
+  if(menu && !wasOpen){
+    menu.classList.add('open');
+    if(tabBtn)tabBtn.setAttribute('aria-expanded','true');
+  }
+}
+function selectFollowupTabFromDropdown(tab){
+  closeFollowupDropdowns();
+  showFollowupSubtab(tab);
+}
 function closeFollowupRosterDropdown(){
-  const menu=document.getElementById('followup-roster-dropdown');
-  const tab=document.getElementById('followup-subtab-rosters');
-  if(menu)menu.classList.remove('open');
-  if(tab)tab.setAttribute('aria-expanded','false');
+  closeFollowupDropdowns();
 }
 function toggleFollowupRosterDropdown(event){
   if(event){event.preventDefault();event.stopPropagation();}
   showFollowupSubtab('rosters');
   const menu=document.getElementById('followup-roster-dropdown');
   const tab=document.getElementById('followup-subtab-rosters');
-  if(menu){
-    const isOpen=menu.classList.toggle('open');
-    if(tab)tab.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  const wasOpen=menu?.classList.contains('open');
+  closeFollowupDropdowns();
+  if(menu && !wasOpen){
+    menu.classList.add('open');
+    if(tab)tab.setAttribute('aria-expanded','true');
   }
 }
 function selectFollowupRosterFromTab(view){
-  closeFollowupRosterDropdown();
+  closeFollowupDropdowns();
   showFollowupSubtab('rosters');
   renderFollowupRosterWorkspace(view);
 }
 document.addEventListener('click',function(e){
-  if(!e.target.closest('.followup-roster-tab-wrap'))closeFollowupRosterDropdown();
+  if(!e.target.closest('.followup-nav-tab-wrap'))closeFollowupDropdowns();
 });
 
 function mountLegacyContentInto(holderId, sourcePageId){
