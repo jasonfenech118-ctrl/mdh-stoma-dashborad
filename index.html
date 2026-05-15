@@ -95,7 +95,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 }
 .btn-so:hover{background:rgba(255,255,255,.12);color:white;}
 
-/* v66-29 — Top navigation tabs with colour/icon dropdown menus */
+/* v66-38 — Top navigation tabs reordered and matched to main menu colours */
 .app-menu-tabs{
   position:fixed;
   top:56px;
@@ -161,6 +161,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .app-menu-tab{position:relative;--menu-colour:#0f766e;--menu-dark:#0f2638;--menu-soft:#ecfdf9;}
 .app-menu-tab.teal,.app-menu-home{--menu-colour:#0f766e;--menu-dark:#064e3b;--menu-soft:#ecfdf9;}
 .app-menu-tab.blue{--menu-colour:#2563eb;--menu-dark:#1d4ed8;--menu-soft:#eff6ff;}
+.app-menu-tab.cyan{--menu-colour:#0284c7;--menu-dark:#0369a1;--menu-soft:#ecfeff;}
 .app-menu-tab.violet{--menu-colour:#7c3aed;--menu-dark:#5b21b6;--menu-soft:#f5f3ff;}
 .app-menu-tab.gold{--menu-colour:#b45309;--menu-dark:#92400e;--menu-soft:#fffbeb;}
 .app-menu-tab.rose{--menu-colour:#e11d48;--menu-dark:#9f1239;--menu-soft:#fff1f2;}
@@ -2863,6 +2864,17 @@ button{font-family:'DM Sans',sans-serif;}
   #section-followups .followup-mini-dropdown{left:0!important;right:auto!important;width:min(320px,calc(100vw - 42px))!important;min-width:0!important;}
 }
 
+
+
+/* v66-38 — top navigation colour match with main menu cards */
+.app-menu-tab.cyan .app-menu-tab-button{border-left-color:#0284c7;}
+.app-menu-tab.cyan .app-menu-mini-icon{background:linear-gradient(135deg,#0369a1,#38bdf8)!important;}
+.app-menu-tab.blue .app-menu-mini-icon{background:linear-gradient(135deg,#1d4ed8,#3b82f6)!important;}
+.app-menu-tab.teal .app-menu-mini-icon,.app-menu-home .app-menu-mini-icon{background:linear-gradient(135deg,#0f766e,#14b8a6)!important;}
+.app-menu-tab.violet .app-menu-mini-icon{background:linear-gradient(135deg,#5b21b6,#c084fc)!important;}
+.app-menu-tab.slate .app-menu-mini-icon{background:linear-gradient(135deg,#27272a,#71717a)!important;}
+.app-menu-tab.rose .app-menu-mini-icon{background:linear-gradient(135deg,#9f1239,#fb7185)!important;}
+
 </style>
 
 <style>
@@ -3918,16 +3930,7 @@ button{font-family:'DM Sans',sans-serif;}
       </div>
     </div>
 
-    <div class="app-menu-tab teal" data-menu-group="patient-centre">
-      <button type="button" class="app-menu-tab-button" onclick="toggleTopMenu(this,event)"><span class="app-menu-mini-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="16" rx="2"/><path d="M9 8h6"/><path d="M9 12h6"/><path d="M9 16h4"/></svg></span><span>Patient Center</span><span class="app-menu-caret">▾</span></button>
-      <div class="app-menu-dropdown">
-        <button type="button" class="app-menu-item" onclick="closeTopMenus();openPatientCentrePage('master')" style="--item-colour:#0f766e;--item-dark:#064e3b;--item-soft:#ecfdf9;"><span class="app-menu-item-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="16" rx="2"/><path d="M9 8h6"/><path d="M9 12h6"/><path d="M9 16h4"/></svg></span><span><span class="app-menu-item-title">Master List</span><span class="app-menu-item-sub">Complete patient register</span></span></button>
-        <button type="button" class="app-menu-item" onclick="closeTopMenus();openPatientCentrePage('inpatient')" style="--item-colour:#2563eb;--item-dark:#1d4ed8;--item-soft:#eff6ff;"><span class="app-menu-item-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M3 12h18"/><path d="M5 12V8a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v4"/><path d="M7 16v2"/><path d="M17 16v2"/><path d="M9 9h.01"/></svg></span><span><span class="app-menu-item-title">Inpatients</span><span class="app-menu-item-sub">Current inpatient workload</span></span></button>
-        <button type="button" class="app-menu-item" onclick="closeTopMenus();openPatientCentrePage('outpatient')" style="--item-colour:#7c3aed;--item-dark:#5b21b6;--item-soft:#f5f3ff;"><span class="app-menu-item-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M13 5h6v6"/><path d="M10 14 19 5"/><path d="M5 7v12h12"/></svg></span><span><span class="app-menu-item-title">Outpatients</span><span class="app-menu-item-sub">Outpatient and community list</span></span></button>
-      </div>
-    </div>
-
-    <div class="app-menu-tab gold" data-menu-group="followups">
+    <div class="app-menu-tab cyan" data-menu-group="followups">
       <button type="button" class="app-menu-tab-button" onclick="toggleTopMenu(this,event)"><span class="app-menu-mini-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="m8 16 2 2 5-5"/></svg></span><span>Follow-Up Centre</span><span class="app-menu-caret">▾</span></button>
       <div class="app-menu-dropdown">
         <button type="button" class="app-menu-item" onclick="closeTopMenus();switchSection('followups',null);setTimeout(()=>showFollowupSubtab('appointments'),0)" style="--item-colour:#0f766e;--item-dark:#064e3b;--item-soft:#ecfdf9;"><span class="app-menu-item-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="16" rx="2"/><path d="M9 8h6"/><path d="M9 12h6"/><path d="M9 16h4"/></svg></span><span><span class="app-menu-item-title">Patient Appointments</span><span class="app-menu-item-sub">Daily clinic appointment book</span></span></button>
@@ -3936,6 +3939,15 @@ button{font-family:'DM Sans',sans-serif;}
         <button type="button" class="app-menu-item" onclick="closeTopMenus();switchSection('followups',null);setTimeout(()=>showFollowupSubtab('dntu'),0)" style="--item-colour:#c2413b;--item-dark:#7c2d12;--item-soft:#fff7ed;"><span class="app-menu-item-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="m10.29 3.86-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.71-3.14l-8-14a2 2 0 0 0-3.42 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></span><span><span class="app-menu-item-title">DNTU</span><span class="app-menu-item-sub">Did Not Turn Up tracking</span></span></button>
         <button type="button" class="app-menu-item" onclick="closeTopMenus();switchSection('followups',null);setTimeout(()=>showFollowupSubtab('paused'),0)" style="--item-colour:#d97706;--item-dark:#92400e;--item-soft:#fffbeb;"><span class="app-menu-item-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M10 8v8"/><path d="M14 8v8"/></svg></span><span><span class="app-menu-item-title">Temporarily Paused Appointments</span><span class="app-menu-item-sub">Paused or awaiting restart</span></span></button>
         <button type="button" class="app-menu-item" onclick="closeTopMenus();switchSection('followups',null,{followupSubtab:'rosters',followupRosterSubtab:'monthly'})" style="--item-colour:#475569;--item-dark:#0f2638;--item-soft:#f8fafc;"><span class="app-menu-item-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="M8 15h8"/><path d="M8 18h5"/></svg></span><span><span class="app-menu-item-title">Rosters</span><span class="app-menu-item-sub">Monthly roster, change of duty and staff audit</span></span></button>
+      </div>
+    </div>
+
+    <div class="app-menu-tab teal" data-menu-group="patient-centre">
+      <button type="button" class="app-menu-tab-button" onclick="toggleTopMenu(this,event)"><span class="app-menu-mini-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="16" rx="2"/><path d="M9 8h6"/><path d="M9 12h6"/><path d="M9 16h4"/></svg></span><span>Patient Center</span><span class="app-menu-caret">▾</span></button>
+      <div class="app-menu-dropdown">
+        <button type="button" class="app-menu-item" onclick="closeTopMenus();openPatientCentrePage('master')" style="--item-colour:#0f766e;--item-dark:#064e3b;--item-soft:#ecfdf9;"><span class="app-menu-item-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="16" rx="2"/><path d="M9 8h6"/><path d="M9 12h6"/><path d="M9 16h4"/></svg></span><span><span class="app-menu-item-title">Master List</span><span class="app-menu-item-sub">Complete patient register</span></span></button>
+        <button type="button" class="app-menu-item" onclick="closeTopMenus();openPatientCentrePage('inpatient')" style="--item-colour:#2563eb;--item-dark:#1d4ed8;--item-soft:#eff6ff;"><span class="app-menu-item-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M3 12h18"/><path d="M5 12V8a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v4"/><path d="M7 16v2"/><path d="M17 16v2"/><path d="M9 9h.01"/></svg></span><span><span class="app-menu-item-title">Inpatients</span><span class="app-menu-item-sub">Current inpatient workload</span></span></button>
+        <button type="button" class="app-menu-item" onclick="closeTopMenus();openPatientCentrePage('outpatient')" style="--item-colour:#7c3aed;--item-dark:#5b21b6;--item-soft:#f5f3ff;"><span class="app-menu-item-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M13 5h6v6"/><path d="M10 14 19 5"/><path d="M5 7v12h12"/></svg></span><span><span class="app-menu-item-title">Outpatients</span><span class="app-menu-item-sub">Outpatient and community list</span></span></button>
       </div>
     </div>
 
