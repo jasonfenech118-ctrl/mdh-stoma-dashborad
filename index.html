@@ -7422,7 +7422,7 @@ function pathwayTabConfig(tab){
   const appliance={key:'appliance',label:'Appliance in Use',panel:renderApplianceInUsePanel(tab)};
   const advice={key:'advice',label:'Advice / Teaching Given',panel:renderAdviceTeachingPanel(tab)};
   const followup={key:'followup',label:'Follow-up Plan',panel:renderFollowupPlanPanel(tab)};
-  if(tab==='elective')return [commonPatient,preop,stoma,postop,teaching,discharge];
+  if(tab==='elective')return [commonPatient,stoma];
   if(tab==='emergency')return [commonPatient,stoma,postop,teaching,discharge];
   if(tab==='bagging')return [commonPatient,{key:'assessment',label:'Appliance / Bagging Assessment',panel:renderBaggingAssessmentPanel(tab)},appliance,advice,followup];
   return [commonPatient,{key:'existing',label:'Existing Stoma Details',panel:renderExistingStomaDetailsPanel(tab)},{key:'skin',label:'Appliance / Skin Assessment',panel:renderSkinAssessmentPanel(tab)},teaching,{key:'handover',label:'Follow-up / Handover Plan',panel:renderHandoverPlanPanel(tab)}];
@@ -7511,7 +7511,7 @@ function renderPathwayStomaSurgeryPanel(tab){
     <div class="fg"><label>End / Loop</label><select id="pp-${tab}-endloop" data-pathway-extra data-extra-label="End / Loop"><option value="">Select...</option><option>End</option><option>Loop</option><option>Not applicable</option></select></div>
     <div class="fg"><label>Date of Surgery <span class="req">*</span></label><input type="date" id="pp-${tab}-surg"/></div>
     <div class="fg"><label>Consultant</label><input id="pp-${tab}-cons" placeholder="Consultant name" autocomplete="off"/></div>
-    <div class="fg"><label>Ward <span class="req">*</span></label><select id="pp-${tab}-ward">${optionList(PATHWAY_WARD_OPTIONS)}</select></div>
+    ${tab==='elective'?'':`<div class="fg"><label>Ward <span class="req">*</span></label><select id="pp-${tab}-ward">${optionList(PATHWAY_WARD_OPTIONS)}</select></div>`}
     <div class="fg"><label>Rod in situ</label><select id="pp-${tab}-rod" data-pathway-extra data-extra-label="Rod in situ">${yesNoOptions()}</select></div>
     <div class="fg"><label>Date of rod removal</label><input type="date" id="pp-${tab}-rodremove" data-pathway-extra data-extra-label="Date of rod removal"></div>
   </div>`;
@@ -7587,7 +7587,7 @@ function renderPathwaySearch(tab){
       </div>
       ${renderPathwayRegistrationTabs(tab)}
       <div class="pathway-form-actions">
-        <div class="pathway-form-note">Step 1: Adding Patient Details is protected after saving. Use Unlock / Edit only for genuine corrections. Step 2: Adding Stoma & Surgery Details and the clinical tabs can be completed later.</div>
+        <div class="pathway-form-note">Step 1: Adding Patient Details is protected after saving. Use Unlock / Edit only for genuine corrections. Step 2: Adding Stoma & Surgery Details (including Date of Surgery) can be completed later.</div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
           <button type="button" class="pathway-reset-btn" onclick="resetPathwayRegistrationForm('${tab}')">Clear form</button>
           <button type="button" class="pathway-save-btn" data-pathway-main-save="true" onclick="savePathwayPagePatient('${tab}')">${isSurgeryPathway(tab)?'Save &amp; Lock Patient Details':'Save '+htmlSafe(meta.short)+' Patient'}</button>
@@ -14840,7 +14840,7 @@ function pathwayTabConfig(tab){
   const appliance={key:'appliance',label:'Appliance in Use',panel:renderApplianceInUsePanel(tab),requiresLock:false};
   const advice={key:'advice',label:'Advice / Teaching Given',panel:renderAdviceTeachingPanel(tab),requiresLock:false};
   const followup={key:'followup',label:'Follow-up Plan',panel:renderFollowupPlanPanel(tab),requiresLock:false};
-  if(tab==='elective')return [commonPatient,tracker,encounters,preop,stoma,postop,teaching,discharge];
+  if(tab==='elective')return [commonPatient,stoma];
   if(tab==='emergency')return [commonPatient,tracker,encounters,stoma,postop,teaching,discharge];
   if(tab==='bagging')return [commonPatient,tracker,encounters,{key:'assessment',label:'Appliance / Bagging Assessment',panel:renderBaggingAssessmentPanel(tab),requiresLock:false},appliance,advice,followup];
   return [commonPatient,tracker,encounters,{key:'existing',label:'Existing Stoma Details',panel:renderExistingStomaDetailsPanel(tab),requiresLock:false},{key:'skin',label:'Appliance / Skin Assessment',panel:renderSkinAssessmentPanel(tab),requiresLock:false},teaching,{key:'handover',label:'Follow-up / Handover Plan',panel:renderHandoverPlanPanel(tab),requiresLock:false}];
@@ -14908,7 +14908,7 @@ function renderPathwayStomaSurgeryPanel(tab){
     <div class="fg"><label>End / Loop</label><select id="pp-${tab}-endloop" data-pathway-extra data-extra-label="End / Loop"><option value="">Select...</option><option>End</option><option>Loop</option><option>Not applicable</option></select></div>
     <div class="fg"><label>Date of Surgery <span class="req">*</span></label><input type="date" id="pp-${tab}-surg"/></div>
     <div class="fg"><label>Consultant</label><input id="pp-${tab}-cons" placeholder="Consultant name" autocomplete="off"/></div>
-    <div class="fg"><label>Ward <span class="req">*</span></label><select id="pp-${tab}-ward">${optionList(PATHWAY_WARD_OPTIONS)}</select></div>
+    ${tab==='elective'?'':`<div class="fg"><label>Ward <span class="req">*</span></label><select id="pp-${tab}-ward">${optionList(PATHWAY_WARD_OPTIONS)}</select></div>`}
     <div class="fg"><label>Rod in situ</label><select id="pp-${tab}-rod" data-pathway-extra data-extra-label="Rod in situ">${yesNoOptions()}</select></div>
     <div class="fg"><label>Date of rod removal</label><input type="date" id="pp-${tab}-rodremove" data-pathway-extra data-extra-label="Date of rod removal"></div>
   </div>`;
@@ -15548,7 +15548,7 @@ function renderPathwayStepsPanel(tab,patient,steps,completions,col,allDone,total
     const teach={key:'teaching',label:'Management & Teaching Plan',panel:renderManagementTeachingPanel(tab)};
     const disc={key:'discharge',label:'Discharge / Follow-up Planning',panel:renderDischargePlanningPanel(tab)};
     const letters={key:'dischargeletters',label:'Discharge Letters',panel:renderPathwayDischargeLettersPanel(tab)};
-    if(tab==='elective')return [p,s,daily,enc,pre,post,teach,disc,letters];
+    if(tab==='elective')return [p,s];
     if(tab==='emergency')return [p,s,daily,enc,post,teach,disc,letters];
     if(tab==='bagging')return [p,{key:'assessment',label:'Appliance / Bagging Assessment',panel:renderBaggingAssessmentPanel(tab)},{key:'appliance',label:'Appliance in Use',panel:renderApplianceInUsePanel(tab)},{key:'advice',label:'Advice / Teaching Given',panel:renderAdviceTeachingPanel(tab)},{key:'followup',label:'Follow-up Plan',panel:renderFollowupPlanPanel(tab)},letters];
     return [p,{key:'existing',label:'Existing Stoma Details',panel:renderExistingStomaDetailsPanel(tab)},{key:'skin',label:'Appliance / Skin Assessment',panel:renderSkinAssessmentPanel(tab)},{key:'appliance',label:'Appliance in Use',panel:renderApplianceInUsePanel(tab)},teach,{key:'handover',label:'Follow-up / Handover Plan',panel:renderHandoverPlanPanel(tab)},letters];
@@ -15570,7 +15570,7 @@ function renderPathwayStepsPanel(tab,patient,steps,completions,col,allDone,total
       <div class="fg"><label>Telephone No.</label><input id="pp-${tab}-ph" autocomplete="off"></div>
       <div class="fg"><label>Locality <span class="req">*</span></label><select id="pp-${tab}-locality">${opt(window.PATHWAY_LOCALITY_OPTIONS||[])}</select></div>
       <div class="fg"><label>Consultant</label><input id="pp-${tab}-cons" autocomplete="off"></div>
-      <div class="fg"><label>Ward <span class="req">*</span></label><select id="pp-${tab}-ward">${opt(window.PATHWAY_WARD_OPTIONS||[])}</select></div>
+      ${tab==='elective'?'':`<div class="fg"><label>Ward <span class="req">*</span></label><select id="pp-${tab}-ward">${opt(window.PATHWAY_WARD_OPTIONS||[])}</select></div>`}
     </div>`;
   };
 
@@ -15595,7 +15595,7 @@ function renderPathwayStepsPanel(tab,patient,steps,completions,col,allDone,total
       <div class="fg"><label>Date of original surgery <span class="req">*</span></label><input type="date" id="pp-${tab}-surg"></div>
       <div class="fg"><label>Hospital / Country / Source</label><input id="pp-${tab}-source" placeholder="Outside hospital / abroad / community" autocomplete="off"></div>
       <div class="fg"><label>Consultant</label><input id="pp-${tab}-cons" autocomplete="off"></div>
-      <div class="fg"><label>Ward <span class="req">*</span></label><select id="pp-${tab}-ward">${opt(window.PATHWAY_WARD_OPTIONS||[])}</select></div>
+      ${tab==='elective'?'':`<div class="fg"><label>Ward <span class="req">*</span></label><select id="pp-${tab}-ward">${opt(window.PATHWAY_WARD_OPTIONS||[])}</select></div>`}
       <div class="fg full"><label>Operation Performed</label><textarea id="pp-${tab}-operation" data-pathway-extra data-extra-label="Operation performed" placeholder="Known operation / procedure"></textarea></div>
       <div class="fg full"><label>Findings</label><textarea id="pp-${tab}-findings" data-pathway-extra data-extra-label="Findings" placeholder="Known findings or relevant history"></textarea></div>
     </div>`;
