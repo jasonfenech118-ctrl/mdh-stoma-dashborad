@@ -9129,6 +9129,171 @@ function renderMdhLetterHtml(data, p){
 }
 </style>
 
+
+<!--
+v66-48 change: Follow-Up Centre now places all roster-related choices under the Monthly Roster tab dropdown.
+- Monthly Roster dropdown includes Monthly Roster, Change of Duty, and Staff Audit.
+- Removed separate Change of Duty/Staff Audit navigation tab from Follow-Up Centre runtime tabs.
+Protected: login, patient pathways, appointment booking, roster data logic, main menu, SQL/database.
+-->
+
+<style>
+/* v66-48 — all roster-related choices live under Monthly Roster in Follow-Up Centre */
+#section-followups #followup-subtab-bar.followup-button-mode .followup-monthly-roster-tab-wrap{
+  position:relative!important;
+  overflow:visible!important;
+  z-index:9999!important;
+}
+#section-followups #followup-subtab-bar.followup-button-mode .followup-monthly-roster-caret{
+  display:inline-block!important;
+  margin-left:2px!important;
+  font-size:10px!important;
+  color:#64748b!important;
+}
+#section-followups #followup-subtab-bar.followup-button-mode .monthly-roster-dropdown{
+  position:absolute!important;
+  top:calc(100% + 7px)!important;
+  left:0!important;
+  width:310px!important;
+  min-width:290px!important;
+  display:none!important;
+  gap:6px!important;
+  padding:8px!important;
+  background:#ffffff!important;
+  border:1px solid #dbe3ea!important;
+  border-left:4px solid #475569!important;
+  border-radius:14px!important;
+  box-shadow:0 18px 42px rgba(15,38,56,.20)!important;
+  z-index:2147483000!important;
+}
+#section-followups #followup-subtab-bar.followup-button-mode .monthly-roster-dropdown.open{
+  display:grid!important;
+}
+#section-followups #followup-subtab-bar.followup-button-mode .monthly-roster-dropdown button{
+  min-height:50px!important;
+  width:100%!important;
+  display:grid!important;
+  grid-template-columns:36px minmax(0,1fr)!important;
+  gap:10px!important;
+  align-items:center!important;
+  text-align:left!important;
+  border:1px solid transparent!important;
+  background:#fff!important;
+  border-radius:11px!important;
+  padding:9px 10px!important;
+  cursor:pointer!important;
+  font-family:'DM Sans',sans-serif!important;
+  color:#0f2638!important;
+}
+#section-followups #followup-subtab-bar.followup-button-mode .monthly-roster-dropdown button:hover{
+  background:#f8fafc!important;
+  border-color:#cbd5e1!important;
+}
+#section-followups #followup-subtab-bar.followup-button-mode .monthly-roster-dropdown strong{display:block!important;font-size:12px!important;font-weight:950!important;color:#0f2638!important;line-height:1.1!important;}
+#section-followups #followup-subtab-bar.followup-button-mode .monthly-roster-dropdown small{display:block!important;margin-top:2px!important;font-size:10.5px!important;font-weight:650!important;color:#64748b!important;line-height:1.2!important;}
+</style>
+<script>
+/* v66-48 — move Change of Duty and Staff Audit under Monthly Roster dropdown */
+(function(){
+  function iconSvg(kind){
+    const map={
+      appointments:'<rect x="6" y="4" width="12" height="16" rx="2"/><path d="M9 8h6"/><path d="M9 12h6"/><path d="M9 16h4"/>',
+      outcomes:'<path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-5"/><path d="M12 16V8"/><path d="M16 16v-7"/><path d="M20 6l-4 4-3-3-5 5"/>',
+      clinic:'<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="M8 14h8"/><path d="M8 18h5"/>',
+      dntu:'<path d="m10.29 3.86-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.71-3.14l-8-14a2 2 0 0 0-3.42 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+      paused:'<circle cx="12" cy="12" r="9"/><path d="M10 8v8"/><path d="M14 8v8"/>',
+      roster:'<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="M8 15h8"/><path d="M8 18h5"/>',
+      cod:'<path d="M7 7h6a3 3 0 0 1 0 6H7"/><path d="m10 4-3 3 3 3"/><path d="M17 17H11a3 3 0 0 1 0-6h6"/><path d="m14 20 3-3-3-3"/>',
+      staff:'<path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-5"/><path d="M12 16V8"/><path d="M16 16v-7"/><path d="M20 6l-4 4-3-3-5 5"/>'
+    };
+    return '<svg class="icon-svg" viewBox="0 0 24 24">'+(map[kind]||map.appointments)+'</svg>';
+  }
+  function tabBtn(id,label,kind,colour,dark,soft,onclick){
+    return '<div class="followup-nav-tab-wrap" style="--tab-colour:'+colour+';--tab-soft:'+soft+';--dropdown-colour:'+colour+';">'+
+      '<button type="button" class="roster-subtab" id="'+id+'" onclick="'+onclick+'" style="--tab-colour:'+colour+';--tab-soft:'+soft+';">'+
+      '<span class="roster-subtab-icon" style="background:linear-gradient(135deg,'+dark+','+colour+');">'+iconSvg(kind)+'</span><span>'+label+'</span></button></div>';
+  }
+  function monthlyRosterDropdownTab(){
+    return '<div class="followup-nav-tab-wrap followup-monthly-roster-tab-wrap" style="--tab-colour:#475569;--tab-soft:#f8fafc;--dropdown-colour:#475569;">'+
+      '<button type="button" class="roster-subtab" id="followup-subtab-rosters" onclick="toggleFollowupMonthlyRosterDropdown(event)" aria-expanded="false" style="--tab-colour:#475569;--tab-soft:#f8fafc;">'+
+      '<span class="roster-subtab-icon" style="background:linear-gradient(135deg,#0f2638,#475569);">'+iconSvg('roster')+'</span><span>Monthly Roster</span><span class="followup-monthly-roster-caret" aria-hidden="true">▾</span></button>'+
+      '<div class="monthly-roster-dropdown" id="followup-monthly-roster-dropdown" aria-label="Monthly Roster options">'+
+      '<button type="button" onclick="selectFollowupMonthlyRosterChoice('monthly')"><span class="mini-roster-icon">'+iconSvg('roster')+'</span><span><strong>Monthly Roster</strong><small>Roster calendar and OT/TIL</small></span></button>'+
+      '<button type="button" onclick="selectFollowupMonthlyRosterChoice('cod')"><span class="mini-roster-icon blue">'+iconSvg('cod')+'</span><span><strong>Change of Duty</strong><small>COD records and changes</small></span></button>'+
+      '<button type="button" onclick="selectFollowupMonthlyRosterChoice('staff-audit')"><span class="mini-roster-icon violet">'+iconSvg('staff')+'</span><span><strong>Staff Audit</strong><small>Staff leave and roster audit</small></span></button>'+ 
+      '</div></div>';
+  }
+  function rebuildFollowupButtonTabsV6648(){
+    const bar=document.getElementById('followup-subtab-bar');
+    if(!bar) return;
+    bar.dataset.v6639Buttons='true';
+    bar.dataset.v6648Monthly='true';
+    bar.classList.add('followup-button-mode');
+    bar.innerHTML = [
+      tabBtn('followup-subtab-appointments','Patient Appointments','appointments','#0f766e','#064e3b','#ecfdf9',"showFollowupSubtab('appointments')"),
+      tabBtn('followup-subtab-outcomes','Appointment Outcomes','outcomes','#2563eb','#1d4ed8','#eff6ff',"showFollowupSubtab('outcomes')"),
+      tabBtn('followup-subtab-clinic','Clinic Audit','clinic','#7c3aed','#5b21b6','#f5f3ff',"showFollowupSubtab('clinic')"),
+      tabBtn('followup-subtab-dntu','DNTU','dntu','#c2413b','#7c2d12','#fff7ed',"showFollowupSubtab('dntu')"),
+      tabBtn('followup-subtab-paused','Temporarily Paused Appointments','paused','#d97706','#92400e','#fffbeb',"showFollowupSubtab('paused')"),
+      monthlyRosterDropdownTab()
+    ].join('');
+  }
+  function closeMonthlyRosterDropdown(){
+    const menu=document.getElementById('followup-monthly-roster-dropdown');
+    const btn=document.getElementById('followup-subtab-rosters');
+    if(menu) menu.classList.remove('open');
+    if(btn) btn.setAttribute('aria-expanded','false');
+  }
+  function setRosterButtonActive(view){
+    document.querySelectorAll('#followup-subtab-bar .roster-subtab').forEach(function(b){b.classList.remove('active');});
+    const btn=document.getElementById('followup-subtab-rosters');
+    if(btn) btn.classList.add('active');
+  }
+  window.toggleFollowupMonthlyRosterDropdown=function(event){
+    if(event){event.preventDefault();event.stopPropagation();}
+    if(typeof window.closeFollowupDropdowns==='function') window.closeFollowupDropdowns();
+    document.querySelectorAll('#section-followups .cod-staff-dropdown.open').forEach(function(m){m.classList.remove('open');});
+    const menu=document.getElementById('followup-monthly-roster-dropdown');
+    const btn=document.getElementById('followup-subtab-rosters');
+    if(!menu) return;
+    const willOpen=!menu.classList.contains('open');
+    closeMonthlyRosterDropdown();
+    if(willOpen){ menu.classList.add('open'); if(btn) btn.setAttribute('aria-expanded','true'); }
+  };
+  window.selectFollowupMonthlyRosterChoice=function(view){
+    closeMonthlyRosterDropdown();
+    view=(view==='cod'||view==='staff-audit')?view:'monthly';
+    if(typeof window.showFollowupSubtab==='function') window.showFollowupSubtab('rosters');
+    if(typeof window.renderFollowupRosterWorkspace==='function') window.renderFollowupRosterWorkspace(view);
+    setRosterButtonActive(view);
+  };
+  window.openFollowupRosterButton=function(view){ window.selectFollowupMonthlyRosterChoice(view); };
+  window.selectFollowupRosterFromTab=function(view){ window.selectFollowupMonthlyRosterChoice(view); };
+  window.toggleFollowupRosterDropdown=function(event){ window.toggleFollowupMonthlyRosterDropdown(event); };
+  window.selectFollowupCodChoice=function(view){ window.selectFollowupMonthlyRosterChoice(view); };
+  window.toggleFollowupCodStaffDropdown=function(event){ window.toggleFollowupMonthlyRosterDropdown(event); };
+  document.addEventListener('click',function(e){
+    if(!e.target.closest('#section-followups .followup-monthly-roster-tab-wrap')) closeMonthlyRosterDropdown();
+  },true);
+  const prevShow=window.showFollowupSubtab;
+  window.showFollowupSubtab=function(tab){
+    const result=prevShow ? prevShow.call(this,tab) : undefined;
+    rebuildFollowupButtonTabsV6648();
+    if(tab!=='rosters'){
+      const active=document.getElementById('followup-subtab-'+tab);
+      if(active){document.querySelectorAll('#followup-subtab-bar .roster-subtab').forEach(function(b){b.classList.remove('active');}); active.classList.add('active');}
+    }else{
+      setRosterButtonActive(window.currentFollowupRosterSubtab||'monthly');
+    }
+    return result;
+  };
+  rebuildFollowupButtonTabsV6648();
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',rebuildFollowupButtonTabsV6648);
+  setTimeout(rebuildFollowupButtonTabsV6648,0);
+  setTimeout(rebuildFollowupButtonTabsV6648,250);
+})();
+</script>
+
 </body></html>`;
 }
 function printDischargeLetter(letterId){
