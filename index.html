@@ -5866,7 +5866,7 @@ function ensureGeneralClinicEmail(){
 function normalizeEmail(email){return String(email||'').trim().toLowerCase();}
 function hardcodedProfileForEmail(email){
   const key=normalizeEmail(email);
-  return LOGIN_PROFILES[key]?{email:key,...LOGIN_PROFILES[key],is_active:true}:null;
+  return LOGIN_PROFILES[key]?{email:key,...LOGIN_PROFILES[key],is_active:true,_approved:true}:null;
 }
 async function loadCurrentLoginProfile(){
   const {data:userData}=await SB.auth.getUser();
@@ -5885,17 +5885,21 @@ async function loadCurrentLoginProfile(){
           full_name:data.full_name||profile?.full_name||email,
           grade:data.grade||profile?.grade||'Staff',
           short_grade:data.short_grade||profile?.short_grade||gradeFromRole(data.grade||'Staff'),
-          is_active:true
+          is_active:true,
+          _approved:true
         };
       }
     }catch(e){
       // Profile table is optional. The hard-coded approved login list still works.
     }
   }
-  currentLoginProfile=profile||{email,full_name:email||'Signed-in user',grade:'Staff',short_grade:'Staff',is_active:true};
+  currentLoginProfile=profile||{email,full_name:email||'Signed-in user',grade:'Staff',short_grade:'Staff',is_active:true,_approved:false};
   return currentLoginProfile;
 }
 function isAllowedLoginEmail(email){return ALLOWED_LOGIN_EMAILS.includes(normalizeEmail(email));}
+function isCurrentUserApproved(){
+  return !!(currentLoginProfile && currentLoginProfile.is_active!==false && (currentLoginProfile._approved===true || isAllowedLoginEmail(currentLoginProfile.email)));
+}
 function getLoggedInSubmitterName(){return currentLoginProfile?.full_name||currentAuthUser?.email||'';}
 function getLoggedInSubmitterGrade(){return currentLoginProfile?.short_grade||gradeFromRole(currentLoginProfile?.grade||'Staff');}
 function updateSignedInUI(){
@@ -6097,10 +6101,6 @@ async function doLogin(){
   const pass=document.getElementById('li-pass').value;
   const errEl=document.getElementById('lerr');
   errEl.textContent='';
-  if(!isAllowedLoginEmail(email)){
-    errEl.textContent='This email is not authorised for this app.';
-    return;
-  }
   const{error}=await SB.auth.signInWithPassword({email,password:pass});
   if(error)errEl.textContent='Invalid email or password.';
   else{await startApp();await logAuditTrailAction('login','auth.users',currentAuthUser?.id,{email});}
@@ -6112,11 +6112,11 @@ window.doLogin=doLogin;
 window.dLogin=doLogin;
 window.dologin=doLogin;
 async function doLogout(){await logAuditTrailAction('logout','auth.users',currentAuthUser?.id,{email:currentLoginProfile?.email||currentAuthUser?.email||''});await SB.auth.signOut();currentAuthUser=null;currentLoginProfile=null;document.getElementById('app').style.display='none';document.getElementById('login-screen').style.display='flex';}
-async function checkSession(){const{data}=await SB.auth.getSession();if(data.session){const email=normalizeEmail(data.session.user?.email||'');if(!isAllowedLoginEmail(email)){await SB.auth.signOut();return;}startApp();}}
+async function checkSession(){const{data}=await SB.auth.getSession();if(data.session){await startApp();}}
 
 async function startApp(){
   await loadCurrentLoginProfile();
-  if(currentLoginProfile?.email&&!isAllowedLoginEmail(currentLoginProfile.email)){
+  if(!isCurrentUserApproved()){
     await SB.auth.signOut();
     document.getElementById('lerr').textContent='This email is not authorised for this app.';
     return;
