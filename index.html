@@ -7625,8 +7625,9 @@ async function savePathwayPagePatient(tab){
   const meta=getPathwayFormMeta(tab);
   const val=id=>document.getElementById(`pp-${tab}-${id}`)?.value?.trim()||'';
   const required=[
-    ['fn','First name'],['sn','Surname'],['dob','Date of birth'],['sex','Gender'],['locality','Locality'],['surg','Date of surgery'],['ward','Ward']
+    ['fn','First name'],['sn','Surname'],['dob','Date of birth'],['sex','Gender'],['locality','Locality'],['surg','Date of surgery']
   ];
+  if(tab!=='elective')required.push(['ward','Ward']);
   for(const [id,label] of required){
     if(!val(id)){alert(label+' is required.');focusPathwayRequiredTab(tab,`pp-${tab}-${id}`);return;}
   }
@@ -14997,7 +14998,7 @@ function renderPathwaySearch(tab){
       </div>
       ${renderPathwayRegistrationTabs(tab)}
       <div class="pathway-form-actions">
-        <div class="pathway-form-note">Required fields: first name, surname, date of birth, gender, locality, date of surgery and ward. Hospital number, patient status and pathway type are intentionally not shown because this page already defines the pathway. Manual signatures are removed because logged-in user identity is captured automatically.</div>
+        <div class="pathway-form-note">Required fields: first name, surname, date of birth, gender, locality, and date of surgery (ward is not required for elective). Hospital number, patient status and pathway type are intentionally not shown because this page already defines the pathway. Manual signatures are removed because logged-in user identity is captured automatically.</div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
           <button type="button" class="pathway-reset-btn" onclick="resetPathwayRegistrationForm('${tab}')">Clear form</button>
           <button type="button" class="pathway-save-btn" onclick="savePathwayPagePatient('${tab}')">Save ${htmlSafe(meta.short)} Patient</button>
@@ -15665,7 +15666,8 @@ function renderPathwayStepsPanel(tab,patient,steps,completions,col,allDone,total
   window.savePathwayPagePatient=async function(tab){
     const meta=getPathwayFormMeta(tab);
     const v=id=>val(`pp-${tab}-${id}`);
-    const required=[['fn','First name'],['sn','Surname'],['dob','Date of birth'],['sex','Gender'],['locality','Locality'],['ward','Ward']];
+    const required=[['fn','First name'],['sn','Surname'],['dob','Date of birth'],['sex','Gender'],['locality','Locality']];
+    if(tab!=='elective')required.push(['ward','Ward']);
     if(tab==='elective'||tab==='emergency'||tab==='readmission')required.push(['surg','Date of surgery']);
     for(const [id,label] of required){if(!v(id)){alert(label+' is required.');focusPathwayRequiredTab(tab,`pp-${tab}-${id}`);return;}}
     const fn=v('fn'), sn=v('sn'), idCard=v('id');
