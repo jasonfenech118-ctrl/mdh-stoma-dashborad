@@ -7,6 +7,12 @@ Protected areas not intentionally changed: login, patient pathways, appointments
 
 <!-- v66-44 locked baseline patch: Removed Ward from Elective Surgery patient details/save payload; removed unsupported assigned_nurse/ward fields from patients table insert path with schema-safe retry. -->
 
+
+<!--
+v66-49 change: Patient Centre visibility fix. Inpatients/Outpatients/Master List now load patients saved from Patient Pathways even when patients_main / episodes_main / stomas_main are not present. Falls back to the live patients table and keeps existing Project Bible support when available.
+Protected areas not intentionally changed: Follow-Up Centre, rosters, appointments, patient pathway form layout, main navigation, SQL/database.
+-->
+
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
@@ -16739,6 +16745,234 @@ function renderPathwayStepsPanel(tab,patient,steps,completions,col,allDone,total
 })();
 </script>
 
+
+<script>
+// v66-49 patch — patient visibility fallback for Patient Centre views
+// Purpose: Patient Centre must show patients saved from pathways even when the Project Bible tables
+// patients_main / episodes_main / stomas_main are not present in Supabase yet.
+(function(){
+  function safeText(v){return (typeof esc==='function')?esc(v):String(v??'').replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  function safeHtml(v){return (typeof htmlSafe==='function')?htmlSafe(v):safeText(v);}
+  function todayIsoLocal(){try{return new Date().toISOString().slice(0,10);}catch(e){return '';}}
+  function cleanDate(v){
+    if(!v)return null;
+    const s=String(v).trim();
+    if(!s || s.includes('${'))return null;
+    if(/^\d{4}-\d{2}-\d{2}/.test(s))return s.slice(0,10);
+    if(/^\d{2}\/\d{2}\/\d{4}$/.test(s)){const [d,m,y]=s.split('/');return `${y}-${m}-${d}`;}
+    return s;
+  }
+  function displayDate(v){
+    const d=cleanDate(v);
+    if(!d)return '—';
+    try{const dt=new Date(d); if(!isNaN(dt))return dt.toLocaleDateString('en-MT');}catch(e){}
+    return safeText(d);
+  }
+  async function selectAllSafe(table){
+    try{
+      let q=SB.from(table).select('*');
+      const r=await q;
+      if(r.error)throw r.error;
+      return {data:r.data||[], error:null};
+    }catch(error){return {data:[], error};}
+  }
+  async function selectByPatientIdsSafe(table,ids){
+    if(!ids || !ids.length)return [];
+    try{
+      const r=await SB.from(table).select('*').in('patient_id',ids);
+      if(r.error)throw r.error;
+      return r.data||[];
+    }catch(e){return [];}
+  }
+  function latestByPatient(rows){
+    const map={};
+    (rows||[]).forEach(r=>{
+      if(!r || !r.patient_id)return;
+      const k=String(r.patient_id);
+      if(!map[k]){map[k]=r;return;}
+      const oldDate=Date.parse(map[k].updated_at||map[k].created_at||map[k].encounter_date||map[k].opened_date||map[k].admission_date||0)||0;
+      const newDate=Date.parse(r.updated_at||r.created_at||r.encounter_date||r.opened_date||r.admission_date||0)||0;
+      if(newDate>=oldDate)map[k]=r;
+    });
+    return map;
+  }
+  function derivePatientType(p,e){
+    const raw=String(p.patient_type||p.type||p.patient_status||p.status||e?.episode_status||e?.status||'').toLowerCase();
+    const ep=String(e?.episode_status||e?.status||e?.episode_type||'').toLowerCase();
+    if(raw.includes('inpatient')||raw.includes('admitted')||ep.includes('open')||ep.includes('active')||p.ward||p.current_ward)return 'inpatient';
+    if(raw.includes('outpatient')||raw.includes('planned')||raw.includes('follow'))return 'outpatient';
+    return 'outpatient';
+  }
+  function normaliseAnyPatient(p,e,st,source){
+    const first=p.first_name||p.name||p.given_name||'';
+    const surname=p.surname||p.last_name||p.family_name||'';
+    const patientType=derivePatientType(p,e);
+    const status=p.patient_status||p.status||(patientType==='inpatient'?'inpatient':'outpatient');
+    const ward=p.ward||p.current_ward||e?.ward||e?.admission_ward||e?.location||'';
+    const stomaType=st?.stoma_type||p.stoma_type||p.stoma_type_summary||p.type_of_stoma||e?.actual_stoma_type||e?.intended_stoma_type||'';
+    const surgeryDate=cleanDate(st?.surgery_date||st?.date_formed||p.surgery_date||p.date_of_surgery||e?.surgery_date||e?.date_of_surgery);
+    return {
+      ...p,
+      id:p.id,
+      source_table:source,
+      first_name:first,
+      surname:surname,
+      patient_number:p.patient_number||p.hospital_number||p.id,
+      hospital_number:p.hospital_number||p.patient_number||'',
+      id_card:p.id_card||p.id_card_number||p.idcard||p.hospital_number||'',
+      id_card_number:p.id_card_number||p.id_card||'',
+      phone_number:p.phone_number||p.contact_number||p.mobile_number||p.home_number||'',
+      contact_number:p.contact_number||p.phone_number||p.mobile_number||p.home_number||'',
+      mobile_number:p.mobile_number||p.contact_number||p.phone_number||'',
+      date_of_birth:cleanDate(p.date_of_birth||p.dob),
+      locality:p.locality||p.address_locality||'',
+      sex:p.sex||p.gender||'',
+      patient_status:status,
+      patient_type:patientType,
+      patient_type_label:patientType==='inpatient'?'Inpatient':'Outpatient',
+      is_active:p.is_active!==false && !String(status).toLowerCase().includes('deleted'),
+      ward:ward,
+      consultant:e?.consultant||p.consultant||'',
+      assigned_nurse:e?.assigned_nurse||e?.primary_nurse||p.assigned_nurse||p.allocated_nurse||p.followup_owner||'Common',
+      allocated_nurse:e?.assigned_nurse||e?.primary_nurse||p.assigned_nurse||p.allocated_nurse||p.followup_owner||'Common',
+      episode_id:e?.id||p.episode_id||null,
+      episode_number:e?.episode_number||e?.episode_id_label||p.episode_number||'',
+      episode_type:e?.episode_type||p.episode_type||p.pathway_type||'',
+      episode_status:e?.episode_status||e?.status||p.episode_status||status,
+      episode_outcome:e?.episode_outcome||p.latest_outcome||p.last_outcome||'',
+      pathway_status:e?.pathway_stage||p.pathway_status||status,
+      pathway_type:p.pathway_type||e?.episode_type||'',
+      admission_date:cleanDate(e?.admission_date||e?.opened_date||p.admission_date),
+      discharge_date:cleanDate(e?.discharge_date||p.discharge_date||p.discharged_date),
+      surgery_date:surgeryDate,
+      stoma_id:st?.id||p.stoma_id||null,
+      stoma_number:st?.stoma_number||p.stoma_number||'',
+      stoma_type:stomaType,
+      stoma_site:st?.stoma_site||p.stoma_site||'',
+      bag_brand:st?.bag_brand||p.bag_brand||p.appliance_used||p.appliances_used||'',
+      flange_size:st?.flange_size||p.flange_size||p.accessories_used||'',
+      accessories_used:p.accessories_used||st?.accessories_used||p.flange_size||'',
+      appliance_used:p.appliance_used||p.appliances_used||st?.bag_brand||'',
+      latest_outcome:p.latest_outcome||p.last_outcome||e?.episode_outcome||status
+    };
+  }
+  async function getAllPatientsFromAvailableTables(){
+    const [mainRes, legacyRes]=await Promise.all([selectAllSafe('patients_main'), selectAllSafe('patients')]);
+    if((!mainRes.data.length && !legacyRes.data.length) && mainRes.error && legacyRes.error){
+      throw mainRes.error || legacyRes.error;
+    }
+    const mainIds=mainRes.data.map(p=>p.id).filter(Boolean);
+    const legacyIds=legacyRes.data.map(p=>p.id).filter(Boolean);
+    const [episodesMain, stomasMain, episodesLegacy, stomasLegacy]=await Promise.all([
+      selectByPatientIdsSafe('episodes_main',mainIds),
+      selectByPatientIdsSafe('stomas_main',mainIds),
+      selectByPatientIdsSafe('episodes',legacyIds),
+      selectByPatientIdsSafe('stomas',legacyIds)
+    ]);
+    const epMainMap=latestByPatient(episodesMain);
+    const stMainMap=latestByPatient(stomasMain);
+    const epLegacyMap=latestByPatient(episodesLegacy);
+    const stLegacyMap=latestByPatient(stomasLegacy);
+    const merged=[];
+    const seen=new Set();
+    function keyFor(p){return String((p.id_card||p.id_card_number||p.hospital_number||p.patient_number||p.id||'')||'').toLowerCase();}
+    (mainRes.data||[]).forEach(p=>{const k=keyFor(p); seen.add(k); merged.push(normaliseAnyPatient(p,epMainMap[String(p.id)],stMainMap[String(p.id)],'patients_main'));});
+    (legacyRes.data||[]).forEach(p=>{const k=keyFor(p); if(!seen.has(k)){seen.add(k); merged.push(normaliseAnyPatient(p,epLegacyMap[String(p.id)],stLegacyMap[String(p.id)],'patients'));}});
+    merged.sort((a,b)=>String(a.surname||'').localeCompare(String(b.surname||'')) || String(a.first_name||'').localeCompare(String(b.first_name||'')));
+    return merged;
+  }
+  window.getProjectPatients=async function(){
+    return await getAllPatientsFromAvailableTables();
+  };
+  window.getProjectPatientById=async function(id){
+    const rows=await getAllPatientsFromAvailableTables();
+    return rows.find(p=>String(p.id)===String(id)) || null;
+  };
+  window.patientMatchesCommandView=function(p,view,dntuIds){
+    if(!view || view==='master')return true;
+    const status=String([p.patient_status,p.episode_status,p.pathway_status,p.episode_outcome,p.latest_outcome].join(' ')).toLowerCase();
+    if(view==='inpatient')return p.patient_type==='inpatient' || status.includes('inpatient') || status.includes('admitted') || status.includes('active inpatient') || !!p.ward;
+    if(view==='outpatient')return p.patient_type==='outpatient' && !status.includes('deceased') && !status.includes('relocated') && !status.includes('reversed');
+    if(view==='active')return p.is_active!==false && !status.includes('deceased') && !status.includes('relocated') && !status.includes('reversed') && !status.includes('closed');
+    if(view==='handover')return status.includes('handover') || status.includes('discharge planning') || p.patient_type==='inpatient';
+    if(view==='dntu')return dntuIds && dntuIds.has(String(p.id));
+    if(view==='reversal')return status.includes('reversal')||status.includes('reversed')||status.includes('refashion')||status.includes('closure')||status.includes('closed');
+    if(view==='deceased')return status.includes('deceased')||status.includes('died');
+    if(view==='relocated')return status.includes('relocated')||status.includes('overseas')||status.includes('moved abroad');
+    if(view==='gozo')return status.includes('gozo');
+    if(view==='outcomes')return status.includes('deceased')||status.includes('relocated')||status.includes('reversed')||status.includes('closed')||status.includes('gozo');
+    return true;
+  };
+  async function getLastReviewMapSafe(ids){
+    const map={}; if(!ids||!ids.length)return map;
+    for(const table of ['encounters_main','encounters']){
+      try{
+        const r=await SB.from(table).select('*').in('patient_id',ids);
+        if(r.error)throw r.error;
+        (r.data||[]).forEach(e=>{
+          const pid=String(e.patient_id||''); if(!pid)return;
+          const d=cleanDate(e.encounter_date||e.review_date||e.created_at);
+          if(!d)return;
+          if(!map[pid] || Date.parse(d)>Date.parse(map[pid]))map[pid]=d;
+        });
+      }catch(e){}
+    }
+    return map;
+  }
+  window.loadPatients=async function(){
+    const tbody=document.getElementById('patients-tbody'); if(!tbody)return;
+    const panel=document.getElementById('patient-list-panel');
+    const view=(document.getElementById('pt-command-filter')?.value||'').trim();
+    const colSpan=view==='outpatient'?10:(view==='inpatient'?9:9);
+    tbody.innerHTML=`<tr><td colspan="${colSpan}" class="empty">Loading patients...</td></tr>`;
+    let rows=[]; let dntuIds=new Set();
+    try{rows=await window.getProjectPatients(); if(typeof getDntuPatientIds==='function')dntuIds=await getDntuPatientIds();}
+    catch(error){tbody.innerHTML=`<tr><td colspan="${colSpan}" class="empty">Error loading patient list: ${safeHtml(error.message||error)}</td></tr>`;return;}
+    try{if(typeof loadPatientCommandCountsFromRows==='function')loadPatientCommandCountsFromRows(rows,dntuIds);}catch(e){}
+    if(view)rows=rows.filter(r=>window.patientMatchesCommandView(r,view,dntuIds));
+    const statusF=document.getElementById('pt-status-filter')?.value||'';
+    const nurseF=document.getElementById('pt-nurse-filter')?.value||'';
+    const search=(document.getElementById('patient-search-input')?.value||document.getElementById('pt-search')?.value||'').trim().toLowerCase();
+    if(statusF && !['inpatient','outpatient','handover'].includes(statusF)){
+      if(statusF==='active')rows=rows.filter(r=>r.is_active!==false);
+      else rows=rows.filter(r=>String([r.patient_status,r.episode_status,r.pathway_status].join(' ')).toLowerCase().includes(statusF));
+    }
+    if(nurseF){
+      const want=nurseF.toLowerCase();
+      rows=rows.filter(r=>{
+        const got=String(r.allocated_nurse||r.assigned_nurse||'').toLowerCase();
+        if(want==='common')return !got || got==='common';
+        if(want.includes('jason'))return got.includes('jason');
+        if(want.includes('jacqueline')||want.includes('jacklyn'))return got.includes('jacqueline')||got.includes('jacklyn');
+        if(want.includes('lorraine'))return got.includes('lorraine');
+        return got===want;
+      });
+    }
+    if(search)rows=rows.filter(r=>[r.first_name,r.surname,r.id_card,r.id_card_number,r.hospital_number,r.patient_number,r.ward,r.locality,r.stoma_type,r.patient_status,r.pathway_status,r.allocated_nurse,r.phone_number,r.contact_number].some(v=>String(v||'').toLowerCase().includes(search)));
+    const lastMap=await getLastReviewMapSafe(rows.map(r=>r.id).filter(Boolean));
+    if(panel){
+      const headers=view==='inpatient'?['ID Card','Name','Surname','Pathway / Case Type','Episode Status / Reason','Date of Surgery','Last Review Date','Ward / Location','Actions']:
+        view==='outpatient'?['ID Card','Name','Surname','Type of Stoma','Appliances Used','Accessories Used','Surgery Date','Latest Outcome','Telephone Number','Locality']:
+        ['ID Card','Name','Surname','Patient Type','Stoma Type','Surgery Date','Locality','Last Review Date','Actions'];
+      const tr=panel.querySelector('thead tr'); if(tr)tr.innerHTML=headers.map(h=>`<th>${safeText(h)}</th>`).join('');
+    }
+    if(!rows.length){tbody.innerHTML=`<tr><td colspan="${colSpan}" class="empty">No patients found for this view</td></tr>`;return;}
+    tbody.innerHTML=rows.map(p=>{
+      const id=safeText(p.id); const idc=safeText(p.id_card||p.id_card_number||p.hospital_number||p.patient_number||'—');
+      const first=safeHtml(p.first_name||''); const sur=safeHtml(p.surname||'');
+      const open=`onclick="openPatientRecordPage('${id}')"`;
+      if(view==='inpatient'){
+        return `<tr class="patient-row-click" ${open}><td style="font-family:monospace;font-size:12px;">${idc}</td><td><strong>${first}</strong></td><td><strong>${sur}</strong></td><td>${safeHtml(p.episode_type||p.pathway_type||p.pathway_status||'Active pathway')}</td><td>${safeHtml(p.episode_status||p.patient_status||p.pathway_status||'Active inpatient episode')}</td><td>${displayDate(p.surgery_date)}</td><td>${displayDate(lastMap[String(p.id)])}</td><td>${safeHtml(p.ward||'—')}</td><td><button onclick="event.stopPropagation();openPatientRecordPage('${id}')" class="btn-refresh">Open</button></td></tr>`;
+      }
+      if(view==='outpatient'){
+        return `<tr class="patient-row-click" ${open}><td style="font-family:monospace;font-size:12px;">${idc}</td><td><strong>${first}</strong></td><td><strong>${sur}</strong></td><td>${safeHtml(p.stoma_type||'—')}</td><td>${safeHtml(p.appliance_used||p.bag_brand||'—')}</td><td>${safeHtml(p.accessories_used||p.flange_size||'—')}</td><td>${displayDate(p.surgery_date)}</td><td>${safeHtml(p.latest_outcome||p.episode_outcome||p.patient_status||p.pathway_status||'—')}</td><td>${safeHtml(p.phone_number||p.contact_number||'—')}</td><td>${safeHtml(p.locality||'—')}</td></tr>`;
+      }
+      return `<tr class="patient-row-click" ${open}><td style="font-family:monospace;font-size:12px;">${idc}</td><td><strong>${first}</strong></td><td><strong>${sur}</strong></td><td>${safeHtml(p.patient_type||p.patient_status||'—')}</td><td>${safeHtml(p.stoma_type||'—')}</td><td>${displayDate(p.surgery_date)}</td><td>${safeHtml(p.locality||'—')}</td><td>${displayDate(lastMap[String(p.id)])}</td><td><button onclick="event.stopPropagation();openPatientRecordPage('${id}')" class="btn-refresh">Open</button></td></tr>`;
+    }).join('');
+  };
+})();
+
+</script>
 </body>
 </html>
 
