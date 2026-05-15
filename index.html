@@ -9007,6 +9007,8 @@ function renderMdhLetterHtml(data, p){
     </div>
   </div>
 
+
+
 </body></html>`;
 }
 
@@ -12565,7 +12567,9 @@ function buildClinicPrintHtml(rows){
       <div class="sum"><div class="n">${dntu}</div><div class="l">Did Not Turn Up</div></div>
     </div>
     ${body}
-  </body></html>`;
+  
+
+</body></html>`;
 }
 
 async function printClinicAuditBook(){
@@ -15881,6 +15885,180 @@ function renderPathwayStepsPanel(tab,patient,steps,completions,col,allDone,total
   #section-patient-pathways .pathway-form-grid{grid-template-columns:1fr!important;}
 }
 </style>
+
+
+
+<style>
+/* v66-36 — final Follow-Up navigation dropdown fix: every Follow-Up tab uses the same visible dropdown behaviour */
+#section-followups #followup-subtab-bar{
+  overflow:visible!important;
+  overflow-x:visible!important;
+  overflow-y:visible!important;
+  flex-wrap:wrap!important;
+  position:relative!important;
+  z-index:5000!important;
+  isolation:isolate!important;
+}
+#section-followups .followup-nav-tab-wrap,
+#section-followups .followup-roster-tab-wrap{
+  position:relative!important;
+  overflow:visible!important;
+  z-index:5001!important;
+}
+#section-followups .followup-nav-tab-wrap:hover,
+#section-followups .followup-roster-tab-wrap:hover,
+#section-followups .followup-nav-tab-wrap.dropdown-open,
+#section-followups .followup-roster-tab-wrap.dropdown-open{
+  z-index:999999!important;
+}
+#section-followups .followup-mini-dropdown,
+#section-followups .followup-roster-dropdown{
+  position:fixed!important;
+  top:auto!important;
+  left:auto!important;
+  right:auto!important;
+  width:330px!important;
+  min-width:300px!important;
+  max-width:calc(100vw - 24px)!important;
+  display:none!important;
+  gap:6px!important;
+  padding:8px!important;
+  background:#ffffff!important;
+  border:1px solid #dbe3ea!important;
+  border-left:4px solid var(--dropdown-colour,#475569)!important;
+  border-radius:14px!important;
+  box-shadow:0 22px 52px rgba(15,38,56,.26)!important;
+  z-index:2147483000!important;
+  pointer-events:auto!important;
+}
+#section-followups .followup-mini-dropdown.open,
+#section-followups .followup-roster-dropdown.open{
+  display:grid!important;
+}
+#section-followups .followup-mini-dropdown button,
+#section-followups .followup-roster-dropdown button{
+  min-height:50px!important;
+  width:100%!important;
+  display:grid!important;
+  grid-template-columns:36px minmax(0,1fr)!important;
+  gap:10px!important;
+  align-items:center!important;
+  text-align:left!important;
+  border:1px solid transparent!important;
+  background:#fff!important;
+  border-radius:11px!important;
+  padding:9px 10px!important;
+  cursor:pointer!important;
+  font-family:'DM Sans',sans-serif!important;
+  color:#0f2638!important;
+}
+#section-followups .followup-mini-dropdown button:hover,
+#section-followups .followup-roster-dropdown button:hover{
+  background:var(--dropdown-soft,#f8fafc)!important;
+  border-color:#cbd5e1!important;
+}
+#section-followups .followup-mini-dropdown strong,
+#section-followups .followup-roster-dropdown strong{
+  display:block!important;
+  font-size:12px!important;
+  font-weight:950!important;
+  color:#0f2638!important;
+  line-height:1.1!important;
+}
+#section-followups .followup-mini-dropdown small,
+#section-followups .followup-roster-dropdown small{
+  display:block!important;
+  margin-top:2px!important;
+  font-size:10.5px!important;
+  font-weight:650!important;
+  color:#64748b!important;
+  line-height:1.2!important;
+}
+#section-followups .followup-roster-caret{
+  margin-left:4px!important;
+  font-size:11px!important;
+  color:#64748b!important;
+}
+#section-followups #followup-subtab-bar .roster-subtab[aria-expanded="true"]{
+  background:#f8fafc!important;
+  color:#0f2638!important;
+  box-shadow:inset 0 -3px 0 var(--dropdown-colour,var(--fu-tab-active,#0f766e))!important;
+}
+#section-followups .mini-roster-icon.teal{background:linear-gradient(135deg,#0f766e,#14b8a6)!important;}
+#section-followups .mini-roster-icon.red{background:linear-gradient(135deg,#7c2d12,#c2413b)!important;}
+#section-followups .mini-roster-icon.amber{background:linear-gradient(135deg,#92400e,#d97706)!important;}
+@media(max-width:760px){
+  #section-followups #followup-subtab-bar{flex-wrap:wrap!important;}
+  #section-followups .followup-mini-dropdown,
+  #section-followups .followup-roster-dropdown{width:calc(100vw - 24px)!important;min-width:0!important;}
+}
+</style>
+
+<script>
+/* v66-36 — robust Follow-Up dropdown positioning, unclipped by any tab bar/card/container */
+(function(){
+  function qs(sel){return document.querySelector(sel);}
+  function qsa(sel){return Array.from(document.querySelectorAll(sel));}
+  function setExpanded(btn, value){ if(btn) btn.setAttribute('aria-expanded', value ? 'true' : 'false'); }
+  function getTabButton(tab){ return document.getElementById('followup-subtab-' + tab); }
+  function getDropdown(tab){ return document.getElementById(tab === 'rosters' ? 'followup-roster-dropdown' : 'followup-' + tab + '-dropdown'); }
+  function activeWrap(btn){ return btn ? btn.closest('.followup-nav-tab-wrap,.followup-roster-tab-wrap') : null; }
+  function positionFollowupDropdown(menu, btn){
+    if(!menu || !btn) return;
+    const rect = btn.getBoundingClientRect();
+    const desired = Math.min(330, Math.max(280, window.innerWidth - 24));
+    const width = Math.min(desired, window.innerWidth - 24);
+    let left = rect.left;
+    if(left + width > window.innerWidth - 12) left = window.innerWidth - width - 12;
+    if(left < 12) left = 12;
+    let top = rect.bottom + 8;
+    const estimatedHeight = Math.min(menu.scrollHeight || 180, 280);
+    if(top + estimatedHeight > window.innerHeight - 12) top = Math.max(12, rect.top - estimatedHeight - 8);
+    menu.style.position = 'fixed';
+    menu.style.left = left + 'px';
+    menu.style.top = top + 'px';
+    menu.style.right = 'auto';
+    menu.style.width = width + 'px';
+  }
+  window.closeFollowupDropdowns = function(){
+    qsa('#section-followups .followup-mini-dropdown.open, #section-followups .followup-roster-dropdown.open').forEach(menu => menu.classList.remove('open'));
+    qsa('#section-followups .followup-nav-tab-wrap.dropdown-open, #section-followups .followup-roster-tab-wrap.dropdown-open').forEach(wrap => wrap.classList.remove('dropdown-open'));
+    qsa('#section-followups #followup-subtab-bar .roster-subtab[aria-expanded="true"]').forEach(btn => setExpanded(btn, false));
+  };
+  function openDropdownFor(tab, event){
+    if(event){ event.preventDefault(); event.stopPropagation(); }
+    const btn = event?.currentTarget || getTabButton(tab);
+    const menu = getDropdown(tab);
+    const wasOpen = !!menu?.classList.contains('open');
+    if(typeof window.showFollowupSubtab === 'function') window.showFollowupSubtab(tab);
+    window.closeFollowupDropdowns();
+    if(menu && btn && !wasOpen){
+      menu.classList.add('open');
+      setExpanded(btn, true);
+      const wrap = activeWrap(btn); if(wrap) wrap.classList.add('dropdown-open');
+      requestAnimationFrame(() => positionFollowupDropdown(menu, btn));
+    }
+  }
+  window.toggleFollowupMiniDropdown = function(event, tab){ openDropdownFor(tab, event); };
+  window.toggleFollowupRosterDropdown = function(event){ openDropdownFor('rosters', event); };
+  window.selectFollowupTabFromDropdown = function(tab){
+    window.closeFollowupDropdowns();
+    if(typeof window.showFollowupSubtab === 'function') window.showFollowupSubtab(tab);
+  };
+  window.selectFollowupRosterFromTab = function(view){
+    window.closeFollowupDropdowns();
+    if(typeof window.showFollowupSubtab === 'function') window.showFollowupSubtab('rosters');
+    if(typeof window.renderFollowupRosterWorkspace === 'function') window.renderFollowupRosterWorkspace(view);
+  };
+  document.addEventListener('click', function(e){
+    if(!e.target.closest('#section-followups .followup-nav-tab-wrap') && !e.target.closest('#section-followups .followup-mini-dropdown')){
+      window.closeFollowupDropdowns();
+    }
+  }, true);
+  window.addEventListener('scroll', function(){ window.closeFollowupDropdowns(); }, true);
+  window.addEventListener('resize', function(){ window.closeFollowupDropdowns(); });
+})();
+</script>
 
 </body>
 </html>
