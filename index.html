@@ -5467,6 +5467,8 @@ const LOGIN_PROFILES={
   'tracy.bartolo@gov.mt':{full_name:'Tracey Galea',grade:'Senior Staff Nurse',short_grade:'SSN'}
 };
 const ALLOWED_LOGIN_EMAILS=Object.keys(LOGIN_PROFILES);
+
+const USE_PROFILE_BASED_AUTH_APPROVAL=false;
 let currentAuthUser=null;
 let currentLoginProfile=null;
 
@@ -6101,6 +6103,10 @@ async function doLogin(){
   const pass=document.getElementById('li-pass').value;
   const errEl=document.getElementById('lerr');
   errEl.textContent='';
+  if(!USE_PROFILE_BASED_AUTH_APPROVAL && !isAllowedLoginEmail(email)){
+    errEl.textContent='This email is not authorised for this app.';
+    return;
+  }
   const{error}=await SB.auth.signInWithPassword({email,password:pass});
   if(error)errEl.textContent='Invalid email or password.';
   else{await startApp();await logAuditTrailAction('login','auth.users',currentAuthUser?.id,{email});}
@@ -6112,11 +6118,19 @@ window.doLogin=doLogin;
 window.dLogin=doLogin;
 window.dologin=doLogin;
 async function doLogout(){await logAuditTrailAction('logout','auth.users',currentAuthUser?.id,{email:currentLoginProfile?.email||currentAuthUser?.email||''});await SB.auth.signOut();currentAuthUser=null;currentLoginProfile=null;document.getElementById('app').style.display='none';document.getElementById('login-screen').style.display='flex';}
-async function checkSession(){const{data}=await SB.auth.getSession();if(data.session){await startApp();}}
+async function checkSession(){
+  const{data}=await SB.auth.getSession();
+  if(!data.session)return;
+  if(!USE_PROFILE_BASED_AUTH_APPROVAL){
+    const email=normalizeEmail(data.session.user?.email||'');
+    if(!isAllowedLoginEmail(email)){await SB.auth.signOut();return;}
+  }
+  await startApp();
+}
 
 async function startApp(){
   await loadCurrentLoginProfile();
-  if(!isCurrentUserApproved()){
+  if(USE_PROFILE_BASED_AUTH_APPROVAL ? !isCurrentUserApproved() : (currentLoginProfile?.email && !isAllowedLoginEmail(currentLoginProfile.email))){
     await SB.auth.signOut();
     document.getElementById('lerr').textContent='This email is not authorised for this app.';
     return;
