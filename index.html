@@ -7416,7 +7416,7 @@ function renderPathwayRegistrationTabs(tab){
 }
 
 function pathwayStomaOptions(){
-  return ['Colostomy','Ileostomy','Jejunostomy','Urostomy','Transverse Colostomy','End Colostomy','Loop Colostomy','End Ileostomy','Loop Ileostomy','Other'];
+  return ['Jejunostomy','Urostomy','Transverse Colostomy','End Colostomy','Loop Colostomy','End Ileostomy','Loop Ileostomy','Other'];
 }
 function yesNoOptions(){return '<option value="">Select...</option><option>Yes</option><option>No</option>';}
 function metUnmetCell(tab,prefix,i,col,type='text'){
@@ -7487,8 +7487,7 @@ function renderPathwayStomaSurgeryPanel(tab){
   return `<div class="pathway-form-grid">
     <div class="fg full"><label>Operation Performed &amp; Findings</label><textarea id="pp-${tab}-opfindings" placeholder="e.g. AP resection with end colostomy formation"></textarea></div>
     <div class="fg"><label>Stoma Type</label><select id="pp-${tab}-stoma">${optionList(pathwayStomaOptions())}</select></div>
-    <div class="fg"><label>End / Loop</label><select id="pp-${tab}-endloop" data-pathway-extra data-extra-label="End / Loop"><option value="">Select...</option><option>End</option><option>Loop</option><option>Not applicable</option></select></div>
-    <div class="fg"><label>Date of Surgery <span class="req">*</span></label><input type="date" id="pp-${tab}-surg"/></div>
+      <div class="fg"><label>Date of Surgery <span class="req">*</span></label><input type="date" id="pp-${tab}-surg"/></div>
     <div class="fg"><label>Consultant</label><input id="pp-${tab}-cons" placeholder="Consultant name" autocomplete="off"/></div>
     <div class="fg"><label>Ward <span class="req">*</span></label><select id="pp-${tab}-ward">${optionList(PATHWAY_WARD_OPTIONS)}</select></div>
     <div class="fg"><label>Rod in situ</label><select id="pp-${tab}-rod" data-pathway-extra data-extra-label="Rod in situ">${yesNoOptions()}</select></div>
@@ -7496,7 +7495,13 @@ function renderPathwayStomaSurgeryPanel(tab){
   </div>`;
 }
 function renderPreOperativeStomaCarePanel(tab){return `<div class="paper-section-title">Pre-operative Stoma Care</div>${renderPreopChecklist(tab)}`;}
-function renderPostOperativeStomaCarePanel(tab){return `<div class="paper-section-title">Post-operative Stoma Care & Discharge Planning</div>${renderPostOpDayTable(tab)}`;}
+function renderPostOperativeStomaCarePanel(tab){return `<div class="paper-section-title">Post-operative Stoma Care & Discharge Planning</div>
+  <div class="pathway-step-note"><strong>Rod details.</strong> Rod in situ and date of rod removal are recorded here with post-operative care, not in Step 2.</div>
+  <div class="pathway-form-grid">
+    <div class="fg"><label>Rod in situ</label><select id="pp-${tab}-rod" data-pathway-extra data-extra-label="Rod in situ">${yesNoOptions()}</select></div>
+    <div class="fg"><label>Date of rod removal</label><input type="date" id="pp-${tab}-rodremove" data-pathway-extra data-extra-label="Date of rod removal"></div>
+  </div>
+  ${renderPostOpDayTable(tab)}`;}
 function renderManagementTeachingPanel(tab){return `<div class="paper-section-title">Appliance in Use</div>${renderApplianceRows(tab)}<div class="paper-section-title mt-paper">Teaching Plan</div>${renderTeachingTable(tab)}`;}
 function renderDischargePlanningPanel(tab){return `<div class="paper-section-title">Discharge / Follow-up Planning</div>${renderDischargeChecklist(tab)}`;}
 function renderApplianceInUsePanel(tab){return `<div class="paper-section-title">Appliance in Use</div>${renderApplianceRows(tab)}`;}
@@ -7517,7 +7522,6 @@ function renderFollowupPlanPanel(tab){return `<div class="pathway-form-grid">
 </div>`;}
 function renderExistingStomaDetailsPanel(tab){return `<div class="pathway-form-grid">
   <div class="fg"><label>Current stoma type</label><select id="pp-${tab}-stoma">${optionList(pathwayStomaOptions())}</select></div>
-  <div class="fg"><label>End / Loop</label><select id="pp-${tab}-endloop" data-pathway-extra data-extra-label="End / Loop"><option value="">Select...</option><option>End</option><option>Loop</option><option>Not applicable</option></select></div>
   <div class="fg"><label>Date of original surgery <span class="req">*</span></label><input type="date" id="pp-${tab}-surg"></div>
   <div class="fg"><label>Hospital / Country / Source</label><input id="pp-${tab}-source" placeholder="Outside hospital / abroad / community" autocomplete="off"/></div>
   <div class="fg"><label>Consultant</label><input id="pp-${tab}-cons" placeholder="Consultant name" autocomplete="off"/></div>
@@ -14969,8 +14973,7 @@ function renderPathwayStomaSurgeryPanel(tab){
     <div class="fg full"><label>Operation Performed</label><textarea id="pp-${tab}-operation" oninput="syncPathwayOperationFindings('${tab}')" data-pathway-extra data-extra-label="Operation Performed" placeholder="Write the operation/procedure performed in free text"></textarea></div>
     <div class="fg full"><label>Findings</label><textarea id="pp-${tab}-findings" oninput="syncPathwayOperationFindings('${tab}')" data-pathway-extra data-extra-label="Findings" placeholder="Write the operative/surgical findings in free text"></textarea></div>
     <div class="fg"><label>Stoma Type</label><select id="pp-${tab}-stoma">${optionList(pathwayStomaOptions())}</select></div>
-    <div class="fg"><label>End / Loop</label><select id="pp-${tab}-endloop" data-pathway-extra data-extra-label="End / Loop"><option value="">Select...</option><option>End</option><option>Loop</option><option>Not applicable</option></select></div>
-    <div class="fg"><label>Date of Surgery <span class="req">*</span></label><input type="date" id="pp-${tab}-surg"/></div>
+      <div class="fg"><label>Date of Surgery <span class="req">*</span></label><input type="date" id="pp-${tab}-surg"/></div>
     <div class="fg"><label>Consultant</label><input id="pp-${tab}-cons" placeholder="Consultant name" autocomplete="off"/></div>
     <div class="fg"><label>Ward <span class="req">*</span></label><select id="pp-${tab}-ward">${optionList(PATHWAY_WARD_OPTIONS)}</select></div>
     <div class="fg"><label>Rod in situ</label><select id="pp-${tab}-rod" data-pathway-extra data-extra-label="Rod in situ">${yesNoOptions()}</select></div>
@@ -14981,7 +14984,6 @@ function renderPathwayStomaSurgeryPanel(tab){
 function renderExistingStomaDetailsPanel(tab){return `<div class="pathway-form-grid">
   <input type="hidden" id="pp-${tab}-opfindings" data-pathway-extra data-extra-label="Operation performed and findings">
   <div class="fg"><label>Current stoma type</label><select id="pp-${tab}-stoma">${optionList(pathwayStomaOptions())}</select></div>
-  <div class="fg"><label>End / Loop</label><select id="pp-${tab}-endloop" data-pathway-extra data-extra-label="End / Loop"><option value="">Select...</option><option>End</option><option>Loop</option><option>Not applicable</option></select></div>
   <div class="fg"><label>Date of original surgery <span class="req">*</span></label><input type="date" id="pp-${tab}-surg"></div>
   <div class="fg"><label>Hospital / Country / Source</label><input id="pp-${tab}-source" placeholder="Outside hospital / abroad / community" autocomplete="off"/></div>
   <div class="fg"><label>Consultant</label><input id="pp-${tab}-cons" placeholder="Consultant name" autocomplete="off"/></div>
@@ -15663,9 +15665,6 @@ function renderPathwayStepsPanel(tab,patient,steps,completions,col,allDone,total
     <div class="pathway-form-grid">
       <div class="fg"><label>Date of Surgery <span class="req">*</span></label><input type="date" id="pp-${tab}-surg"></div>
       <div class="fg"><label>Stoma Type</label><select id="pp-${tab}-stoma">${opt(pathwayStomaOptions())}</select></div>
-      <div class="fg"><label>End / Loop</label><select id="pp-${tab}-endloop" data-pathway-extra data-extra-label="End / Loop"><option value="">Select...</option><option>End</option><option>Loop</option><option>Not applicable</option></select></div>
-      <div class="fg"><label>Rod in situ</label><select id="pp-${tab}-rod" data-pathway-extra data-extra-label="Rod in situ">${yn}</select></div>
-      <div class="fg"><label>Date of rod removal</label><input type="date" id="pp-${tab}-rodremove" data-pathway-extra data-extra-label="Date of rod removal"></div>
       <div class="fg full"><label>Operation Performed</label><textarea id="pp-${tab}-operation" data-pathway-extra data-extra-label="Operation performed" placeholder="Write the operation/procedure performed"></textarea></div>
       <div class="fg full"><label>Findings</label><textarea id="pp-${tab}-findings" data-pathway-extra data-extra-label="Findings" placeholder="Write operative/surgical findings"></textarea></div>
       <div class="fg full"><label>Clinical notes / pathway comments</label><textarea id="pp-${tab}-notes" data-pathway-extra data-extra-label="Pathway comments"></textarea></div>
@@ -15675,7 +15674,6 @@ function renderPathwayStepsPanel(tab,patient,steps,completions,col,allDone,total
   window.renderExistingStomaDetailsPanel=function(tab){
     return `<div class="pathway-form-grid">
       <div class="fg"><label>Current stoma type</label><select id="pp-${tab}-stoma">${opt(pathwayStomaOptions())}</select></div>
-      <div class="fg"><label>End / Loop</label><select id="pp-${tab}-endloop" data-pathway-extra data-extra-label="End / Loop"><option value="">Select...</option><option>End</option><option>Loop</option><option>Not applicable</option></select></div>
       <div class="fg"><label>Date of original surgery <span class="req">*</span></label><input type="date" id="pp-${tab}-surg"></div>
       <div class="fg"><label>Hospital / Country / Source</label><input id="pp-${tab}-source" placeholder="Outside hospital / abroad / community" autocomplete="off"></div>
       <div class="fg"><label>Consultant</label><input data-patient-detail="true" id="pp-${tab}-cons" autocomplete="off"></div>
@@ -15729,8 +15727,9 @@ function renderPathwayStepsPanel(tab,patient,steps,completions,col,allDone,total
 
   window.focusPathwayRequiredTab=function(tab,fieldId){
     const short=String(fieldId||'').split(`pp-${tab}-`).pop();
-    const step2=['surg','ward','stoma','operation','findings','cons','rod','rodremove'].includes(short);
-    switchPathwayRegistrationTab(tab,step2?(tab==='readmission'?'existing':'stoma'):'patient');
+    const postop=['rod','rodremove'].includes(short);
+    const step2=['surg','ward','stoma','operation','findings','cons'].includes(short);
+    switchPathwayRegistrationTab(tab,postop?'postop':(step2?(tab==='readmission'?'existing':'stoma'):'patient'));
     const el=document.getElementById(fieldId); if(el){el.focus();el.scrollIntoView({behavior:'smooth',block:'center'});}
   };
 
@@ -16335,6 +16334,151 @@ function renderPathwayStepsPanel(tab,patient,steps,completions,col,allDone,total
   };
 
   rebuildFollowupButtonTabs();
+})();
+</script>
+
+
+
+<style>
+/* v66-46 — pathway navigation tabs now match the compact icon-button tab style used in Follow-Up Centre */
+#section-patient-pathways .pathway-form-tabs,
+#section-patient-pathways .pathway-workspace-tabs{
+  display:flex!important;
+  flex-direction:row!important;
+  flex-wrap:wrap!important;
+  align-items:stretch!important;
+  justify-content:flex-start!important;
+  gap:0!important;
+  width:100%!important;
+  max-width:none!important;
+  margin:0 0 12px!important;
+  padding:0 10px!important;
+  background:#ffffff!important;
+  border:1px solid var(--border)!important;
+  border-radius:10px!important;
+  box-shadow:0 2px 7px rgba(15,38,56,.06)!important;
+  overflow-x:visible!important;
+  overflow-y:visible!important;
+}
+#section-patient-pathways .pathway-form-tab,
+#section-patient-pathways .pathway-workspace-tab{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:8px!important;
+  min-height:43px!important;
+  height:43px!important;
+  padding:0 14px!important;
+  margin:0!important;
+  border:0!important;
+  border-right:1px solid rgba(221,227,234,.85)!important;
+  border-radius:0!important;
+  background:#ffffff!important;
+  box-shadow:none!important;
+  color:#64748b!important;
+  font-family:'DM Sans',sans-serif!important;
+  font-size:12px!important;
+  font-weight:750!important;
+  letter-spacing:.01em!important;
+  line-height:1.1!important;
+  white-space:nowrap!important;
+  cursor:pointer!important;
+  position:relative!important;
+  transform:none!important;
+}
+#section-patient-pathways .pathway-form-tab:first-child,
+#section-patient-pathways .pathway-workspace-tab:first-child{border-radius:9px 0 0 9px!important;}
+#section-patient-pathways .pathway-form-tab:last-child,
+#section-patient-pathways .pathway-workspace-tab:last-child{border-right:0!important;border-radius:0 9px 9px 0!important;}
+#section-patient-pathways .pathway-form-tab:hover,
+#section-patient-pathways .pathway-workspace-tab:hover{background:#f8fafc!important;color:#0f2638!important;}
+#section-patient-pathways .pathway-form-tab.active,
+#section-patient-pathways .pathway-workspace-tab.active{
+  background:#f8fafc!important;
+  color:#0f2638!important;
+  box-shadow:inset 0 -3px 0 var(--pathway-colour,#0f766e)!important;
+}
+#section-patient-pathways .pathway-form-tab.active .pathway-form-tab-label,
+#section-patient-pathways .pathway-workspace-tab.active .pathway-form-tab-label{font-weight:950!important;}
+#section-patient-pathways .pathway-form-tab-icon{
+  width:25px!important;
+  height:25px!important;
+  min-width:25px!important;
+  flex:0 0 25px!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  border-radius:7px!important;
+  color:#fff!important;
+  background:linear-gradient(135deg,var(--pathway-colour,#0f766e),#0f2638)!important;
+  box-shadow:0 3px 7px rgba(15,38,56,.12)!important;
+}
+#section-patient-pathways .pathway-form-tab-icon svg{width:15px!important;height:15px!important;stroke-width:2.2!important;fill:none!important;stroke:currentColor!important;}
+#section-patient-pathways .pathway-form-tab.tab-disabled{opacity:.48!important;cursor:not-allowed!important;}
+@media(max-width:760px){
+  #section-patient-pathways .pathway-form-tabs,
+  #section-patient-pathways .pathway-workspace-tabs{flex-wrap:nowrap!important;overflow-x:auto!important;overflow-y:hidden!important;padding:0 6px!important;}
+  #section-patient-pathways .pathway-form-tab,
+  #section-patient-pathways .pathway-workspace-tab{height:40px!important;min-height:40px!important;padding:0 10px!important;font-size:11px!important;}
+  #section-patient-pathways .pathway-form-tab-icon{width:22px!important;height:22px!important;min-width:22px!important;}
+}
+</style>
+
+<script>
+/* v66-46 — final pathway form adjustments: refined Step 2 fields, rod details moved to Post-op, uniform icon tabs */
+(function(){
+  const safe=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  window.pathwayStomaOptions=function(){
+    return ['Jejunostomy','Urostomy','Transverse Colostomy','End Colostomy','Loop Colostomy','End Ileostomy','Loop Ileostomy','Other'];
+  };
+  function iconSvg(key){
+    const common='viewBox="0 0 24 24"';
+    const map={
+      patient:`<svg ${common}><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="7" r="4"/></svg>`,
+      stoma:`<svg ${common}><path d="M6 4h6a6 6 0 0 1 0 12H8"/><path d="M6 4v16"/><path d="M13 8h5"/><path d="M15 12h5"/></svg>`,
+      dailyreviews:`<svg ${common}><rect x="5" y="4" width="14" height="16" rx="2"/><path d="M9 8h6"/><path d="M9 12h6"/><path d="M9 16h4"/></svg>`,
+      encounters:`<svg ${common}><path d="M4 5h16"/><path d="M4 12h16"/><path d="M4 19h16"/><circle cx="8" cy="5" r="1"/><circle cx="8" cy="12" r="1"/><circle cx="8" cy="19" r="1"/></svg>`,
+      preop:`<svg ${common}><path d="M12 3v18"/><path d="M4 12h16"/><path d="M7 7h10v10H7z"/></svg>`,
+      postop:`<svg ${common}><path d="M8 21h8"/><path d="M12 17v4"/><path d="M6 3h12v8a6 6 0 0 1-12 0z"/></svg>`,
+      teaching:`<svg ${common}><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5z"/><path d="M8 7h8"/><path d="M8 11h6"/></svg>`,
+      discharge:`<svg ${common}><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>`,
+      dischargeletters:`<svg ${common}><path d="M6 2h9l3 3v17H6z"/><path d="M14 2v5h5"/><path d="M9 12h6"/><path d="M9 16h6"/></svg>`
+    };
+    return map[key]||`<svg ${common}><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg>`;
+  }
+  const oldRenderTabs=window.renderPathwayRegistrationTabs;
+  window.renderPathwayRegistrationTabs=function(tab){
+    const tabs=window.pathwayTabConfig(tab);
+    return `<div class="pathway-form-tabs" role="tablist" aria-label="Pathway form tabs">${tabs.map((t,i)=>`<button type="button" class="pathway-form-tab ${i===0?'active':''} ${t.requiresLock?'tab-disabled':''}" data-needs-lock="${t.requiresLock?'true':'false'}" id="pf-tab-${tab}-${t.key}" onclick="switchPathwayRegistrationTab('${tab}','${t.key}')"><span class="pathway-form-tab-icon" aria-hidden="true">${iconSvg(t.key)}</span><span class="pathway-form-tab-label">${safe(t.label)}</span></button>`).join('')}</div>${tabs.map((t,i)=>`<div class="pathway-form-panel ${i===0?'active':''}" id="pf-panel-${tab}-${t.key}">${t.panel}</div>`).join('')}`;
+  };
+  window.renderPathwayStomaSurgeryPanel=function(tab){
+    const opt=list=>'<option value="">Select...</option>'+list.map(x=>`<option value="${safe(x)}">${safe(x)}</option>`).join('');
+    return `<div class="pathway-step-note"><strong>Step 2: Adding Stoma &amp; Surgery Details.</strong> These clinical details can be completed and updated as the admission progresses.</div>
+    <div class="pathway-form-grid">
+      <div class="fg"><label>Date of Surgery <span class="req">*</span></label><input type="date" id="pp-${tab}-surg"></div>
+      <div class="fg"><label>Stoma Type</label><select id="pp-${tab}-stoma">${opt(window.pathwayStomaOptions())}</select></div>
+      <div class="fg full"><label>Operation Performed</label><textarea id="pp-${tab}-operation" data-pathway-extra data-extra-label="Operation performed" placeholder="Write the operation/procedure performed"></textarea></div>
+      <div class="fg full"><label>Findings</label><textarea id="pp-${tab}-findings" data-pathway-extra data-extra-label="Findings" placeholder="Write operative/surgical findings"></textarea></div>
+      <div class="fg full"><label>Clinical notes / pathway comments</label><textarea id="pp-${tab}-notes" data-pathway-extra data-extra-label="Pathway comments"></textarea></div>
+    </div>`;
+  };
+  const yesNo='<option value="">Select...</option><option>Yes</option><option>No</option>';
+  window.renderPostOperativeStomaCarePanel=function(tab){
+    return `<div class="paper-section-title">Post-operative Stoma Care &amp; Discharge Planning</div>
+      <div class="pathway-step-note"><strong>Rod details.</strong> Rod in situ and date of rod removal are recorded with post-operative care.</div>
+      <div class="pathway-form-grid">
+        <div class="fg"><label>Rod in situ</label><select id="pp-${tab}-rod" data-pathway-extra data-extra-label="Rod in situ">${yesNo}</select></div>
+        <div class="fg"><label>Date of rod removal</label><input type="date" id="pp-${tab}-rodremove" data-pathway-extra data-extra-label="Date of rod removal"></div>
+      </div>
+      ${typeof renderPostOpDayTable==='function'?renderPostOpDayTable(tab):''}`;
+  };
+  const oldFocus=window.focusPathwayRequiredTab;
+  window.focusPathwayRequiredTab=function(tab,fieldId){
+    const short=String(fieldId||'').split(`pp-${tab}-`).pop();
+    const panel=(short==='rod'||short==='rodremove')?'postop':(['surg','stoma','operation','findings','cons'].includes(short)?(tab==='readmission'?'existing':'stoma'):'patient');
+    try{window.switchPathwayRegistrationTab(tab,panel);}catch(e){if(oldFocus)oldFocus(tab,fieldId);}
+    const el=document.getElementById(fieldId); if(el){el.focus();el.scrollIntoView({behavior:'smooth',block:'center'});}
+  };
 })();
 </script>
 
