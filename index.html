@@ -3942,31 +3942,19 @@ button{font-family:'DM Sans',sans-serif;}
       </div>
     </div>
 
+    <!-- Patient Center: opens Master List directly (Note 74/75) -->
     <div class="app-menu-tab teal" data-menu-group="patient-centre">
-      <button type="button" class="app-menu-tab-button" onclick="toggleTopMenu(this,event)"><span class="app-menu-mini-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="16" rx="2"/><path d="M9 8h6"/><path d="M9 12h6"/><path d="M9 16h4"/></svg></span><span>Patient Center</span><span class="app-menu-caret">▾</span></button>
-      <div class="app-menu-dropdown">
-        <button type="button" class="app-menu-item" onclick="closeTopMenus();openPatientCentrePage('master')" style="--item-colour:#0f766e;--item-dark:#064e3b;--item-soft:#ecfdf9;"><span class="app-menu-item-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="16" rx="2"/><path d="M9 8h6"/><path d="M9 12h6"/><path d="M9 16h4"/></svg></span><span><span class="app-menu-item-title">Master List</span><span class="app-menu-item-sub">Complete patient register</span></span></button>
-        <button type="button" class="app-menu-item" onclick="closeTopMenus();openPatientCentrePage('inpatient')" style="--item-colour:#2563eb;--item-dark:#1d4ed8;--item-soft:#eff6ff;"><span class="app-menu-item-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M3 12h18"/><path d="M5 12V8a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v4"/><path d="M7 16v2"/><path d="M17 16v2"/><path d="M9 9h.01"/></svg></span><span><span class="app-menu-item-title">Inpatients</span><span class="app-menu-item-sub">Current inpatient workload</span></span></button>
-        <button type="button" class="app-menu-item" onclick="closeTopMenus();openPatientCentrePage('outpatient')" style="--item-colour:#7c3aed;--item-dark:#5b21b6;--item-soft:#f5f3ff;"><span class="app-menu-item-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M13 5h6v6"/><path d="M10 14 19 5"/><path d="M5 7v12h12"/></svg></span><span><span class="app-menu-item-title">Outpatients</span><span class="app-menu-item-sub">Outpatient and community list</span></span></button>
-      </div>
+      <button type="button" class="app-menu-tab-button" onclick="closeTopMenus();openPatientCentrePage('master')"><span class="app-menu-mini-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="16" rx="2"/><path d="M9 8h6"/><path d="M9 12h6"/><path d="M9 16h4"/></svg></span><span>Patient Center</span></button>
     </div>
 
+    <!-- Clinical Workforce: opens logged-in nurse's patients directly (Note 75) -->
     <div class="app-menu-tab violet" data-menu-group="clinical-workforce">
-      <button type="button" class="app-menu-tab-button" onclick="toggleTopMenu(this,event)"><span class="app-menu-mini-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><span>Clinical Workforce</span><span class="app-menu-caret">▾</span></button>
-      <div class="app-menu-dropdown">
-        <button type="button" class="app-menu-item" onclick="closeTopMenus();openClinicalWorkforcePage('jacqueline')" style="--item-colour:#7c3aed;--item-dark:#5b21b6;--item-soft:#f5f3ff;"><span class="app-menu-item-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><span><span class="app-menu-item-title">Jacqueline My Patients</span><span class="app-menu-item-sub">Patients linked to Jacqueline</span></span></button>
-        <button type="button" class="app-menu-item" onclick="closeTopMenus();openClinicalWorkforcePage('jason')" style="--item-colour:#0f766e;--item-dark:#064e3b;--item-soft:#ecfdf9;"><span class="app-menu-item-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><span><span class="app-menu-item-title">Jason My Patients</span><span class="app-menu-item-sub">Patients linked to Jason</span></span></button>
-        <button type="button" class="app-menu-item" onclick="closeTopMenus();openClinicalWorkforcePage('lorraine')" style="--item-colour:#2563eb;--item-dark:#1d4ed8;--item-soft:#eff6ff;"><span class="app-menu-item-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><span><span class="app-menu-item-title">Lorraine My Patients</span><span class="app-menu-item-sub">Patients linked to Lorraine</span></span></button>
-        <button type="button" class="app-menu-item" onclick="closeTopMenus();openClinicalWorkforcePage('common')" style="--item-colour:#b45309;--item-dark:#92400e;--item-soft:#fffbeb;"><span class="app-menu-item-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><span><span class="app-menu-item-title">Common Our Patients</span><span class="app-menu-item-sub">Shared patients</span></span></button>
-      </div>
+      <button type="button" class="app-menu-tab-button" onclick="closeTopMenus();openCurrentNursePatients()"><span class="app-menu-mini-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><span>Clinical Workforce</span></button>
     </div>
 
+    <!-- Admin & Reporting: opens KPI directly (Note 75) -->
     <div class="app-menu-tab slate" data-menu-group="admin">
-      <button type="button" class="app-menu-tab-button" onclick="toggleTopMenu(this,event)"><span class="app-menu-mini-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-5"/><path d="M12 16V8"/><path d="M16 16v-7"/><path d="M20 6l-4 4-3-3-5 5"/></svg></span><span>Admin &amp; Reporting</span><span class="app-menu-caret">▾</span></button>
-      <div class="app-menu-dropdown">
-        <button type="button" class="app-menu-item" onclick="closeTopMenus();switchSection('kpi-dashboard',null)" style="--item-colour:#e11d48;--item-dark:#9f1239;--item-soft:#fff1f2;"><span class="app-menu-item-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-5"/><path d="M12 16V8"/><path d="M16 16v-7"/><path d="M20 6l-4 4-3-3-5 5"/></svg></span><span><span class="app-menu-item-title">KPIs</span><span class="app-menu-item-sub">Clinical performance indicators</span></span></button>
-        <button type="button" class="app-menu-item" onclick="closeTopMenus();switchSection('audit-trail',null)" style="--item-colour:#475569;--item-dark:#0f2638;--item-soft:#f8fafc;"><span class="app-menu-item-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/><path d="M11 8v3l2 2"/></svg></span><span><span class="app-menu-item-title">Audit Trail</span><span class="app-menu-item-sub">Full system activity log</span></span></button>
-      </div>
+      <button type="button" class="app-menu-tab-button" onclick="closeTopMenus();switchSection('kpi-dashboard',null)"><span class="app-menu-mini-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-5"/><path d="M12 16V8"/><path d="M16 16v-7"/><path d="M20 6l-4 4-3-3-5 5"/></svg></span><span>Admin &amp; Reporting</span></button>
     </div>
   </nav>
 
@@ -6184,10 +6172,7 @@ function goBackSection(){
   const focused=document.querySelector('.section.active.platform-focused');
   if(focused){
     if(focused.id==='section-patient-outcomes'){switchSection('home',null,{fromBack:true});return;}
-    if(focused.id==='section-patients'){
-      if(window.__patientBackTarget==='home'){switchSection('home',null,{fromBack:true});return;}
-      showPatientOptionsHub();return;
-    }
+    if(focused.id==='section-patients'){switchSection('home',null,{fromBack:true});return;}
     if(focused.id==='section-followups'){switchSection('home',null,{fromBack:true});return;}
     if(focused.id==='section-patient-pathways'){loadPatientPathways();return;}
     if(focused.id==='section-roster'){showRosterHub();return;}
@@ -6195,10 +6180,7 @@ function goBackSection(){
   const active=document.querySelector('.section.active');
   if(active){
     if(active.id==='section-patient-outcomes'){switchSection('home',null,{fromBack:true});return;}
-    if(active.id==='section-patients'){
-      if(window.__patientBackTarget==='home'){switchSection('home',null,{fromBack:true});return;}
-      showPatientOptionsHub();return;
-    }
+    if(active.id==='section-patients'){switchSection('home',null,{fromBack:true});return;}
     if(active.id==='section-followups'){switchSection('home',null,{fromBack:true});return;}
     if(active.id==='section-roster'){showRosterHub();return;}
   }
@@ -6318,7 +6300,7 @@ function showPatientSubtab(tab, options={}){
   const labels={'master':'Master List','inpatient':'Inpatients','outpatient':'Outpatients','handover':'Handover'};
   const el=document.getElementById('patient-active-view-label');
   if(el)el.textContent=options.label||labels[tab]||'Patients';
-  const backAction=options.backAction||((options.backTarget==='home')?"switchSection('home',null,{fromBack:true})":'showPatientOptionsHub()');
+  const backAction=options.backAction||((options.backTarget==='home')?"switchSection('home',null,{fromBack:true})":"switchSection('home',null,{fromBack:true})");
   const titleData=options.titleData||getPlatformTitleData('patient-'+tab);
   setPlatformFocusTitle('section-patients', titleData, backAction);
   if(tab==='master'){
@@ -6331,6 +6313,15 @@ function showPatientSubtab(tab, options={}){
     }
   }
   else{setPatientCommandFilter(tab);}
+}
+
+// Note 75: Clinical Workforce tab opens logged-in nurse's patients directly
+function openCurrentNursePatients(){
+  const nurseName=currentLoginProfile?.full_name||'';
+  // Find matching key
+  const map={'Jason Fenech':'jason','Jacqueline Sammut':'jacqueline','Lorraine Stivala':'lorraine'};
+  const key=map[nurseName]||'common';
+  openClinicalWorkforcePage(key);
 }
 
 function openPatientCentrePage(tab){
@@ -6369,12 +6360,8 @@ function openClinicalWorkforcePage(key){
 }
 
 function showPatientOptionsHub(){
-  window.__patientBackTarget='';
-  window.__patientDirectMode=false;
-  window.__patientMode='centre';
-  const section=document.getElementById('section-patients');
-  if(section){section.classList.remove('platform-focused','platform-hub','clinical-workforce-focused');}
-  clearPlatformFocusTitle('section-patients');
+  // Note 74: Patient Centre hub removed — go straight to Home
+  switchSection('home',null,{fromBack:true});
 }
 
 function filterPatientTable(val){
@@ -6634,7 +6621,10 @@ function switchSection(name, navEl, options={}){
   if(name==='home')loadHomeDashboard();
   if(name==='account'){setTimeout(()=>renderProfileTab('profile'),0);}
   if(name==='patients'){
-    if(!options.keepPatientFocus){showPatientOptionsHub();}
+    if(!options.keepPatientFocus){
+      // Note 74: Open Master List directly, no hub
+      setTimeout(()=>showPatientSubtab('master',{direct:true,backTarget:'home',backAction:"switchSection('home',null,{fromBack:true})"}),0);
+    }
     loadPatients();loadPatientCommandCounts();
   }
   if(name==='patient-pathways')loadPatientPathways();
@@ -7651,9 +7641,9 @@ function renderPathwayStomaSurgeryPanel(tab){
     <div class="fg full"><label>Operation Performed &amp; Findings</label><textarea id="pp-${tab}-opfindings" placeholder="e.g. AP resection with end colostomy formation"></textarea></div>
     <div class="fg"><label>Stoma Type</label><select id="pp-${tab}-stoma">${optionList(pathwayStomaOptions())}</select></div>
     <div class="fg"><label>End / Loop</label><select id="pp-${tab}-endloop" data-pathway-extra data-extra-label="End / Loop"><option value="">Select...</option><option>End</option><option>Loop</option><option>Not applicable</option></select></div>
-    <div class="fg"><label>Date of Surgery <span class="req">*</span></label><input type="date" id="pp-${tab}-surg"/></div>
+    <div class="fg"><label>Date of Surgery</label><input type="date" id="pp-${tab}-surg"/></div>
     <div class="fg"><label>Consultant</label><input id="pp-${tab}-cons" placeholder="Consultant name" autocomplete="off"/></div>
-    <div class="fg"><label>Ward <span class="req">*</span></label><select id="pp-${tab}-ward">${optionList(PATHWAY_WARD_OPTIONS)}</select></div>
+    <div class="fg"><label>Ward</label><select id="pp-${tab}-ward">${optionList(PATHWAY_WARD_OPTIONS)}</select></div>
     <div class="fg"><label>Rod in situ</label><select id="pp-${tab}-rod" data-pathway-extra data-extra-label="Rod in situ">${yesNoOptions()}</select></div>
     <div class="fg"><label>Date of rod removal</label><input type="date" id="pp-${tab}-rodremove" data-pathway-extra data-extra-label="Date of rod removal"></div>
   </div>`;
@@ -15757,8 +15747,8 @@ function renderPathwayStepsPanel(tab,patient,steps,completions,col,allDone,total
   window.savePathwayPagePatient=async function(tab){
     const meta=getPathwayFormMeta(tab);
     const v=id=>val(`pp-${tab}-${id}`);
-    const required=[['fn','First name'],['sn','Surname'],['dob','Date of birth'],['sex','Gender'],['locality','Locality'],['ward','Ward']];
-    if(tab==='elective'||tab==='emergency'||tab==='readmission')required.push(['surg','Date of surgery']);
+    const required=[['fn','First name'],['sn','Surname'],['dob','Date of birth'],['sex','Gender'],['locality','Locality']];
+    // Note 72: Ward not required. Note 73: Surgery date not required.
     for(const [id,label] of required){if(!v(id)){alert(label+' is required.');focusPathwayRequiredTab(tab,`pp-${tab}-${id}`);return;}}
     const fn=v('fn'), sn=v('sn'), idCard=v('id');
     const operation=v('operation')||v('opfindings');
@@ -15849,7 +15839,7 @@ function renderPathwayStepsPanel(tab,patient,steps,completions,col,allDone,total
     document.getElementById('patient-record-page')?.remove();
     document.querySelectorAll('#patient-subtab-bar .roster-subtab').forEach(b=>b.classList.remove('active')); document.getElementById('patient-subtab-'+tab)?.classList.add('active');
     const el=document.getElementById('patient-active-view-label'); if(el)el.textContent={master:'Master List',inpatient:'Inpatients',outpatient:'Outpatients',handover:'Handover'}[tab]||'Patients';
-    setPlatformFocusTitle('section-patients',getPlatformTitleData('patient-'+tab),'showPatientOptionsHub()');
+    setPlatformFocusTitle('section-patients',getPlatformTitleData('patient-'+tab),"switchSection('home',null,{fromBack:true})");
     const nurse=document.getElementById('pt-nurse-filter'); if(nurse)nurse.value='';
     const cmd=document.getElementById('pt-command-filter'); if(cmd)cmd.value=(tab==='master')?'':tab;
     updatePatientViewLabel?.(); loadPatients();
