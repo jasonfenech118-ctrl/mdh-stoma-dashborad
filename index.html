@@ -3931,7 +3931,7 @@ v66-42 emergency fix:
     <div class="app-menu-tab blue" data-menu-group="patient-management">
       <button type="button" class="app-menu-tab-button" onclick="toggleTopMenu(this,event)"><span class="app-menu-mini-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="18" cy="18" r="2"/><path d="M8 6h8"/><path d="M18 8v8"/><path d="M8 6v12h8"/></svg></span><span>Patient Management</span><span class="app-menu-caret">▾</span></button>
       <div class="app-menu-dropdown">
-        <button type="button" class="app-menu-item" onclick="closeTopMenus();switchSection('patient-pathways',null)" style="--item-colour:#2563eb;--item-dark:#1d4ed8;--item-soft:#eff6ff;"><span class="app-menu-item-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="18" cy="18" r="2"/><path d="M8 6h8"/><path d="M18 8v8"/><path d="M8 6v12h8"/></svg></span><span><span class="app-menu-item-title">Patient Pathways</span><span class="app-menu-item-sub">Elective, emergency, fistula/wounds and OSH stoma</span></span></button>
+        <button type="button" class="app-menu-item" onclick="closeTopMenus();switchSection('patient-pathways',null)" style="--item-colour:#2563eb;--item-dark:#1d4ed8;--item-soft:#eff6ff;"><span class="app-menu-item-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="18" cy="18" r="2"/><path d="M8 6h8"/><path d="M18 8v8"/><path d="M8 6v12h8"/></svg></span><span><span class="app-menu-item-title">Add Patient</span><span class="app-menu-item-sub">Elective, emergency, fistula/wounds and OSH stoma</span></span></button>
         <button type="button" class="app-menu-item" onclick="closeTopMenus();switchSection('patient-outcomes',null)" style="--item-colour:#7c3aed;--item-dark:#5b21b6;--item-soft:#f5f3ff;"><span class="app-menu-item-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg></span><span><span class="app-menu-item-title">Patient Outcomes</span><span class="app-menu-item-sub">Active, reversed, deceased and relocated views</span></span></button>
         <button type="button" class="app-menu-item" onclick="closeTopMenus();switchSection('followups',null)" style="--item-colour:#0284c7;--item-dark:#0369a1;--item-soft:#ecfeff;"><span class="app-menu-item-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="m8 16 2 2 5-5"/></svg></span><span><span class="app-menu-item-title">Follow-Ups</span><span class="app-menu-item-sub">Appointments, DNTU and rosters</span></span></button>
         <button type="button" class="app-menu-item" onclick="closeTopMenus();openPatientCentrePage('handover')" style="--item-colour:#b45309;--item-dark:#92400e;--item-soft:#fffbeb;"><span class="app-menu-item-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M7 7h6a3 3 0 0 1 0 6H7"/><path d="m10 4-3 3 3 3"/><path d="M17 17H11a3 3 0 0 1 0-6h6"/><path d="m14 20 3-3-3-3"/></svg></span><span><span class="app-menu-item-title">Handover</span><span class="app-menu-item-sub">Patients needing handover</span></span></button>
@@ -4008,7 +4008,7 @@ v66-42 emergency fix:
       <div class="home-btn-grid">
         <div class="home-btn home-btn-blue" onclick="switchSection('patient-pathways',null)">
           <div class="home-btn-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="18" cy="18" r="2"/><path d="M8 6h8"/><path d="M18 8v8"/><path d="M8 6v12h8"/></svg></div>
-          <div class="home-btn-title">Patient Pathways</div>
+          <div class="home-btn-title">Add Patient</div>
           <div class="home-btn-sub">Elective · Emergency · Fistula/Wounds</div>
         </div>
         <div class="home-btn home-btn-indigo" onclick="switchSection('patient-outcomes',null)">
@@ -5467,6 +5467,12 @@ const LOGIN_PROFILES={
   'tracy.bartolo@gov.mt':{full_name:'Tracey Galea',grade:'Senior Staff Nurse',short_grade:'SSN'}
 };
 const ALLOWED_LOGIN_EMAILS=Object.keys(LOGIN_PROFILES);
+
+/* AUTH SAFETY CONFIG
+   Keep default=false to preserve legacy allowlist behavior.
+   Set true only when ready to enforce profile-based approval in startApp(). */
+const USE_PROFILE_BASED_AUTH_APPROVAL=false;
+const AUTH_DEBUG_LOGS=false;
 let currentAuthUser=null;
 let currentLoginProfile=null;
 
@@ -5866,7 +5872,7 @@ function ensureGeneralClinicEmail(){
 function normalizeEmail(email){return String(email||'').trim().toLowerCase();}
 function hardcodedProfileForEmail(email){
   const key=normalizeEmail(email);
-  return LOGIN_PROFILES[key]?{email:key,...LOGIN_PROFILES[key],is_active:true}:null;
+  return LOGIN_PROFILES[key]?{email:key,...LOGIN_PROFILES[key],is_active:true,_approved:true}:null;
 }
 async function loadCurrentLoginProfile(){
   const {data:userData}=await SB.auth.getUser();
@@ -5885,17 +5891,22 @@ async function loadCurrentLoginProfile(){
           full_name:data.full_name||profile?.full_name||email,
           grade:data.grade||profile?.grade||'Staff',
           short_grade:data.short_grade||profile?.short_grade||gradeFromRole(data.grade||'Staff'),
-          is_active:true
+          is_active:true,
+          _approved:true
         };
       }
     }catch(e){
       // Profile table is optional. The hard-coded approved login list still works.
     }
   }
-  currentLoginProfile=profile||{email,full_name:email||'Signed-in user',grade:'Staff',short_grade:'Staff',is_active:true};
+  currentLoginProfile=profile||{email,full_name:email||'Signed-in user',grade:'Staff',short_grade:'Staff',is_active:true,_approved:false};
   return currentLoginProfile;
 }
 function isAllowedLoginEmail(email){return ALLOWED_LOGIN_EMAILS.includes(normalizeEmail(email));}
+function isCurrentUserApproved(){
+  return !!(currentLoginProfile && currentLoginProfile.is_active!==false && (currentLoginProfile._approved===true || isAllowedLoginEmail(currentLoginProfile.email)));
+}
+function authDebug(message,meta){if(!AUTH_DEBUG_LOGS)return;console.info('[auth]',message,meta||'');}
 function getLoggedInSubmitterName(){return currentLoginProfile?.full_name||currentAuthUser?.email||'';}
 function getLoggedInSubmitterGrade(){return currentLoginProfile?.short_grade||gradeFromRole(currentLoginProfile?.grade||'Staff');}
 function updateSignedInUI(){
@@ -6097,13 +6108,15 @@ async function doLogin(){
   const pass=document.getElementById('li-pass').value;
   const errEl=document.getElementById('lerr');
   errEl.textContent='';
-  if(!isAllowedLoginEmail(email)){
+  authDebug('login attempt',{email,mode:USE_PROFILE_BASED_AUTH_APPROVAL?'profile':'allowlist'});
+  if(!USE_PROFILE_BASED_AUTH_APPROVAL && !isAllowedLoginEmail(email)){
+    authDebug('login blocked by allowlist',{email});
     errEl.textContent='This email is not authorised for this app.';
     return;
   }
   const{error}=await SB.auth.signInWithPassword({email,password:pass});
-  if(error)errEl.textContent='Invalid email or password.';
-  else{await startApp();await logAuditTrailAction('login','auth.users',currentAuthUser?.id,{email});}
+  if(error){authDebug('login failed',{email,error:error.message});errEl.textContent='Invalid email or password.';}
+  else{authDebug('login success',{email});await startApp();await logAuditTrailAction('login','auth.users',currentAuthUser?.id,{email});}
 }
 document.getElementById('li-pass').addEventListener('keydown',e=>{if(e.key==='Enter')window.loginApp();});
 window.__realDoLogin=doLogin;
@@ -6112,11 +6125,21 @@ window.doLogin=doLogin;
 window.dLogin=doLogin;
 window.dologin=doLogin;
 async function doLogout(){await logAuditTrailAction('logout','auth.users',currentAuthUser?.id,{email:currentLoginProfile?.email||currentAuthUser?.email||''});await SB.auth.signOut();currentAuthUser=null;currentLoginProfile=null;document.getElementById('app').style.display='none';document.getElementById('login-screen').style.display='flex';}
-async function checkSession(){const{data}=await SB.auth.getSession();if(data.session){const email=normalizeEmail(data.session.user?.email||'');if(!isAllowedLoginEmail(email)){await SB.auth.signOut();return;}startApp();}}
+async function checkSession(){
+  const{data}=await SB.auth.getSession();
+  authDebug('checkSession',{hasSession:!!data.session,mode:USE_PROFILE_BASED_AUTH_APPROVAL?'profile':'allowlist'});
+  if(!data.session)return;
+  if(!USE_PROFILE_BASED_AUTH_APPROVAL){
+    const email=normalizeEmail(data.session.user?.email||'');
+    if(!isAllowedLoginEmail(email)){authDebug('session blocked by allowlist',{email});await SB.auth.signOut();return;}
+  }
+  await startApp();
+}
 
 async function startApp(){
   await loadCurrentLoginProfile();
-  if(currentLoginProfile?.email&&!isAllowedLoginEmail(currentLoginProfile.email)){
+  authDebug('startApp profile loaded',{email:currentLoginProfile?.email,approved:isCurrentUserApproved(),mode:USE_PROFILE_BASED_AUTH_APPROVAL?'profile':'allowlist'});
+  if(USE_PROFILE_BASED_AUTH_APPROVAL ? !isCurrentUserApproved() : (currentLoginProfile?.email && !isAllowedLoginEmail(currentLoginProfile.email))){
     await SB.auth.signOut();
     document.getElementById('lerr').textContent='This email is not authorised for this app.';
     return;
