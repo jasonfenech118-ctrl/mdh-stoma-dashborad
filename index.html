@@ -5468,7 +5468,11 @@ const LOGIN_PROFILES={
 };
 const ALLOWED_LOGIN_EMAILS=Object.keys(LOGIN_PROFILES);
 
+/* AUTH SAFETY CONFIG
+   Keep default=false to preserve legacy allowlist behavior.
+   Set true only when ready to enforce profile-based approval in startApp(). */
 const USE_PROFILE_BASED_AUTH_APPROVAL=false;
+const AUTH_DEBUG_LOGS=false;
 let currentAuthUser=null;
 let currentLoginProfile=null;
 
@@ -5902,6 +5906,7 @@ function isAllowedLoginEmail(email){return ALLOWED_LOGIN_EMAILS.includes(normali
 function isCurrentUserApproved(){
   return !!(currentLoginProfile && currentLoginProfile.is_active!==false && (currentLoginProfile._approved===true || isAllowedLoginEmail(currentLoginProfile.email)));
 }
+function authDebug(message,meta){if(!AUTH_DEBUG_LOGS)return;console.info('[auth]',message,meta||'');}
 function getLoggedInSubmitterName(){return currentLoginProfile?.full_name||currentAuthUser?.email||'';}
 function getLoggedInSubmitterGrade(){return currentLoginProfile?.short_grade||gradeFromRole(currentLoginProfile?.grade||'Staff');}
 function updateSignedInUI(){
@@ -6103,13 +6108,15 @@ async function doLogin(){
   const pass=document.getElementById('li-pass').value;
   const errEl=document.getElementById('lerr');
   errEl.textContent='';
+  authDebug('login attempt',{email,mode:USE_PROFILE_BASED_AUTH_APPROVAL?'profile':'allowlist'});
   if(!USE_PROFILE_BASED_AUTH_APPROVAL && !isAllowedLoginEmail(email)){
+    authDebug('login blocked by allowlist',{email});
     errEl.textContent='This email is not authorised for this app.';
     return;
   }
   const{error}=await SB.auth.signInWithPassword({email,password:pass});
-  if(error)errEl.textContent='Invalid email or password.';
-  else{await startApp();await logAuditTrailAction('login','auth.users',currentAuthUser?.id,{email});}
+  if(error){authDebug('login failed',{email,error:error.message});errEl.textContent='Invalid email or password.';}
+  else{authDebug('login success',{email});await startApp();await logAuditTrailAction('login','auth.users',currentAuthUser?.id,{email});}
 }
 document.getElementById('li-pass').addEventListener('keydown',e=>{if(e.key==='Enter')window.loginApp();});
 window.__realDoLogin=doLogin;
@@ -6120,16 +6127,18 @@ window.dologin=doLogin;
 async function doLogout(){await logAuditTrailAction('logout','auth.users',currentAuthUser?.id,{email:currentLoginProfile?.email||currentAuthUser?.email||''});await SB.auth.signOut();currentAuthUser=null;currentLoginProfile=null;document.getElementById('app').style.display='none';document.getElementById('login-screen').style.display='flex';}
 async function checkSession(){
   const{data}=await SB.auth.getSession();
+  authDebug('checkSession',{hasSession:!!data.session,mode:USE_PROFILE_BASED_AUTH_APPROVAL?'profile':'allowlist'});
   if(!data.session)return;
   if(!USE_PROFILE_BASED_AUTH_APPROVAL){
     const email=normalizeEmail(data.session.user?.email||'');
-    if(!isAllowedLoginEmail(email)){await SB.auth.signOut();return;}
+    if(!isAllowedLoginEmail(email)){authDebug('session blocked by allowlist',{email});await SB.auth.signOut();return;}
   }
   await startApp();
 }
 
 async function startApp(){
   await loadCurrentLoginProfile();
+  authDebug('startApp profile loaded',{email:currentLoginProfile?.email,approved:isCurrentUserApproved(),mode:USE_PROFILE_BASED_AUTH_APPROVAL?'profile':'allowlist'});
   if(USE_PROFILE_BASED_AUTH_APPROVAL ? !isCurrentUserApproved() : (currentLoginProfile?.email && !isAllowedLoginEmail(currentLoginProfile.email))){
     await SB.auth.signOut();
     document.getElementById('lerr').textContent='This email is not authorised for this app.';
