@@ -1,4 +1,10 @@
 <!DOCTYPE html>
+<!--
+LOCKED BASELINE: v66-46
+v66-47 change: Staff Audit removed as a separate Follow-Up tab button and placed under Change of Duty as a dropdown choice.
+Protected areas not intentionally changed: login, patient pathways, appointments, rosters data, main menu, SQL/database.
+-->
+
 <!-- v66-44 locked baseline patch: Removed Ward from Elective Surgery patient details/save payload; removed unsupported assigned_nurse/ward fields from patients table insert path with schema-safe retry. -->
 
 <html lang="en">
@@ -16239,6 +16245,59 @@ function renderPathwayStepsPanel(tab,patient,steps,completions,col,allDone,total
 #section-followups #followup-subtab-bar.followup-button-mode .followup-roster-dropdown{
   display:none!important;
 }
+/* v66-47 — Staff Audit now lives under Change of Duty as a dropdown choice */
+#section-followups #followup-subtab-bar.followup-button-mode .followup-cod-tab-wrap{
+  position:relative!important;
+  overflow:visible!important;
+  z-index:9999!important;
+}
+#section-followups #followup-subtab-bar.followup-button-mode .followup-cod-dropdown-caret{
+  display:inline-block!important;
+  margin-left:2px!important;
+  font-size:10px!important;
+  color:#64748b!important;
+}
+#section-followups #followup-subtab-bar.followup-button-mode .cod-staff-dropdown{
+  position:absolute!important;
+  top:calc(100% + 7px)!important;
+  left:0!important;
+  width:300px!important;
+  min-width:280px!important;
+  display:none!important;
+  gap:6px!important;
+  padding:8px!important;
+  background:#ffffff!important;
+  border:1px solid #dbe3ea!important;
+  border-left:4px solid #2563eb!important;
+  border-radius:14px!important;
+  box-shadow:0 18px 42px rgba(15,38,56,.20)!important;
+  z-index:2147483000!important;
+}
+#section-followups #followup-subtab-bar.followup-button-mode .cod-staff-dropdown.open{
+  display:grid!important;
+}
+#section-followups #followup-subtab-bar.followup-button-mode .cod-staff-dropdown button{
+  min-height:50px!important;
+  width:100%!important;
+  display:grid!important;
+  grid-template-columns:36px minmax(0,1fr)!important;
+  gap:10px!important;
+  align-items:center!important;
+  text-align:left!important;
+  border:1px solid transparent!important;
+  background:#fff!important;
+  border-radius:11px!important;
+  padding:9px 10px!important;
+  cursor:pointer!important;
+  font-family:'DM Sans',sans-serif!important;
+  color:#0f2638!important;
+}
+#section-followups #followup-subtab-bar.followup-button-mode .cod-staff-dropdown button:hover{
+  background:#eff6ff!important;
+  border-color:#bfdbfe!important;
+}
+#section-followups #followup-subtab-bar.followup-button-mode .cod-staff-dropdown strong{display:block!important;font-size:12px!important;font-weight:950!important;color:#0f2638!important;line-height:1.1!important;}
+#section-followups #followup-subtab-bar.followup-button-mode .cod-staff-dropdown small{display:block!important;margin-top:2px!important;font-size:10.5px!important;font-weight:650!important;color:#64748b!important;line-height:1.2!important;}
 @media(max-width:760px){
   #section-followups #followup-subtab-bar.followup-button-mode{gap:6px!important;padding:8px!important;}
   #section-followups #followup-subtab-bar.followup-button-mode .roster-subtab{font-size:11px!important;padding:0 10px 0 7px!important;}
@@ -16281,6 +16340,15 @@ function renderPathwayStepsPanel(tab,patient,steps,completions,col,allDone,total
       '<button type="button" class="roster-subtab" id="'+id+'" onclick="'+onclick+'" style="--tab-colour:'+colour+';--tab-soft:'+soft+';">'+
       '<span class="roster-subtab-icon" style="background:linear-gradient(135deg,'+dark+','+colour+');">'+iconSvg(kind)+'</span><span>'+label+'</span></button></div>';
   }
+  function codDropdownTab(){
+    return '<div class="followup-nav-tab-wrap followup-cod-tab-wrap" style="--tab-colour:#2563eb;--tab-soft:#eff6ff;--dropdown-colour:#2563eb;">'+
+      '<button type="button" class="roster-subtab" id="followup-subtab-roster-cod" onclick="toggleFollowupCodStaffDropdown(event)" style="--tab-colour:#2563eb;--tab-soft:#eff6ff;">'+
+      '<span class="roster-subtab-icon" style="background:linear-gradient(135deg,#1d4ed8,#2563eb);">'+iconSvg('cod')+'</span><span>Change of Duty</span><span class="followup-cod-dropdown-caret" aria-hidden="true">▾</span></button>'+
+      '<div class="cod-staff-dropdown" id="followup-cod-staff-dropdown" aria-label="Change of Duty options">'+
+      '<button type="button" onclick="selectFollowupCodChoice(\'cod\')"><span class="mini-roster-icon blue">'+iconSvg('cod')+'</span><span><strong>Change of Duty</strong><small>COD records and changes</small></span></button>'+
+      '<button type="button" onclick="selectFollowupCodChoice(\'staff-audit\')"><span class="mini-roster-icon violet">'+iconSvg('staff')+'</span><span><strong>Staff Audit</strong><small>Staff leave and roster audit</small></span></button>'+
+      '</div></div>';
+  }
   function rebuildFollowupButtonTabs(){
     const bar=document.getElementById('followup-subtab-bar');
     if(!bar || bar.dataset.v6639Buttons==='true') return;
@@ -16293,13 +16361,12 @@ function renderPathwayStepsPanel(tab,patient,steps,completions,col,allDone,total
       tabBtn('followup-subtab-dntu','DNTU','dntu','#c2413b','#7c2d12','#fff7ed',"showFollowupSubtab('dntu')"),
       tabBtn('followup-subtab-paused','Temporarily Paused Appointments','paused','#d97706','#92400e','#fffbeb',"showFollowupSubtab('paused')"),
       tabBtn('followup-subtab-rosters','Monthly Roster','roster','#475569','#0f2638','#f8fafc',"openFollowupRosterButton('monthly')"),
-      tabBtn('followup-subtab-roster-cod','Change of Duty','cod','#2563eb','#1d4ed8','#eff6ff',"openFollowupRosterButton('cod')"),
-      tabBtn('followup-subtab-roster-staff-audit','Staff Audit','staff','#7c3aed','#5b21b6','#f5f3ff',"openFollowupRosterButton('staff-audit')")
+      codDropdownTab()
     ].join('');
   }
   function setRosterButtonActive(view){
     document.querySelectorAll('#followup-subtab-bar .roster-subtab').forEach(function(b){b.classList.remove('active');});
-    const id = view==='cod' ? 'followup-subtab-roster-cod' : (view==='staff-audit' ? 'followup-subtab-roster-staff-audit' : 'followup-subtab-rosters');
+    const id = (view==='cod' || view==='staff-audit') ? 'followup-subtab-roster-cod' : 'followup-subtab-rosters';
     const btn=document.getElementById(id);
     if(btn)btn.classList.add('active');
   }
@@ -16319,6 +16386,31 @@ function renderPathwayStepsPanel(tab,patient,steps,completions,col,allDone,total
     window.openFollowupRosterButton('monthly');
   };
   window.selectFollowupRosterFromTab = function(view){ window.openFollowupRosterButton(view); };
+
+  function closeCodStaffDropdown(){
+    const menu=document.getElementById('followup-cod-staff-dropdown');
+    const btn=document.getElementById('followup-subtab-roster-cod');
+    if(menu) menu.classList.remove('open');
+    if(btn) btn.setAttribute('aria-expanded','false');
+  }
+  window.toggleFollowupCodStaffDropdown = function(event){
+    if(event){ event.preventDefault(); event.stopPropagation(); }
+    if(typeof window.closeFollowupDropdowns === 'function') window.closeFollowupDropdowns();
+    const menu=document.getElementById('followup-cod-staff-dropdown');
+    const btn=document.getElementById('followup-subtab-roster-cod');
+    if(!menu) return;
+    const willOpen=!menu.classList.contains('open');
+    document.querySelectorAll('#section-followups .cod-staff-dropdown.open').forEach(function(m){m.classList.remove('open');});
+    if(willOpen){ menu.classList.add('open'); if(btn) btn.setAttribute('aria-expanded','true'); }
+    else if(btn){ btn.setAttribute('aria-expanded','false'); }
+  };
+  window.selectFollowupCodChoice = function(view){
+    closeCodStaffDropdown();
+    window.openFollowupRosterButton(view === 'staff-audit' ? 'staff-audit' : 'cod');
+  };
+  document.addEventListener('click', function(e){
+    if(!e.target.closest('#section-followups .followup-cod-tab-wrap')) closeCodStaffDropdown();
+  }, true);
 
   const oldShow = window.showFollowupSubtab;
   window.showFollowupSubtab = function(tab){
