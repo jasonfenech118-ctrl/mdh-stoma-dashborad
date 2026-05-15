@@ -2747,6 +2747,53 @@ button{font-family:'DM Sans',sans-serif;}
 @media(max-width:760px){.followup-roster-tab-wrap{min-width:100%;}.followup-roster-dropdown{left:0;right:auto;width:min(320px,calc(100vw - 42px));}}
 #followup-subtab-appliances,#followup-pane-appliances,#section-appliances,.menu-appliances{display:none!important;}
 
+
+
+/* v66-34 — make the Follow-Up Centre Rosters tab dropdown visible and unclipped */
+#section-followups #followup-subtab-bar{
+  overflow:visible!important;
+  position:relative!important;
+  z-index:250!important;
+}
+#section-followups .followup-roster-tab-wrap{
+  position:relative!important;
+  overflow:visible!important;
+  z-index:500!important;
+}
+#section-followups .followup-roster-dropdown{
+  top:calc(100% + 8px)!important;
+  right:0!important;
+  left:auto!important;
+  width:300px!important;
+  min-width:300px!important;
+  z-index:99999!important;
+  background:#ffffff!important;
+  border:1px solid #dbe3ea!important;
+  border-left:4px solid #475569!important;
+  border-radius:14px!important;
+  box-shadow:0 20px 46px rgba(15,38,56,.22)!important;
+}
+#section-followups .followup-roster-dropdown.open,
+#section-followups .followup-roster-tab-wrap:hover .followup-roster-dropdown{
+  display:grid!important;
+  gap:6px!important;
+}
+#section-followups .followup-roster-dropdown button{
+  min-height:48px!important;
+  border-radius:11px!important;
+  background:#fff!important;
+}
+#section-followups .followup-roster-dropdown button:hover{
+  background:#f8fafc!important;
+  border-color:#cbd5e1!important;
+}
+#section-followups .followup-roster-tab-wrap .roster-subtab.active{
+  box-shadow:inset 0 -3px 0 #475569!important;
+}
+@media(max-width:760px){
+  #section-followups #followup-subtab-bar{overflow-x:auto!important;overflow-y:visible!important;}
+  #section-followups .followup-roster-dropdown{left:0!important;right:auto!important;width:min(320px,calc(100vw - 42px))!important;min-width:0!important;}
+}
 </style>
 
 <style>
