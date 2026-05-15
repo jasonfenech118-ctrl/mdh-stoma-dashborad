@@ -9021,6 +9021,181 @@ function renderMdhLetterHtml(data, p){
 
 
 
+
+
+<style>
+/* v66-39 — navigation tabs work as direct buttons, not dropdowns */
+.app-menu-tabs .app-menu-dropdown{
+  display:none!important;
+}
+.app-menu-tabs .app-menu-caret,
+#section-followups .followup-roster-caret{
+  display:none!important;
+}
+.app-menu-tabs .app-menu-tab-button,
+.app-menu-tabs .app-menu-home{
+  cursor:pointer!important;
+}
+.app-menu-tabs .app-menu-tab-button:hover,
+.app-menu-tabs .app-menu-home:hover{
+  transform:translateY(-1px);
+}
+#section-followups #followup-subtab-bar.followup-button-mode{
+  display:flex!important;
+  flex-wrap:wrap!important;
+  grid-template-columns:none!important;
+  gap:7px!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  overflow:visible!important;
+  padding:8px 10px!important;
+}
+#section-followups #followup-subtab-bar.followup-button-mode .followup-nav-tab-wrap{
+  display:inline-flex!important;
+  min-width:0!important;
+  width:auto!important;
+  flex:0 0 auto!important;
+  position:relative!important;
+}
+#section-followups #followup-subtab-bar.followup-button-mode .roster-subtab{
+  width:auto!important;
+  min-width:0!important;
+  height:34px!important;
+  min-height:34px!important;
+  padding:0 12px 0 8px!important;
+  border-radius:10px!important;
+  font-size:11.5px!important;
+  gap:7px!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  box-shadow:none!important;
+  white-space:nowrap!important;
+  border:1px solid rgba(15,38,56,.11)!important;
+  background:#ffffff!important;
+}
+#section-followups #followup-subtab-bar.followup-button-mode .roster-subtab:hover{
+  transform:translateY(-1px)!important;
+  box-shadow:0 5px 14px rgba(15,38,56,.10)!important;
+}
+#section-followups #followup-subtab-bar.followup-button-mode .roster-subtab.active{
+  box-shadow:inset 0 -3px 0 var(--tab-colour,var(--fu-tab-active,#0f766e)),0 5px 14px rgba(15,38,56,.08)!important;
+  border-color:var(--tab-colour,var(--fu-tab-active,#0f766e))!important;
+  background:var(--tab-soft,#f8fafc)!important;
+}
+#section-followups #followup-subtab-bar.followup-button-mode .roster-subtab-icon{
+  width:24px!important;
+  height:24px!important;
+  min-width:24px!important;
+  border-radius:7px!important;
+  box-shadow:none!important;
+}
+#section-followups #followup-subtab-bar.followup-button-mode .roster-subtab-icon svg{
+  width:14px!important;
+  height:14px!important;
+}
+#section-followups #followup-subtab-bar.followup-button-mode .followup-mini-dropdown,
+#section-followups #followup-subtab-bar.followup-button-mode .followup-roster-dropdown{
+  display:none!important;
+}
+@media(max-width:760px){
+  #section-followups #followup-subtab-bar.followup-button-mode{gap:6px!important;padding:8px!important;}
+  #section-followups #followup-subtab-bar.followup-button-mode .roster-subtab{font-size:11px!important;padding:0 10px 0 7px!important;}
+}
+</style>
+<script>
+/* v66-39 — direct navigation buttons and direct Follow-Up Centre tabs */
+(function(){
+  function textOf(el){return (el && el.textContent || '').replace(/▾/g,'').replace(/\s+/g,' ').trim().toLowerCase();}
+  function go(section){ if(typeof window.switchSection === 'function') window.switchSection(section,null); }
+
+  // Main navigation: click the tab itself to open the correct page. No dropdown is required.
+  window.toggleTopMenu = function(button,event){
+    if(event){ event.preventDefault(); event.stopPropagation(); }
+    if(typeof window.closeTopMenus === 'function') window.closeTopMenus();
+    const label = textOf(button);
+    if(label.includes('patient management')){ go('patient-pathways'); return; }
+    if(label.includes('follow-up')){ go('followups'); setTimeout(function(){ if(typeof window.showFollowupSubtab==='function') window.showFollowupSubtab('appointments'); },0); return; }
+    if(label.includes('patient center') || label.includes('patient centre')){ if(typeof window.openPatientCentrePage==='function') window.openPatientCentrePage('master'); else go('patients'); return; }
+    if(label.includes('clinical workforce')){ if(typeof window.openClinicalWorkforcePage==='function') window.openClinicalWorkforcePage('common'); else go('patients'); return; }
+    if(label.includes('admin')){ go('kpi-dashboard'); return; }
+    go('home');
+  };
+
+  function iconSvg(kind){
+    const map={
+      appointments:'<rect x="6" y="4" width="12" height="16" rx="2"/><path d="M9 8h6"/><path d="M9 12h6"/><path d="M9 16h4"/>',
+      outcomes:'<path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-5"/><path d="M12 16V8"/><path d="M16 16v-7"/><path d="M20 6l-4 4-3-3-5 5"/>',
+      clinic:'<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="M8 14h8"/><path d="M8 18h5"/>',
+      dntu:'<path d="m10.29 3.86-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.71-3.14l-8-14a2 2 0 0 0-3.42 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+      paused:'<circle cx="12" cy="12" r="9"/><path d="M10 8v8"/><path d="M14 8v8"/>',
+      roster:'<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="M8 15h8"/><path d="M8 18h5"/>',
+      cod:'<path d="M7 7h6a3 3 0 0 1 0 6H7"/><path d="m10 4-3 3 3 3"/><path d="M17 17H11a3 3 0 0 1 0-6h6"/><path d="m14 20 3-3-3-3"/>',
+      staff:'<path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-5"/><path d="M12 16V8"/><path d="M16 16v-7"/><path d="M20 6l-4 4-3-3-5 5"/>'
+    };
+    return '<svg class="icon-svg" viewBox="0 0 24 24">'+(map[kind]||map.appointments)+'</svg>';
+  }
+  function tabBtn(id,label,kind,colour,dark,soft,onclick){
+    return '<div class="followup-nav-tab-wrap" style="--tab-colour:'+colour+';--tab-soft:'+soft+';--dropdown-colour:'+colour+';">'+
+      '<button type="button" class="roster-subtab" id="'+id+'" onclick="'+onclick+'" style="--tab-colour:'+colour+';--tab-soft:'+soft+';">'+
+      '<span class="roster-subtab-icon" style="background:linear-gradient(135deg,'+dark+','+colour+');">'+iconSvg(kind)+'</span><span>'+label+'</span></button></div>';
+  }
+  function rebuildFollowupButtonTabs(){
+    const bar=document.getElementById('followup-subtab-bar');
+    if(!bar || bar.dataset.v6639Buttons==='true') return;
+    bar.dataset.v6639Buttons='true';
+    bar.classList.add('followup-button-mode');
+    bar.innerHTML = [
+      tabBtn('followup-subtab-appointments','Patient Appointments','appointments','#0f766e','#064e3b','#ecfdf9',"showFollowupSubtab('appointments')"),
+      tabBtn('followup-subtab-outcomes','Appointment Outcomes','outcomes','#2563eb','#1d4ed8','#eff6ff',"showFollowupSubtab('outcomes')"),
+      tabBtn('followup-subtab-clinic','Clinic Audit','clinic','#7c3aed','#5b21b6','#f5f3ff',"showFollowupSubtab('clinic')"),
+      tabBtn('followup-subtab-dntu','DNTU','dntu','#c2413b','#7c2d12','#fff7ed',"showFollowupSubtab('dntu')"),
+      tabBtn('followup-subtab-paused','Temporarily Paused Appointments','paused','#d97706','#92400e','#fffbeb',"showFollowupSubtab('paused')"),
+      tabBtn('followup-subtab-rosters','Monthly Roster','roster','#475569','#0f2638','#f8fafc',"openFollowupRosterButton('monthly')"),
+      tabBtn('followup-subtab-roster-cod','Change of Duty','cod','#2563eb','#1d4ed8','#eff6ff',"openFollowupRosterButton('cod')"),
+      tabBtn('followup-subtab-roster-staff-audit','Staff Audit','staff','#7c3aed','#5b21b6','#f5f3ff',"openFollowupRosterButton('staff-audit')")
+    ].join('');
+  }
+  function setRosterButtonActive(view){
+    document.querySelectorAll('#followup-subtab-bar .roster-subtab').forEach(function(b){b.classList.remove('active');});
+    const id = view==='cod' ? 'followup-subtab-roster-cod' : (view==='staff-audit' ? 'followup-subtab-roster-staff-audit' : 'followup-subtab-rosters');
+    const btn=document.getElementById(id);
+    if(btn)btn.classList.add('active');
+  }
+  window.openFollowupRosterButton = function(view){
+    view=(view==='cod'||view==='staff-audit')?view:'monthly';
+    if(typeof window.closeFollowupDropdowns === 'function') window.closeFollowupDropdowns();
+    if(typeof window.showFollowupSubtab === 'function') window.showFollowupSubtab('rosters');
+    if(typeof window.renderFollowupRosterWorkspace === 'function') window.renderFollowupRosterWorkspace(view);
+    setRosterButtonActive(view);
+  };
+  window.toggleFollowupMiniDropdown = function(event,tab){
+    if(event){event.preventDefault();event.stopPropagation();}
+    if(typeof window.showFollowupSubtab==='function') window.showFollowupSubtab(tab);
+  };
+  window.toggleFollowupRosterDropdown = function(event){
+    if(event){event.preventDefault();event.stopPropagation();}
+    window.openFollowupRosterButton('monthly');
+  };
+  window.selectFollowupRosterFromTab = function(view){ window.openFollowupRosterButton(view); };
+
+  const oldShow = window.showFollowupSubtab;
+  window.showFollowupSubtab = function(tab){
+    rebuildFollowupButtonTabs();
+    const result = oldShow ? oldShow.call(this,tab) : undefined;
+    if(tab !== 'rosters'){
+      const active=document.getElementById('followup-subtab-'+tab);
+      if(active){ document.querySelectorAll('#followup-subtab-bar .roster-subtab').forEach(function(b){b.classList.remove('active');}); active.classList.add('active'); }
+    }else{
+      setRosterButtonActive(window.currentFollowupRosterSubtab || 'monthly');
+    }
+    return result;
+  };
+
+  rebuildFollowupButtonTabs();
+})();
+</script>
+
 </body></html>`;
 }
 
@@ -12581,6 +12756,181 @@ function buildClinicPrintHtml(rows){
     ${body}
   
 
+
+
+<style>
+/* v66-39 — navigation tabs work as direct buttons, not dropdowns */
+.app-menu-tabs .app-menu-dropdown{
+  display:none!important;
+}
+.app-menu-tabs .app-menu-caret,
+#section-followups .followup-roster-caret{
+  display:none!important;
+}
+.app-menu-tabs .app-menu-tab-button,
+.app-menu-tabs .app-menu-home{
+  cursor:pointer!important;
+}
+.app-menu-tabs .app-menu-tab-button:hover,
+.app-menu-tabs .app-menu-home:hover{
+  transform:translateY(-1px);
+}
+#section-followups #followup-subtab-bar.followup-button-mode{
+  display:flex!important;
+  flex-wrap:wrap!important;
+  grid-template-columns:none!important;
+  gap:7px!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  overflow:visible!important;
+  padding:8px 10px!important;
+}
+#section-followups #followup-subtab-bar.followup-button-mode .followup-nav-tab-wrap{
+  display:inline-flex!important;
+  min-width:0!important;
+  width:auto!important;
+  flex:0 0 auto!important;
+  position:relative!important;
+}
+#section-followups #followup-subtab-bar.followup-button-mode .roster-subtab{
+  width:auto!important;
+  min-width:0!important;
+  height:34px!important;
+  min-height:34px!important;
+  padding:0 12px 0 8px!important;
+  border-radius:10px!important;
+  font-size:11.5px!important;
+  gap:7px!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  box-shadow:none!important;
+  white-space:nowrap!important;
+  border:1px solid rgba(15,38,56,.11)!important;
+  background:#ffffff!important;
+}
+#section-followups #followup-subtab-bar.followup-button-mode .roster-subtab:hover{
+  transform:translateY(-1px)!important;
+  box-shadow:0 5px 14px rgba(15,38,56,.10)!important;
+}
+#section-followups #followup-subtab-bar.followup-button-mode .roster-subtab.active{
+  box-shadow:inset 0 -3px 0 var(--tab-colour,var(--fu-tab-active,#0f766e)),0 5px 14px rgba(15,38,56,.08)!important;
+  border-color:var(--tab-colour,var(--fu-tab-active,#0f766e))!important;
+  background:var(--tab-soft,#f8fafc)!important;
+}
+#section-followups #followup-subtab-bar.followup-button-mode .roster-subtab-icon{
+  width:24px!important;
+  height:24px!important;
+  min-width:24px!important;
+  border-radius:7px!important;
+  box-shadow:none!important;
+}
+#section-followups #followup-subtab-bar.followup-button-mode .roster-subtab-icon svg{
+  width:14px!important;
+  height:14px!important;
+}
+#section-followups #followup-subtab-bar.followup-button-mode .followup-mini-dropdown,
+#section-followups #followup-subtab-bar.followup-button-mode .followup-roster-dropdown{
+  display:none!important;
+}
+@media(max-width:760px){
+  #section-followups #followup-subtab-bar.followup-button-mode{gap:6px!important;padding:8px!important;}
+  #section-followups #followup-subtab-bar.followup-button-mode .roster-subtab{font-size:11px!important;padding:0 10px 0 7px!important;}
+}
+</style>
+<script>
+/* v66-39 — direct navigation buttons and direct Follow-Up Centre tabs */
+(function(){
+  function textOf(el){return (el && el.textContent || '').replace(/▾/g,'').replace(/\s+/g,' ').trim().toLowerCase();}
+  function go(section){ if(typeof window.switchSection === 'function') window.switchSection(section,null); }
+
+  // Main navigation: click the tab itself to open the correct page. No dropdown is required.
+  window.toggleTopMenu = function(button,event){
+    if(event){ event.preventDefault(); event.stopPropagation(); }
+    if(typeof window.closeTopMenus === 'function') window.closeTopMenus();
+    const label = textOf(button);
+    if(label.includes('patient management')){ go('patient-pathways'); return; }
+    if(label.includes('follow-up')){ go('followups'); setTimeout(function(){ if(typeof window.showFollowupSubtab==='function') window.showFollowupSubtab('appointments'); },0); return; }
+    if(label.includes('patient center') || label.includes('patient centre')){ if(typeof window.openPatientCentrePage==='function') window.openPatientCentrePage('master'); else go('patients'); return; }
+    if(label.includes('clinical workforce')){ if(typeof window.openClinicalWorkforcePage==='function') window.openClinicalWorkforcePage('common'); else go('patients'); return; }
+    if(label.includes('admin')){ go('kpi-dashboard'); return; }
+    go('home');
+  };
+
+  function iconSvg(kind){
+    const map={
+      appointments:'<rect x="6" y="4" width="12" height="16" rx="2"/><path d="M9 8h6"/><path d="M9 12h6"/><path d="M9 16h4"/>',
+      outcomes:'<path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-5"/><path d="M12 16V8"/><path d="M16 16v-7"/><path d="M20 6l-4 4-3-3-5 5"/>',
+      clinic:'<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="M8 14h8"/><path d="M8 18h5"/>',
+      dntu:'<path d="m10.29 3.86-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.71-3.14l-8-14a2 2 0 0 0-3.42 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+      paused:'<circle cx="12" cy="12" r="9"/><path d="M10 8v8"/><path d="M14 8v8"/>',
+      roster:'<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="M8 15h8"/><path d="M8 18h5"/>',
+      cod:'<path d="M7 7h6a3 3 0 0 1 0 6H7"/><path d="m10 4-3 3 3 3"/><path d="M17 17H11a3 3 0 0 1 0-6h6"/><path d="m14 20 3-3-3-3"/>',
+      staff:'<path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-5"/><path d="M12 16V8"/><path d="M16 16v-7"/><path d="M20 6l-4 4-3-3-5 5"/>'
+    };
+    return '<svg class="icon-svg" viewBox="0 0 24 24">'+(map[kind]||map.appointments)+'</svg>';
+  }
+  function tabBtn(id,label,kind,colour,dark,soft,onclick){
+    return '<div class="followup-nav-tab-wrap" style="--tab-colour:'+colour+';--tab-soft:'+soft+';--dropdown-colour:'+colour+';">'+
+      '<button type="button" class="roster-subtab" id="'+id+'" onclick="'+onclick+'" style="--tab-colour:'+colour+';--tab-soft:'+soft+';">'+
+      '<span class="roster-subtab-icon" style="background:linear-gradient(135deg,'+dark+','+colour+');">'+iconSvg(kind)+'</span><span>'+label+'</span></button></div>';
+  }
+  function rebuildFollowupButtonTabs(){
+    const bar=document.getElementById('followup-subtab-bar');
+    if(!bar || bar.dataset.v6639Buttons==='true') return;
+    bar.dataset.v6639Buttons='true';
+    bar.classList.add('followup-button-mode');
+    bar.innerHTML = [
+      tabBtn('followup-subtab-appointments','Patient Appointments','appointments','#0f766e','#064e3b','#ecfdf9',"showFollowupSubtab('appointments')"),
+      tabBtn('followup-subtab-outcomes','Appointment Outcomes','outcomes','#2563eb','#1d4ed8','#eff6ff',"showFollowupSubtab('outcomes')"),
+      tabBtn('followup-subtab-clinic','Clinic Audit','clinic','#7c3aed','#5b21b6','#f5f3ff',"showFollowupSubtab('clinic')"),
+      tabBtn('followup-subtab-dntu','DNTU','dntu','#c2413b','#7c2d12','#fff7ed',"showFollowupSubtab('dntu')"),
+      tabBtn('followup-subtab-paused','Temporarily Paused Appointments','paused','#d97706','#92400e','#fffbeb',"showFollowupSubtab('paused')"),
+      tabBtn('followup-subtab-rosters','Monthly Roster','roster','#475569','#0f2638','#f8fafc',"openFollowupRosterButton('monthly')"),
+      tabBtn('followup-subtab-roster-cod','Change of Duty','cod','#2563eb','#1d4ed8','#eff6ff',"openFollowupRosterButton('cod')"),
+      tabBtn('followup-subtab-roster-staff-audit','Staff Audit','staff','#7c3aed','#5b21b6','#f5f3ff',"openFollowupRosterButton('staff-audit')")
+    ].join('');
+  }
+  function setRosterButtonActive(view){
+    document.querySelectorAll('#followup-subtab-bar .roster-subtab').forEach(function(b){b.classList.remove('active');});
+    const id = view==='cod' ? 'followup-subtab-roster-cod' : (view==='staff-audit' ? 'followup-subtab-roster-staff-audit' : 'followup-subtab-rosters');
+    const btn=document.getElementById(id);
+    if(btn)btn.classList.add('active');
+  }
+  window.openFollowupRosterButton = function(view){
+    view=(view==='cod'||view==='staff-audit')?view:'monthly';
+    if(typeof window.closeFollowupDropdowns === 'function') window.closeFollowupDropdowns();
+    if(typeof window.showFollowupSubtab === 'function') window.showFollowupSubtab('rosters');
+    if(typeof window.renderFollowupRosterWorkspace === 'function') window.renderFollowupRosterWorkspace(view);
+    setRosterButtonActive(view);
+  };
+  window.toggleFollowupMiniDropdown = function(event,tab){
+    if(event){event.preventDefault();event.stopPropagation();}
+    if(typeof window.showFollowupSubtab==='function') window.showFollowupSubtab(tab);
+  };
+  window.toggleFollowupRosterDropdown = function(event){
+    if(event){event.preventDefault();event.stopPropagation();}
+    window.openFollowupRosterButton('monthly');
+  };
+  window.selectFollowupRosterFromTab = function(view){ window.openFollowupRosterButton(view); };
+
+  const oldShow = window.showFollowupSubtab;
+  window.showFollowupSubtab = function(tab){
+    rebuildFollowupButtonTabs();
+    const result = oldShow ? oldShow.call(this,tab) : undefined;
+    if(tab !== 'rosters'){
+      const active=document.getElementById('followup-subtab-'+tab);
+      if(active){ document.querySelectorAll('#followup-subtab-bar .roster-subtab').forEach(function(b){b.classList.remove('active');}); active.classList.add('active'); }
+    }else{
+      setRosterButtonActive(window.currentFollowupRosterSubtab || 'monthly');
+    }
+    return result;
+  };
+
+  rebuildFollowupButtonTabs();
+})();
+</script>
+
 </body></html>`;
 }
 
@@ -16069,6 +16419,181 @@ function renderPathwayStepsPanel(tab,patient,steps,completions,col,allDone,total
   }, true);
   window.addEventListener('scroll', function(){ window.closeFollowupDropdowns(); }, true);
   window.addEventListener('resize', function(){ window.closeFollowupDropdowns(); });
+})();
+</script>
+
+
+
+<style>
+/* v66-39 — navigation tabs work as direct buttons, not dropdowns */
+.app-menu-tabs .app-menu-dropdown{
+  display:none!important;
+}
+.app-menu-tabs .app-menu-caret,
+#section-followups .followup-roster-caret{
+  display:none!important;
+}
+.app-menu-tabs .app-menu-tab-button,
+.app-menu-tabs .app-menu-home{
+  cursor:pointer!important;
+}
+.app-menu-tabs .app-menu-tab-button:hover,
+.app-menu-tabs .app-menu-home:hover{
+  transform:translateY(-1px);
+}
+#section-followups #followup-subtab-bar.followup-button-mode{
+  display:flex!important;
+  flex-wrap:wrap!important;
+  grid-template-columns:none!important;
+  gap:7px!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  overflow:visible!important;
+  padding:8px 10px!important;
+}
+#section-followups #followup-subtab-bar.followup-button-mode .followup-nav-tab-wrap{
+  display:inline-flex!important;
+  min-width:0!important;
+  width:auto!important;
+  flex:0 0 auto!important;
+  position:relative!important;
+}
+#section-followups #followup-subtab-bar.followup-button-mode .roster-subtab{
+  width:auto!important;
+  min-width:0!important;
+  height:34px!important;
+  min-height:34px!important;
+  padding:0 12px 0 8px!important;
+  border-radius:10px!important;
+  font-size:11.5px!important;
+  gap:7px!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  box-shadow:none!important;
+  white-space:nowrap!important;
+  border:1px solid rgba(15,38,56,.11)!important;
+  background:#ffffff!important;
+}
+#section-followups #followup-subtab-bar.followup-button-mode .roster-subtab:hover{
+  transform:translateY(-1px)!important;
+  box-shadow:0 5px 14px rgba(15,38,56,.10)!important;
+}
+#section-followups #followup-subtab-bar.followup-button-mode .roster-subtab.active{
+  box-shadow:inset 0 -3px 0 var(--tab-colour,var(--fu-tab-active,#0f766e)),0 5px 14px rgba(15,38,56,.08)!important;
+  border-color:var(--tab-colour,var(--fu-tab-active,#0f766e))!important;
+  background:var(--tab-soft,#f8fafc)!important;
+}
+#section-followups #followup-subtab-bar.followup-button-mode .roster-subtab-icon{
+  width:24px!important;
+  height:24px!important;
+  min-width:24px!important;
+  border-radius:7px!important;
+  box-shadow:none!important;
+}
+#section-followups #followup-subtab-bar.followup-button-mode .roster-subtab-icon svg{
+  width:14px!important;
+  height:14px!important;
+}
+#section-followups #followup-subtab-bar.followup-button-mode .followup-mini-dropdown,
+#section-followups #followup-subtab-bar.followup-button-mode .followup-roster-dropdown{
+  display:none!important;
+}
+@media(max-width:760px){
+  #section-followups #followup-subtab-bar.followup-button-mode{gap:6px!important;padding:8px!important;}
+  #section-followups #followup-subtab-bar.followup-button-mode .roster-subtab{font-size:11px!important;padding:0 10px 0 7px!important;}
+}
+</style>
+<script>
+/* v66-39 — direct navigation buttons and direct Follow-Up Centre tabs */
+(function(){
+  function textOf(el){return (el && el.textContent || '').replace(/▾/g,'').replace(/\s+/g,' ').trim().toLowerCase();}
+  function go(section){ if(typeof window.switchSection === 'function') window.switchSection(section,null); }
+
+  // Main navigation: click the tab itself to open the correct page. No dropdown is required.
+  window.toggleTopMenu = function(button,event){
+    if(event){ event.preventDefault(); event.stopPropagation(); }
+    if(typeof window.closeTopMenus === 'function') window.closeTopMenus();
+    const label = textOf(button);
+    if(label.includes('patient management')){ go('patient-pathways'); return; }
+    if(label.includes('follow-up')){ go('followups'); setTimeout(function(){ if(typeof window.showFollowupSubtab==='function') window.showFollowupSubtab('appointments'); },0); return; }
+    if(label.includes('patient center') || label.includes('patient centre')){ if(typeof window.openPatientCentrePage==='function') window.openPatientCentrePage('master'); else go('patients'); return; }
+    if(label.includes('clinical workforce')){ if(typeof window.openClinicalWorkforcePage==='function') window.openClinicalWorkforcePage('common'); else go('patients'); return; }
+    if(label.includes('admin')){ go('kpi-dashboard'); return; }
+    go('home');
+  };
+
+  function iconSvg(kind){
+    const map={
+      appointments:'<rect x="6" y="4" width="12" height="16" rx="2"/><path d="M9 8h6"/><path d="M9 12h6"/><path d="M9 16h4"/>',
+      outcomes:'<path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-5"/><path d="M12 16V8"/><path d="M16 16v-7"/><path d="M20 6l-4 4-3-3-5 5"/>',
+      clinic:'<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="M8 14h8"/><path d="M8 18h5"/>',
+      dntu:'<path d="m10.29 3.86-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.71-3.14l-8-14a2 2 0 0 0-3.42 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+      paused:'<circle cx="12" cy="12" r="9"/><path d="M10 8v8"/><path d="M14 8v8"/>',
+      roster:'<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="M8 15h8"/><path d="M8 18h5"/>',
+      cod:'<path d="M7 7h6a3 3 0 0 1 0 6H7"/><path d="m10 4-3 3 3 3"/><path d="M17 17H11a3 3 0 0 1 0-6h6"/><path d="m14 20 3-3-3-3"/>',
+      staff:'<path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-5"/><path d="M12 16V8"/><path d="M16 16v-7"/><path d="M20 6l-4 4-3-3-5 5"/>'
+    };
+    return '<svg class="icon-svg" viewBox="0 0 24 24">'+(map[kind]||map.appointments)+'</svg>';
+  }
+  function tabBtn(id,label,kind,colour,dark,soft,onclick){
+    return '<div class="followup-nav-tab-wrap" style="--tab-colour:'+colour+';--tab-soft:'+soft+';--dropdown-colour:'+colour+';">'+
+      '<button type="button" class="roster-subtab" id="'+id+'" onclick="'+onclick+'" style="--tab-colour:'+colour+';--tab-soft:'+soft+';">'+
+      '<span class="roster-subtab-icon" style="background:linear-gradient(135deg,'+dark+','+colour+');">'+iconSvg(kind)+'</span><span>'+label+'</span></button></div>';
+  }
+  function rebuildFollowupButtonTabs(){
+    const bar=document.getElementById('followup-subtab-bar');
+    if(!bar || bar.dataset.v6639Buttons==='true') return;
+    bar.dataset.v6639Buttons='true';
+    bar.classList.add('followup-button-mode');
+    bar.innerHTML = [
+      tabBtn('followup-subtab-appointments','Patient Appointments','appointments','#0f766e','#064e3b','#ecfdf9',"showFollowupSubtab('appointments')"),
+      tabBtn('followup-subtab-outcomes','Appointment Outcomes','outcomes','#2563eb','#1d4ed8','#eff6ff',"showFollowupSubtab('outcomes')"),
+      tabBtn('followup-subtab-clinic','Clinic Audit','clinic','#7c3aed','#5b21b6','#f5f3ff',"showFollowupSubtab('clinic')"),
+      tabBtn('followup-subtab-dntu','DNTU','dntu','#c2413b','#7c2d12','#fff7ed',"showFollowupSubtab('dntu')"),
+      tabBtn('followup-subtab-paused','Temporarily Paused Appointments','paused','#d97706','#92400e','#fffbeb',"showFollowupSubtab('paused')"),
+      tabBtn('followup-subtab-rosters','Monthly Roster','roster','#475569','#0f2638','#f8fafc',"openFollowupRosterButton('monthly')"),
+      tabBtn('followup-subtab-roster-cod','Change of Duty','cod','#2563eb','#1d4ed8','#eff6ff',"openFollowupRosterButton('cod')"),
+      tabBtn('followup-subtab-roster-staff-audit','Staff Audit','staff','#7c3aed','#5b21b6','#f5f3ff',"openFollowupRosterButton('staff-audit')")
+    ].join('');
+  }
+  function setRosterButtonActive(view){
+    document.querySelectorAll('#followup-subtab-bar .roster-subtab').forEach(function(b){b.classList.remove('active');});
+    const id = view==='cod' ? 'followup-subtab-roster-cod' : (view==='staff-audit' ? 'followup-subtab-roster-staff-audit' : 'followup-subtab-rosters');
+    const btn=document.getElementById(id);
+    if(btn)btn.classList.add('active');
+  }
+  window.openFollowupRosterButton = function(view){
+    view=(view==='cod'||view==='staff-audit')?view:'monthly';
+    if(typeof window.closeFollowupDropdowns === 'function') window.closeFollowupDropdowns();
+    if(typeof window.showFollowupSubtab === 'function') window.showFollowupSubtab('rosters');
+    if(typeof window.renderFollowupRosterWorkspace === 'function') window.renderFollowupRosterWorkspace(view);
+    setRosterButtonActive(view);
+  };
+  window.toggleFollowupMiniDropdown = function(event,tab){
+    if(event){event.preventDefault();event.stopPropagation();}
+    if(typeof window.showFollowupSubtab==='function') window.showFollowupSubtab(tab);
+  };
+  window.toggleFollowupRosterDropdown = function(event){
+    if(event){event.preventDefault();event.stopPropagation();}
+    window.openFollowupRosterButton('monthly');
+  };
+  window.selectFollowupRosterFromTab = function(view){ window.openFollowupRosterButton(view); };
+
+  const oldShow = window.showFollowupSubtab;
+  window.showFollowupSubtab = function(tab){
+    rebuildFollowupButtonTabs();
+    const result = oldShow ? oldShow.call(this,tab) : undefined;
+    if(tab !== 'rosters'){
+      const active=document.getElementById('followup-subtab-'+tab);
+      if(active){ document.querySelectorAll('#followup-subtab-bar .roster-subtab').forEach(function(b){b.classList.remove('active');}); active.classList.add('active'); }
+    }else{
+      setRosterButtonActive(window.currentFollowupRosterSubtab || 'monthly');
+    }
+    return result;
+  };
+
+  rebuildFollowupButtonTabs();
 })();
 </script>
 
