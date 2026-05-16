@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- v66-65c: Patient Record Lookup Fix — opens records from legacy patients or patients_main by UUID, ID card, hospital number, or patient number. -->
 <!--
 VERSION: v66-62 Stage 4 — Episode Safety, Closure & Movement Indicators
 Built from: v66-61b hotfix.
@@ -19426,10 +19427,43 @@ input,select,textarea{border-radius:12px!important;}
     try{let q=SB.from(table).select('*'); if(filterFn)q=filterFn(q); const r=await q; if(r.error)throw r.error; return (r.data||[]).map(x=>({...x,_table:table}));}catch(e){return [];}
   }
   async function getPatient(patientId){
-    let rows=await selectRows('patients',q=>q.eq('id',patientId).limit(1));
+    const key=String(patientId||'').trim();
+    if(!key)return null;
+
+    // Prefer the newer merged patient loader when available, because it already
+    // combines patients_main + legacy patients and normalises old records.
+    try{
+      if(typeof window.getProjectPatientById==='function'){
+        const p=await window.getProjectPatientById(key);
+        if(p)return p;
+      }
+    }catch(e){}
+
+    // Direct ID lookup in both possible patient tables.
+    let rows=await selectRows('patients',q=>q.eq('id',key).limit(1));
     if(rows[0])return rows[0];
-    rows=await selectRows('patients_main',q=>q.eq('id',patientId).limit(1));
+    rows=await selectRows('patients_main',q=>q.eq('id',key).limit(1));
     if(rows[0])return rows[0];
+
+    // Some legacy rows/open buttons may pass an ID card / hospital number rather
+    // than the database UUID. Fall back to clinical identifiers.
+    const clinicalColumns=['id_card','id_card_number','id_card_no','hospital_number','patient_number'];
+    for(const table of ['patients','patients_main']){
+      for(const col of clinicalColumns){
+        rows=await selectRows(table,q=>q.eq(col,key).limit(1));
+        if(rows[0])return rows[0];
+      }
+    }
+
+    // Last resort: search all loaded rows by common identifiers.
+    try{
+      const all=(typeof window.getProjectPatients==='function')?await window.getProjectPatients():[];
+      const found=(all||[]).find(p=>[
+        p.id,p.patient_id,p.id_card,p.id_card_number,p.id_card_no,p.hospital_number,p.patient_number
+      ].some(v=>String(v||'').trim()===key));
+      if(found)return found;
+    }catch(e){}
+
     return null;
   }
   async function getRelated(patientId){
@@ -19647,11 +19681,17 @@ input,select,textarea{border-radius:12px!important;}
     document.getElementById('patient-record-page')?.remove();
     if(typeof setPlatformFocusTitle==='function')setPlatformFocusTitle('section-patients',{eyebrow:'Patient Record',title:'Patient Overview & Episodes',subtitle:'Lifelong patient record with episode-specific workflow.',icon:'document',colour:'#0f766e',colourDark:'#0f2638',soft:'#ecfdf9'},'backToPatientList()');
     const page=document.createElement('div'); page.id='patient-record-page'; page.className='patient-record-page v6661-record'; page.innerHTML='<div class="empty">Loading patient record...</div>'; section.appendChild(page);
-    const [p,rel]=await Promise.all([getPatient(patientId),getRelated(patientId)]);
+    const p=await getPatient(patientId);
     if(!p){page.innerHTML=emptyState('Patient record not found','The selected patient could not be loaded. Please return to the list and try again.','<button class="v6661-btn" onclick="backToPatientList()">Back to List</button>');return;}
-    const ctx={patientId,patient:p,related:rel,activeTab:'summary',version:VERSION};
+
+    // Resolve the real database patient id before loading related rows. This fixes
+    // older/legacy rows where the list may pass an ID card or hospital number.
+    const resolvedPatientId=String(p.id||p.patient_id||patientId);
+    const rel=await getRelated(resolvedPatientId);
+
+    const ctx={patientId:resolvedPatientId,patient:p,related:rel,activeTab:'summary',version:VERSION};
     window._v6661PatientRecord=ctx;
-    page.innerHTML=`${renderProfile(p,rel)}${renderActions(patientId,p,rel)}<div id="v6661-patient-record-tabs">${renderTabs('summary')}</div><div id="v6661-patient-record-panel" class="v6661-tab-panel">${renderSummaryTab(ctx)}</div>`;
+    page.innerHTML=`${renderProfile(p,rel)}${renderActions(resolvedPatientId,p,rel)}<div id="v6661-patient-record-tabs">${renderTabs('summary')}</div><div id="v6661-patient-record-panel" class="v6661-tab-panel">${renderSummaryTab(ctx)}</div>`;
   };
   // Refresh the redesigned record after existing modal saves where those functions already call openPatientRecordPage.
 })();
