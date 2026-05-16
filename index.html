@@ -16,6 +16,12 @@ Protected areas not intentionally changed: Follow-Up Centre, rosters, appointmen
 <html lang="en">
 <head>
 <!--
+v66-56 change: Existing Master List import patients are classified/displayed as Old Stoma / Existing Stoma.
+Patient placement remains outpatient unless an active inpatient episode is opened.
+Protected: Follow-Up Centre, rosters, appointment grid, pathway forms and SQL schema structure.
+-->
+
+<!--
 VERSION: v66-50
 Built from: v66-49 with syntax repair.
 Changes:
@@ -16708,7 +16714,7 @@ function renderPathwayStepsPanel(tab,patient,steps,completions,col,allDone,total
         return got===want;
       });
     }
-    if(search)rows=rows.filter(r=>[r.first_name,r.surname,r.id_card,r.id_card_number,r.hospital_number,r.patient_number,r.ward,r.locality,r.stoma_type,r.patient_status,r.pathway_status,r.allocated_nurse,r.phone_number,r.contact_number].some(v=>String(v||'').toLowerCase().includes(search)));
+    if(search)rows=rows.filter(r=>[r.first_name,r.surname,r.id_card,r.id_card_number,r.hospital_number,r.patient_number,r.ward,r.locality,r.stoma_type,r.patient_status,r.pathway_status,r.pathway_type,r.clinical_category,r.allocated_nurse,r.phone_number,r.contact_number].some(v=>String(v||'').toLowerCase().includes(search)));
     const lastMap=await getLastReviewMapSafe(rows.map(r=>r.id).filter(Boolean));
     if(panel){
       const headers=view==='inpatient'?['ID Card','Name','Surname','Pathway / Case Type','Episode Status / Reason','Date of Surgery','Last Review Date','Ward / Location','Actions']:
@@ -16939,7 +16945,8 @@ function renderPathwayStepsPanel(tab,patient,steps,completions,col,allDone,total
       if(view==='outpatient'){
         return `<tr class="patient-row-click" ${open}><td style="font-family:monospace;font-size:12px;">${idc}</td><td><strong>${first}</strong></td><td><strong>${sur}</strong></td><td>${pcHtml(p.stoma_type||'—')}</td><td>${pcHtml(p.appliance_used||p.bag_brand||'—')}</td><td>${pcHtml(p.accessories_used||p.flange_size||'—')}</td><td>${pcDisplayDate(p.surgery_date)}</td><td>${pcHtml(p.latest_outcome||p.episode_outcome||p.patient_status||p.pathway_status||'—')}</td><td>${pcHtml(p.phone_number||p.contact_number||'—')}</td><td>${pcHtml(p.locality||'—')}</td></tr>`;
       }
-      const typeLabel=isStrictInpatient(p)?'inpatient':(p.patient_type||p.patient_status||'outpatient');
+      const oldStomaBlob=String([p.patient_type,p.pathway_type,p.pathway_status,p.episode_type,p.clinical_category].join(' ')).toLowerCase();
+      const typeLabel=isStrictInpatient(p)?'Inpatient':((oldStomaBlob.includes('old_stoma')||oldStomaBlob.includes('old stoma')||oldStomaBlob.includes('existing stoma')||oldStomaBlob.includes('established stoma'))?'Old Stoma / Existing':(p.patient_type||p.patient_status||'Outpatient'));
       return `<tr class="patient-row-click" ${open}><td style="font-family:monospace;font-size:12px;">${idc}</td><td><strong>${first}</strong></td><td><strong>${sur}</strong></td><td>${pcHtml(typeLabel||'—')}</td><td>${pcHtml(p.stoma_type||'—')}</td><td>${pcDisplayDate(p.surgery_date)}</td><td>${pcHtml(p.locality||'—')}</td><td>${pcDisplayDate(lastMap[String(p.id)])}</td><td><button onclick="event.stopPropagation();openPatientRecordPage('${id}')" class="btn-refresh">Open</button></td></tr>`;
     }).join('');
   };
@@ -17947,7 +17954,8 @@ function renderPathwayStepsPanel(tab,patient,steps,completions,col,allDone,total
     if(view==='outpatient'){
       if(episodeState?.location==='inpatient')return false;
       if(text.includes('deceased')||text.includes('relocated')||text.includes('reversed'))return false;
-      const isOut=lc(patient.patient_type).includes('outpatient') || lc(patient.patient_status).includes('outpatient') || lc(patient.pathway_status).includes('planned') || lc(patient.pathway_status).includes('awaiting') || !text.includes('inpatient');
+      const oldStomaPlacement=lc([patient.patient_type,patient.pathway_type,patient.pathway_status,patient.episode_type,patient.clinical_category].join(' ')).includes('old_stoma') || lc([patient.patient_type,patient.pathway_type,patient.pathway_status,patient.episode_type,patient.clinical_category].join(' ')).includes('old stoma') || lc([patient.patient_type,patient.pathway_type,patient.pathway_status,patient.episode_type,patient.clinical_category].join(' ')).includes('existing stoma') || lc([patient.patient_type,patient.pathway_type,patient.pathway_status,patient.episode_type,patient.clinical_category].join(' ')).includes('established stoma');
+      const isOut=oldStomaPlacement || lc(patient.patient_type).includes('outpatient') || lc(patient.patient_status).includes('outpatient') || lc(patient.pathway_status).includes('planned') || lc(patient.pathway_status).includes('awaiting') || !text.includes('inpatient');
       if(window.__awaitingOperationOnly){
         const waitText=[patient.pathway_type,patient.pathway_status,patient.operation_due_date,patient.operation_date_due,patient.surgery_date,patient.patient_status,patient.episode_status].map(lc).join(' ');
         return isOut && (waitText.includes('elective')||waitText.includes('planned')||waitText.includes('awaiting')||!!patient.operation_due_date||!!patient.operation_date_due);
