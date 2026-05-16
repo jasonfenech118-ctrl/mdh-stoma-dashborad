@@ -3983,6 +3983,51 @@ button{font-family:'DM Sans',sans-serif;}
 })();
 </script>
 
+
+<style>
+/* v66-65 — testing checklist, print polish and mobile safety */
+.v6665-test-hero{background:linear-gradient(135deg,#0f2638,#0f766e);color:white;border-radius:22px;padding:24px;margin-bottom:16px;box-shadow:var(--shadow-lg);display:flex;justify-content:space-between;gap:20px;align-items:center;overflow:hidden;position:relative;}
+.v6665-test-hero:after{content:'';position:absolute;right:-80px;top:-90px;width:220px;height:220px;border-radius:999px;background:rgba(255,255,255,.09);}
+.v6665-test-hero h3{font-size:24px;font-weight:900;margin:4px 0 8px;letter-spacing:-.3px;}
+.v6665-test-hero p{font-size:13px;line-height:1.55;color:rgba(255,255,255,.82);max-width:780px;}
+.v6665-eyebrow{font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:1.1px;color:#99f6e4;}
+.v6665-test-kpis{display:grid;grid-template-columns:repeat(3,minmax(86px,1fr));gap:10px;position:relative;z-index:1;min-width:310px;}
+.v6665-test-kpis div{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);border-radius:15px;padding:13px;text-align:center;}
+.v6665-test-kpis strong{display:block;font-size:25px;line-height:1;font-weight:950;}
+.v6665-test-kpis span{display:block;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.4px;margin-top:6px;color:rgba(255,255,255,.78);}
+.v6665-status-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-bottom:14px;}
+.v6665-status-strip div{background:white;border:1px solid var(--border);border-radius:14px;padding:13px 15px;box-shadow:var(--shadow);}
+.v6665-status-strip strong{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:5px;}
+.v6665-status-strip span{display:block;font-size:13px;font-weight:850;color:var(--navy);}
+.v6665-self-check-results{background:#f8fafc;border:1px dashed var(--border);border-radius:14px;padding:14px;margin-bottom:14px;font-size:12px;color:var(--muted);line-height:1.5;}
+.v6665-self-check-results.ok{border-color:#99f6e4;background:#ecfdf9;color:#0f766e;}
+.v6665-self-check-results.warn{border-color:#fde68a;background:#fffbea;color:#92400e;}
+.v6665-check-card{background:white;border:1px solid var(--border);border-radius:18px;box-shadow:var(--shadow);padding:18px;margin-bottom:16px;}
+.v6665-check-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:12px;}
+.v6665-check-head h3{font-size:16px;font-weight:900;color:var(--navy);margin:0;}
+.v6665-check-head p{font-size:12px;color:var(--muted);margin-top:3px;}
+.v6665-checklist-table{display:grid;gap:8px;}
+.v6665-check-row{display:grid;grid-template-columns:minmax(220px,1fr) 130px 1.3fr 220px;gap:10px;align-items:center;border:1px solid var(--border);border-radius:12px;padding:10px;background:#fbfdfe;}
+.v6665-check-title{font-size:13px;font-weight:900;color:var(--navy);}
+.v6665-check-sub{font-size:11px;color:var(--muted);margin-top:2px;line-height:1.35;}
+.v6665-pill{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;padding:5px 9px;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.35px;white-space:nowrap;}
+.v6665-pill.untested{background:#eef2f7;color:#475569;}
+.v6665-pill.passed{background:#dcfce7;color:#166534;}
+.v6665-pill.fix{background:#fee2e2;color:#991b1b;}
+.v6665-note-input{width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:9px;font-size:12px;font-family:'DM Sans',sans-serif;outline:none;}
+.v6665-note-input:focus{border-color:var(--teal);}
+.v6665-row-actions{display:flex;gap:5px;justify-content:flex-end;flex-wrap:wrap;}
+.v6665-row-actions button{border:1px solid var(--border);background:white;border-radius:8px;padding:6px 8px;font-size:10px;font-weight:900;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--navy);}
+.v6665-row-actions button.pass{background:#dcfce7;color:#166534;border-color:#bbf7d0;}
+.v6665-row-actions button.fix{background:#fee2e2;color:#991b1b;border-color:#fecaca;}
+.v6665-guidance-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;}
+.v6665-guidance-grid div{background:#f8fafc;border:1px solid var(--border);border-radius:13px;padding:13px;}
+.v6665-guidance-grid strong{display:block;font-size:13px;color:var(--navy);margin-bottom:5px;}
+.v6665-guidance-grid span{display:block;font-size:12px;color:var(--muted);line-height:1.4;}
+@media(max-width:980px){.v6665-test-hero{flex-direction:column;align-items:stretch}.v6665-test-kpis{min-width:0}.v6665-check-row{grid-template-columns:1fr}.v6665-row-actions{justify-content:flex-start}}
+@media print{body.v6665-print-testing .topbar,body.v6665-print-testing .home-command-search,body.v6665-print-testing .phdr button,body.v6665-print-testing .v6665-row-actions,body.v6665-print-testing .btn-refresh,body.v6665-print-testing .btn-add{display:none!important}body.v6665-print-testing .section{display:none!important}body.v6665-print-testing #section-system-testing{display:block!important}body.v6665-print-testing .main-content{margin:0!important;padding:10mm!important}.v6665-test-hero{background:white!important;color:#111!important;border:1px solid #ccc!important;box-shadow:none!important}.v6665-test-hero p,.v6665-eyebrow{color:#333!important}.v6665-check-card,.v6665-status-strip div{box-shadow:none!important}.v6665-check-row{break-inside:avoid;page-break-inside:avoid}}
+</style>
+
 </head>
 <body>
 <!--
@@ -4158,6 +4203,11 @@ v66-42 emergency fix:
             <div class="home-btn-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06A1.65 1.65 0 0 0 15 19.4a1.65 1.65 0 0 0-1 .6 1.65 1.65 0 0 0-.4 1V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1.1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-.6-1 1.65 1.65 0 0 0-1-.4H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1.1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-.6 1.65 1.65 0 0 0 .4-1V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1.1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9c.2.3.4.7.6 1h1a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg></div>
             <div class="home-btn-title">Admin &amp; Settings</div>
             <div class="home-btn-sub">Maintain dropdown lists and system wording</div>
+          </div>
+          <div class="home-btn home-btn-blue" onclick="switchSection('system-testing',null)">
+            <div class="home-btn-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M9 11l2 2 4-4"/><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg></div>
+            <div class="home-btn-title">Testing Checklist</div>
+            <div class="home-btn-sub">Live-readiness checks before replacing the current version</div>
           </div>
         </div>
       </div>
@@ -4897,6 +4947,69 @@ v66-42 emergency fix:
           <div class="v6664-list-head"><div><h3>Nurse-friendly errors</h3><p>Technical errors are logged to the console; nurses should see practical messages.</p></div></div>
           <div id="v6664-error-preview" class="v6664-error-preview">If the system cannot save, it should ask nurses to check required fields and try again rather than showing raw database wording.</div>
           <button class="v6664-test-btn" onclick="v6664ShowFriendlyMessage('Patient could not be saved. Please check the required fields and try again.','warning')">Preview message</button>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ══════════════════════════════════ -->
+    <!-- SYSTEM TESTING CHECKLIST — v66-65 live readiness -->
+    <!-- ══════════════════════════════════ -->
+    <div class="section" id="section-system-testing">
+      <div class="phdr patient-page-title">
+        <div>
+          <h2>Testing Checklist</h2>
+          <p>Live-readiness checks for the staged redesign before replacing the working dashboard.</p>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+          <button class="btn-refresh" onclick="v6665RunSelfChecks()">Run frontend checks</button>
+          <button class="btn-refresh" onclick="v6665ExportTestingReport()">Export report</button>
+          <button class="btn-refresh" onclick="v6665PrintTestingReport()">Print</button>
+          <button class="btn-refresh" onclick="v6665ResetChecklist()">Reset</button>
+        </div>
+      </div>
+
+      <div class="v6665-test-hero">
+        <div>
+          <div class="v6665-eyebrow">Controlled rollout</div>
+          <h3>v66-65 live-readiness board</h3>
+          <p>Use this checklist after running the database SQL and after replacing the HTML. It keeps testing organised without changing clinical records.</p>
+        </div>
+        <div class="v6665-test-kpis">
+          <div><strong id="v6665-kpi-passed">0</strong><span>Passed</span></div>
+          <div><strong id="v6665-kpi-fix">0</strong><span>Needs fix</span></div>
+          <div><strong id="v6665-kpi-total">0</strong><span>Total checks</span></div>
+        </div>
+      </div>
+
+      <div class="v6665-status-strip">
+        <div><strong>Current build</strong><span>v66-65 Stage 7</span></div>
+        <div><strong>Required SQL</strong><span>v66-62c DB support tables</span></div>
+        <div><strong>Testing mode</strong><span>Manual clinical checks + frontend checks</span></div>
+      </div>
+
+      <div id="v6665-self-check-results" class="v6665-self-check-results">
+        Click <strong>Run frontend checks</strong> to confirm key browser functions and sections are present.
+      </div>
+
+      <div class="v6665-check-card">
+        <div class="v6665-check-head">
+          <div>
+            <h3>Live testing checklist</h3>
+            <p>Mark each item as passed, needs fix, or untested. This is saved in this browser only.</p>
+          </div>
+          <button class="btn-add" onclick="v6665MarkAllPassed()">Mark all passed</button>
+        </div>
+        <div id="v6665-checklist-table" class="v6665-checklist-table"></div>
+      </div>
+
+      <div class="v6665-check-card print-guidance">
+        <div class="v6665-check-head"><div><h3>Safe go-live guidance</h3><p>Use this before replacing the live GitHub Pages file.</p></div></div>
+        <div class="v6665-guidance-grid">
+          <div><strong>1. Database</strong><span>Run v66-62c SQL and confirm no 404 Supabase table errors remain.</span></div>
+          <div><strong>2. Frontend</strong><span>Replace the HTML, then use Ctrl + F5 to avoid browser cache problems.</span></div>
+          <div><strong>3. Clinical flow</strong><span>Test Add Patient, Patient Record, Episodes, Stomas, Reviews, Follow-ups, and closure.</span></div>
+          <div><strong>4. Rollback</strong><span>Keep the previous working HTML file saved so it can be restored quickly if needed.</span></div>
         </div>
       </div>
     </div>
@@ -20122,6 +20235,90 @@ Protected: Add Patient flow, episode movement, patient record redesign, Follow-U
     window.switchSection=function(name,navEl,options){const r=prevSwitch.apply(this,arguments); if(name==='admin-settings')setTimeout(v6664RenderAdminSettings,0); return r;};
   }
   applyReferenceLists();
+})();
+</script>
+
+
+<script>
+/* v66-65 — live-readiness checklist and lightweight frontend self-checks */
+(function(){
+  const d=document;
+  const KEY='mdh_stoma_v6665_testing_checklist';
+  const checks=[
+    {id:'db',title:'Database support SQL',sub:'Run v66-62c SQL and confirm Supabase 404 table/resource errors have disappeared.'},
+    {id:'login',title:'Login and profile',sub:'Sign in, see the correct user name, open Profile, and sign out safely.'},
+    {id:'home',title:'Home command centre',sub:'Home cards open the correct sections and no top navigation row is required.'},
+    {id:'add_patient',title:'Add Patient flows',sub:'Elective, Unplanned, Bagging Advice, and Outside Hospital patient creation flows show only relevant fields.'},
+    {id:'duplicate',title:'Duplicate patient warning',sub:'Adding a patient with a matching ID/name warns before creating another record.'},
+    {id:'patient_record',title:'Patient record rule set',sub:'Patient record shows Summary, Episodes, Stomas & Appliances, Reviews, Follow-ups, Outcomes, Letters, Notes/Audit.'},
+    {id:'episode',title:'Episode-specific pathway',sub:'First episode shows full agile pathway; later episodes show focused current-problem workflow.'},
+    {id:'movement',title:'Episode closure and movement',sub:'Closing an episode requires outcome/destination/follow-up plan and moves patient to the correct list.'},
+    {id:'stoma_appliance',title:'Stoma and appliance history',sub:'Stoma ID and appliance changes link to the patient/stoma history without overwriting previous records.'},
+    {id:'reviews',title:'Reviews and amendments',sub:'Reviews can be locked/finalised and corrected through amendment workflow rather than casual editing.'},
+    {id:'alerts',title:'Critical alerts and handover',sub:'Critical patient alert appears clearly and handover/print summary is usable.'},
+    {id:'followups',title:'Follow-Up Centre',sub:'Appointments, outcomes, DNTU, cancelled history, rebooking, and audit still work.'},
+    {id:'rosters',title:'Roster and workforce tools',sub:'Rosters, Change of Duty, Staff Audit, Clinic Audit and daily attendance still open correctly.'},
+    {id:'admin',title:'Admin & Settings lists',sub:'Standard dropdown lists can be edited, exported, imported and restored.'},
+    {id:'mobile',title:'Mobile/tablet readability',sub:'Cards, forms, tables and patient pages are readable on tablet/mobile and not clipped.'},
+    {id:'print',title:'Print/export summaries',sub:'Patient/episode/handover/testing print views are tidy and clinically practical.'},
+    {id:'audit',title:'Audit trail',sub:'Important actions such as alerts, amendments, closures and safe record actions are logged.'},
+    {id:'rollback',title:'Rollback file saved',sub:'Previous known-good HTML file is kept before replacing the live GitHub Pages file.'}
+  ];
+  function load(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){return {};}}
+  function save(v){localStorage.setItem(KEY,JSON.stringify(v));}
+  function safe(v){try{return htmlSafe(v);}catch(e){return String(v||'').replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];});}}
+  function statusClass(st){return st==='passed'?'passed':(st==='fix'?'fix':'untested');}
+  function statusLabel(st){return st==='passed'?'Passed':(st==='fix'?'Needs fix':'Untested');}
+  function counts(state){let passed=0,fix=0;checks.forEach(c=>{const st=state[c.id]?.status||'untested';if(st==='passed')passed++;if(st==='fix')fix++;});return {passed,fix,total:checks.length};}
+  window.v6665RenderChecklist=function(){
+    const box=d.getElementById('v6665-checklist-table'); if(!box)return;
+    const state=load();
+    const c=counts(state);
+    const p=d.getElementById('v6665-kpi-passed'), f=d.getElementById('v6665-kpi-fix'), t=d.getElementById('v6665-kpi-total');
+    if(p)p.textContent=c.passed; if(f)f.textContent=c.fix; if(t)t.textContent=c.total;
+    box.innerHTML=checks.map(item=>{
+      const row=state[item.id]||{}; const st=row.status||'untested'; const note=row.note||'';
+      return '<div class="v6665-check-row">'+
+        '<div><div class="v6665-check-title">'+safe(item.title)+'</div><div class="v6665-check-sub">'+safe(item.sub)+'</div></div>'+ 
+        '<div><span class="v6665-pill '+statusClass(st)+'">'+statusLabel(st)+'</span></div>'+ 
+        '<input class="v6665-note-input" value="'+safe(note)+'" placeholder="Testing note / issue found..." onchange="v6665SetNote(\''+item.id+'\',this.value)">'+
+        '<div class="v6665-row-actions"><button class="pass" onclick="v6665SetStatus(\''+item.id+'\',\'passed\')">Pass</button><button class="fix" onclick="v6665SetStatus(\''+item.id+'\',\'fix\')">Needs fix</button><button onclick="v6665SetStatus(\''+item.id+'\',\'untested\')">Untested</button></div>'+ 
+      '</div>';
+    }).join('');
+  };
+  window.v6665SetStatus=function(id,status){const state=load();state[id]=Object.assign({},state[id]||{},{status:status,updated_at:new Date().toISOString()});save(state);v6665RenderChecklist();};
+  window.v6665SetNote=function(id,note){const state=load();state[id]=Object.assign({},state[id]||{},{note:String(note||''),updated_at:new Date().toISOString()});save(state);};
+  window.v6665MarkAllPassed=function(){if(!confirm('Mark all testing checklist items as passed?'))return;const state=load();checks.forEach(c=>{state[c.id]=Object.assign({},state[c.id]||{},{status:'passed',updated_at:new Date().toISOString()});});save(state);v6665RenderChecklist();};
+  window.v6665ResetChecklist=function(){if(!confirm('Reset the testing checklist on this browser?'))return;localStorage.removeItem(KEY);v6665RenderChecklist();};
+  window.v6665RunSelfChecks=function(){
+    const probes=[
+      ['Home section',!!d.getElementById('section-home')],
+      ['Add Patient section',!!d.getElementById('section-patient-pathways')],
+      ['Patient Centre section',!!d.getElementById('section-patients')],
+      ['Patient record/detail section',!!d.getElementById('section-patient-detail')],
+      ['Admin & Settings section',!!d.getElementById('section-admin-settings')],
+      ['Testing checklist section',!!d.getElementById('section-system-testing')],
+      ['switchSection function',typeof window.switchSection==='function'],
+      ['Supabase client object',typeof window.SB!=='undefined'],
+      ['Safe HTML helper',typeof window.htmlSafe==='function' || typeof htmlSafe==='function'],
+      ['Friendly message helper',typeof window.v6664ShowFriendlyMessage==='function']
+    ];
+    const failed=probes.filter(x=>!x[1]);
+    const el=d.getElementById('v6665-self-check-results');
+    if(el){el.className='v6665-self-check-results '+(failed.length?'warn':'ok');el.innerHTML=(failed.length?'Some frontend checks need attention: ':'Frontend checks passed: ')+probes.map(x=>(x[1]?'✓ ':'⚠ ')+safe(x[0])).join(' · ');}
+    if(typeof v6664ShowFriendlyMessage==='function')v6664ShowFriendlyMessage(failed.length?'Frontend checks completed with warnings.':'Frontend checks passed.','');
+  };
+  window.v6665ExportTestingReport=function(){
+    const state=load(); const c=counts(state);
+    const report={build:'v66-65 Stage 7',created_at:new Date().toISOString(),summary:c,checks:checks.map(item=>Object.assign({},item,state[item.id]||{status:'untested'}))};
+    const blob=new Blob([JSON.stringify(report,null,2)],{type:'application/json'}); const url=URL.createObjectURL(blob); const a=d.createElement('a'); a.href=url; a.download='MDH_Stoma_Care_v66-65_testing_report_'+new Date().toISOString().slice(0,10)+'.json'; d.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),500);
+  };
+  window.v6665PrintTestingReport=function(){d.body.classList.add('v6665-print-testing');setTimeout(()=>{window.print();setTimeout(()=>d.body.classList.remove('v6665-print-testing'),400);},80);};
+  const prevSwitch=window.switchSection;
+  if(typeof prevSwitch==='function'){
+    window.switchSection=function(name,navEl,options){const r=prevSwitch.apply(this,arguments); if(name==='system-testing')setTimeout(v6665RenderChecklist,0); return r;};
+  }
+  if(d.readyState==='loading')d.addEventListener('DOMContentLoaded',v6665RenderChecklist); else setTimeout(v6665RenderChecklist,0);
 })();
 </script>
 
