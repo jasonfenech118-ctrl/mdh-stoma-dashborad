@@ -19720,6 +19720,185 @@ input,select,textarea{border-radius:12px!important;}
 })();
 </script>
 
+
+
+<!--
+VERSION: v66-63 Stage 5 — Safety, Amendments & Handover
+Built from: v66-62 Stage 4 v2.
+Changes:
+- Added patient-level safety tools: critical alert, safe amendment, safe record action, handover print.
+- Added encounter/review locking and amendment actions in the redesigned patient record encounters tab.
+- Added no-hard-delete workflow: mark entered in error / archive with mandatory reason and audit log.
+- Added clean clinical handover print view using Patient/Stoma/Episode/Encounter/Appliance/Follow-up rule set.
+Protected: Add Patient flow, episode movement, patient record redesign, Follow-Up Centre, appointments, rosters, login and Supabase config.
+-->
+
+<style id="v66-63-stage5-safety-css">
+/* ─────────────────────────────────────────────────────
+   v66-63 Stage 5 — safety, amendments and handover
+   ───────────────────────────────────────────────────── */
+.v6663-safety-toolbar{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px;padding:12px;background:linear-gradient(135deg,#ffffff,#f8fbfc 60%,#eefbf8);border:1px solid rgba(15,38,56,.10);border-radius:18px;box-shadow:0 10px 28px rgba(15,38,56,.06);align-items:center}
+.v6663-safety-toolbar-label{font-size:10px;font-weight:950;letter-spacing:.10em;text-transform:uppercase;color:#0f766e;margin-right:4px;display:flex;align-items:center;gap:6px}
+.v6663-btn{border:1px solid #cbd5e1;background:#fff;color:#0f2638;border-radius:999px;padding:9px 13px;font-size:12px;font-weight:900;cursor:pointer;display:inline-flex;align-items:center;gap:7px;box-shadow:0 1px 4px rgba(15,38,56,.06);font-family:'DM Sans',Inter,sans-serif;line-height:1.1;transition:all .16s}
+.v6663-btn:hover{transform:translateY(-1px);box-shadow:0 8px 18px rgba(15,38,56,.10)}
+.v6663-btn.teal{background:#0f766e;color:#fff;border-color:#0f766e}.v6663-btn.blue{background:#eff6ff;color:#1d4ed8;border-color:#bfdbfe}.v6663-btn.amber{background:#fffbeb;color:#92400e;border-color:#fde68a}.v6663-btn.red{background:#fff1f2;color:#9f1239;border-color:#fecdd3}.v6663-btn.dark{background:#0f2638;color:#fff;border-color:#0f2638}
+.v6663-alert-strip{margin:0 0 14px;padding:13px 15px;border-radius:18px;border:1px solid #fecaca;border-left:6px solid #c2413b;background:#fff7f7;color:#7f1d1d;box-shadow:0 8px 20px rgba(127,29,29,.07)}
+.v6663-alert-strip strong{font-size:13px;display:block;margin-bottom:4px}.v6663-alert-strip span{font-size:12px;line-height:1.35;display:block}
+.v6663-modal-backdrop{position:fixed;inset:0;z-index:10040;background:rgba(8,37,54,.62);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:14px}
+.v6663-modal{width:720px;max-width:98vw;max-height:92vh;overflow:auto;background:#fff;border-radius:24px;border:1px solid rgba(15,38,56,.12);box-shadow:0 30px 90px rgba(8,37,54,.32)}
+.v6663-modal-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;padding:20px 22px;border-bottom:1px solid #e5eef1;background:linear-gradient(135deg,#f8fbfc,#ecfdf9)}
+.v6663-modal-head .eyebrow{font-size:10px;font-weight:950;letter-spacing:.14em;text-transform:uppercase;color:#0f766e;margin-bottom:5px}.v6663-modal-head h3{margin:0;color:#0f2638;font-size:20px;font-weight:950;letter-spacing:-.02em}.v6663-modal-head p{margin:5px 0 0;color:#64748b;font-size:12px;line-height:1.35}
+.v6663-modal-close{border:1px solid #d8e3e7;background:#fff;border-radius:999px;padding:7px 13px;font-size:12px;font-weight:900;color:#0f2638;cursor:pointer;font-family:'DM Sans',Inter,sans-serif}
+.v6663-modal-body{padding:18px 22px 22px}.v6663-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.v6663-fg{display:flex;flex-direction:column;gap:5px}.v6663-fg.full{grid-column:1/-1}.v6663-fg label{font-size:10px;font-weight:950;letter-spacing:.06em;text-transform:uppercase;color:#475569}.v6663-fg input,.v6663-fg select,.v6663-fg textarea{width:100%;border:1.5px solid #d8e3e7;border-radius:12px;padding:10px 11px;font-size:13px;font-family:'DM Sans',Inter,sans-serif;color:#0f2638;background:#fff;outline:none}.v6663-fg input:focus,.v6663-fg select:focus,.v6663-fg textarea:focus{border-color:#0f766e;box-shadow:0 0 0 3px rgba(15,118,110,.10)}.v6663-fg textarea{min-height:88px;resize:vertical}.v6663-required{color:#c2413b;font-weight:950}.v6663-help{font-size:11px;color:#64748b;line-height:1.35;margin-top:4px}.v6663-modal-actions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:16px;padding-top:14px;border-top:1px solid #e5eef1}
+.v6663-enc-action-cell{display:flex;gap:5px;flex-wrap:wrap}.v6663-lock-pill{display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:999px;background:#ecfdf9;color:#0f766e;border:1px solid #ccfbf1;font-size:10px;font-weight:950}.v6663-lock-pill.locked{background:#f1f5f9;color:#475569;border-color:#cbd5e1}.v6663-small-btn{border:1px solid #d8e3e7;background:#fff;border-radius:8px;padding:5px 8px;font-size:10px;font-weight:900;cursor:pointer;color:#0f2638;font-family:'DM Sans',Inter,sans-serif}.v6663-small-btn:hover{border-color:#0f766e;color:#0f766e;background:#f0fdfa}.v6663-small-btn.red{background:#fff1f2;color:#9f1239;border-color:#fecdd3}.v6663-small-btn.blue{background:#eff6ff;color:#1d4ed8;border-color:#bfdbfe}
+@media(max-width:700px){.v6663-form-grid{grid-template-columns:1fr}.v6663-safety-toolbar{align-items:flex-start}.v6663-btn{width:100%;justify-content:center}}
+</style>
+
+<script id="v66-63-stage5-safety-js">
+(function(){
+  const VERSION='v66-63';
+  const d=document;
+  const S=()=>window.SB||window.supabaseClient||null;
+  const esc=v=>String(v??'').replace(/[&<>'"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[m]));
+  const js=v=>String(v??'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\n/g,'\\n').replace(/\r/g,'');
+  const today=()=>new Date().toISOString().slice(0,10);
+  const nowIso=()=>new Date().toISOString();
+  const nurse=()=>{try{return (window.getLoggedInSubmitterName&&getLoggedInSubmitterName())||window.currentLoginProfile?.full_name||window.currentLoginProfile?.display_name||window.currentAuthUser?.email||'Logged-in user';}catch(e){return 'Logged-in user';}};
+  const fmtDate=v=>{if(!v)return '—'; try{const x=new Date(v); if(!isNaN(x))return x.toLocaleDateString('en-MT');}catch(e){} return String(v);};
+  const first=(obj,keys)=>{for(const k of keys){if(obj&&obj[k])return obj[k];}return '';};
+  function patientName(p){return [first(p,['first_name','name']),first(p,['surname','last_name'])].filter(Boolean).join(' ').trim() || p?.full_name || p?.name || 'Unnamed patient';}
+  function patientIdText(p){return first(p,['id_card','id_card_no','id_card_number','hospital_number','patient_number']) || '—';}
+  function closeModal(){d.getElementById('v6663-modal')?.remove();}
+  window.v6663CloseModal=closeModal;
+  function ctx(){return window._v6661PatientRecord||null;}
+  function patientId(){return ctx()?.patientId||ctx()?.patient?.id||'';}
+  async function audit(action, details, reason, tableName, recordId){
+    const sb=S(); if(!sb)return;
+    const c=ctx()||{};
+    const payload={actor_email:window.currentAuthUser?.email||null,actor_name:nurse(),action,table_name:tableName||null,record_id:recordId?String(recordId):null,patient_id:c.patientId||c.patient?.id||null,episode_id:c.related?.episodes?.find?.(e=>!/closed|complete|cancel/i.test(String(e.status||e.episode_status||'')))?.id||null,details:details||{},reason:reason||null,created_at:nowIso()};
+    try{await sb.from('app_audit_log').insert(payload);}catch(e){try{await sb.from('audit_log').insert({action,record_id:payload.record_id,details:JSON.stringify(details||{}),created_at:nowIso()});}catch(_){}}
+  }
+  async function updateSafe(table,id,payload){
+    const sb=S(); if(!sb||!table||!id)return {ok:false,error:'No database connection'};
+    try{const r=await sb.from(table).update(payload).eq('id',id); if(!r.error)return {ok:true}; return {ok:false,error:r.error.message||String(r.error)};}catch(e){return {ok:false,error:e.message||String(e)};}
+  }
+  async function updatePatientVariants(id,variants){
+    const tables=['patients_main','patients'];
+    let last='No update attempted';
+    for(const payload of variants){
+      for(const table of tables){const r=await updateSafe(table,id,payload); if(r.ok)return {ok:true,table,payload}; last=r.error;}
+    }
+    return {ok:false,error:last};
+  }
+  function modalShell(title,sub,body){
+    closeModal();
+    const el=d.createElement('div'); el.id='v6663-modal'; el.className='v6663-modal-backdrop';
+    el.innerHTML=`<div class="v6663-modal" role="dialog" aria-modal="true"><div class="v6663-modal-head"><div><div class="eyebrow">${esc(VERSION)} safety workflow</div><h3>${esc(title)}</h3><p>${esc(sub||'')}</p></div><button class="v6663-modal-close" onclick="v6663CloseModal()">Close</button></div><div class="v6663-modal-body">${body}</div></div>`;
+    d.body.appendChild(el);
+  }
+  function criticalAlertText(p){return first(p,['critical_alerts','critical_alert','important_notes','critical_notes','alerts'])||'';}
+  function injectAlertStrip(){
+    const c=ctx(); if(!c||d.getElementById('v6663-alert-strip'))return;
+    const txt=criticalAlertText(c.patient||{}); if(!txt)return;
+    const anchor=d.getElementById('v6662-patient-safety-strip')||d.querySelector('.v6661-record-actions')||d.getElementById('patient-record-page');
+    if(anchor)anchor.insertAdjacentHTML(anchor.id==='patient-record-page'?'afterbegin':'beforebegin',`<div class="v6663-alert-strip" id="v6663-alert-strip"><strong>Critical patient alert</strong><span>${esc(txt)}</span></div>`);
+  }
+  function injectToolbar(){
+    const c=ctx(); if(!c||d.getElementById('v6663-safety-toolbar'))return;
+    const actions=d.querySelector('.v6661-record-actions'); if(!actions)return;
+    actions.insertAdjacentHTML('afterend',`<div class="v6663-safety-toolbar" id="v6663-safety-toolbar"><div class="v6663-safety-toolbar-label">Clinical safety</div><button class="v6663-btn red" onclick="v6663OpenAlertModal()">⚠ Critical Alert</button><button class="v6663-btn amber" onclick="v6663OpenAmendmentModal()">✎ Create Amendment</button><button class="v6663-btn blue" onclick="v6663PrintPatientHandover()">🖨 Handover / Print</button><button class="v6663-btn dark" onclick="v6663OpenRecordSafetyModal()">🔒 Record Safety</button></div>`);
+  }
+  function refreshPatientRecordSoon(){
+    const c=ctx(); if(c?.patientId&&typeof window.openPatientRecordPage==='function')setTimeout(()=>window.openPatientRecordPage(c.patientId),350);
+  }
+  window.v6663OpenAlertModal=function(){
+    const c=ctx(); if(!c)return alert('Open a patient record first.');
+    const p=c.patient||{};
+    modalShell('Critical patient alert','Visible safety information at the top of the lifelong patient record.',`<div class="v6663-form-grid"><div class="v6663-fg full"><label>Alert / important safety note <span class="v6663-required">*</span></label><textarea id="v6663-alert-text">${esc(criticalAlertText(p))}</textarea><div class="v6663-help">Examples: high-output stoma, severe excoriation, frequent leakage, patient not coping, carer required, supplies issue, urgent follow-up needed.</div></div><div class="v6663-fg full"><label>Reason for update <span class="v6663-required">*</span></label><input id="v6663-alert-reason" placeholder="Why is this alert being added or changed?"/></div></div><div class="v6663-modal-actions"><button class="v6663-btn" onclick="v6663CloseModal()">Cancel</button><button class="v6663-btn red" onclick="v6663SaveAlert()">Save critical alert</button></div>`);
+  };
+  window.v6663SaveAlert=async function(){
+    const id=patientId(); const text=d.getElementById('v6663-alert-text')?.value.trim()||''; const reason=d.getElementById('v6663-alert-reason')?.value.trim()||'';
+    if(!text||!reason)return alert('Please enter the alert and the reason for the update.');
+    const variants=[{critical_alerts:text,important_notes:text,updated_at:nowIso(),updated_by:nurse()},{critical_alert:text,important_notes:text,updated_at:nowIso()},{notes:text,updated_at:nowIso()}];
+    const r=await updatePatientVariants(id,variants);
+    await audit('critical_alert_updated',{alert:text},reason,'patients',id);
+    if(!r.ok)return alert('Alert was logged in audit, but the patient table could not be updated: '+r.error);
+    closeModal(); refreshPatientRecordSoon();
+  };
+  window.v6663OpenAmendmentModal=function(recordType,recordId,tableName){
+    const c=ctx(); if(!c)return alert('Open a patient record first.');
+    const rt=recordType||'patient_record';
+    modalShell('Create safe amendment','This does not overwrite the original clinical entry. It records an amendment reason and audit entry.',`<div class="v6663-form-grid"><div class="v6663-fg"><label>Record type</label><select id="v6663-amend-type"><option value="patient_record">Patient record</option><option value="episode">Episode</option><option value="encounter_review">Encounter / review</option><option value="stoma">Stoma</option><option value="appliance">Appliance</option><option value="discharge_letter">Discharge letter</option><option value="follow_up">Follow-up</option></select></div><div class="v6663-fg"><label>Record ID</label><input id="v6663-amend-id" value="${esc(recordId||patientId())}"/></div><div class="v6663-fg full"><label>Amendment reason <span class="v6663-required">*</span></label><input id="v6663-amend-reason" placeholder="Reason correction is required"/></div><div class="v6663-fg full"><label>Amendment note <span class="v6663-required">*</span></label><textarea id="v6663-amend-note" placeholder="Describe the correction or clarification. The original record remains preserved."></textarea></div></div><div class="v6663-modal-actions"><button class="v6663-btn" onclick="v6663CloseModal()">Cancel</button><button class="v6663-btn amber" onclick="v6663SaveAmendment('${js(tableName||'')}')">Save amendment audit</button></div>`);
+    const sel=d.getElementById('v6663-amend-type'); if(sel)sel.value=rt;
+  };
+  window.v6663SaveAmendment=async function(tableName){
+    const type=d.getElementById('v6663-amend-type')?.value||'patient_record'; const id=d.getElementById('v6663-amend-id')?.value.trim()||patientId(); const reason=d.getElementById('v6663-amend-reason')?.value.trim()||''; const note=d.getElementById('v6663-amend-note')?.value.trim()||'';
+    if(!reason||!note)return alert('Please enter the amendment reason and note.');
+    await audit('safe_amendment_created',{record_type:type,amendment_note:note,original_preserved:true},reason,tableName||type,id);
+    closeModal(); alert('Amendment saved to the audit trail. The original record has not been overwritten.');
+  };
+  window.v6663OpenRecordSafetyModal=function(){
+    const c=ctx(); if(!c)return alert('Open a patient record first.');
+    modalShell('Record safety action','Clinical records should not be hard-deleted. Use archive or entered-in-error with a mandatory reason.',`<div class="v6663-form-grid"><div class="v6663-fg"><label>Safety action <span class="v6663-required">*</span></label><select id="v6663-safe-action"><option value="archive">Archive / make inactive</option><option value="entered_in_error">Mark entered in error</option></select></div><div class="v6663-fg"><label>Effective date</label><input type="date" id="v6663-safe-date" value="${today()}"/></div><div class="v6663-fg full"><label>Mandatory reason <span class="v6663-required">*</span></label><textarea id="v6663-safe-reason" placeholder="Explain why this safe record action is being applied."></textarea></div></div><div class="v6663-modal-actions"><button class="v6663-btn" onclick="v6663CloseModal()">Cancel</button><button class="v6663-btn dark" onclick="v6663SaveRecordSafety()">Apply safe action</button></div>`);
+  };
+  window.v6663SaveRecordSafety=async function(){
+    const id=patientId(); const action=d.getElementById('v6663-safe-action')?.value||'archive'; const reason=d.getElementById('v6663-safe-reason')?.value.trim()||''; const date=d.getElementById('v6663-safe-date')?.value||today();
+    if(!reason)return alert('Please enter the reason.');
+    const status=action==='entered_in_error'?'entered_in_error':'archived';
+    const variants=[{current_status:status,patient_status:status,is_active:false,archived_at:date,archive_reason:reason,updated_at:nowIso(),updated_by:nurse()},{status:status,is_active:false,notes:reason,updated_at:nowIso()},{patient_status:status,notes:reason,updated_at:nowIso()}];
+    const r=await updatePatientVariants(id,variants);
+    await audit('safe_record_action',{action,effective_date:date,no_hard_delete:true},reason,'patients',id);
+    if(!r.ok)return alert('Safety action was logged in audit, but the patient table could not be updated: '+r.error);
+    closeModal(); refreshPatientRecordSoon();
+  };
+  function latest(rows){return (rows||[]).slice().sort((a,b)=>String(first(b,['review_date','encounter_date','created_at','event_date','appt_date'])).localeCompare(String(first(a,['review_date','encounter_date','created_at','event_date','appt_date']))))[0]||null;}
+  function activeEp(rows){return (rows||[]).find(e=>!/closed|complete|cancel|entered_in_error|archive/i.test(String([e.status,e.episode_status,e.pathway_status,e.date_closed,e.closed_date].join(' '))))||null;}
+  window.v6663PrintPatientHandover=function(){
+    const c=ctx(); if(!c)return alert('Open a patient record first.');
+    const p=c.patient||{}, rel=c.related||{}, ep=activeEp(rel.episodes), st=(rel.stomas||[])[0]||{}, rev=latest(rel.encounters), fu=latest(rel.followups);
+    const alerts=criticalAlertText(p)||'None recorded';
+    const rows=[
+      ['Patient',patientName(p)],['ID Card / Hospital No.',patientIdText(p)],['DOB / Age',[fmtDate(first(p,['date_of_birth','dob'])),first(p,['age'])].filter(Boolean).join(' / ')||'—'],['Telephone',first(p,['contact_number','telephone','telephone_no','phone_number'])||'—'],['Locality',first(p,['locality','address'])||'—'],['Consultant',first(p,['consultant'])||first(ep||{},['consultant'])||'—'],['Current status',first(p,['current_status','patient_status','status'])||'—'],['Active episode',ep?first(ep,['episode_type','pathway_type','episode_reason','status']):'No active episode'],['Ward / location',first(ep||{},['ward','current_location'])||first(p,['ward','current_location'])||'—'],['Date of surgery',fmtDate(first(ep||{},['surgery_date','date_of_surgery','operation_date'])||first(st,['surgery_date','date_formed']))],['Stoma',first(st,['stoma_type','stoma_type_summary'])||first(p,['stoma_type','stoma_type_summary'])||'—'],['Appliance',first(st,['appliance_used','bag_brand','bag_in_use'])||first(p,['appliance_used','bag_brand'])||'—'],['Accessories',first(st,['accessories_used','flange_size','flange_in_use'])||first(p,['accessories_used','flange_size'])||'—'],['Latest review',rev?[fmtDate(first(rev,['review_date','encounter_date','created_at'])),first(rev,['plan','notes','clinical_notes','review_notes'])].filter(Boolean).join(' — '):'No review recorded'],['Follow-up plan',fu?[fmtDate(first(fu,['followup_date','appt_date','next_followup_date'])),first(fu,['status','outcome','notes'])].filter(Boolean).join(' — '):(first(ep||{},['followup_plan'])||'—')],['Critical alerts',alerts]
+    ];
+    const win=window.open('','_blank','width=980,height=760'); if(!win)return alert('Popup blocked. Please allow popups to print the handover summary.');
+    const html='<!doctype html><html><head><title>MDH Stoma Care Handover</title><style>body{font-family:Arial,sans-serif;margin:28px;color:#0f2638}h1{font-size:22px;margin:0 0 4px}h2{font-size:14px;margin:0 0 18px;color:#0f766e}table{border-collapse:collapse;width:100%;margin-top:14px}td{border:1px solid #cbd5e1;padding:9px 10px;font-size:12px;vertical-align:top}td:first-child{width:230px;background:#f1f5f9;font-weight:700}.alert{border-left:5px solid #c2413b;background:#fff7f7;padding:10px 12px;margin:14px 0;color:#7f1d1d}.meta{font-size:11px;color:#64748b;margin-top:18px}@media print{button{display:none}}</style></head><body><button onclick="window.print()" style="float:right;padding:8px 14px;border:0;border-radius:8px;background:#0f766e;color:white;font-weight:700">Print</button><h1>MDH Stoma Care — Patient Handover Summary</h1><h2>'+esc(patientName(p))+'</h2><div class="alert"><strong>Critical alerts:</strong><br>'+esc(alerts)+'</div><table>'+rows.map(r=>'<tr><td>'+esc(r[0])+'</td><td>'+esc(r[1])+'</td></tr>').join('')+'</table><div class="meta">Generated by '+esc(nurse())+' on '+esc(new Date().toLocaleString('en-MT'))+'. This is a clinical handover summary; original records remain in the dashboard.</div></body></html>';
+    win.document.open(); win.document.write(html); win.document.close(); setTimeout(()=>{try{win.focus();}catch(e){}},250);
+    audit('handover_summary_printed',{patient:patientName(p),version:VERSION},null,'patients',c.patientId||p.id);
+  };
+  window.v6663LockEncounter=async function(rowId,tableName){
+    if(!rowId)return alert('This review does not have a record ID available.');
+    const reason=prompt('Reason for locking/finalising this review:', 'Review completed and finalised'); if(!reason)return;
+    let r=await updateSafe(tableName||'encounters_main',rowId,{is_locked:true,locked_at:nowIso(),updated_at:nowIso(),updated_by:nurse()});
+    if(!r.ok && tableName!=='encounters_main')r=await updateSafe('encounters_main',rowId,{is_locked:true,locked_at:nowIso(),updated_at:nowIso(),updated_by:nurse()});
+    await audit('encounter_locked',{table:tableName||'encounters_main'},reason,tableName||'encounters_main',rowId);
+    if(!r.ok)return alert('Lock was logged in audit, but the review table could not be updated: '+r.error);
+    alert('Review locked/finalised. Future correction should use amendment.'); refreshPatientRecordSoon();
+  };
+  function enhanceEncounterPanel(){
+    const c=ctx(); const panel=d.getElementById('v6661-patient-record-panel'); if(!c||!panel||panel.dataset.v6663Enhanced==='true')return;
+    const title=panel.querySelector('h3')?.textContent||''; if(!/Encounter|Review/i.test(title))return;
+    const table=panel.querySelector('table.v6661-table'); if(!table)return;
+    const head=table.querySelector('thead tr'); const bodyRows=[...table.querySelectorAll('tbody tr')]; if(!head||!bodyRows.length)return;
+    const th=d.createElement('th'); th.textContent='Safety'; head.appendChild(th);
+    const rows=c.related?.encounters||[];
+    bodyRows.forEach((tr,i)=>{const r=rows[i]||{}; const id=r.id||r.encounter_id||''; const tab=r._table||'encounters_main'; const locked=!!(r.is_locked||r.locked_at||/locked|final/i.test(String(r.status||r.review_status||''))); const td=d.createElement('td'); td.innerHTML=`<div class="v6663-enc-action-cell"><span class="v6663-lock-pill ${locked?'locked':''}">${locked?'Locked':'Open'}</span>${locked?'':`<button class="v6663-small-btn blue" onclick="v6663LockEncounter('${js(id)}','${js(tab)}')">Lock</button>`}<button class="v6663-small-btn" onclick="v6663OpenAmendmentModal('encounter_review','${js(id)}','${js(tab)}')">Amend</button></div>`; tr.appendChild(td);});
+    panel.dataset.v6663Enhanced='true';
+  }
+  function injectAll(){injectAlertStrip(); injectToolbar(); setTimeout(enhanceEncounterPanel,80);}
+  const prevOpen=window.openPatientRecordPage;
+  if(typeof prevOpen==='function'){
+    window.openPatientRecordPage=async function(){const res=await prevOpen.apply(this,arguments); setTimeout(injectAll,120); return res;};
+  }
+  const prevTab=window.stage3RenderPatientRecordTab;
+  if(typeof prevTab==='function'){
+    window.stage3RenderPatientRecordTab=function(tab){const panel=d.getElementById('v6661-patient-record-panel'); if(panel)delete panel.dataset.v6663Enhanced; const res=prevTab.apply(this,arguments); setTimeout(()=>{injectToolbar(); injectAlertStrip(); enhanceEncounterPanel();},120); return res;};
+  }
+  const obs=new MutationObserver(()=>{if(d.getElementById('patient-record-page')||d.querySelector('.v6661-record-actions'))setTimeout(injectAll,120);});
+  if(d.body)obs.observe(d.body,{childList:true,subtree:true});
+  setTimeout(injectAll,700);
+})();
+</script>
+
 </body>
 </html>
 
