@@ -15672,7 +15672,7 @@ function renderPathwayStepsPanel(tab,patient,steps,completions,col,allDone,total
 
   window.renderPathwaySearch=function(tab){
     const meta=getPathwayFormMeta(tab);
-    return `<div class="pathway-page-shell" style="--pathway-colour:${meta.colour};"><div class="pathway-form-card" id="pathway-new-form-${tab}"><div class="pathway-form-head" style="padding:18px 18px 0;"><div><h3>Add new patient</h3><p>Start the pathway. Patient details are saved and locked first, then the stoma/surgery and review sections can be completed later.</p></div></div>${renderPathwayRegistrationTabs(tab)}<div class="pathway-form-actions"><div class="pathway-form-note">Step 1: Adding Patient Details is protected after saving. Date of surgery is completed in Step 2. Ward / location is recorded in Daily Reviews when the patient is seen.</div><div style="display:flex;gap:8px;flex-wrap:wrap;"><button type="button" class="pathway-reset-btn" onclick="resetPathwayRegistrationForm('${tab}')">Clear form</button><button type="button" class="pathway-save-btn" data-pathway-main-save="true" onclick="savePathwayPagePatient('${tab}')">Save &amp; Lock Patient Details</button></div></div></div></div>`;
+    return `<div class="pathway-page-shell" style="--pathway-colour:${meta.colour};"><div class="pathway-form-card" id="pathway-new-form-${tab}"><div class="pathway-form-head" style="padding:18px 18px 0;"><div><h3>Add new ${esc(meta.label)} patient</h3><p>Start the pathway. Patient details are saved and locked first, then the stoma/surgery and review sections can be completed later.</p></div></div>${renderPathwayRegistrationTabs(tab)}<div class="pathway-form-actions"><div class="pathway-form-note">Step 1: Adding Patient Details is protected after saving. Date of surgery is completed in Step 2. Ward / location is recorded in Daily Reviews when the patient is seen.</div><div style="display:flex;gap:8px;flex-wrap:wrap;"><button type="button" class="pathway-reset-btn" onclick="resetPathwayRegistrationForm('${tab}')">Clear form</button><button type="button" class="pathway-save-btn" data-pathway-main-save="true" onclick="savePathwayPagePatient('${tab}')">Save &amp; Lock Patient Details</button></div></div></div></div>`;
   };
 
   async function createInitialEncounter(patientId,meta,patientPayload){
@@ -16731,6 +16731,220 @@ function renderPathwayStepsPanel(tab,patient,steps,completions,col,allDone,total
     }).join('');
   };
 })();
+
+// v66-51 patch — strict Patient Centre inpatient/outpatient separation.
+// Keeps the v66-49 fallback loader, but fixes the view resolver so the Inpatients title
+// cannot accidentally display the Master List / Outpatients rows.
+(function(){
+  function pcText(v){
+    try{ if(typeof esc==='function')return esc(v); }catch(e){}
+    return String(v??'').replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});
+  }
+  function pcHtml(v){
+    try{ if(typeof htmlSafe==='function')return htmlSafe(v); }catch(e){}
+    return pcText(v);
+  }
+  function pcCleanDate(v){
+    if(!v)return null;
+    const s=String(v).trim();
+    if(!s || s.includes('${'))return null;
+    if(/^\d{4}-\d{2}-\d{2}/.test(s))return s.slice(0,10);
+    if(/^\d{2}\/\d{2}\/\d{4}$/.test(s)){const a=s.split('/');return `${a[2]}-${a[1]}-${a[0]}`;}
+    return s;
+  }
+  function pcDisplayDate(v){
+    const d=pcCleanDate(v);
+    if(!d)return '—';
+    try{const dt=new Date(d); if(!isNaN(dt))return dt.toLocaleDateString('en-MT');}catch(e){}
+    return pcText(d);
+  }
+  function pcBlob(p){
+    return String([
+      p?.patient_type,p?.patient_status,p?.status,p?.episode_status,p?.pathway_status,
+      p?.episode_type,p?.pathway_type,p?.episode_outcome,p?.latest_outcome,p?.ward,p?.current_ward
+    ].join(' ')).toLowerCase();
+  }
+  function hasClosedOrOutcomeStatus(p){
+    const b=pcBlob(p);
+    return b.includes('closed') || b.includes('completed') || b.includes('discharged') || b.includes('deceased') || b.includes('relocated') || b.includes('reversed');
+  }
+  function hasOutpatientOnlyStatus(p){
+    const b=pcBlob(p);
+    return b.includes('outpatient') || b.includes('planned elective') || b.includes('planned/outpatient') || b.includes('planned') || b.includes('follow-up') || b.includes('follow up');
+  }
+  function hasOpenEpisodeStatus(p){
+    const b=pcBlob(p);
+    return b.includes('open episode') || b.includes('episode open') || b.includes('active episode') || b.includes('episode_status active') || b.includes('active inpatient') || b.includes('admitted') || b.includes('inpatient') || b.includes('emergency');
+  }
+  function isStrictInpatient(p){
+    const b=pcBlob(p);
+    const ward=String(p?.ward||p?.current_ward||'').trim();
+    const discharged=pcCleanDate(p?.discharge_date||p?.discharged_date||p?.episode_closed_date||'');
+    if(hasClosedOrOutcomeStatus(p) || discharged)return false;
+    if(String(p?.patient_type||'').toLowerCase()==='inpatient')return true;
+    if(String(p?.patient_status||p?.status||'').toLowerCase()==='inpatient')return true;
+    if(String(p?.episode_status||'').toLowerCase()==='active')return true;
+    if(String(p?.episode_status||'').toLowerCase()==='open')return true;
+    if(ward && ward!=='—' && !hasOutpatientOnlyStatus(p))return true;
+    if(hasOpenEpisodeStatus(p) && !hasOutpatientOnlyStatus(p))return true;
+    // Planned elective/outpatient rows must not leak into Inpatients.
+    if(b.includes('outpatient') || b.includes('planned'))return false;
+    return false;
+  }
+  function isStrictOutpatient(p){
+    const b=pcBlob(p);
+    if(b.includes('deceased') || b.includes('relocated') || b.includes('reversed'))return false;
+    return !isStrictInpatient(p);
+  }
+  function requestedPatientView(){
+    const command=(document.getElementById('pt-command-filter')?.value||'').trim();
+    if(command)return command;
+    const stored=(window.__patientCurrentView||'').trim();
+    if(stored && stored!=='master')return stored;
+    const label=String(document.getElementById('patient-active-view-label')?.textContent||'').toLowerCase();
+    const title=String(
+      document.querySelector('#section-patients .platform-title-title')?.textContent ||
+      document.querySelector('#section-patients .platform-focus-title h2')?.textContent ||
+      document.querySelector('#section-patients .patient-page-title h2')?.textContent || ''
+    ).toLowerCase();
+    const txt=label+' '+title;
+    if(txt.includes('inpatient'))return 'inpatient';
+    if(txt.includes('outpatient'))return 'outpatient';
+    if(txt.includes('handover'))return 'handover';
+    return '';
+  }
+  function setPatientViewState(view){
+    window.__patientCurrentView=view||'';
+    const cmd=document.getElementById('pt-command-filter');
+    if(cmd && view && view!=='master')cmd.value=view;
+    if(cmd && view==='master')cmd.value='';
+  }
+  const originalShowPatientSubtab=window.showPatientSubtab;
+  if(typeof originalShowPatientSubtab==='function'){
+    window.showPatientSubtab=function(tab,options){
+      setPatientViewState(tab);
+      return originalShowPatientSubtab.apply(this,arguments);
+    };
+  }
+  const originalSetPatientCommandFilter=window.setPatientCommandFilter;
+  if(typeof originalSetPatientCommandFilter==='function'){
+    window.setPatientCommandFilter=function(view){
+      setPatientViewState(view||'master');
+      return originalSetPatientCommandFilter.apply(this,arguments);
+    };
+  }
+  const originalOpenPatientCentrePage=window.openPatientCentrePage;
+  if(typeof originalOpenPatientCentrePage==='function'){
+    window.openPatientCentrePage=function(tab){
+      setPatientViewState(tab);
+      return originalOpenPatientCentrePage.apply(this,arguments);
+    };
+  }
+  window.patientMatchesCommandView=function(p,view,dntuIds){
+    if(!view || view==='master')return true;
+    const status=pcBlob(p);
+    if(view==='inpatient')return isStrictInpatient(p);
+    if(view==='outpatient')return isStrictOutpatient(p);
+    if(view==='active')return p?.is_active!==false && !status.includes('deceased') && !status.includes('relocated') && !status.includes('reversed') && !status.includes('closed');
+    if(view==='handover')return status.includes('handover') || status.includes('discharge planning') || isStrictInpatient(p);
+    if(view==='dntu')return dntuIds && dntuIds.has(String(p?.id));
+    if(view==='reversal')return status.includes('reversal') || status.includes('reversed') || status.includes('refashion') || status.includes('closure') || status.includes('closed');
+    if(view==='deceased')return status.includes('deceased') || status.includes('died');
+    if(view==='relocated')return status.includes('relocated') || status.includes('overseas') || status.includes('moved abroad');
+    if(view==='gozo')return status.includes('gozo');
+    if(view==='outcomes')return status.includes('deceased') || status.includes('relocated') || status.includes('reversed') || status.includes('closed') || status.includes('gozo');
+    return true;
+  };
+  async function pcLastReviewMap(ids){
+    const map={};
+    if(!ids||!ids.length)return map;
+    for(const table of ['encounters_main','encounters']){
+      try{
+        const r=await SB.from(table).select('*').in('patient_id',ids);
+        if(r.error)throw r.error;
+        (r.data||[]).forEach(e=>{
+          const pid=String(e.patient_id||'');
+          const d=pcCleanDate(e.encounter_date||e.review_date||e.created_at);
+          if(!pid||!d)return;
+          if(!map[pid] || Date.parse(d)>Date.parse(map[pid]))map[pid]=d;
+        });
+      }catch(e){}
+    }
+    return map;
+  }
+  window.loadPatients=async function(){
+    const tbody=document.getElementById('patients-tbody');
+    if(!tbody)return;
+    const panel=document.getElementById('patient-list-panel');
+    const view=requestedPatientView();
+    const cmd=document.getElementById('pt-command-filter');
+    if(cmd && view && view!=='master')cmd.value=view;
+    const colSpan=view==='outpatient'?10:(view==='inpatient'?9:9);
+    tbody.innerHTML=`<tr><td colspan="${colSpan}" class="empty">Loading patients...</td></tr>`;
+    let rows=[]; let dntuIds=new Set();
+    try{
+      rows=await window.getProjectPatients();
+      if(typeof getDntuPatientIds==='function')dntuIds=await getDntuPatientIds();
+    }catch(error){
+      tbody.innerHTML=`<tr><td colspan="${colSpan}" class="empty">Error loading patient list: ${pcHtml(error.message||error)}</td></tr>`;
+      return;
+    }
+    if(view)rows=rows.filter(r=>window.patientMatchesCommandView(r,view,dntuIds));
+    try{if(typeof loadPatientCommandCountsFromRows==='function')loadPatientCommandCountsFromRows(rows,dntuIds);}catch(e){}
+    const statusF=document.getElementById('pt-status-filter')?.value||'';
+    const nurseF=document.getElementById('pt-nurse-filter')?.value||'';
+    const search=(document.getElementById('patient-search-input')?.value||document.getElementById('pt-search')?.value||'').trim().toLowerCase();
+    // Do not let the generic Status dropdown override the selected Inpatients/Outpatients page.
+    if(statusF && !['inpatient','outpatient','handover','active'].includes(statusF)){
+      rows=rows.filter(r=>pcBlob(r).includes(String(statusF).toLowerCase()));
+    }
+    if(statusF==='active')rows=rows.filter(r=>r.is_active!==false && !hasClosedOrOutcomeStatus(r));
+    if(nurseF){
+      const want=nurseF.toLowerCase();
+      rows=rows.filter(r=>{
+        const got=String(r.allocated_nurse||r.assigned_nurse||'').toLowerCase();
+        if(want==='common')return !got || got==='common';
+        if(want.includes('jason'))return got.includes('jason');
+        if(want.includes('jacqueline')||want.includes('jacklyn'))return got.includes('jacqueline')||got.includes('jacklyn');
+        if(want.includes('lorraine'))return got.includes('lorraine');
+        return got===want;
+      });
+    }
+    if(search){
+      rows=rows.filter(r=>[r.first_name,r.surname,r.id_card,r.id_card_number,r.hospital_number,r.patient_number,r.ward,r.locality,r.stoma_type,r.patient_status,r.pathway_status,r.allocated_nurse,r.phone_number,r.contact_number]
+        .some(v=>String(v||'').toLowerCase().includes(search)));
+    }
+    const lastMap=await pcLastReviewMap(rows.map(r=>r.id).filter(Boolean));
+    if(panel){
+      const headers=view==='inpatient'?['ID Card','Name','Surname','Pathway / Case Type','Episode Status / Reason','Date of Surgery','Last Review Date','Ward / Location','Actions']:
+        view==='outpatient'?['ID Card','Name','Surname','Type of Stoma','Appliances Used','Accessories Used','Surgery Date','Latest Outcome','Telephone Number','Locality']:
+        ['ID Card','Name','Surname','Patient Type','Stoma Type','Surgery Date','Locality','Last Review Date','Actions'];
+      const tr=panel.querySelector('thead tr');
+      if(tr)tr.innerHTML=headers.map(h=>`<th>${pcText(h)}</th>`).join('');
+    }
+    if(!rows.length){
+      const msg=view==='inpatient'?'No active inpatient episodes found for this view':(view==='outpatient'?'No outpatient/planned patients found for this view':'No patients found for this view');
+      tbody.innerHTML=`<tr><td colspan="${colSpan}" class="empty">${pcText(msg)}</td></tr>`;
+      return;
+    }
+    tbody.innerHTML=rows.map(p=>{
+      const id=pcText(p.id);
+      const idc=pcText(p.id_card||p.id_card_number||p.hospital_number||p.patient_number||'—');
+      const first=pcHtml(p.first_name||'');
+      const sur=pcHtml(p.surname||'');
+      const open=`onclick="openPatientRecordPage('${id}')"`;
+      if(view==='inpatient'){
+        return `<tr class="patient-row-click" ${open}><td style="font-family:monospace;font-size:12px;">${idc}</td><td><strong>${first}</strong></td><td><strong>${sur}</strong></td><td>${pcHtml(p.episode_type||p.pathway_type||p.pathway_status||'Active pathway')}</td><td>${pcHtml(p.episode_status||p.patient_status||p.pathway_status||'Active inpatient episode')}</td><td>${pcDisplayDate(p.surgery_date)}</td><td>${pcDisplayDate(lastMap[String(p.id)])}</td><td>${pcHtml(p.ward||'—')}</td><td><button onclick="event.stopPropagation();openPatientRecordPage('${id}')" class="btn-refresh">Open</button></td></tr>`;
+      }
+      if(view==='outpatient'){
+        return `<tr class="patient-row-click" ${open}><td style="font-family:monospace;font-size:12px;">${idc}</td><td><strong>${first}</strong></td><td><strong>${sur}</strong></td><td>${pcHtml(p.stoma_type||'—')}</td><td>${pcHtml(p.appliance_used||p.bag_brand||'—')}</td><td>${pcHtml(p.accessories_used||p.flange_size||'—')}</td><td>${pcDisplayDate(p.surgery_date)}</td><td>${pcHtml(p.latest_outcome||p.episode_outcome||p.patient_status||p.pathway_status||'—')}</td><td>${pcHtml(p.phone_number||p.contact_number||'—')}</td><td>${pcHtml(p.locality||'—')}</td></tr>`;
+      }
+      const typeLabel=isStrictInpatient(p)?'inpatient':(p.patient_type||p.patient_status||'outpatient');
+      return `<tr class="patient-row-click" ${open}><td style="font-family:monospace;font-size:12px;">${idc}</td><td><strong>${first}</strong></td><td><strong>${sur}</strong></td><td>${pcHtml(typeLabel||'—')}</td><td>${pcHtml(p.stoma_type||'—')}</td><td>${pcDisplayDate(p.surgery_date)}</td><td>${pcHtml(p.locality||'—')}</td><td>${pcDisplayDate(lastMap[String(p.id)])}</td><td><button onclick="event.stopPropagation();openPatientRecordPage('${id}')" class="btn-refresh">Open</button></td></tr>`;
+    }).join('');
+  };
+})();
+
 
 </script>
 
