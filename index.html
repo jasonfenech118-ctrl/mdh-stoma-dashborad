@@ -1,14 +1,23 @@
 <!DOCTYPE html>
 <!--
-VERSION: v66-59 Stage 1 (Navigation / Add Patient / Command Centre styling)
+VERSION: v66-60 Stage 2 (Add Patient conditional create-only workflow)
 Built from protected baseline: v66-58a
+
+v66-60 Stage 2 changes:
+- Add Patient is now create/start-only with conditional forms per patient type.
+- Elective creation shows Patient Details + Planned/Pre-operative details only; ongoing first-episode tools are not shown from Add Patient.
+- Unplanned creation shows Patient Details + Surgery/Stoma details and sends the patient to Inpatients.
+- Bagging Advice creation uses referral/wound/fistula fields, not surgery pathway tabs.
+- Outside Hospital creation uses existing-stoma/initial-review fields and does not show first-episode post-op tools.
+- Conditional save rules: surgery date/ward no longer required for planned elective, bagging, or outside hospital patients unless the care setting is inpatient.
+- After save, Add Patient shows a destination/next-step confirmation rather than opening the full episode workspace.
 
 v66-59 Stage 1 changes:
 - Removed the top horizontal navigation button row from the visible interface.
 - Header now acts as the clean contextual navigation area with Back, Home, Profile, and Sign Out.
 - Home screen reorganised into a clinical command-centre dashboard with KPI cards and grouped entry points.
 - Renamed Add Patient to Add Patient in visible wording while preserving the existing underlying section id and workflow code.
-- Renamed pathway entry buttons to Add Elective Surgery Patient Patient, Add Unplanned Patient, Bagging Advice for Fistula and Wounds Advice, and Add Outside Stoma Hospital Patient.
+- Renamed pathway entry buttons to Add Elective Surgery Patient, Add Unplanned Patient, Bagging Advice for Fistula and Wounds Advice, and Add Outside Stoma Hospital Patient.
 - Applied first pass of the soft teal/blue command-centre visual style across core cards, tables, tabs, panels, and modals.
 - No database/Supabase schema changes. Appointment, roster, login, audit and existing patient-loading logic preserved.
 
@@ -4209,7 +4218,7 @@ v66-42 emergency fix:
     <!-- ══════════════════════════════════ -->
     <div class="section" id="section-patient-pathways">
       <div class="phdr">
-        <div><h2>Add Patient</h2><p>Structured admission-to-discharge trajectory for each patient type</p></div>
+        <div><h2>Add Patient</h2><p>Create/start a patient case only. Ongoing care continues from Patient Centre, Inpatients or Outpatients.</p></div>
         <button class="btn-refresh" onclick="loadPatientPathways();">↻ Refresh</button>
       </div>
 
@@ -18615,6 +18624,448 @@ input,select,textarea{border-radius:12px!important;}
   window.refreshStage1HomeKpis=refreshStage1HomeKpis;
 })();
 </script>
+
+
+<style id="v66-60-stage2-add-patient-css">
+/* v66-60 — Add Patient conditional create-only workflow */
+#section-patient-pathways .pathway-form-head h3{font-size:18px!important;font-weight:950!important;color:#0f2638!important;letter-spacing:-.2px!important;}
+#section-patient-pathways .pathway-form-head p{font-size:12.5px!important;line-height:1.45!important;color:#64748b!important;max-width:900px!important;}
+.stage2-flow-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin:14px 18px 0;}
+.stage2-flow-card{border:1px solid rgba(15,38,56,.10);border-radius:15px;background:#f8fbfc;padding:12px 13px;min-height:92px;box-shadow:0 6px 18px rgba(15,38,56,.04);}
+.stage2-flow-card strong{display:block;color:#0f2638;font-size:12.5px;font-weight:950;margin-bottom:4px;}
+.stage2-flow-card span{display:block;color:#64748b;font-size:11.3px;line-height:1.35;}
+.stage2-flow-card.active{background:linear-gradient(135deg,#ffffff,#ecfdf9);border-color:#99f6e4;}
+.stage2-guidance{margin:14px 18px 0;border:1px solid #ccfbf1;background:#f0fdfa;color:#0f766e;border-radius:14px;padding:11px 13px;font-size:12px;line-height:1.45;font-weight:750;}
+.stage2-warning{margin:12px 0 0;border:1px solid #fde68a;background:#fffbeb;color:#92400e;border-radius:14px;padding:11px 13px;font-size:12px;line-height:1.45;font-weight:750;}
+.stage2-duplicate-box{display:none;margin:14px 18px 0;border:1px solid #fed7aa;background:#fff7ed;color:#9a3412;border-radius:14px;padding:12px 14px;font-size:12px;line-height:1.45;}
+.stage2-duplicate-box.show{display:block;}
+.stage2-duplicate-box strong{display:block;margin-bottom:4px;color:#7c2d12;}
+.stage2-required-note{font-size:11.5px;color:#64748b;line-height:1.45;}
+.stage2-created-card{background:white;border:1px solid rgba(15,38,56,.10);border-left:6px solid var(--pathway-colour,#0f766e);border-radius:22px;padding:22px;box-shadow:0 12px 34px rgba(15,38,56,.09);}
+.stage2-created-hero{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;flex-wrap:wrap;margin-bottom:16px;}
+.stage2-created-hero h3{font-size:22px;color:#0f2638;font-weight:950;margin:0 0 4px;letter-spacing:-.35px;}
+.stage2-created-hero p{font-size:13px;color:#64748b;line-height:1.5;margin:0;}
+.stage2-status-pill{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:999px;background:#ecfdf9;color:#0f766e;border:1px solid #99f6e4;font-weight:950;font-size:12px;white-space:nowrap;}
+.stage2-created-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:14px 0;}
+.stage2-created-item{background:#f8fbfc;border:1px solid #e2edf1;border-radius:15px;padding:13px;}
+.stage2-created-item .label{font-size:10px;color:#64748b;text-transform:uppercase;letter-spacing:.55px;font-weight:950;margin-bottom:5px;}
+.stage2-created-item .value{font-size:13px;color:#0f2638;font-weight:900;line-height:1.3;}
+.stage2-next-box{border:1px dashed #99f6e4;background:#f0fdfa;color:#0f766e;border-radius:16px;padding:14px;margin-top:14px;font-size:12.5px;line-height:1.5;}
+.stage2-next-box strong{color:#0f2638;}
+.stage2-action-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;padding-top:16px;border-top:1px solid #e2edf1;}
+.stage2-action-row button{border:1.5px solid #cfe4e8;background:white;color:#0f2638;border-radius:999px;padding:10px 16px;font-size:12.5px;font-weight:950;cursor:pointer;font-family:'DM Sans',sans-serif;box-shadow:0 6px 16px rgba(15,38,56,.06);}
+.stage2-action-row button.primary{background:linear-gradient(135deg,var(--pathway-colour,#0f766e),#14b8a6);color:white;border-color:transparent;}
+.stage2-action-row button:hover{transform:translateY(-1px);}
+#section-patient-pathways .pathway-form-tabs{margin:16px 18px 0!important;display:grid!important;grid-template-columns:repeat(auto-fit,minmax(190px,1fr))!important;gap:8px!important;}
+#section-patient-pathways .pathway-form-tab{min-height:44px!important;text-align:center!important;justify-content:center!important;}
+#section-patient-pathways .pathway-form-panel{padding-top:18px!important;}
+@media(max-width:760px){.stage2-flow-strip{grid-template-columns:1fr;margin-left:12px;margin-right:12px}.stage2-guidance,.stage2-duplicate-box{margin-left:12px;margin-right:12px}.stage2-created-card{padding:16px;border-radius:18px}.stage2-created-hero h3{font-size:19px}.stage2-action-row{flex-direction:column}.stage2-action-row button{width:100%;}}
+</style>
+
+<script id="v66-60-stage2-add-patient-js">
+(function(){
+  const esc = (v)=> (typeof htmlSafe==='function' ? htmlSafe(v) : String(v??'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m])));
+  const js = (v)=> (typeof jsSafe==='function' ? jsSafe(v) : String(v??'').replace(/\\/g,'\\\\').replace(/'/g,"\\'"));
+  const today = ()=> new Date().toISOString().slice(0,10);
+  const wards = ()=> (typeof PATHWAY_WARD_OPTIONS!=='undefined' ? PATHWAY_WARD_OPTIONS : ['SAU1','SAU2','SW1','SW2','SW3','SW4','SW5','SHDU','ITU','Other']);
+  const localities = ()=> (typeof PATHWAY_LOCALITY_OPTIONS!=='undefined' ? PATHWAY_LOCALITY_OPTIONS : ['Attard','Birkirkara','Mosta','San Gwann','Sliema','Valletta','Gozo']);
+  const stomas = ()=> (typeof pathwayStomaOptions==='function' ? pathwayStomaOptions() : ['Colostomy','Ileostomy','Urostomy','Other']);
+  const opts = (arr, selected='') => `<option value="">Select...</option>${(arr||[]).map(v=>`<option value="${esc(v)}"${String(v)===String(selected)?' selected':''}>${esc(v)}</option>`).join('')}`;
+
+  function meta(tab){
+    const map={
+      elective:{label:'Add Elective Surgery Patient',short:'Elective',colour:'#0f766e',pathway:'elective',episode:'First episode — planned elective',stage:'Planned / Awaiting Operation',defaultStatus:'outpatient',destination:'Outpatients / Awaiting Operation',subtitle:'Create the planned elective patient record and capture pre-operative / planned surgery details. Inpatient first-episode tools unlock later after surgery or admission.',save:'Create Planned Elective Patient'},
+      emergency:{label:'Add Unplanned Patient',short:'Unplanned',colour:'#991b1b',pathway:'emergency',episode:'First episode — unplanned surgical',stage:'Active Inpatient',defaultStatus:'inpatient',destination:'Inpatients',subtitle:'Create an urgent/unplanned surgical patient and send the active first episode directly to Inpatients.',save:'Create Unplanned Patient'},
+      bagging:{label:'Bagging Advice for Fistula and Wounds Advice',short:'Bagging Advice',colour:'#5b21b6',pathway:'bagging_advice',episode:'Bagging advice / fistula / wound',stage:'Referral / Advice Case',defaultStatus:'outpatient',destination:'Outpatients or Inpatients depending on current setting',subtitle:'Create a wound/fistula/bagging advice case. This does not use surgical stoma pathway tabs.',save:'Create Bagging Advice Case'},
+      readmission:{label:'Add Outside Stoma Hospital Patient',short:'Outside Hospital',colour:'#b45309',pathway:'old_stoma_new_referral',episode:'Outside hospital / existing stoma referral',stage:'Existing Stoma / Initial Review',defaultStatus:'outpatient',destination:'Outpatients or Inpatients depending on current setting',subtitle:'Create an existing-stoma patient from another hospital/abroad and record the initial review. First-episode post-op tools stay hidden unless a true new-stoma episode is opened.',save:'Create Outside Hospital Patient'}
+    };
+    return map[tab]||map.elective;
+  }
+  window.getPathwayFormMeta=meta;
+
+  function patientPanel(tab){
+    return `<div class="pathway-form-grid">
+      <div class="fg"><label>First Name <span class="req">*</span></label><input data-patient-detail="true" id="pp-${tab}-fn" placeholder="First name" autocomplete="off" onblur="stage2CheckDuplicate('${tab}')"/></div>
+      <div class="fg"><label>Surname <span class="req">*</span></label><input data-patient-detail="true" id="pp-${tab}-sn" placeholder="Surname" autocomplete="off" onblur="stage2CheckDuplicate('${tab}')"/></div>
+      <div class="fg"><label>ID Card</label><input data-patient-detail="true" id="pp-${tab}-id" placeholder="000000M" autocomplete="off" onblur="stage2CheckDuplicate('${tab}')"/></div>
+      <div class="fg"><label>Date of Birth <span class="req">*</span></label><input data-patient-detail="true" type="date" id="pp-${tab}-dob" onblur="stage2CheckDuplicate('${tab}')"/></div>
+      <div class="fg"><label>Contact Number</label><input data-patient-detail="true" id="pp-${tab}-ph" placeholder="Phone number" autocomplete="off" onblur="stage2CheckDuplicate('${tab}')"/></div>
+      <div class="fg"><label>Gender <span class="req">*</span></label><select data-patient-detail="true" id="pp-${tab}-sex"><option value="">Select...</option><option>Male</option><option>Female</option></select></div>
+      <div class="fg full"><label>Locality <span class="req">*</span></label><select data-patient-detail="true" id="pp-${tab}-locality">${opts(localities())}</select></div>
+    </div>
+    <div class="stage2-required-note">After this patient is created, demographic details should be treated as protected and only corrected through an intentional edit/amendment workflow.</div>`;
+  }
+
+  function electivePlannedPanel(tab){
+    return `<div class="pathway-form-grid">
+      <input type="hidden" id="pp-${tab}-opfindings" data-pathway-extra data-extra-label="Planned operation and notes">
+      <div class="fg"><label>Operation Due Date</label><input type="date" id="pp-${tab}-surg" data-pathway-extra data-extra-label="Operation due date"></div>
+      <div class="fg"><label>Planned Stoma Type</label><select id="pp-${tab}-stoma">${opts(stomas())}</select></div>
+      <div class="fg"><label>Consultant</label><input id="pp-${tab}-cons" placeholder="Consultant name" autocomplete="off"></div>
+      <div class="fg"><label>Pre-op siting completed?</label><select id="pp-${tab}-siting-done" data-pathway-extra data-extra-label="Pre-op siting completed"><option value="">Select...</option><option>Yes</option><option>No</option><option>Deferred / patient not ready</option></select></div>
+      <div class="fg full"><label>Planned Operation / Procedure</label><textarea id="pp-${tab}-operation" oninput="stage2SyncOperationFindings('${tab}')" data-pathway-extra data-extra-label="Planned operation / procedure" placeholder="Write the planned procedure in free text"></textarea></div>
+      <div class="fg full"><label>Pre-operative / Siting Notes</label><textarea id="pp-${tab}-findings" oninput="stage2SyncOperationFindings('${tab}')" data-pathway-extra data-extra-label="Pre-operative / siting notes" placeholder="Siting details, patient readiness, education notes, outstanding concerns"></textarea></div>
+      <div class="fg full"><label>General Notes</label><textarea id="pp-${tab}-notes" placeholder="Any important pre-operative notes for the Stoma Care team"></textarea></div>
+    </div>
+    <div class="stage2-warning"><strong>Elective flow:</strong> this patient will be saved as Outpatient / Awaiting Operation. Daily reviews, post-op review, teaching, discharge planning and discharge letter are not opened here. They become available from Inpatients after surgery/admission.</div>`;
+  }
+
+  function emergencySurgeryPanel(tab){
+    return `<div class="pathway-form-grid">
+      <input type="hidden" id="pp-${tab}-opfindings" data-pathway-extra data-extra-label="Operation performed and findings">
+      <div class="fg"><label>Date of Surgery <span class="req">*</span></label><input type="date" id="pp-${tab}-surg"></div>
+      <div class="fg"><label>Ward <span class="req">*</span></label><select id="pp-${tab}-ward">${opts(wards())}</select></div>
+      <div class="fg"><label>Stoma Type <span class="req">*</span></label><select id="pp-${tab}-stoma">${opts(stomas())}</select></div>
+      <div class="fg"><label>Consultant</label><input id="pp-${tab}-cons" placeholder="Consultant name" autocomplete="off"></div>
+      <div class="fg full"><label>Operation Performed</label><textarea id="pp-${tab}-operation" oninput="stage2SyncOperationFindings('${tab}')" data-pathway-extra data-extra-label="Operation Performed" placeholder="Write the operation/procedure performed in free text"></textarea></div>
+      <div class="fg full"><label>Findings</label><textarea id="pp-${tab}-findings" oninput="stage2SyncOperationFindings('${tab}')" data-pathway-extra data-extra-label="Findings" placeholder="Write the operative/surgical findings in free text"></textarea></div>
+      <div class="fg full"><label>Immediate Concerns / Plan</label><textarea id="pp-${tab}-notes" placeholder="Clinical concerns, first review needs, immediate plan"></textarea></div>
+    </div>
+    <div class="stage2-guidance"><strong>Unplanned flow:</strong> once saved, the patient appears as an active inpatient first episode. Daily reviews, teaching and discharge planning continue from Inpatients / Patient Record.</div>`;
+  }
+
+  function baggingReferralPanel(tab){
+    return `<div class="pathway-form-grid">
+      <div class="fg"><label>Current care setting <span class="req">*</span></label><select id="pp-${tab}-case-setting"><option value="outpatient">Outpatient / clinic / community</option><option value="inpatient">Currently admitted / inpatient</option></select></div>
+      <div class="fg"><label>Ward / Location</label><select id="pp-${tab}-ward">${opts(wards())}</select></div>
+      <div class="fg"><label>Reason for advice <span class="req">*</span></label><select id="pp-${tab}-advice-reason" data-pathway-extra data-extra-label="Reason for bagging advice"><option value="">Select...</option><option>Fistula</option><option>Wound</option><option>Leakage</option><option>Skin irritation</option><option>Appliance review</option><option>Other</option></select></div>
+      <div class="fg"><label>Referral Source</label><input id="pp-${tab}-source" placeholder="Ward / clinic / community / other service" autocomplete="off"></div>
+      <div class="fg"><label>Site / Area</label><input id="pp-${tab}-site" data-pathway-extra data-extra-label="Bagging site / area" placeholder="e.g. abdomen, fistula site, wound site"></div>
+      <div class="fg"><label>Skin condition</label><select id="pp-${tab}-skin" data-pathway-extra data-extra-label="Skin condition"><option value="">Select...</option><option>Healthy / intact</option><option>Red</option><option>Broken / excoriated</option><option>Other</option></select></div>
+      <div class="fg"><label>Output / leakage</label><input id="pp-${tab}-output" data-pathway-extra data-extra-label="Output / leakage" placeholder="Output type, leakage pattern, volume"></div>
+      <div class="fg"><label>Current appliance / dressing</label><input id="pp-${tab}-current-appliance" data-pathway-extra data-extra-label="Current appliance / dressing" placeholder="Current product if known"></div>
+      <div class="fg full"><label>Assessment / Advice Given <span class="req">*</span></label><textarea id="pp-${tab}-notes" placeholder="Assessment, advice, products recommended, teaching given"></textarea></div>
+      <div class="fg"><label>Next review date</label><input type="date" id="pp-${tab}-nextreview" data-pathway-extra data-extra-label="Next review date"></div>
+      <div class="fg"><label>Follow-up location</label><input id="pp-${tab}-followlocation" data-pathway-extra data-extra-label="Follow-up location" placeholder="Clinic / ward / community"></div>
+    </div>
+    <div class="stage2-guidance"><strong>Bagging advice flow:</strong> this case is not treated as a surgical stoma pathway. Post-op 1–7 tools and first-episode stoma teaching are hidden unless a separate relevant episode is opened.</div>`;
+  }
+
+  function outsideInitialPanel(tab){
+    return `<div class="pathway-form-grid">
+      <div class="fg"><label>Current care setting <span class="req">*</span></label><select id="pp-${tab}-case-setting"><option value="outpatient">Outpatient / clinic / community</option><option value="inpatient">Currently admitted / inpatient</option></select></div>
+      <div class="fg"><label>Ward / Location</label><select id="pp-${tab}-ward">${opts(wards())}</select></div>
+      <div class="fg"><label>Existing Stoma Type <span class="req">*</span></label><select id="pp-${tab}-stoma">${opts(stomas())}</select></div>
+      <div class="fg"><label>Date of Original Surgery</label><input type="date" id="pp-${tab}-surg"></div>
+      <div class="fg"><label>Hospital / Country / Source</label><input id="pp-${tab}-source" placeholder="Outside hospital / abroad / community" autocomplete="off"></div>
+      <div class="fg"><label>Consultant</label><input id="pp-${tab}-cons" placeholder="Consultant name" autocomplete="off"></div>
+      <div class="fg"><label>Current appliance</label><input id="pp-${tab}-current-appliance" data-pathway-extra data-extra-label="Current appliance" placeholder="Flange/bag/accessories if known"></div>
+      <div class="fg"><label>Main reason for referral/admission <span class="req">*</span></label><input id="pp-${tab}-issue" data-pathway-extra data-extra-label="Main reason for referral/admission" placeholder="Supply issue, leakage, skin, review, admission"></div>
+      <div class="fg"><label>Peristomal skin</label><select id="pp-${tab}-skin" data-pathway-extra data-extra-label="Peristomal skin"><option value="">Select...</option><option>Healthy / intact</option><option>Red</option><option>Broken / excoriated</option><option>Other</option></select></div>
+      <div class="fg"><label>Output / Function</label><input id="pp-${tab}-output" data-pathway-extra data-extra-label="Output / function" placeholder="Type / consistency / frequency"></div>
+      <div class="fg full"><label>Initial Review / Plan <span class="req">*</span></label><textarea id="pp-${tab}-notes" placeholder="Initial review, plan, supplies/Schedule V needs, follow-up or inpatient plan"></textarea></div>
+    </div>
+    <div class="stage2-guidance"><strong>Outside Hospital / existing stoma flow:</strong> this patient is marked as an imported/existing stoma case. First-episode post-op tools stay hidden unless a new surgical first episode is opened deliberately.</div>`;
+  }
+
+  window.stage2SyncOperationFindings=function(tab){
+    const op=document.getElementById(`pp-${tab}-operation`)?.value?.trim()||'';
+    const f=document.getElementById(`pp-${tab}-findings`)?.value?.trim()||'';
+    const hidden=document.getElementById(`pp-${tab}-opfindings`);
+    if(hidden)hidden.value=[op?`Operation Performed: ${op}`:'', f?`Findings / Notes: ${f}`:''].filter(Boolean).join('\n');
+  };
+
+  window.pathwayTabConfig=function(tab){
+    const common={key:'patient',label:'Step 1: Patient Details',panel:patientPanel(tab),requiresLock:false};
+    if(tab==='elective')return [common,{key:'planned',label:'Step 2: Planned / Pre-operative Details',panel:electivePlannedPanel(tab),requiresLock:false}];
+    if(tab==='emergency')return [common,{key:'surgery',label:'Step 2: Surgery & Stoma Details',panel:emergencySurgeryPanel(tab),requiresLock:false}];
+    if(tab==='bagging')return [common,{key:'referral',label:'Step 2: Referral / Fistula / Wound Details',panel:baggingReferralPanel(tab),requiresLock:false}];
+    return [common,{key:'existing',label:'Step 2: Existing Stoma / Initial Review',panel:outsideInitialPanel(tab),requiresLock:false}];
+  };
+
+  window.renderPathwayRegistrationTabs=function(tab){
+    const tabs=window.pathwayTabConfig(tab);
+    return `<div class="pathway-form-tabs" role="tablist" aria-label="Add Patient form steps">
+      ${tabs.map((t,i)=>`<button type="button" class="pathway-form-tab ${i===0?'active':''}" id="pf-tab-${tab}-${t.key}" onclick="switchPathwayRegistrationTab('${tab}','${t.key}')">${esc(t.label)}</button>`).join('')}
+    </div>
+    ${tabs.map((t,i)=>`<div class="pathway-form-panel ${i===0?'active':''}" id="pf-panel-${tab}-${t.key}">${t.panel}</div>`).join('')}`;
+  };
+
+  window.switchPathwayRegistrationTab=function(tab,panel){
+    const card=document.getElementById(`pathway-new-form-${tab}`); if(!card)return;
+    card.querySelectorAll('.pathway-form-tab').forEach(btn=>btn.classList.toggle('active',btn.id===`pf-tab-${tab}-${panel}`));
+    card.querySelectorAll('.pathway-form-panel').forEach(pane=>pane.classList.toggle('active',pane.id===`pf-panel-${tab}-${panel}`));
+  };
+
+  function flowCards(tab){
+    const data={
+      elective:[['1. Create patient','Patient demographics and planned elective details only.'],['2. Await operation','Saved to Outpatients / Awaiting Operation.'],['3. After surgery','Inpatient first-episode tools unlock from Inpatients.']],
+      emergency:[['1. Create patient','Patient demographics plus surgery/stoma details.'],['2. Active inpatient','Saved directly to the inpatient workload.'],['3. Continue care','Daily reviews, teaching and discharge planning continue from Inpatients.']],
+      bagging:[['1. Create referral','Patient details plus fistula/wound/bagging assessment.'],['2. Set location','Choose outpatient/community or inpatient setting.'],['3. Continue plan','Follow-up or inpatient review continues from the correct area.']],
+      readmission:[['1. Create existing stoma case','Patient details plus existing stoma / initial review.'],['2. Mark setting','Outpatient or inpatient depending on current status.'],['3. No first-episode tools','Post-op first-episode tools stay hidden unless clinically opened.']]
+    }[tab]||[];
+    return `<div class="stage2-flow-strip">${data.map((x,i)=>`<div class="stage2-flow-card ${i===0?'active':''}"><strong>${esc(x[0])}</strong><span>${esc(x[1])}</span></div>`).join('')}</div>`;
+  }
+
+  window.renderPathwaySearch=function(tab){
+    const m=meta(tab);
+    return `<div class="pathway-page-shell" style="--pathway-colour:${m.colour};">
+      <div class="pathway-form-card" id="pathway-new-form-${tab}">
+        <div class="pathway-form-head" style="padding:18px 18px 0;">
+          <div><h3>${esc(m.label)}</h3><p>${esc(m.subtitle)}</p></div>
+        </div>
+        ${flowCards(tab)}
+        <div class="stage2-duplicate-box" id="stage2-duplicate-${tab}"></div>
+        ${window.renderPathwayRegistrationTabs(tab)}
+        <div class="pathway-form-actions">
+          <div class="pathway-form-note">Add Patient is for creating the patient/case only. It does not open the full episode workspace. After saving, continue from Patient Centre, Inpatients or Outpatients according to the patient status.</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button type="button" class="pathway-reset-btn" onclick="resetPathwayRegistrationForm('${tab}')">Clear form</button>
+            <button type="button" class="pathway-save-btn" data-pathway-main-save="true" onclick="savePathwayPagePatient('${tab}')">${esc(m.save)}</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  };
+
+  window.resetPathwayRegistrationForm=function(tab){
+    const card=document.getElementById(`pathway-new-form-${tab}`); if(!card)return;
+    card.querySelectorAll('input,textarea,select').forEach(el=>{ if(el.type==='checkbox')el.checked=false; else el.value=''; el.disabled=false; el.classList.remove('pathway-locked-field'); });
+    const dup=document.getElementById(`stage2-duplicate-${tab}`); if(dup){dup.classList.remove('show');dup.innerHTML='';}
+    switchPathwayRegistrationTab(tab,'patient');
+  };
+
+  function val(tab,id){return document.getElementById(`pp-${tab}-${id}`)?.value?.trim()||'';}
+  function requiredFor(tab){
+    const base=[['fn','First name'],['sn','Surname'],['dob','Date of birth'],['sex','Gender'],['locality','Locality']];
+    if(tab==='emergency')return base.concat([['surg','Date of surgery'],['ward','Ward'],['stoma','Stoma type']]);
+    if(tab==='bagging')return base.concat([['advice-reason','Reason for advice'],['notes','Assessment / advice given']]);
+    if(tab==='readmission')return base.concat([['stoma','Existing stoma type'],['issue','Main reason for referral/admission'],['notes','Initial review / plan']]);
+    return base;
+  }
+  function focusField(tab,id){
+    const el=document.getElementById(`pp-${tab}-${id}`); if(!el)return;
+    const panel=el.closest('.pathway-form-panel');
+    if(panel){const key=panel.id.split(`pf-panel-${tab}-`).pop(); if(key) switchPathwayRegistrationTab(tab,key);}
+    setTimeout(()=>{el.focus(); el.scrollIntoView({behavior:'smooth',block:'center'});},50);
+  }
+  function collectExtra(tab){
+    if(typeof collectPathwayExtendedNotes==='function')return collectPathwayExtendedNotes(tab);
+    return '';
+  }
+  function currentStatus(tab){
+    if(tab==='elective')return 'outpatient';
+    if(tab==='emergency')return 'inpatient';
+    const setting=val(tab,'case-setting')||'outpatient';
+    return setting==='inpatient'?'inpatient':'outpatient';
+  }
+  function destinationFor(tab,status){
+    if(tab==='elective')return 'Outpatients / Awaiting Operation';
+    if(status==='inpatient')return 'Inpatients';
+    return 'Outpatients / Our Patients';
+  }
+  function validate(tab){
+    for(const [id,label] of requiredFor(tab)){
+      if(!val(tab,id)){alert(label+' is required.'); focusField(tab,id); return false;}
+    }
+    const status=currentStatus(tab);
+    if((tab==='bagging'||tab==='readmission')&&status==='inpatient'&&!val(tab,'ward')){alert('Ward / Location is required when the patient is currently admitted.'); focusField(tab,'ward'); return false;}
+    return true;
+  }
+
+  async function findDuplicates(tab){
+    const id=val(tab,'id'); const fn=val(tab,'fn'); const sn=val(tab,'sn'); const dob=val(tab,'dob');
+    const found=[];
+    if(!window.SB)return found;
+    try{
+      if(id){
+        let r=await SB.from('patients').select('id,first_name,surname,id_card,dob').eq('id_card',id).limit(3);
+        (r.data||[]).forEach(p=>found.push({source:'patients',...p}));
+      }
+    }catch(e){}
+    try{
+      if(id){
+        let r=await SB.from('patients_main').select('id,first_name,surname,id_card_number,date_of_birth').eq('id_card_number',id).limit(3);
+        (r.data||[]).forEach(p=>found.push({source:'patients_main',...p}));
+      }
+    }catch(e){}
+    if(!found.length && fn && sn && dob){
+      try{
+        let r=await SB.from('patients').select('id,first_name,surname,id_card,dob').ilike('first_name',fn).ilike('surname',sn).eq('dob',dob).limit(3);
+        (r.data||[]).forEach(p=>found.push({source:'patients',...p}));
+      }catch(e){}
+      try{
+        let r=await SB.from('patients_main').select('id,first_name,surname,id_card_number,date_of_birth').ilike('first_name',fn).ilike('surname',sn).eq('date_of_birth',dob).limit(3);
+        (r.data||[]).forEach(p=>found.push({source:'patients_main',...p}));
+      }catch(e){}
+    }
+    return found;
+  }
+
+  window.stage2CheckDuplicate=async function(tab){
+    const box=document.getElementById(`stage2-duplicate-${tab}`); if(!box)return;
+    const matches=await findDuplicates(tab);
+    if(!matches.length){box.classList.remove('show'); box.innerHTML=''; return;}
+    box.classList.add('show');
+    box.innerHTML=`<strong>Possible existing patient found</strong>${matches.slice(0,3).map(p=>`<div>${esc([p.first_name,p.surname].filter(Boolean).join(' ')||'Unnamed patient')} · ID: ${esc(p.id_card||p.id_card_number||'—')} · DOB: ${esc(p.dob||p.date_of_birth||'—')}</div>`).join('')}<div style="margin-top:6px;">Please check the existing record before creating a duplicate.</div>`;
+  };
+
+  window.savePathwayPagePatient=async function(tab){
+    const m=meta(tab);
+    stage2SyncOperationFindings(tab);
+    if(!validate(tab))return;
+    const matches=await findDuplicates(tab);
+    if(matches.length){
+      const ok=confirm('Possible existing patient found. Open/check the existing patient record first if this is the same person. Continue creating a new patient anyway?');
+      if(!ok)return;
+    }
+    const fn=val(tab,'fn'), sn=val(tab,'sn'), idCard=val(tab,'id');
+    const status=currentStatus(tab);
+    const extended=collectExtra(tab);
+    const statusLine=`Status/placement after creation: ${destinationFor(tab,status)}.`;
+    const importedLine=tab==='readmission'?'Imported / Existing Patient: yes. This is not treated as a first new surgical stoma episode.':'';
+    const combinedNotes=[val(tab,'notes'),statusLine,importedLine,extended].filter(Boolean).join('\n\n');
+    const fallbackHospital=idCard||`NO-HOSP-${Date.now()}`;
+    const patientPayload={
+      hospital_number:null,
+      id_card:idCard||null,
+      first_name:fn,
+      surname:sn,
+      contact_number:val(tab,'ph')||null,
+      dob:val(tab,'dob')||null,
+      sex:val(tab,'sex')||null,
+      locality:val(tab,'locality')||null,
+      op_performed_findings:val(tab,'opfindings')||null,
+      stoma_type_summary:val(tab,'stoma')||null,
+      assigned_nurse:val(tab,'nurse')||null,
+      consultant:val(tab,'cons')||null,
+      ward:status==='inpatient'?(val(tab,'ward')||null):null,
+      surgery_date:val(tab,'surg')||null,
+      patient_status:status,
+      pathway_type:m.pathway,
+      referral_source:val(tab,'source')||null,
+      notes:combinedNotes||null
+    };
+    let patientId=null, savedIn='patients';
+    try{
+      const {data,error}=await SB.from('patients').insert({...patientPayload,hospital_number:fallbackHospital}).select('id').single();
+      if(error)throw error;
+      patientId=data?.id;
+    }catch(primaryError){
+      savedIn='patients_main';
+      try{
+        const {data,error}=await SB.from('patients_main').insert({
+          hospital_number:fallbackHospital,
+          id_card_number:idCard||null,
+          first_name:fn,
+          surname:sn,
+          mobile_number:patientPayload.contact_number,
+          date_of_birth:patientPayload.dob,
+          sex:patientPayload.sex,
+          locality:patientPayload.locality,
+          patient_status:status,
+          current_ward:patientPayload.ward,
+          medical_history:[patientPayload.op_performed_findings,combinedNotes].filter(Boolean).join('\n\n')||null,
+          is_active:true,
+          created_by:(typeof getLoggedInSubmitterName==='function'?getLoggedInSubmitterName():null)
+        }).select('id').single();
+        if(error)throw error;
+        patientId=data?.id;
+      }catch(fallbackError){
+        alert('Patient could not be saved. Please check required fields and try again. Details: '+(fallbackError?.message||primaryError?.message||'Unknown error'));
+        return;
+      }
+    }
+    if(!patientId)return;
+    try{
+      await SB.from('episodes_main').insert({
+        patient_id:patientId,
+        episode_type:m.episode,
+        episode_status:tab==='elective'?'Planned / Awaiting Operation':(status==='inpatient'?'Active Inpatient':'Active Outpatient'),
+        pathway_stage:m.stage,
+        admission_date:status==='inpatient'?today():null,
+        admission_ward:patientPayload.ward,
+        consultant:patientPayload.consultant,
+        surgery_date:patientPayload.surgery_date,
+        operation_performed:patientPayload.op_performed_findings,
+        intended_stoma_type:patientPayload.stoma_type_summary,
+        actual_stoma_type:(tab==='emergency'||tab==='readmission')?patientPayload.stoma_type_summary:null,
+        assigned_nurse:patientPayload.assigned_nurse||(typeof getLoggedInSubmitterName==='function'?getLoggedInSubmitterName():null),
+        created_by:(typeof getLoggedInSubmitterName==='function'?getLoggedInSubmitterName():null)
+      });
+    }catch(e){console.warn('Episode creation skipped:',e?.message||e);}
+    try{
+      if((tab==='emergency'||tab==='readmission') && patientPayload.stoma_type_summary){
+        await SB.from('stomas_main').insert({
+          patient_id:patientId,
+          stoma_type:patientPayload.stoma_type_summary,
+          surgery_date:patientPayload.surgery_date,
+          date_formed:patientPayload.surgery_date,
+          stoma_status:'Active',
+          created_by:(typeof getLoggedInSubmitterName==='function'?getLoggedInSubmitterName():null)
+        });
+      }
+    }catch(e){console.warn('Stoma creation skipped:',e?.message||e);}
+    try{ if(typeof logAuditTrailAction==='function')await logAuditTrailAction('insert',savedIn,patientId,{description:`${m.label} created: ${fn} ${sn}. ${destinationFor(tab,status)}`}); }catch(e){}
+    if(!window._pathwayPatient)window._pathwayPatient={};
+    window._pathwayPatient[tab]=_pathwayPatient[tab]={id:patientId,name:`${fn} ${sn}`,idCard:idCard||'—',hospNo:fallbackHospital,stage2Status:status,stage2Destination:destinationFor(tab,status),stage2Meta:m,stomaType:patientPayload.stoma_type_summary,surgeryDate:patientPayload.surgery_date};
+    const pane=document.getElementById('pathway-pane-'+tab);
+    if(pane)window.renderPathwayForm(tab,pane,_pathwayPatient[tab]);
+    if(typeof loadPatients==='function')loadPatients();
+    if(typeof refreshStage1HomeKpis==='function')refreshStage1HomeKpis();
+  };
+
+  function destinationButton(patient){
+    const status=patient.stage2Status||'outpatient';
+    if(status==='inpatient')return `<button type="button" class="primary" onclick="switchSection('patients',null);setTimeout(()=>showPatientSubtab('inpatient'),80);">Go to Inpatients</button>`;
+    return `<button type="button" class="primary" onclick="switchSection('patients',null);setTimeout(()=>showPatientSubtab('outpatient'),80);">Go to Outpatients</button>`;
+  }
+
+  window.renderPathwayForm=function(tab,pane,patient){
+    const m=patient.stage2Meta||meta(tab);
+    const col=m.colour||'#0f766e';
+    const destination=patient.stage2Destination||destinationFor(tab,patient.stage2Status||m.defaultStatus);
+    const next={
+      elective:'This patient is now a planned elective / awaiting operation case. Continue pre-operative administration from Outpatients/Patient Centre. After operation/admission, inpatient first-episode tools can be opened from Inpatients.',
+      emergency:'This patient is now an active inpatient first episode. Continue daily reviews, post-op care, teaching and discharge planning from Inpatients or the patient record.',
+      bagging:'This bagging/fistula/wound advice case has been created. Continue review and follow-up from the patient record or the correct inpatient/outpatient list.',
+      readmission:'This imported/existing stoma patient has been created without first-episode post-op tools. Continue with existing-stoma review, stoma/appliance updates and follow-up from the patient record or correct list.'
+    }[tab]||'Continue from Patient Centre.';
+    pane.innerHTML=`<div class="pathway-page-shell" style="--pathway-colour:${col};">
+      <div class="stage2-created-card">
+        <div class="stage2-created-hero">
+          <div><h3>Patient case created</h3><p>Add Patient is complete for this case. Ongoing clinical work should now continue from the correct patient workspace.</p></div>
+          <div class="stage2-status-pill">${esc(destination)}</div>
+        </div>
+        <div class="stage2-created-grid">
+          <div class="stage2-created-item"><div class="label">Patient</div><div class="value">${esc(patient.name||'—')}</div></div>
+          <div class="stage2-created-item"><div class="label">ID Card</div><div class="value">${esc(patient.idCard||'—')}</div></div>
+          <div class="stage2-created-item"><div class="label">Case Type</div><div class="value">${esc(m.label)}</div></div>
+          <div class="stage2-created-item"><div class="label">Stoma / Focus</div><div class="value">${esc(patient.stomaType||m.short||'—')}</div></div>
+          <div class="stage2-created-item"><div class="label">Date</div><div class="value">${esc(patient.surgeryDate||today())}</div></div>
+        </div>
+        <div class="stage2-next-box"><strong>Next step:</strong> ${esc(next)}</div>
+        <div class="stage2-action-row">
+          ${destinationButton(patient)}
+          <button type="button" onclick="if(typeof openPatientRecordPage==='function')openPatientRecordPage('${js(patient.id)}');">Open Patient Record</button>
+          <button type="button" onclick="clearPathwayPatient('${tab}')">Create Another ${esc(m.short)} Patient</button>
+        </div>
+      </div>
+    </div>`;
+  };
+
+  // Keep the old step engine available for patient records, but stop Add Patient from exposing all first-episode tools.
+  if(typeof PATHWAY_STEPS!=='undefined'){
+    PATHWAY_STEPS.elective=[
+      {id:'patient',title:'Patient Details Created',mandatory:true,icon:'👤',description:'Patient demographics created and protected.'},
+      {id:'planned',title:'Planned / Pre-operative Details',mandatory:false,icon:'📍',description:'Operation due date, planned procedure, siting notes and pre-op readiness recorded when available.'}
+    ];
+    PATHWAY_STEPS.emergency=[
+      {id:'patient',title:'Patient Details Created',mandatory:true,icon:'👤',description:'Unplanned patient demographics created.'},
+      {id:'surgery',title:'Surgery / Stoma Details',mandatory:true,icon:'🔵',description:'Surgery date, ward, operation, findings and stoma type recorded.'}
+    ];
+    PATHWAY_STEPS.bagging=[
+      {id:'patient',title:'Patient Details Created',mandatory:true,icon:'👤',description:'Patient details created for bagging/fistula/wound advice.'},
+      {id:'referral',title:'Referral / Assessment Details',mandatory:true,icon:'🔍',description:'Reason, assessment, advice and follow-up plan recorded.'}
+    ];
+    PATHWAY_STEPS.readmission=[
+      {id:'patient',title:'Patient Details Created',mandatory:true,icon:'👤',description:'Existing stoma patient created/imported.'},
+      {id:'existing',title:'Existing Stoma / Initial Review',mandatory:true,icon:'🔵',description:'Existing stoma details, initial review and plan recorded.'}
+    ];
+  }
+})();
+</script>
+
 </body>
 </html>
 
