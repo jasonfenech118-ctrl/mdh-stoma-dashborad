@@ -17532,6 +17532,289 @@ function renderPathwayStepsPanel(tab,patient,steps,completions,col,allDone,total
   };
 })();
 </script>
+
+
+<!-- v66-54: patient record workflow cleanup, first-episode review rules, inpatient state persistence, awaiting-operation outpatient filter. -->
+<style>
+.awaiting-op-filter-btn{
+  border:1.5px solid #f59e0b;background:#fffbeb;color:#92400e;border-radius:10px;padding:9px 12px;
+  font-size:12px;font-weight:900;font-family:'DM Sans',sans-serif;cursor:pointer;white-space:nowrap;
+}
+.awaiting-op-filter-btn.active{background:#f59e0b;color:#fff;border-color:#d97706;box-shadow:0 4px 12px rgba(245,158,11,.22);}
+.patient-record-action-btn[data-v6654-hidden="true"]{display:none!important;}
+.patient-record-first-note{font-size:11px;color:#64748b;margin:-4px 0 8px;}
+</style>
+<script>
+(function(){
+  const STATE_KEY='mdh_stoma_patient_episode_state_v66_54';
+  function readState(){try{return JSON.parse(localStorage.getItem(STATE_KEY)||'{}')||{};}catch(e){return {};}}
+  function writeState(s){try{localStorage.setItem(STATE_KEY,JSON.stringify(s||{}));}catch(e){}}
+  function patientIdOf(p){return String(p?.id??p?.patient_id??'');}
+  function stateFor(id){const s=readState();return s[String(id)]||null;}
+  function setState(id,patch){const s=readState();s[String(id)]={...(s[String(id)]||{}),...patch,updated_at:new Date().toISOString()};writeState(s);}
+  function clean(v){return String(v??'').trim();}
+  function lc(v){return clean(v).toLowerCase();}
+  function todayIso(){return new Date().toISOString().slice(0,10);}
+  function html(v){return clean(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+  function isAwaitingOperationPatient(p){
+    const b=[p?.patient_type,p?.patient_status,p?.status,p?.pathway_status,p?.pathway_type,p?.episode_type,p?.episode_status,p?.latest_outcome,p?.notes,p?.surgery_date,p?.operation_due_date,p?.operation_date_due].join(' ').toLowerCase();
+    const st=stateFor(patientIdOf(p));
+    if(st?.location==='inpatient')return false;
+    if(b.includes('inpatient')||b.includes('admitted')||b.includes('deceased')||b.includes('relocated')||b.includes('reversed'))return false;
+    return b.includes('elective')||b.includes('planned')||b.includes('awaiting')||!!(p?.operation_due_date||p?.operation_date_due||p?.surgery_date);
+  }
+  function enrichPatientWithEpisodeState(p){
+    const id=patientIdOf(p); if(!id)return p;
+    const st=stateFor(id); if(!st)return p;
+    const out={...p};
+    if(st.location==='inpatient'){
+      out.patient_type='inpatient';
+      out.patient_status='inpatient';
+      out.status='inpatient';
+      out.episode_status='Active';
+      out.pathway_status=st.reason||'Active inpatient episode';
+      out.episode_type=st.reason||out.episode_type||'Active inpatient episode';
+      out.ward=st.ward||out.ward||out.current_ward||'';
+      out.current_ward=st.ward||out.current_ward||out.ward||'';
+      out.admission_date=st.opened_date||out.admission_date||todayIso();
+    }else if(st.location==='outpatient'){
+      out.patient_type='outpatient';
+      out.patient_status='outpatient';
+      out.status='outpatient';
+      out.episode_status='Closed';
+      out.pathway_status=st.reason||'Outpatient / episode closed';
+      out.ward=''; out.current_ward='';
+    }
+    return out;
+  }
+  async function updateTableWithColumnRetry(table,id,payload){
+    if(!window.SB||!id)return {ok:false};
+    let body={...payload}; let last=null;
+    for(let i=0;i<24;i++){
+      try{
+        const r=await SB.from(table).update(body).eq('id',id).select('id');
+        if(!r.error)return {ok:true,data:r.data,body};
+        last=r.error;
+        const msg=String(r.error.message||'');
+        const m=msg.match(/Could not find the '([^']+)' column/i);
+        if(m && Object.prototype.hasOwnProperty.call(body,m[1])){delete body[m[1]];continue;}
+        break;
+      }catch(e){last=e;break;}
+    }
+    return {ok:false,error:last,body};
+  }
+  async function insertTableWithColumnRetry(table,payload){
+    if(!window.SB)return {ok:false};
+    let body={...payload}; let last=null;
+    for(let i=0;i<24;i++){
+      try{
+        const r=await SB.from(table).insert(body).select('*').single();
+        if(!r.error)return {ok:true,data:r.data,body};
+        last=r.error;
+        const msg=String(r.error.message||'');
+        const m=msg.match(/Could not find the '([^']+)' column/i);
+        if(m && Object.prototype.hasOwnProperty.call(body,m[1])){delete body[m[1]];continue;}
+        break;
+      }catch(e){last=e;break;}
+    }
+    return {ok:false,error:last,body};
+  }
+  async function persistInpatientState(patientId,ward,reason){
+    const payload={
+      patient_type:'inpatient', patient_status:'inpatient', status:'inpatient', episode_status:'Active',
+      pathway_status:reason||'Active inpatient episode', ward:ward||null, current_ward:ward||null,
+      admission_date:todayIso(), is_active:true, updated_at:new Date().toISOString(), modified_at:new Date().toISOString()
+    };
+    await Promise.allSettled([
+      updateTableWithColumnRetry('patients',patientId,payload),
+      updateTableWithColumnRetry('patients_main',patientId,{patient_status:'Inpatient',status:'Inpatient',current_ward:ward||null,ward:ward||null,is_active:true,updated_at:new Date().toISOString(),modified_at:new Date().toISOString()})
+    ]);
+    setState(patientId,{location:'inpatient',episode_status:'Active',reason:reason||'Active inpatient episode',ward:ward||'',opened_date:todayIso()});
+  }
+  async function persistOutpatientState(patientId,reason){
+    await Promise.allSettled([
+      updateTableWithColumnRetry('patients',patientId,{patient_type:'outpatient',patient_status:'outpatient',status:'outpatient',episode_status:'Closed',pathway_status:reason||'Outpatient / episode closed',ward:null,current_ward:null,updated_at:new Date().toISOString(),modified_at:new Date().toISOString()}),
+      updateTableWithColumnRetry('patients_main',patientId,{patient_status:'Outpatient',status:'Outpatient',current_ward:null,ward:null,updated_at:new Date().toISOString(),modified_at:new Date().toISOString()})
+    ]);
+    setState(patientId,{location:'outpatient',episode_status:'Closed',reason:reason||'Outpatient / episode closed',ward:''});
+  }
+  async function persistEpisode(patientId,ward,reason){
+    const base={patient_id:patientId,episode_type:reason||'Active inpatient episode',episode_status:'Active',status:'Active',pathway_stage:'Active inpatient episode',admission_date:todayIso(),opened_date:todayIso(),admission_ward:ward||null,ward:ward||null,episode_summary:reason||null,notes:reason||null,created_by:(window.getLoggedInSubmitterName?.()||window.currentLoginProfile?.full_name||window.currentAuthUser?.email||'Logged-in user')};
+    let r=await insertTableWithColumnRetry('episodes_main',base);
+    if(!r.ok)r=await insertTableWithColumnRetry('episodes',base);
+    return r;
+  }
+  const originalGetProjectPatients=window.getProjectPatients;
+  if(typeof originalGetProjectPatients==='function'){
+    window.getProjectPatients=async function(){
+      const rows=await originalGetProjectPatients.apply(this,arguments);
+      return (rows||[]).map(enrichPatientWithEpisodeState);
+    };
+  }
+  const originalGetProjectPatientById=window.getProjectPatientById;
+  if(typeof originalGetProjectPatientById==='function'){
+    window.getProjectPatientById=async function(id){
+      const p=await originalGetProjectPatientById.apply(this,arguments);
+      return p?enrichPatientWithEpisodeState(p):p;
+    };
+  }
+  const originalPatientMatches=window.patientMatchesCommandView;
+  window.patientMatchesCommandView=function(p,view,dntuIds){
+    const patient=enrichPatientWithEpisodeState(p||{});
+    const st=stateFor(patientIdOf(patient));
+    if(view==='inpatient'){
+      if(st?.location==='inpatient')return true;
+      return typeof originalPatientMatches==='function'?originalPatientMatches(patient,view,dntuIds):lc(patient.patient_type||patient.patient_status).includes('inpatient');
+    }
+    if(view==='outpatient'){
+      if(st?.location==='inpatient')return false;
+      const base=typeof originalPatientMatches==='function'?originalPatientMatches(patient,view,dntuIds):!lc(patient.patient_type||patient.patient_status).includes('inpatient');
+      if(window.__awaitingOperationOnly)return base && isAwaitingOperationPatient(patient);
+      return base;
+    }
+    return typeof originalPatientMatches==='function'?originalPatientMatches(patient,view,dntuIds):true;
+  };
+  function currentPatientView(){
+    const cmd=clean(document.getElementById('pt-command-filter')?.value);
+    if(cmd)return cmd;
+    const label=lc(document.getElementById('patient-active-view-label')?.textContent);
+    if(label.includes('outpatient'))return 'outpatient';
+    if(label.includes('inpatient'))return 'inpatient';
+    return window.__patientCurrentView||'';
+  }
+  function injectAwaitingOperationFilter(){
+    const bar=document.querySelector('#section-patients .pt-search-bar');
+    if(!bar)return;
+    let btn=document.getElementById('awaiting-operation-filter-btn');
+    const show=currentPatientView()==='outpatient';
+    if(!show){if(btn)btn.style.display='none';return;}
+    if(!btn){
+      btn=document.createElement('button');
+      btn.type='button';
+      btn.id='awaiting-operation-filter-btn';
+      btn.className='awaiting-op-filter-btn';
+      btn.textContent='Awaiting operation';
+      btn.onclick=function(){window.__awaitingOperationOnly=!window.__awaitingOperationOnly; if(typeof window.loadPatients==='function')window.loadPatients();};
+      const clear=Array.from(bar.querySelectorAll('button')).find(b=>lc(b.textContent).includes('clear'));
+      if(clear)bar.insertBefore(btn,clear); else bar.appendChild(btn);
+    }
+    btn.style.display='inline-flex';
+    btn.classList.toggle('active',!!window.__awaitingOperationOnly);
+    btn.textContent=window.__awaitingOperationOnly?'Awaiting operation only':'Awaiting operation';
+  }
+  const originalLoadPatients=window.loadPatients;
+  if(typeof originalLoadPatients==='function'){
+    window.loadPatients=async function(){
+      const r=await originalLoadPatients.apply(this,arguments);
+      injectAwaitingOperationFilter();
+      return r;
+    };
+  }
+  const originalShowPatientSubtab=window.showPatientSubtab;
+  if(typeof originalShowPatientSubtab==='function'){
+    window.showPatientSubtab=function(tab){
+      if(tab!=='outpatient')window.__awaitingOperationOnly=false;
+      const r=originalShowPatientSubtab.apply(this,arguments);
+      setTimeout(injectAwaitingOperationFilter,50);
+      return r;
+    };
+  }
+  function buttonText(btn){return lc(btn?.textContent||'');}
+  function prunePatientRecordActions(){
+    const page=document.getElementById('patient-record-page'); if(!page)return;
+    page.querySelectorAll('.patient-record-action-btn').forEach(btn=>{
+      const txt=buttonText(btn);
+      if(txt.includes('move to inpatients')||txt.includes('open episode')){btn.setAttribute('data-v6654-hidden','true');}
+    });
+    const topPanel=document.getElementById('patient-record-action-panel');
+    if(topPanel){
+      const note=document.createElement('div');
+      note.className='patient-record-first-note';
+      note.textContent='Post-op 1–7 and Daily Stoma Reviews are first-episode post-operative tools. Use Add New Episode for later admissions.';
+      if(!topPanel.querySelector('.patient-record-first-note'))topPanel.prepend(note);
+      topPanel.querySelectorAll('.patient-record-action-btn').forEach(btn=>{
+        const txt=buttonText(btn);
+        if(txt.includes('continue post-op'))btn.innerHTML='🗓️ First episode Post-op 1–7 Review';
+        if(txt.includes('open daily stoma review'))btn.innerHTML='📝 First episode Daily Stoma Review';
+      });
+    }
+    const cards=Array.from(page.querySelectorAll('.episode-card'));
+    cards.forEach((card,idx)=>{
+      const firstEpisode=idx===0;
+      card.querySelectorAll('.patient-record-action-btn').forEach(btn=>{
+        const txt=buttonText(btn);
+        if(txt.includes('move to inpatients')||txt.includes('open episode'))btn.setAttribute('data-v6654-hidden','true');
+        if((txt.includes('post-op')||txt.includes('daily stoma review'))&&!firstEpisode){btn.setAttribute('data-v6654-hidden','true');}
+        if(firstEpisode&&txt.includes('start post-op'))btn.innerHTML='🗓️ First episode Post-op 1–7 Review';
+        if(firstEpisode&&txt.includes('new daily stoma review'))btn.innerHTML='📝 First episode Daily Stoma Review';
+      });
+    });
+    page.querySelectorAll('.pc-table-note').forEach(n=>{
+      n.textContent='Use Post-op 1–7 or Daily Stoma Review only for the first post-operative episode. Use Add New Episode for later admissions. Closed encounters remain read-only.';
+    });
+  }
+  const originalOpenPatientRecordPage=window.openPatientRecordPage;
+  if(typeof originalOpenPatientRecordPage==='function'){
+    window.openPatientRecordPage=async function(patientId){
+      const r=await originalOpenPatientRecordPage.apply(this,arguments);
+      prunePatientRecordActions();
+      return r;
+    };
+  }
+  window.addPatientRecordEpisode=async function(patientId){
+    const reason=(prompt('Reason / type for the new episode:', 'Readmission / complication review')||'').trim();
+    if(!reason)return;
+    const ward=(prompt('Ward / location, if admitted:', '')||'').trim();
+    try{
+      await persistInpatientState(patientId,ward,reason);
+      await persistEpisode(patientId,ward,reason);
+      if(typeof window.loadPatients==='function')await window.loadPatients();
+      if(typeof originalOpenPatientRecordPage==='function')await window.openPatientRecordPage(patientId);
+      alert('New episode opened. The patient is now shown in Inpatients.');
+    }catch(err){alert('Could not add episode: '+(err?.message||err));}
+  };
+  const originalClosePatientRecordEpisode=window.closePatientRecordEpisode;
+  window.closePatientRecordEpisode=async function(patientId,episodeId){
+    const ok=confirm('Close this episode and move the patient back to Outpatients?');
+    if(!ok)return;
+    try{
+      if(episodeId && episodeId!=='current'){
+        await Promise.allSettled([
+          updateTableWithColumnRetry('episodes_main',episodeId,{episode_status:'Closed',status:'Closed',discharge_date:todayIso(),closed_at:new Date().toISOString(),updated_at:new Date().toISOString()}),
+          updateTableWithColumnRetry('episodes',episodeId,{episode_status:'Closed',status:'Closed',discharge_date:todayIso(),closed_at:new Date().toISOString(),updated_at:new Date().toISOString()})
+        ]);
+      }else if(typeof originalClosePatientRecordEpisode==='function'){
+        // For current records without an episode row, just update the patient status below.
+      }
+      await persistOutpatientState(patientId,'Outpatient / episode closed');
+      if(typeof window.loadPatients==='function')await window.loadPatients();
+      if(typeof window.openPatientRecordPage==='function')await window.openPatientRecordPage(patientId);
+      alert('Episode closed. Patient moved back to Outpatients.');
+    }catch(err){alert('Could not close episode: '+(err?.message||err));}
+  };
+  const originalOpenReview=window.openRecordDailyReviewPanel;
+  if(typeof originalOpenReview==='function'){
+    window.openRecordDailyReviewPanel=function(patientId,episodeId,mode){
+      const r=originalOpenReview.apply(this,arguments);
+      prunePatientRecordActions();
+      return r;
+    };
+  }
+  const originalSaveReview=window.saveRecordDailyReview;
+  if(typeof originalSaveReview==='function'){
+    window.saveRecordDailyReview=async function(patientId,episodeId){
+      const ward=clean(document.getElementById('rr-ward')?.value);
+      const type=clean(document.getElementById('rr-type')?.value)||'Daily Stoma Review';
+      await persistInpatientState(patientId,ward,type);
+      const r=await originalSaveReview.apply(this,arguments);
+      setTimeout(prunePatientRecordActions,100);
+      return r;
+    };
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',injectAwaitingOperationFilter);else injectAwaitingOperationFilter();
+  setTimeout(injectAwaitingOperationFilter,250);
+})();
+</script>
 </body>
 </html>
 
