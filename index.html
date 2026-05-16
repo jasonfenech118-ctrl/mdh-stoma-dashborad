@@ -1,5 +1,16 @@
 <!DOCTYPE html>
 <!--
+VERSION: v66-62 Stage 4 — Episode Safety, Closure & Movement Indicators
+Built from: v66-61b hotfix.
+
+v66-62 Stage 4 changes:
+- Added safe episode closing workflow with mandatory outcome, destination/placement, follow-up plan, closure reason and audit-friendly fields.
+- Added patient movement/destination handling when an episode is closed: outpatient, inpatient, closed from service, deceased, or reversed.
+- Added episode safety KPI strip on redesigned patient records: active episode, last review, date of surgery, stoma/appliance, and alerts.
+- Added last-reviewed visual markers to Patient Centre rows.
+- Preserved Add Patient create-only workflow, patient record rule set, appointments, Follow-Up Centre, rosters, audit, login and Supabase configuration.
+-->
+<!--
 VERSION: v66-61a Stage 3 HOTFIX — Patient Record Rule Set / Episode-Specific Workflow
 Built from: v66-60 Stage 2, with Stage 3 inserted once safely.
 Hotfix: repaired previous v66-61 syntax error caused by Stage 3 block being inserted inside printEpisode().
@@ -19459,6 +19470,256 @@ input,select,textarea{border-radius:12px!important;}
 })();
 
 </script>
+
+
+<style id="v66-62-stage4-episode-safety-css">
+/* ─────────────────────────────────────────────────────
+   v66-62 Stage 4 — episode safety, closing workflow and movement indicators
+   ───────────────────────────────────────────────────── */
+.v6662-safety-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin:12px 0 14px;}
+.v6662-safety-card{background:#fff;border:1px solid rgba(15,38,56,.10);border-left:5px solid var(--safety-colour,#0f766e);border-radius:16px;padding:11px 12px;box-shadow:0 8px 20px rgba(15,38,56,.06);}
+.v6662-safety-card .label{font-size:9.5px;font-weight:950;text-transform:uppercase;letter-spacing:.08em;color:#64748b;margin-bottom:4px;}
+.v6662-safety-card .value{font-size:15px;font-weight:950;color:#0f2638;line-height:1.15;}
+.v6662-safety-card .sub{font-size:11px;color:#64748b;margin-top:3px;line-height:1.25;font-weight:700;}
+.v6662-safety-card.ok{--safety-colour:#0f766e}.v6662-safety-card.warn{--safety-colour:#b45309}.v6662-safety-card.red{--safety-colour:#c2413b}.v6662-safety-card.blue{--safety-colour:#2563eb}.v6662-safety-card.violet{--safety-colour:#7c3aed}
+.v6662-modal-backdrop{position:fixed;inset:0;z-index:10020;background:rgba(8,37,54,.62);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:14px;}
+.v6662-modal{width:760px;max-width:98vw;max-height:92vh;overflow:auto;background:#fff;border-radius:24px;border:1px solid rgba(15,38,56,.12);box-shadow:0 30px 90px rgba(8,37,54,.32);}
+.v6662-modal-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;padding:20px 22px;border-bottom:1px solid #e5eef1;background:linear-gradient(135deg,#f8fbfc,#ecfdf9);}
+.v6662-modal-head .eyebrow{font-size:10px;font-weight:950;letter-spacing:.14em;text-transform:uppercase;color:#0f766e;margin-bottom:5px;}
+.v6662-modal-head h3{margin:0;color:#0f2638;font-size:20px;font-weight:950;letter-spacing:-.02em;}
+.v6662-modal-head p{margin:5px 0 0;color:#64748b;font-size:12px;line-height:1.35;}
+.v6662-modal-close{border:1px solid #d8e3e7;background:#fff;border-radius:999px;padding:7px 13px;font-size:12px;font-weight:900;color:#0f2638;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.v6662-modal-body{padding:18px 22px 22px;}
+.v6662-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;}
+.v6662-fg{display:flex;flex-direction:column;gap:5px;}
+.v6662-fg.full{grid-column:1/-1;}
+.v6662-fg label{font-size:10px;font-weight:950;letter-spacing:.06em;text-transform:uppercase;color:#475569;}
+.v6662-fg input,.v6662-fg select,.v6662-fg textarea{width:100%;border:1.5px solid #d8e3e7;border-radius:12px;padding:10px 11px;font-size:13px;font-family:'DM Sans',sans-serif;color:#0f2638;background:#fff;outline:none;}
+.v6662-fg input:focus,.v6662-fg select:focus,.v6662-fg textarea:focus{border-color:#0f766e;box-shadow:0 0 0 3px rgba(15,118,110,.10);}
+.v6662-fg textarea{min-height:80px;resize:vertical;}
+.v6662-required{color:#c2413b;font-weight:950;}
+.v6662-help{font-size:11px;color:#64748b;line-height:1.35;margin-top:4px;}
+.v6662-warning{margin:0 0 14px;padding:11px 12px;border-radius:14px;border:1px solid #fde68a;background:#fffbeb;color:#92400e;font-size:12px;font-weight:800;line-height:1.35;}
+.v6662-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:16px;padding-top:14px;border-top:1px solid #e5eef1;flex-wrap:wrap;}
+.v6662-btn{border:1px solid #d8e3e7;background:#fff;color:#0f2638;border-radius:999px;padding:9px 16px;font-size:12px;font-weight:900;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.v6662-btn.primary{background:#0f766e;border-color:#0f766e;color:#fff;box-shadow:0 8px 22px rgba(15,118,110,.16);}
+.v6662-btn.red{background:#fff1f2;border-color:#fecdd3;color:#9f1239;}
+.v6662-row-alert{display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border-radius:999px;font-size:10px;font-weight:950;margin-top:3px;}
+.v6662-row-alert.ok{background:#ecfdf5;color:#065f46;border:1px solid #bbf7d0}.v6662-row-alert.warn{background:#fffbeb;color:#92400e;border:1px solid #fde68a}.v6662-row-alert.red{background:#fff1f2;color:#9f1239;border:1px solid #fecdd3}
+@media(max-width:700px){.v6662-form-grid{grid-template-columns:1fr}.v6662-modal-head,.v6662-modal-body{padding-left:16px;padding-right:16px}.v6662-safety-strip{grid-template-columns:1fr}}
+@media print{.v6662-modal-backdrop,.v6662-safety-strip{display:none!important;}}
+</style>
+
+<script id="v66-62-stage4-episode-safety-js">
+/* v66-62 Stage 4 — safer episode closure and movement rules */
+(function(){
+  const VERSION_STAGE4='v66-62';
+  const STATE_KEY='mdh_stoma_patient_episode_state_v66_54';
+  function html(v){return String(v??'').replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  function js(v){return String(v??'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\n/g,'\\n').replace(/\r/g,'');}
+  function clean(v){return String(v??'').trim();}
+  function lc(v){return clean(v).toLowerCase();}
+  function today(){return new Date().toISOString().slice(0,10);}
+  function nowIso(){return new Date().toISOString();}
+  function fmtDate(v){
+    if(!v)return '—';
+    try{const d=new Date(v); return isNaN(d)?String(v):d.toLocaleDateString('en-GB');}catch(e){return String(v||'—');}
+  }
+  function dateOnly(v){
+    if(!v)return '';
+    if(typeof v==='string' && /^\d{4}-\d{2}-\d{2}/.test(v))return v.slice(0,10);
+    try{const d=new Date(v); return isNaN(d)?'':d.toISOString().slice(0,10);}catch(e){return '';}
+  }
+  function daysSince(v){
+    const ds=dateOnly(v); if(!ds)return null;
+    const a=new Date(ds+'T12:00:00'); const b=new Date(today()+'T12:00:00');
+    return Math.floor((b-a)/86400000);
+  }
+  function userName(){try{return (typeof getLoggedInSubmitterName==='function'&&getLoggedInSubmitterName())||window.CURRENT_USER_NAME||localStorage.getItem('mdh_user_name')||'Logged-in user';}catch(e){return 'Logged-in user';}}
+  function readState(){try{return JSON.parse(localStorage.getItem(STATE_KEY)||'{}')||{};}catch(e){return {};}}
+  function writeState(patientId,state){try{const all=readState(); all[String(patientId)]={...(all[String(patientId)]||{}),...state,updated_at:nowIso(),updated_by:userName(),source:VERSION_STAGE4}; localStorage.setItem(STATE_KEY,JSON.stringify(all));}catch(e){}}
+  async function schemaUpdate(table,id,payload){
+    if(typeof SB==='undefined'||!SB?.from)return {ok:false,error:new Error('Supabase not ready')};
+    let body={...payload}; let last=null;
+    for(let i=0;i<20;i++){
+      try{
+        const r=await SB.from(table).update(body).eq('id',id).select('id').limit(1);
+        if(!r.error)return {ok:true,data:r.data,body};
+        last=r.error;
+        const m=String(r.error.message||'').match(/Could not find the '([^']+)' column/i);
+        if(m && Object.prototype.hasOwnProperty.call(body,m[1])){delete body[m[1]]; continue;}
+        break;
+      }catch(err){last=err; break;}
+    }
+    return {ok:false,error:last,body};
+  }
+  async function schemaInsert(table,payload){
+    if(typeof SB==='undefined'||!SB?.from)return {ok:false,error:new Error('Supabase not ready')};
+    let body={...payload}; let last=null;
+    for(let i=0;i<20;i++){
+      try{
+        const r=await SB.from(table).insert(body).select('*').single();
+        if(!r.error)return {ok:true,data:r.data,body};
+        last=r.error;
+        const m=String(r.error.message||'').match(/Could not find the '([^']+)' column/i);
+        if(m && Object.prototype.hasOwnProperty.call(body,m[1])){delete body[m[1]]; continue;}
+        break;
+      }catch(err){last=err; break;}
+    }
+    return {ok:false,error:last,body};
+  }
+  async function fetchPatientContext(patientId){
+    const ctx=window._v6661PatientRecord;
+    if(ctx && String(ctx.patientId)===String(patientId))return ctx;
+    let patient=null, related={episodes:[],encounters:[],stomas:[],followups:[],letters:[],outcomes:[],audit:[]};
+    try{ if(typeof window.getProjectPatientById==='function') patient=await window.getProjectPatientById(patientId); }catch(e){}
+    async function select(table){try{const r=await SB.from(table).select('*').eq('patient_id',patientId).limit(500);return r.error?[]:(r.data||[]).map(x=>({...x,_table:table}));}catch(e){return [];}}
+    try{
+      const [em,el,cm,cl,sm,sl,fu,ap,dl]=await Promise.all([select('episodes_main'),select('episodes'),select('encounters_main'),select('encounters'),select('stomas_main'),select('stomas'),select('follow_ups'),select('appointments'),select('discharge_letters')]);
+      related={episodes:[...em,...el],encounters:[...cm,...cl],stomas:[...sm,...sl],followups:[...fu,...ap],letters:dl,outcomes:[],audit:[]};
+    }catch(e){}
+    return {patientId,patient,related};
+  }
+  function activeEpisodeFrom(rel){
+    const rows=rel?.episodes||[];
+    return rows.find(ep=>!/closed|complete|completed|cancelled|not proceeded|deceased|reversed/i.test([ep.episode_status,ep.status,ep.pathway_status,ep.discharge_date].filter(Boolean).join(' ')))||null;
+  }
+  function latestReview(rel){
+    const rows=[...(rel?.encounters||[])].sort((a,b)=>String(b.review_date||b.encounter_date||b.created_at||'').localeCompare(String(a.review_date||a.encounter_date||a.created_at||'')));
+    return rows[0]||null;
+  }
+  function firstValue(obj,keys){for(const k of keys){if(obj&&obj[k])return obj[k];}return '';}
+  function patientStatusLabel(p,rel){
+    const s=[p?.patient_type,p?.patient_status,p?.status,p?.pathway_status].filter(Boolean).join(' ');
+    if(/inpatient|active inpatient/i.test(s))return 'Inpatient';
+    if(activeEpisodeFrom(rel))return 'Active episode';
+    return 'Outpatient / no active inpatient episode';
+  }
+  function buildSafetyStrip(ctx){
+    const p=ctx?.patient||{}; const rel=ctx?.related||{}; const ep=activeEpisodeFrom(rel); const rev=latestReview(rel);
+    const surgery=firstValue(p,['surgery_date','date_of_surgery','operation_date']) || firstValue(ep||{},['surgery_date','date_of_surgery','operation_date']);
+    const last=rev ? (rev.review_date||rev.encounter_date||rev.created_at) : '';
+    const d=daysSince(last);
+    let reviewClass='blue', reviewText='No review recorded', reviewSub='Add a review when clinically required';
+    if(d!==null){reviewText=d===0?'Reviewed today':(d+' day'+(d===1?'':'s')+' since review'); reviewSub='Latest: '+fmtDate(last); reviewClass=d===0?'ok':(d>=2?'red':'warn');}
+    const activeText=ep ? (ep.episode_type||ep.pathway_stage||'Active episode') : 'No active episode';
+    return `<div class="v6662-safety-strip" id="v6662-patient-safety-strip">
+      <div class="v6662-safety-card ${ep?'ok':'warn'}"><div class="label">Episode status</div><div class="value">${html(activeText)}</div><div class="sub">${html(patientStatusLabel(p,rel))}</div></div>
+      <div class="v6662-safety-card blue"><div class="label">Date of surgery</div><div class="value">${html(fmtDate(surgery))}</div><div class="sub">Useful for post-operative tracking</div></div>
+      <div class="v6662-safety-card ${reviewClass}"><div class="label">Last review safety</div><div class="value">${html(reviewText)}</div><div class="sub">${html(reviewSub)}</div></div>
+      <div class="v6662-safety-card violet"><div class="label">Next action</div><div class="value">${ep?'Continue active care':'Open episode if care is needed'}</div><div class="sub">Patient-level details remain lifelong</div></div>
+    </div>`;
+  }
+  function injectSafetyStrip(){
+    const page=document.getElementById('patient-record-page');
+    const ctx=window._v6661PatientRecord;
+    if(!page||!ctx||document.getElementById('v6662-patient-safety-strip'))return;
+    const actions=page.querySelector('.v6661-record-actions');
+    if(actions)actions.insertAdjacentHTML('beforebegin',buildSafetyStrip(ctx));
+  }
+  const previousOpen=window.openPatientRecordPage;
+  if(typeof previousOpen==='function'){
+    window.openPatientRecordPage=async function(patientId){
+      const result=await previousOpen.apply(this,arguments);
+      setTimeout(injectSafetyStrip,60);
+      return result;
+    };
+  }
+
+  window.closePatientRecordEpisode=function(patientId,episodeId){
+    window.openStage4CloseEpisodeModal(patientId,episodeId);
+  };
+  window.openStage4CloseEpisodeModal=async function(patientId,episodeId){
+    document.getElementById('v6662-close-episode-modal')?.remove();
+    const ctx=await fetchPatientContext(patientId);
+    const rel=ctx.related||{};
+    const ep=(rel.episodes||[]).find(x=>String(x.id||x.episode_id_label||'current')===String(episodeId||'current')) || activeEpisodeFrom(rel) || {};
+    const p=ctx.patient||{};
+    const latest=latestReview(rel);
+    const currentAppliance=firstValue(p,['appliance_used','bag_brand']) || firstValue((rel.stomas||[])[0]||{},['appliance_used','bag_brand','bag_in_use']);
+    const modal=document.createElement('div'); modal.id='v6662-close-episode-modal'; modal.className='v6662-modal-backdrop';
+    modal.innerHTML=`<div class="v6662-modal" role="dialog" aria-modal="true" aria-label="Close episode safely">
+      <div class="v6662-modal-head"><div><div class="eyebrow">Episode closing safety</div><h3>Close Episode → placement update</h3><p>${html(p.first_name||p.name||'Patient')} ${html(p.surname||'')} · ${html(ep.episode_type||ep.pathway_stage||'Active episode')}</p></div><button class="v6662-modal-close" onclick="document.getElementById('v6662-close-episode-modal')?.remove()">✕ Close</button></div>
+      <div class="v6662-modal-body">
+        <div class="v6662-warning">Before closing, confirm the final outcome, current stoma/appliance state, follow-up plan and unresolved issues. This preserves the clinical trail and updates Inpatients/Outpatients safely.</div>
+        <div class="v6662-form-grid">
+          <div class="v6662-fg"><label>Final outcome <span class="v6662-required">*</span></label><select id="v6662-outcome"><option value="">Select outcome...</option><option>Discharged to Outpatients</option><option>Discharged from Stoma Care Service</option><option>Transferred / referred onward</option><option>Reversed / stoma closed</option><option>Deceased</option><option>Cancelled / not proceeded</option><option>Other</option></select></div>
+          <div class="v6662-fg"><label>Destination / placement <span class="v6662-required">*</span></label><select id="v6662-destination"><option value="outpatient">Move to Outpatients / Our Patients</option><option value="closed_service">Closed from service</option><option value="inpatient">Keep in Inpatients</option><option value="deceased">Mark as deceased / inactive</option><option value="reversed">Reversed / stoma closed</option></select></div>
+          <div class="v6662-fg"><label>Closure date</label><input type="date" id="v6662-close-date" value="${today()}"></div>
+          <div class="v6662-fg"><label>Last review</label><input value="${html(fmtDate(latest?.review_date||latest?.encounter_date||latest?.created_at))}" readonly></div>
+          <div class="v6662-fg"><label>Current stoma status</label><select id="v6662-stoma-status"><option value="">Select if known...</option><option>Active stoma</option><option>New stoma formed</option><option>Existing stoma unchanged</option><option>Reversed / closed</option><option>Refashioned</option><option>No stoma / not applicable</option><option>Concern remains</option></select></div>
+          <div class="v6662-fg"><label>Current appliance setup</label><input id="v6662-appliance" value="${html(currentAppliance||'')}" placeholder="Current bag/flange/accessories"></div>
+          <div class="v6662-fg full"><label>Follow-up / discharge plan <span class="v6662-required">*</span></label><textarea id="v6662-followup-plan" placeholder="Follow-up appointment, community nurse, supplies, Schedule V, patient/carer advice..."></textarea></div>
+          <div class="v6662-fg full"><label>Unresolved issues / safety notes</label><textarea id="v6662-unresolved" placeholder="Skin issue, leakage, high output, teaching still needed, supply concern, patient not coping..."></textarea></div>
+          <div class="v6662-fg"><label>Discharge letter status</label><select id="v6662-letter"><option>Not required</option><option>Required — not started</option><option>Drafted</option><option>Finalised / printed</option><option>Sent / handed over</option></select></div>
+          <div class="v6662-fg"><label>Closed by</label><input value="${html(userName())}" readonly></div>
+          <div class="v6662-fg full"><label>Reason for closure / amendment trail <span class="v6662-required">*</span></label><textarea id="v6662-reason" placeholder="Why this episode is being closed now. This becomes part of the audit trail."></textarea></div>
+        </div>
+        <div class="v6662-actions"><button class="v6662-btn" onclick="document.getElementById('v6662-close-episode-modal')?.remove()">Cancel</button><button class="v6662-btn primary" onclick="stage4CompleteEpisodeClosure('${js(patientId)}','${js(episodeId||'current')}')">Close episode safely</button></div>
+      </div>
+    </div>`;
+    document.body.appendChild(modal);
+  };
+  window.stage4CompleteEpisodeClosure=async function(patientId,episodeId){
+    const val=id=>clean(document.getElementById(id)?.value);
+    const outcome=val('v6662-outcome'), destination=val('v6662-destination'), plan=val('v6662-followup-plan'), reason=val('v6662-reason');
+    if(!outcome){alert('Please select a final outcome.');return;}
+    if(!destination){alert('Please select the patient destination / placement.');return;}
+    if(!plan){alert('Please enter the follow-up / discharge plan.');return;}
+    if(!reason){alert('Please enter the reason for closure.');return;}
+    const closeDate=val('v6662-close-date')||today();
+    const stomaStatus=val('v6662-stoma-status');
+    const appliance=val('v6662-appliance');
+    const unresolved=val('v6662-unresolved');
+    const letter=val('v6662-letter');
+    const episodePayload={episode_status:'Closed',status:'Closed',discharge_date:closeDate,closed_date:closeDate,closed_at:nowIso(),closed_by:userName(),final_outcome:outcome,outcome:outcome,patient_destination:destination,current_stoma_status:stomaStatus,current_appliance_setup:appliance,follow_up_plan:plan,discharge_plan:plan,unresolved_issues:unresolved,discharge_letter_status:letter,closure_reason:reason,updated_at:nowIso(),modified_at:nowIso(),updated_by:userName()};
+    const patientPayload={modified_at:nowIso(),updated_at:nowIso()};
+    if(destination==='outpatient')Object.assign(patientPayload,{patient_type:'outpatient',patient_status:'outpatient',status:'outpatient',pathway_status:'Outpatient / episode closed',ward:null,current_ward:null});
+    if(destination==='inpatient')Object.assign(patientPayload,{patient_type:'inpatient',patient_status:'inpatient',status:'inpatient',pathway_status:'Active inpatient episode'});
+    if(destination==='closed_service')Object.assign(patientPayload,{patient_type:'outpatient',patient_status:'closed',status:'closed',pathway_status:'Closed from service',ward:null,current_ward:null});
+    if(destination==='deceased')Object.assign(patientPayload,{patient_type:'inactive',patient_status:'deceased',status:'deceased',pathway_status:'Deceased',is_active:false,ward:null,current_ward:null});
+    if(destination==='reversed')Object.assign(patientPayload,{patient_type:'outpatient',patient_status:'reversed',status:'reversed',pathway_status:'Reversed / stoma closed',ward:null,current_ward:null});
+    try{
+      if(episodeId && episodeId!=='current'){
+        await schemaUpdate('episodes_main',episodeId,episodePayload);
+        await schemaUpdate('episodes',episodeId,episodePayload);
+      }
+      await schemaUpdate('patients',patientId,patientPayload);
+      await schemaUpdate('patients_main',patientId,patientPayload);
+      writeState(patientId,{location:destination==='inpatient'?'inpatient':'outpatient',reason:outcome,closed_outcome:outcome,closed_date:closeDate,destination});
+      try{if(typeof logAuditTrailAction==='function')await logAuditTrailAction('update','episodes_main',patientId,{description:`Episode closed safely. Outcome: ${outcome}. Destination: ${destination}. Reason: ${reason}.`});}catch(e){}
+      document.getElementById('v6662-close-episode-modal')?.remove();
+      if(typeof loadPatients==='function')loadPatients();
+      if(typeof window.openPatientRecordPage==='function')await window.openPatientRecordPage(patientId);
+      alert('Episode closed and patient placement updated safely.');
+    }catch(err){alert('Could not close episode safely: '+(err.message||err));}
+  };
+
+  // Add lightweight last-review visual markers to Patient Centre rows after the table renders.
+  function enhancePatientRows(){
+    document.querySelectorAll('#section-patients table.dt tbody tr').forEach(function(tr){
+      if(tr.dataset.v6662Marked)return;
+      const cells=[...tr.children];
+      const lastReviewCell=cells.find(td=>/\d{1,2}\/\d{1,2}\/\d{4}|\d{4}-\d{2}-\d{2}|—/.test(td.textContent||'') && /Open|Active|Inpatient|Outpatient|Patient|Stoma|Review/.test(tr.textContent||''));
+      if(!lastReviewCell)return;
+      const txt=(lastReviewCell.textContent||'').trim();
+      if(!txt || txt==='—')return;
+      const d=daysSince(txt);
+      if(d===null)return;
+      const span=document.createElement('span');
+      span.className='v6662-row-alert '+(d===0?'ok':(d>=2?'red':'warn'));
+      span.textContent=d===0?'Reviewed today':`${d}d since review`;
+      lastReviewCell.appendChild(document.createElement('br'));
+      lastReviewCell.appendChild(span);
+      tr.dataset.v6662Marked='true';
+    });
+  }
+  const obs=new MutationObserver(()=>setTimeout(enhancePatientRows,120));
+  if(document.body)obs.observe(document.body,{childList:true,subtree:true});
+  setTimeout(enhancePatientRows,600);
+})();
+</script>
+
 </body>
 </html>
 
