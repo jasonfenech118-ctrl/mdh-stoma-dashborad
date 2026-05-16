@@ -17534,6 +17534,7 @@ function renderPathwayStepsPanel(tab,patient,steps,completions,col,allDone,total
 </script>
 
 
+<!-- v66-55 built from v66-54: Follow-Up Centre now only shows paused appointment/follow-up records; patient episodes stay in Patient Centre. -->
 <!-- v66-54: patient record workflow cleanup, first-episode review rules, inpatient state persistence, awaiting-operation outpatient filter. -->
 <style>
 .awaiting-op-filter-btn{
@@ -17815,6 +17816,158 @@ function renderPathwayStepsPanel(tab,patient,steps,completions,col,allDone,total
   setTimeout(injectAwaitingOperationFilter,250);
 })();
 </script>
+
+
+<!-- v66-55: separate Patient Centre episodes from Follow-Up Centre appointment/follow-up status. -->
+<style>
+  .v6655-note{font-size:11px;color:#64748b;margin:6px 0 10px;line-height:1.35;}
+  .v6655-chip{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:999px;background:#fffbeb;color:#92400e;border:1px solid #fde68a;font-size:10px;font-weight:800;}
+  .v6655-actions{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+  .v6655-btn{padding:4px 10px;border-radius:7px;border:1px solid #d7dee8;background:#fff;color:#0f172a;font-size:11px;font-weight:800;cursor:pointer;}
+  .v6655-btn.teal{background:#0f766e;color:white;border-color:#0f766e;}
+  .v6655-btn.amber{background:#fff7ed;color:#92400e;border-color:#fed7aa;}
+</style>
+<script>
+(function(){
+  'use strict';
+  const lc=v=>String(v||'').toLowerCase();
+  const clean=v=>String(v||'').trim();
+  const EP_STATE_KEY='mdh_stoma_patient_episode_state_v66_54';
+  function readEpState(){try{return JSON.parse(localStorage.getItem(EP_STATE_KEY)||'{}')||{};}catch(e){return {};}}
+  function localPatientId(p){return String(p?.id??p?.patient_id??'');}
+  function localStateFor(id){return readEpState()[String(id)]||null;}
+  const pausedTokens=['paused','temporarily paused','temporary pause','on hold','hold','paused_dntu','paused dntu'];
+  function isPausedFollowupStatus(row){
+    const joined=[row?.followup_status,row?.status,row?.appointment_status].map(lc).join(' ');
+    return pausedTokens.some(t=>joined.includes(t));
+  }
+  function dateText(v){
+    if(!v)return '—';
+    try{
+      if(typeof window.fmtMaybeDate==='function')return window.fmtMaybeDate(v);
+      const d=new Date(v);return isNaN(d)?String(v):d.toLocaleDateString('en-MT');
+    }catch(e){return String(v||'—');}
+  }
+  function patientDisplayFromMap(patientMap,patientId,fallbackName='Unknown patient'){
+    const p=patientMap?.[patientId]||{};
+    const name=clean(`${p.first_name||''} ${p.surname||''}`)||fallbackName;
+    const id=p.id_card||p.id_card_number||p.hospital_number||p.patient_number||'—';
+    const phone=p.phone_number||p.mobile_number||p.home_number||p.contact_number||'';
+    return {name,id,phone,patient:p};
+  }
+  async function loadPausedFollowupRows(){
+    let rows=[];
+    try{
+      const {data,error}=await SB.from('follow_ups').select('*').eq('is_active',true).order('followup_due_date',{ascending:true}).limit(500);
+      if(!error && Array.isArray(data)){
+        rows=(data||[]).filter(isPausedFollowupStatus).map(r=>({...r,_followup_source:'follow_ups'}));
+      }
+    }catch(e){console.warn('Paused follow_ups load skipped:',e?.message||e);}
+    if(rows.length)return rows;
+    try{
+      const {data,error}=await SB.from('appointments').select('*').order('appt_date',{ascending:false}).order('appt_slot',{ascending:false}).limit(800);
+      if(!error && Array.isArray(data)){
+        const paused=(data||[]).filter(isPausedFollowupStatus);
+        if(typeof window.enrichAppointments==='function'){
+          const enriched=await window.enrichAppointments(paused);
+          return (enriched||[]).map(r=>({...r,_followup_source:'appointments'}));
+        }
+        return paused.map(r=>({...r,_followup_source:'appointments'}));
+      }
+    }catch(e){console.warn('Paused appointments load skipped:',e?.message||e);}
+    return rows;
+  }
+  window.renderTemporarilyPausedAppointments=async function(){
+    const inner=document.getElementById('followup-paused-inner');
+    if(!inner)return;
+    inner.innerHTML='<div class="patient-command patient-table-card" style="max-width:1120px;margin:0 auto;"><div class="empty">Loading temporarily paused follow-up appointments...</div></div>';
+    let rows=[];
+    try{rows=await loadPausedFollowupRows();}catch(error){
+      inner.innerHTML=`<div class="patient-command patient-table-card" style="max-width:1120px;margin:0 auto;"><div class="empty">Error loading temporarily paused follow-ups: ${htmlSafe(error.message||error)}</div></div>`;
+      return;
+    }
+    rows=(rows||[]).filter(r=>r && r.patient_id);
+    let patientMap={};
+    try{
+      if(typeof window.getPatientNamesMap==='function')patientMap=await window.getPatientNamesMap(rows);
+    }catch(e){console.warn('Paused follow-up patient names skipped:',e?.message||e);}
+    const body=rows.length?rows.map(r=>{
+      let pInfo;
+      if(r._followup_source==='appointments' && r.patients){
+        const name=clean(`${r.patients.first_name||''} ${r.patients.surname||''}`)||'Unknown patient';
+        pInfo={name,id:r.patients.id_card||'—',phone:r.patients.phone_number||'',patient:r.patients};
+      }else{
+        pInfo=patientDisplayFromMap(patientMap,r.patient_id,'Unknown patient');
+      }
+      const apptDate=r.appointment_date||r.appt_date||r.followup_due_date||'';
+      const apptTime=String(r.appointment_time||r.appt_slot||'').slice(0,5);
+      const status=r.followup_status||r.status||r.appointment_status||'Paused';
+      const type=r.followup_type||'Follow-up appointment';
+      const nurse=r.assigned_nurse||r.seen_by||r.staff?.full_name||r.bank_staff?.full_name||'—';
+      const sourceLabel=r._followup_source==='appointments'?'Appointment':'Follow-up plan';
+      const statusAction=r._followup_source==='follow_ups'&&typeof window.updateFollowupStatus==='function'
+        ?`<button class="v6655-btn amber" onclick="updateFollowupStatus('${jsSafe(r.id)}','${jsSafe(r.patient_id)}')">Status</button>`
+        :'';
+      const historyAction=(typeof window.openFollowupHistory==='function')
+        ?`<button class="v6655-btn teal" onclick="openFollowupHistory('${jsSafe('project:'+r.patient_id)}')">History</button>`
+        :'';
+      return `<tr>
+        <td><strong>${htmlSafe(pInfo.name)}</strong><br/><span style="font-size:10px;color:var(--muted);">${htmlSafe(sourceLabel)}</span></td>
+        <td style="font-family:monospace;font-size:12px;">${htmlSafe(pInfo.id||'—')}</td>
+        <td>${htmlSafe([dateText(apptDate),apptTime].filter(Boolean).join(' ')||'—')}</td>
+        <td>${htmlSafe(type||'—')}</td>
+        <td>${htmlSafe(nurse||'—')}</td>
+        <td><span class="v6655-chip">${htmlSafe(status||'Paused')}</span></td>
+        <td><div class="v6655-actions">${statusAction}${historyAction}</div></td>
+      </tr>`;
+    }).join(''):'<tr><td colspan="7" class="empty">No temporarily paused follow-up appointments found. Patient pathway episodes are kept in Patient Centre.</td></tr>';
+    inner.innerHTML=`<div class="patient-command patient-table-card" style="max-width:1120px;margin:0 auto;">
+      <div class="v6655-note">This view now shows only paused follow-up appointment/follow-up-plan records. First episodes, awaiting operation patients, and inpatient/outpatient episode records remain in Patient Centre.</div>
+      <div style="overflow-x:auto;"><table class="dt"><thead><tr><th>Patient</th><th>ID Card</th><th>Appointment / Due</th><th>Type</th><th>Allocated Nurse</th><th>Status</th><th>Actions</th></tr></thead><tbody>${body}</tbody></table></div>
+    </div>`;
+  };
+
+  // v66-55: protect patient-centre classification from follow-up appointment statuses.
+  const previousPatientMatches=window.patientMatchesCommandView;
+  window.patientMatchesCommandView=function(p,view,dntuIds){
+    let patient=p||{};
+    const patientId=localPatientId(patient);
+    const episodeState=localStateFor(patientId);
+    if(episodeState?.location==='inpatient'){
+      patient={...patient,patient_type:'inpatient',patient_status:'inpatient',status:'inpatient',episode_status:'Active',pathway_status:episodeState.reason||'Active inpatient episode',ward:episodeState.ward||patient.ward||patient.current_ward||''};
+    }else if(episodeState?.location==='outpatient'){
+      patient={...patient,patient_type:'outpatient',patient_status:'outpatient',status:'outpatient',episode_status:'Closed',ward:'',current_ward:''};
+    }
+    const text=[patient.patient_type,patient.patient_status,patient.episode_status,patient.pathway_status,patient.status,patient.ward,patient.current_ward].map(lc).join(' ');
+    if(view==='inpatient'){
+      if(episodeState?.location==='inpatient')return true;
+      if(text.includes('inpatient')||text.includes('active inpatient')||!!patient.ward||!!patient.current_ward)return true;
+      return false;
+    }
+    if(view==='outpatient'){
+      if(episodeState?.location==='inpatient')return false;
+      if(text.includes('deceased')||text.includes('relocated')||text.includes('reversed'))return false;
+      const isOut=lc(patient.patient_type).includes('outpatient') || lc(patient.patient_status).includes('outpatient') || lc(patient.pathway_status).includes('planned') || lc(patient.pathway_status).includes('awaiting') || !text.includes('inpatient');
+      if(window.__awaitingOperationOnly){
+        const waitText=[patient.pathway_type,patient.pathway_status,patient.operation_due_date,patient.operation_date_due,patient.surgery_date,patient.patient_status,patient.episode_status].map(lc).join(' ');
+        return isOut && (waitText.includes('elective')||waitText.includes('planned')||waitText.includes('awaiting')||!!patient.operation_due_date||!!patient.operation_date_due);
+      }
+      return isOut;
+    }
+    if(typeof previousPatientMatches==='function')return previousPatientMatches(patient,view,dntuIds);
+    return true;
+  };
+
+  const previousOpenPatientProfile=window.openPatientProfile;
+  if(typeof previousOpenPatientProfile==='function'){
+    window.openPatientProfile=async function(id){
+      window.__patientBackTarget='patients';
+      return previousOpenPatientProfile.apply(this,arguments);
+    };
+  }
+})();
+</script>
+
 </body>
 </html>
 
