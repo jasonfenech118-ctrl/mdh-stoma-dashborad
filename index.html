@@ -4154,6 +4154,11 @@ v66-42 emergency fix:
             <div class="home-btn-title">Audit Trail</div>
             <div class="home-btn-sub">Full system activity log</div>
           </div>
+          <div class="home-btn home-btn-teal" onclick="switchSection('admin-settings',null)">
+            <div class="home-btn-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06A1.65 1.65 0 0 0 15 19.4a1.65 1.65 0 0 0-1 .6 1.65 1.65 0 0 0-.4 1V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1.1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-.6-1 1.65 1.65 0 0 0-1-.4H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1.1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-.6 1.65 1.65 0 0 0 .4-1V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1.1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9c.2.3.4.7.6 1h1a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg></div>
+            <div class="home-btn-title">Admin &amp; Settings</div>
+            <div class="home-btn-sub">Maintain dropdown lists and system wording</div>
+          </div>
         </div>
       </div>
     </div>
@@ -4826,6 +4831,73 @@ v66-42 emergency fix:
           <thead><tr><th>Date / Time</th><th>User</th><th>Action</th><th>Section</th><th>Patient</th><th>Details</th></tr></thead>
           <tbody id="audit-trail-tbody"><tr><td colspan="6" class="empty">Click Refresh or select a section to load the audit trail.</td></tr></tbody>
         </table></div>
+      </div>
+    </div>
+
+
+    <!-- ══════════════════════════════════ -->
+    <!-- ADMIN / SETTINGS — v66-64 controlled lists -->
+    <!-- ══════════════════════════════════ -->
+    <div class="section" id="section-admin-settings">
+      <div class="phdr patient-page-title">
+        <div><h2>Admin &amp; Settings</h2><p>Maintain standard dropdown lists and safe system wording without changing code.</p></div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+          <button class="btn-refresh" onclick="v6664ExportReferenceLists()">Export JSON</button>
+          <button class="btn-refresh" onclick="document.getElementById('v6664-import-file').click()">Import JSON</button>
+          <input id="v6664-import-file" type="file" accept="application/json,.json" style="display:none" onchange="v6664ImportReferenceLists(this.files && this.files[0])"/>
+        </div>
+      </div>
+
+      <div class="v6664-admin-hero">
+        <div>
+          <div class="v6664-eyebrow">Clinical system maintenance</div>
+          <h3>Standard clinical lists</h3>
+          <p>Use this area to keep key dropdowns consistent: consultants, wards, localities, nurses, stoma types, appliance categories, episode reasons, outcomes and clinic slots. Comments/free text remain available where clinically needed.</p>
+        </div>
+        <div class="v6664-admin-kpis">
+          <div class="v6664-admin-kpi"><strong id="v6664-kpi-categories">—</strong><span>Lists</span></div>
+          <div class="v6664-admin-kpi"><strong id="v6664-kpi-items">—</strong><span>Total items</span></div>
+        </div>
+      </div>
+
+      <div class="v6664-admin-grid">
+        <div class="v6664-admin-sidebar">
+          <div class="v6664-admin-sidebar-title">Reference lists</div>
+          <div id="v6664-category-list" class="v6664-category-list"></div>
+          <div class="v6664-admin-note">Saved in this browser now and applied to new pathway forms. A later database-backed settings table can make the same lists shared across all devices.</div>
+        </div>
+        <div class="v6664-admin-main">
+          <div class="v6664-list-head">
+            <div>
+              <h3 id="v6664-current-title">Select a list</h3>
+              <p id="v6664-current-description">Choose a list on the left to maintain values.</p>
+            </div>
+            <span id="v6664-save-state" class="v6664-save-state">Ready</span>
+          </div>
+          <div class="v6664-add-row">
+            <input id="v6664-new-item" placeholder="Add new item..." onkeydown="if(event.key==='Enter')v6664AddItem()"/>
+            <button onclick="v6664AddItem()">+ Add</button>
+            <button class="secondary" onclick="v6664RestoreCurrentDefaults()">Restore defaults</button>
+          </div>
+          <div id="v6664-item-list" class="v6664-item-list"></div>
+        </div>
+      </div>
+
+      <div class="v6664-admin-grid two">
+        <div class="v6664-admin-main">
+          <div class="v6664-list-head"><div><h3>Safe wording rules</h3><p>These reminders keep the clinical record clear and consistent.</p></div></div>
+          <div class="v6664-rule-list">
+            <div><strong>No hard delete</strong><span>Use archive, entered in error, cancel, or amendment workflows.</span></div>
+            <div><strong>First episode only</strong><span>Teaching, siting, first post-op reviews and discharge planning appear for first new-stoma episodes unless specifically needed again.</span></div>
+            <div><strong>Episode-specific pathway</strong><span>Pathway progress belongs to the selected episode, not the lifelong patient profile.</span></div>
+            <div><strong>Stoma-level appliance history</strong><span>Appliance changes should be linked to the relevant stoma with reason and date.</span></div>
+          </div>
+        </div>
+        <div class="v6664-admin-main">
+          <div class="v6664-list-head"><div><h3>Nurse-friendly errors</h3><p>Technical errors are logged to the console; nurses should see practical messages.</p></div></div>
+          <div id="v6664-error-preview" class="v6664-error-preview">If the system cannot save, it should ask nurses to check required fields and try again rather than showing raw database wording.</div>
+          <button class="v6664-test-btn" onclick="v6664ShowFriendlyMessage('Patient could not be saved. Please check the required fields and try again.','warning')">Preview message</button>
+        </div>
       </div>
     </div>
 
@@ -6683,6 +6755,7 @@ function switchSection(name, navEl, options={}){
     'discharge':'MDH Stoma Care — Discharge Letters',
     'kpi-dashboard':'MDH Stoma Care — KPIs',
     'audit-trail':'MDH Stoma Care — Audit Trail',
+    'admin-settings':'MDH Stoma Care — Admin & Settings',
     'clinical-reviews':'MDH Stoma Care — Clinical Reviews',
     'teaching':'MDH Stoma Care — Teaching',
     'referrals':'MDH Stoma Care — Referrals',
@@ -6729,6 +6802,7 @@ function switchSection(name, navEl, options={}){
   }
   if(name==='dntu')loadDntuPolicy();
   if(name==='kpi-dashboard')loadKpiDashboard();
+  if(name==='admin-settings' && typeof window.v6664RenderAdminSettings==='function'){setTimeout(()=>window.v6664RenderAdminSettings(),0);}
   loadLegacySectionData(name);
   if(name==='roster'){
     if(options.rosterSubtab)setTimeout(()=>showRosterSubtab(options.rosterSubtab,{skipLoad:false}),0);
@@ -19723,7 +19797,7 @@ input,select,textarea{border-radius:12px!important;}
 
 
 <!--
-VERSION: v66-63 Stage 5 — Safety, Amendments & Handover
+VERSION: v66-64 Stage 6 — Admin Settings, Standard Lists & Friendly Errors
 Built from: v66-62 Stage 4 v2.
 Changes:
 - Added patient-level safety tools: critical alert, safe amendment, safe record action, handover print.
@@ -19896,6 +19970,158 @@ Protected: Add Patient flow, episode movement, patient record redesign, Follow-U
   const obs=new MutationObserver(()=>{if(d.getElementById('patient-record-page')||d.querySelector('.v6661-record-actions'))setTimeout(injectAll,120);});
   if(d.body)obs.observe(d.body,{childList:true,subtree:true});
   setTimeout(injectAll,700);
+})();
+</script>
+
+
+
+<!-- =============================================================
+     v66-64 Stage 6 — Admin Settings, Standard Lists & Friendly Errors
+     ============================================================= -->
+<style id="v66-64-stage6-admin-css">
+#section-patients .patient-owner-panel{display:none!important;}
+#section-patients #pt-nurse-filter{display:none!important;}
+.v6664-admin-hero{background:linear-gradient(135deg,#ffffff 0%,#f8fbfc 54%,#eafbf8 100%);border:1px solid var(--border);border-radius:20px;padding:20px 22px;box-shadow:var(--shadow);display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:16px;position:relative;overflow:hidden;}
+.v6664-admin-hero:after{content:'';position:absolute;right:-70px;top:-90px;width:210px;height:210px;border-radius:50%;background:rgba(20,184,166,.10);}
+.v6664-admin-hero h3{font-family:'DM Serif Display',serif;font-size:24px;font-weight:400;color:var(--navy);margin:0 0 6px;letter-spacing:-.2px;}
+.v6664-admin-hero p{font-size:13px;line-height:1.55;color:var(--muted);max-width:830px;}
+.v6664-eyebrow{font-size:10px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--teal);margin-bottom:7px;}
+.v6664-admin-kpis{display:flex;gap:10px;position:relative;z-index:1;}
+.v6664-admin-kpi{background:#fff;border:1px solid var(--border);border-radius:14px;padding:12px 16px;min-width:105px;text-align:center;box-shadow:var(--shadow);}
+.v6664-admin-kpi strong{display:block;font-size:25px;color:var(--navy);line-height:1;font-weight:950;}
+.v6664-admin-kpi span{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.45px;color:var(--muted);font-weight:850;margin-top:5px;}
+.v6664-admin-grid{display:grid;grid-template-columns:290px minmax(0,1fr);gap:14px;margin-bottom:14px;}
+.v6664-admin-grid.two{grid-template-columns:1fr 1fr;}
+.v6664-admin-sidebar,.v6664-admin-main{background:#fff;border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);padding:16px;}
+.v6664-admin-sidebar-title{font-size:11px;font-weight:900;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-bottom:10px;}
+.v6664-category-list{display:grid;gap:8px;}
+.v6664-category-btn{border:1px solid var(--border);background:#f8fafc;border-radius:13px;padding:11px 12px;display:flex;justify-content:space-between;gap:10px;align-items:center;cursor:pointer;font-family:'DM Sans',sans-serif;text-align:left;transition:all .15s;}
+.v6664-category-btn:hover{border-color:#99f6e4;background:#f0fdfa;transform:translateY(-1px);}
+.v6664-category-btn.active{border-color:var(--teal);background:#ecfdf9;box-shadow:0 0 0 2px rgba(20,184,166,.12);}
+.v6664-category-btn strong{font-size:12.5px;color:var(--navy);}
+.v6664-category-btn span{font-size:10px;font-weight:900;color:var(--teal);background:#fff;border:1px solid #ccfbf1;border-radius:999px;padding:3px 8px;white-space:nowrap;}
+.v6664-admin-note{margin-top:12px;background:#f8fafc;border:1px dashed var(--border);border-radius:12px;padding:10px 11px;font-size:11px;color:var(--muted);line-height:1.45;}
+.v6664-list-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px;}
+.v6664-list-head h3{font-size:17px;color:var(--navy);font-weight:900;margin:0 0 4px;}
+.v6664-list-head p{font-size:12px;color:var(--muted);line-height:1.4;margin:0;}
+.v6664-save-state{font-size:10px;font-weight:900;border-radius:999px;background:#e8f5f4;color:var(--teal);border:1px solid #b7ddd9;padding:5px 9px;text-transform:uppercase;white-space:nowrap;}
+.v6664-save-state.warning{background:#fff8e1;color:#856404;border-color:#efd88a;}
+.v6664-add-row{display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap;}
+.v6664-add-row input{flex:1;min-width:220px;border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;font-family:'DM Sans',sans-serif;font-size:13px;outline:none;}
+.v6664-add-row input:focus{border-color:var(--teal);}
+.v6664-add-row button,.v6664-test-btn{border:none;border-radius:10px;padding:10px 13px;background:var(--teal);color:#fff;font-weight:850;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.v6664-add-row button.secondary{background:#f8fafc;color:var(--navy);border:1.5px solid var(--border);}
+.v6664-item-list{display:grid;gap:7px;max-height:430px;overflow:auto;padding-right:3px;}
+.v6664-item-row{display:flex;gap:8px;align-items:center;border:1px solid var(--border);border-radius:12px;background:#fff;padding:8px 9px;}
+.v6664-item-row input{flex:1;border:0;background:#f8fafc;border-radius:9px;padding:8px 10px;font-size:12.5px;font-family:'DM Sans',sans-serif;outline:none;color:var(--navy);}
+.v6664-item-row button{border:0;border-radius:8px;padding:7px 9px;font-size:11px;font-weight:900;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.v6664-item-row button.save{background:#e8f5f4;color:var(--teal);}
+.v6664-item-row button.delete{background:#fee2e2;color:#991b1b;}
+.v6664-rule-list{display:grid;gap:9px;}
+.v6664-rule-list div{border:1px solid var(--border);border-radius:12px;background:#f8fafc;padding:11px 12px;}
+.v6664-rule-list strong{display:block;color:var(--navy);font-size:13px;margin-bottom:3px;}
+.v6664-rule-list span{display:block;color:var(--muted);font-size:12px;line-height:1.4;}
+.v6664-error-preview{background:#fff8e1;border:1px solid #efd88a;color:#856404;border-radius:12px;padding:12px 13px;font-size:12px;line-height:1.45;margin-bottom:10px;}
+.v6664-friendly-message{position:fixed;right:20px;bottom:22px;z-index:3000;background:#0f2638;color:white;border-radius:14px;padding:12px 15px;box-shadow:0 16px 42px rgba(15,38,56,.22);font-size:13px;max-width:360px;border-left:5px solid var(--teal);}
+.v6664-friendly-message.warning{border-left-color:#b7791f;}
+.v6664-friendly-message.error{border-left-color:#c2413b;}
+@media(max-width:900px){.v6664-admin-hero{align-items:flex-start;flex-direction:column}.v6664-admin-kpis{width:100%}.v6664-admin-kpi{flex:1}.v6664-admin-grid,.v6664-admin-grid.two{grid-template-columns:1fr}.v6664-admin-sidebar{order:1}.v6664-admin-main{order:2}}
+</style>
+<script id="v66-64-stage6-admin-js">
+(function(){
+  const VERSION='v66-64';
+  const d=document;
+  const STORAGE_KEY='mdh_v6664_admin_reference_lists';
+  const DEFAULTS={
+    consultants:{title:'Consultants',description:'Consultants shown in patient and episode forms.',items:['Mr J. Cassar','Mr A. Borg','Mr M. Vella','Mr D. Camilleri','Other']},
+    wards:{title:'Wards / locations',description:'Hospital ward/location dropdowns used by reviews and episodes.',items:['SAU1','SAU2','SW1','SW2','SW3','SW4','SW5','SHDU','ITU','Euro1','Euro2','Outpatient','Community','Other']},
+    localities:{title:'Localities',description:'Patient locality dropdown used during Add Patient.',items:['Attard','Balzan','Birkirkara','Birzebbuga','Fgura','Gzira','Hamrun','Mosta','Msida','Naxxar','Paola','Qormi','Rabat','San Gwann','Sliema','St Julian\'s','St Paul\'s Bay','Valletta','Zabbar','Zebbug','Zejtun','Zurrieq','Gozo','Other']},
+    nurses:{title:'Nurses / users',description:'Clinical users displayed in nurse/team lists.',items:['Jason Fenech','Jacqueline Sammut','Lorraine-Marie Micallef','Shared / Common']},
+    stomaTypes:{title:'Stoma types',description:'Standard stoma-type choices.',items:['Colostomy','Ileostomy','Urostomy','Jejunostomy','Transverse colostomy','Loop colostomy','End colostomy','Loop ileostomy','End ileostomy','Mucous fistula','Other']},
+    applianceCategories:{title:'Appliance categories',description:'Appliance and accessory category wording.',items:['One-piece pouch','Two-piece pouch','Baseplate / flange','Drainable pouch','Closed pouch','Convex appliance','Flat appliance','Barrier ring','Paste','Powder','Belt','Adhesive remover','Skin barrier wipe','Other']},
+    episodeReasons:{title:'Episode reasons',description:'Reasons for opening a new episode.',items:['First stoma formation','Planned elective surgery','Unplanned / emergency surgery','Readmission','Complication','Appliance issue','Peristomal skin problem','High output','Outside hospital / existing stoma referral','Bagging advice / fistula / wound','Reversal / closure / refashion','Follow-up review','Other']},
+    outcomes:{title:'Outcomes',description:'Common closure/outcome wording.',items:['Active','Awaiting operation','Inpatient','Outpatient','Discharged to outpatient follow-up','Closed from service','Reversed / stoma closed','Deceased','Relocated overseas','Discharged to Gozo','Entered in error','Archived']},
+    clinicSlots:{title:'Clinic slots',description:'Default clinic appointment slot times.',items:['08:30','09:00','09:30','10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30']},
+    skinConditions:{title:'Skin conditions',description:'Structured peristomal skin choices.',items:['Healthy / intact','Red','Excoriated','Broken skin','Leakage-related irritation','Fungal rash suspected','Painful','Other']}
+  };
+  let currentKey='consultants';
+  const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  function cloneDefaults(){return JSON.parse(JSON.stringify(DEFAULTS));}
+  function normalise(raw){
+    const base=cloneDefaults();
+    if(!raw||typeof raw!=='object')return base;
+    Object.keys(base).forEach(k=>{if(raw[k]&&Array.isArray(raw[k].items)){base[k].items=[...new Set(raw[k].items.map(x=>String(x).trim()).filter(Boolean))];}});
+    return base;
+  }
+  function getLists(){try{return normalise(JSON.parse(localStorage.getItem(STORAGE_KEY)||'null'));}catch(e){return cloneDefaults();}}
+  function setLists(lists){localStorage.setItem(STORAGE_KEY,JSON.stringify(normalise(lists))); applyReferenceLists();}
+  function countItems(lists){return Object.values(lists).reduce((n,x)=>n+(x.items||[]).length,0);}
+  function setState(text,cls){const el=d.getElementById('v6664-save-state'); if(el){el.textContent=text||'Saved'; el.className='v6664-save-state '+(cls||'');}}
+  function applyReferenceLists(){
+    const lists=getLists();
+    window.V6664_REFERENCE_LISTS=lists;
+    window.PATHWAY_WARD_OPTIONS=lists.wards.items.slice();
+    window.PATHWAY_LOCALITY_OPTIONS=lists.localities.items.slice();
+    window.V6664_STOMA_TYPES=lists.stomaTypes.items.slice();
+    window.V6664_EPISODE_REASONS=lists.episodeReasons.items.slice();
+    window.V6664_CLINIC_SLOTS=lists.clinicSlots.items.slice();
+  }
+  window.v6664GetReferenceList=function(key){const lists=getLists(); return (lists[key]?.items||[]).slice();};
+  window.v6664RenderAdminSettings=function(){
+    applyReferenceLists();
+    const lists=getLists();
+    const cat=d.getElementById('v6664-category-list');
+    const items=d.getElementById('v6664-item-list');
+    if(!cat||!items)return;
+    d.getElementById('v6664-kpi-categories').textContent=Object.keys(lists).length;
+    d.getElementById('v6664-kpi-items').textContent=countItems(lists);
+    cat.innerHTML=Object.keys(lists).map(k=>`<button type="button" class="v6664-category-btn ${k===currentKey?'active':''}" onclick="v6664SelectCategory('${esc(k)}')"><strong>${esc(lists[k].title)}</strong><span>${(lists[k].items||[]).length}</span></button>`).join('');
+    const data=lists[currentKey]||lists.consultants;
+    d.getElementById('v6664-current-title').textContent=data.title||'Reference list';
+    d.getElementById('v6664-current-description').textContent=data.description||'Maintain list values.';
+    items.innerHTML=(data.items||[]).map((v,i)=>`<div class="v6664-item-row"><input id="v6664-item-${i}" value="${esc(v)}"><button class="save" onclick="v6664SaveItem(${i})">Save</button><button class="delete" onclick="v6664DeleteItem(${i})">Remove</button></div>`).join('')||'<div class="empty">No items yet. Add the first item above.</div>';
+    setState('Ready');
+  };
+  window.v6664SelectCategory=function(k){currentKey=k; v6664RenderAdminSettings();};
+  window.v6664AddItem=function(){
+    const input=d.getElementById('v6664-new-item'); const val=(input?.value||'').trim(); if(!val){v6664ShowFriendlyMessage('Enter a value before adding it.','warning');return;}
+    const lists=getLists(); const arr=lists[currentKey].items||[]; if(arr.map(x=>x.toLowerCase()).includes(val.toLowerCase())){v6664ShowFriendlyMessage('This item already exists in the selected list.','warning');return;}
+    arr.push(val); lists[currentKey].items=arr; setLists(lists); if(input)input.value=''; v6664RenderAdminSettings(); setState('Saved');
+  };
+  window.v6664SaveItem=function(i){
+    const input=d.getElementById('v6664-item-'+i); const val=(input?.value||'').trim(); if(!val){v6664ShowFriendlyMessage('List item cannot be blank.','warning');return;}
+    const lists=getLists(); lists[currentKey].items[i]=val; lists[currentKey].items=[...new Set(lists[currentKey].items.map(x=>String(x).trim()).filter(Boolean))]; setLists(lists); v6664RenderAdminSettings(); setState('Saved');
+  };
+  window.v6664DeleteItem=function(i){
+    if(!confirm('Remove this item from the selected list?'))return;
+    const lists=getLists(); lists[currentKey].items.splice(i,1); setLists(lists); v6664RenderAdminSettings(); setState('Saved');
+  };
+  window.v6664RestoreCurrentDefaults=function(){
+    if(!confirm('Restore the default values for this list?'))return;
+    const lists=getLists(); lists[currentKey]=cloneDefaults()[currentKey]; setLists(lists); v6664RenderAdminSettings(); setState('Defaults restored');
+  };
+  window.v6664ExportReferenceLists=function(){
+    const blob=new Blob([JSON.stringify(getLists(),null,2)],{type:'application/json'}); const url=URL.createObjectURL(blob); const a=d.createElement('a'); a.href=url; a.download='MDH_Stoma_Care_reference_lists_'+new Date().toISOString().slice(0,10)+'.json'; d.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),500); setState('Exported');
+  };
+  window.v6664ImportReferenceLists=function(file){
+    if(!file)return; const reader=new FileReader(); reader.onload=function(){try{const parsed=JSON.parse(reader.result); setLists(parsed); v6664RenderAdminSettings(); v6664ShowFriendlyMessage('Reference lists imported successfully.','');}catch(e){v6664ShowFriendlyMessage('Could not import the file. Please choose a valid JSON export.','error');}}; reader.readAsText(file);
+  };
+  window.v6664ShowFriendlyMessage=function(message,type){
+    let el=d.getElementById('v6664-friendly-message'); if(el)el.remove(); el=d.createElement('div'); el.id='v6664-friendly-message'; el.className='v6664-friendly-message '+(type||''); el.textContent=message; d.body.appendChild(el); setTimeout(()=>{try{el.remove();}catch(e){}},4200);
+  };
+  window.addEventListener('unhandledrejection',function(ev){
+    const msg=String(ev.reason?.message||ev.reason||'');
+    if(/Failed to fetch|404|406|PGRST|column|relation|Supabase|PostgREST/i.test(msg)) v6664ShowFriendlyMessage('The system could not load some data. Please refresh, and if it continues check that the required Supabase tables exist.','error');
+  });
+  window.addEventListener('error',function(ev){
+    const msg=String(ev.message||'');
+    if(/Script error|Unexpected|Supabase|PGRST|Failed/i.test(msg)) v6664ShowFriendlyMessage('Something did not load correctly. Please refresh the page. Technical details are in the browser console.','error');
+  });
+  const prevSwitch=window.switchSection;
+  if(typeof prevSwitch==='function'){
+    window.switchSection=function(name,navEl,options){const r=prevSwitch.apply(this,arguments); if(name==='admin-settings')setTimeout(v6664RenderAdminSettings,0); return r;};
+  }
+  applyReferenceLists();
 })();
 </script>
 
