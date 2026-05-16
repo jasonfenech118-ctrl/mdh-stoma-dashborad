@@ -1,5 +1,30 @@
 <!DOCTYPE html>
 <!--
+VERSION: v66-58a (hotfix on v66-58)
+Built from: v66-57
+
+v66-58a hotfix changes:
+- Fixed: Uncaught ReferenceError 'p is not defined' in renderEpisodeCardV52 — removed out-of-scope fullName(p) references inside the episode card action row and the print button. The outer top-level action panel still receives the patient name correctly because it is rendered inside openPatientRecordPage where p is in scope.
+- AI Discharge Letter now editable: textarea with Save Edits, Print and Finalise buttons.
+- Added saveDischargeLetterEdits() and printDischargeLetter() helpers.
+- Added autoShiftAwaitingOperationPatients(): runs 5s after app start, shifts any outpatient whose surgery_date <= today to Inpatient. Audit logged.
+- Added first-episode-only note inside pathway steps panel.
+
+v66-58 base changes:
+- PATHWAY_STEPS updated: elective now Step 1 (patient details), Step 2 (pre-op siting), Step 3 (surgery/stoma formed). Emergency Step 1 then Step 2. Clearer descriptions throughout.
+- Surgery date no longer required for bagging or OSH/readmission pathway.
+- Elective patient saved without surgery date defaults to outpatient/Awaiting Operation.
+- postponeSurgery(): logs reason and new date, returns patient to Outpatient/Awaiting Operation, audit logged.
+- printEpisode(): per-episode print button, opens clean print window.
+- openNewEpisodeModal(): full modal with admission type (10 types), ward, date, link-to-stoma dropdown, and notes.
+- First Episode / Later Episode badges on episode cards.
+- prunePatientRecordActions preserves postpone/print/add-new/close buttons across all episodes.
+- Renamed legacy openNewEpisodeModal to openNewEpisodeModalLegacy to avoid conflict.
+
+Protected: login, DNTU streak, Follow-Up Centre, rosters, audit, Supabase config.
+-->
+
+<!--
 LOCKED BASELINE: v66-46
 v66-47 change: Staff Audit removed as a separate Follow-Up tab button and placed under Change of Duty as a dropdown choice.
 Protected areas not intentionally changed: login, patient pathways, appointments, rosters data, main menu, SQL/database.
@@ -8021,6 +8046,46 @@ async function postponeSurgery(patientId) {
   if (typeof loadPatients === 'function') loadPatients();
 }
 
+// ── AUTO-SHIFT: OUTPATIENT → INPATIENT WHEN SURGERY DATE ARRIVES ──────────
+async function autoShiftAwaitingOperationPatients() {
+  try {
+    const today = new Date().toISOString().slice(0,10);
+    // Look in patients_main for patients with surgery_date today or earlier 
+    // and patient_status still outpatient/awaiting
+    const {data, error} = await SB.from('patients_main')
+      .select('id,first_name,surname,patient_status,surgery_date,current_ward')
+      .lte('surgery_date', today)
+      .or('patient_status.eq.Outpatient,patient_status.eq.outpatient,patient_status.ilike.%awaiting%');
+    if (error) { console.warn('autoShift query:', error.message); return; }
+    const shifted = [];
+    for (const p of (data || [])) {
+      if (!p.surgery_date) continue;
+      try {
+        await SB.from('patients_main').update({
+          patient_status: 'Inpatient',
+          modified_at: new Date().toISOString()
+        }).eq('id', p.id);
+        await SB.from('patients').update({
+          patient_type: 'inpatient',
+          patient_status: 'inpatient',
+          status: 'inpatient',
+          modified_at: new Date().toISOString()
+        }).eq('id', p.id).catch(() => {});
+        await logAuditTrailAction('auto_shift', 'patients_main', p.id, {
+          description: `Auto-shifted ${p.first_name||''} ${p.surname||''} from Outpatient to Inpatient on surgery date ${p.surgery_date}.`
+        }).catch(() => {});
+        shifted.push(`${p.first_name||''} ${p.surname||''}`.trim() || p.id);
+      } catch(e) { console.warn('autoShift update:', e); }
+    }
+    if (shifted.length) {
+      console.log('Auto-shifted patients to Inpatient:', shifted);
+    }
+  } catch(e) { console.warn('autoShiftAwaitingOperationPatients:', e); }
+}
+
+// Run auto-shift on app start (after a small delay so SB is ready)
+setTimeout(() => { if (typeof SB !== 'undefined') autoShiftAwaitingOperationPatients(); }, 5000);
+
 // ── PRINT EPISODE ─────────────────────────────────────────────────────────
 function printEpisode(episodeId, patientName) {
   const card = document.getElementById(episodeId) || document.getElementById('episode-' + String(episodeId).replace(/[^a-zA-Z0-9_-]/g, ''));
@@ -8766,12 +8831,15 @@ Stoma Care Clinic / Stoma Care Unit`;
     const mo = document.getElementById('mo');
     const mb = document.getElementById('mb');
     if(mo&&mb){
-      mb.innerHTML=`<h2>AI Discharge Letter — Draft</h2><div class="msub">Review and amend before finalising</div>
-      <div style="white-space:pre-wrap;font-size:12.5px;line-height:1.7;color:var(--text);max-height:55vh;overflow:auto;padding:14px;background:#fffef9;border-radius:10px;border:1px solid var(--border);font-family:'DM Sans',sans-serif;">${htmlSafe(letterBody)}</div>
-      <div class="mact">
+      const letterIdJs = saved?.id ? JSON.stringify(saved.id) : 'null';
+      mb.innerHTML=`<h2>AI Discharge Letter — Editable Draft</h2><div class="msub">Review, edit and finalise. Changes are saved when you click Save Edits or Finalise.</div>
+      <textarea id="discharge-letter-editor" style="width:100%;min-height:55vh;padding:14px;background:#fffef9;border-radius:10px;border:1.5px solid var(--border);font-family:'DM Sans',sans-serif;font-size:12.5px;line-height:1.7;color:var(--text);resize:vertical;outline:none;white-space:pre-wrap;">${htmlSafe(letterBody)}</textarea>
+      <div class="mact" style="display:flex;gap:8px;flex-wrap:wrap;">
         <button class="btn-cancel" onclick="closeMo()">Close</button>
-        <button class="btn-save" onclick="navigator.clipboard.writeText(${JSON.stringify(letterBody)});alert('Copied.')">Copy Text</button>
-        ${saved?.id?`<button class="btn-save" style="background:var(--green);" onclick="finaliseDischargeLetter('${saved.id}');closeMo();">Finalise Letter</button>`:''}
+        <button class="btn-save" onclick="navigator.clipboard.writeText(document.getElementById('discharge-letter-editor').value);alert('Copied to clipboard.')">📋 Copy Text</button>
+        <button class="btn-save" onclick="printDischargeLetter()" style="background:#475569;">🖨️ Print</button>
+        ${saved?.id?`<button class="btn-save" onclick="saveDischargeLetterEdits(${letterIdJs})" style="background:#0f766e;">💾 Save Edits</button>`:''}
+        ${saved?.id?`<button class="btn-save" style="background:var(--green);" onclick="saveDischargeLetterEdits(${letterIdJs}).then(()=>{finaliseDischargeLetter(${letterIdJs});closeMo();})">✓ Finalise Letter</button>`:''}
       </div>`;
       mo.classList.add('open');
     }
@@ -8786,6 +8854,52 @@ async function finaliseDischargeLetter(letterId){
   const {error} = await SB.from('discharge_letters').update({status:'finalised',updated_at:new Date().toISOString()}).eq('id',letterId);
   if(error){alert('Error: '+error.message);return;}
   alert('Letter finalised.');
+}
+
+// ── SAVE EDITED DISCHARGE LETTER ──────────────────────────────────────────
+async function saveDischargeLetterEdits(letterId){
+  const ta = document.getElementById('discharge-letter-editor');
+  if(!ta){alert('Editor not found.');return;}
+  const body = ta.value;
+  const {error} = await SB.from('discharge_letters').update({letter_body:body,updated_at:new Date().toISOString()}).eq('id',letterId);
+  if(error){alert('Save error: '+error.message);return;}
+  await logAuditTrailAction('update','discharge_letters',letterId,{description:'Discharge letter edited and saved by '+ (getLoggedInSubmitterName()||'nurse')}).catch(()=>{});
+  // Brief confirmation, no alert (called from finalise flow)
+  const btn = document.querySelector('[onclick*="saveDischargeLetterEdits"]');
+  if(btn){const orig=btn.innerHTML;btn.innerHTML='✓ Saved';setTimeout(()=>{btn.innerHTML=orig;},1200);}
+}
+
+// ── PRINT DISCHARGE LETTER ────────────────────────────────────────────────
+function printDischargeLetter(){
+  const ta = document.getElementById('discharge-letter-editor');
+  if(!ta){alert('Letter editor not found.');return;}
+  const body = ta.value;
+  const win = window.open('','_blank','width=800,height=900');
+  if(!win){alert('Please allow pop-ups for this site to print.');return;}
+  // Render the markdown-like letter into a printable doc.
+  const formatted = body
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/^•\s/gm,'&bull; ')
+    .replace(/\n/g,'<br/>');
+  win.document.write(`<!DOCTYPE html><html><head><title>MDH Stoma Care Discharge Letter</title><style>
+    body{font-family:'Times New Roman',serif;font-size:13px;color:#111;margin:32px 40px;line-height:1.6;}
+    h1{font-size:18px;color:#0f2638;margin-bottom:4px;}
+    .header{border-bottom:2px solid #0f766e;padding-bottom:12px;margin-bottom:24px;}
+    .tagline{font-size:11px;color:#666;}
+    .body{font-size:13px;}
+    .footer{margin-top:30px;padding-top:8px;border-top:1px solid #ccc;font-size:10px;color:#888;}
+    @media print{body{margin:18px 24px;}@page{margin:14mm;}}
+  </style></head><body>
+    <div class="header">
+      <h1>MDH Stoma Care Clinic</h1>
+      <div class="tagline">Mater Dei Hospital · Malta · Tel: 2545 4431</div>
+    </div>
+    <div class="body">${formatted}</div>
+    <div class="footer">Printed: ${new Date().toLocaleString('en-MT')} · MDH Stoma Care Dashboard</div>
+  </body></html>`);
+  win.document.close();
+  setTimeout(()=>{win.focus();win.print();},400);
 }
 
 // previewDischargeLetter — see v66 version below
@@ -15259,7 +15373,7 @@ async function savePathwayEncounter(tab,patientId){
   const pane=document.getElementById('pathway-pane-'+tab);const patient=_pathwayPatient[tab];if(pane&&patient){window._pathwayEpisodeActiveTab[tab]='encounters';await renderPathwayForm(tab,pane,patient);} 
 }
 function renderPathwayStepsPanel(tab,patient,steps,completions,col,allDone,totalMandatory,completedMandatory){
-  return `${!allDone?`<div class="pathway-lock-msg">🔒 Episode cannot be closed until all mandatory steps are complete. ${totalMandatory-completedMandatory} step${totalMandatory-completedMandatory!==1?'s':''} remaining.</div>`:''}${steps.map((step,i)=>{const prev=i>0?steps[i-1]:null;const prevDone=!prev||completions[prev.id];const done=completions[step.id];const isActive=!done&&prevDone;const isLocked=!done&&!prevDone;const stepState=done?'complete':isActive?'active-step':isLocked?'locked':'pending';const numState=done?'complete':isActive?'active':'locked';const doneInfo=completions[step.id];return `<div class="pathway-step-card ${stepState}"><div class="pathway-step-header ${stepState}" onclick="togglePathwayStep('step-body-${tab}-${step.id}')"><div style="display:flex;align-items:center;gap:0;"><div class="pathway-step-num ${numState}">${done?'✓':i+1}</div><div><div class="pathway-step-title">${step.icon} ${htmlSafe(step.title)}${step.mandatory?'':' <span style="font-size:9px;background:#f1f5f9;color:#64748b;padding:1px 5px;border-radius:4px;font-weight:700;margin-left:4px;">Optional</span>'}</div><div class="pathway-step-meta">${htmlSafe(step.description)}${doneInfo&&doneInfo.date?' · ✓ '+doneInfo.date+(doneInfo.nurse?' by '+doneInfo.nurse:''):''}</div></div></div><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:11px;padding:3px 9px;border-radius:999px;font-weight:800;background:${done?'#d4edda':isActive?'#fef3c7':'#f1f5f9'};color:${done?'#155724':isActive?'#92400e':'#94a3b8'};">${done?'Complete':isActive?'Action Required':'Pending'}</span><span style="color:var(--muted);font-size:14px;">${isActive||done?'▾':'▸'}</span></div></div><div class="pathway-step-body" id="step-body-${tab}-${step.id}" style="display:${isActive||done?'block':'none'};">${renderPathwayStepBody(tab,step,patient,done,isLocked,col)}</div></div>`;}).join('')}<div style="margin-top:20px;padding-top:16px;border-top:2px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;"><div style="font-size:12px;color:var(--muted);">All mandatory steps must be complete before closing the episode.</div><button onclick="closePathwayEpisode('${tab}','${patient.id}')" ${allDone?'':"disabled title='Complete all mandatory steps first'"} style="padding:10px 24px;border-radius:10px;border:none;background:${allDone?col:'#e2e8f0'};color:${allDone?'white':'#94a3b8'};font-size:13px;font-weight:700;cursor:${allDone?'pointer':'not-allowed'};font-family:'DM Sans',sans-serif;">${allDone?'✓ Close Episode & Discharge':'🔒 Close Episode (steps incomplete)'}</button></div>`;
+  return `<div style="background:#ecfdf9;border:1.5px solid #99f6e4;border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:#0f766e;font-weight:600;">📋 First episode care progression. Pre-op siting, education, post-op 1–7 review, daily reviews, teaching, discharge planning and discharge letter are first-episode-only steps. For later episodes, use Add New Episode from the patient record.</div>${!allDone?`<div class="pathway-lock-msg">🔒 Episode cannot be closed until all mandatory steps are complete. ${totalMandatory-completedMandatory} step${totalMandatory-completedMandatory!==1?'s':''} remaining.</div>`:''}${steps.map((step,i)=>{const prev=i>0?steps[i-1]:null;const prevDone=!prev||completions[prev.id];const done=completions[step.id];const isActive=!done&&prevDone;const isLocked=!done&&!prevDone;const stepState=done?'complete':isActive?'active-step':isLocked?'locked':'pending';const numState=done?'complete':isActive?'active':'locked';const doneInfo=completions[step.id];return `<div class="pathway-step-card ${stepState}"><div class="pathway-step-header ${stepState}" onclick="togglePathwayStep('step-body-${tab}-${step.id}')"><div style="display:flex;align-items:center;gap:0;"><div class="pathway-step-num ${numState}">${done?'✓':i+1}</div><div><div class="pathway-step-title">${step.icon} ${htmlSafe(step.title)}${step.mandatory?'':' <span style="font-size:9px;background:#f1f5f9;color:#64748b;padding:1px 5px;border-radius:4px;font-weight:700;margin-left:4px;">Optional</span>'}</div><div class="pathway-step-meta">${htmlSafe(step.description)}${doneInfo&&doneInfo.date?' · ✓ '+doneInfo.date+(doneInfo.nurse?' by '+doneInfo.nurse:''):''}</div></div></div><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:11px;padding:3px 9px;border-radius:999px;font-weight:800;background:${done?'#d4edda':isActive?'#fef3c7':'#f1f5f9'};color:${done?'#155724':isActive?'#92400e':'#94a3b8'};">${done?'Complete':isActive?'Action Required':'Pending'}</span><span style="color:var(--muted);font-size:14px;">${isActive||done?'▾':'▸'}</span></div></div><div class="pathway-step-body" id="step-body-${tab}-${step.id}" style="display:${isActive||done?'block':'none'};">${renderPathwayStepBody(tab,step,patient,done,isLocked,col)}</div></div>`;}).join('')}<div style="margin-top:20px;padding-top:16px;border-top:2px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;"><div style="font-size:12px;color:var(--muted);">All mandatory steps must be complete before closing the episode.</div><button onclick="closePathwayEpisode('${tab}','${patient.id}')" ${allDone?'':"disabled title='Complete all mandatory steps first'"} style="padding:10px 24px;border-radius:10px;border:none;background:${allDone?col:'#e2e8f0'};color:${allDone?'white':'#94a3b8'};font-size:13px;font-weight:700;cursor:${allDone?'pointer':'not-allowed'};font-family:'DM Sans',sans-serif;">${allDone?'✓ Close Episode & Discharge':'🔒 Close Episode (steps incomplete)'}</button></div>`;
 }
 
 </script>
@@ -17686,14 +17800,14 @@ function renderPathwayStepsPanel(tab,patient,steps,completions,col,allDone,total
           <button class="patient-record-action-btn primary" type="button" onclick="movePatientRecordToInpatient('${j(patientId)}')">🏥 Move to Inpatients / Open Episode</button>
           <button class="patient-record-action-btn amber" type="button" onclick="openRecordDailyReviewPanel('${j(patientId)}','${j(ep.id||'current')}','postop')">🗓️ Start Post-op 1–7 Review</button>
           <button class="patient-record-action-btn blue" type="button" onclick="openRecordDailyReviewPanel('${j(patientId)}','${j(ep.id||'current')}','daily')">📝 New Daily Stoma Review</button>
-          <button class="patient-record-action-btn" type="button" onclick="openNewEpisodeModal('${j(patientId)}','${j(fullName(p))}')">➕ Add New Episode</button>
+          <button class="patient-record-action-btn" type="button" onclick="openNewEpisodeModal('${j(patientId)}','')">➕ Add New Episode</button>
           <button class="patient-record-action-btn" type="button" onclick="postponeSurgery('${j(patientId)}')">📅 Postpone Surgery</button>
-          <button class="patient-record-action-btn" type="button" onclick="printEpisode('episode-${String(ep.id||'current').replace(/[^a-zA-Z0-9_-]/g,'')}','${j(fullName(p))}')" title="Print this episode">🖨️ Print Episode</button>
+          <button class="patient-record-action-btn" type="button" onclick="printEpisode('episode-${String(ep.id||'current').replace(/[^a-zA-Z0-9_-]/g,'')}','')" title="Print this episode">🖨️ Print Episode</button>
           ${closed?'':`<button class="patient-record-action-btn red" type="button" onclick="closePatientRecordEpisode('${j(patientId)}','${j(ep.id||'current')}')">🔒 Close Episode → Outpatients</button>`}
         </div>
         <div class="episode-overview-grid">${overview.map(([a,b])=>`<div class="episode-overview-item"><div class="label">${e(a)}</div><div class="value">${e(b)}</div></div>`).join('')}</div>
         <div style="display:flex;justify-content:flex-end;margin-bottom:10px;">
-          <button type="button" onclick="printEpisode('${e(eid)}','${e(fullName(p)||'Patient')}')" style="padding:6px 14px;border-radius:8px;border:1.5px solid #d8e3e7;background:#f8fafc;color:#0f2638;font-size:11px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;display:inline-flex;align-items:center;gap:6px;">🖨️ Print this episode</button>
+          <button type="button" onclick="printEpisode('${e(eid)}','')" style="padding:6px 14px;border-radius:8px;border:1.5px solid #d8e3e7;background:#f8fafc;color:#0f2638;font-size:11px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;display:inline-flex;align-items:center;gap:6px;">🖨️ Print this episode</button>
         </div>
         <div class="pathway-table-wrap"><table class="pathway-paper-table"><thead><tr><th>Date</th><th>Encounter No.</th><th>Type</th><th>Stoma / Skin / Output / Changes</th><th>Care considerations / plan</th><th>Status</th></tr></thead><tbody>${related.length?related.map(function(r){return `<tr><td>${displayDate(r.encounter_date||r.review_date||r.created_at)}</td><td><strong>${e(r.encounter_number||'—')}</strong></td><td>${e(r.encounter_type||'Review')}</td><td>${e(r.clinical_summary||r.stoma_summary||r.notes||'—')}</td><td>${e(r.plan||r.follow_up_plan||r.care_plan||'—')}</td><td><span class="closed-lock-pill">🔒 ${e(r.encounter_status||r.status||'Closed')}</span></td></tr>`;}).join(''):`<tr><td colspan="6" class="empty">No encounters recorded for this episode yet. Use the buttons above to start a post-op or daily stoma review.</td></tr>`}</tbody></table></div>
       </div>
