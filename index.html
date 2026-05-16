@@ -1,5 +1,18 @@
 <!DOCTYPE html>
 <!--
+VERSION: v66-59 Stage 1 (Navigation / Add Patient / Command Centre styling)
+Built from protected baseline: v66-58a
+
+v66-59 Stage 1 changes:
+- Removed the top horizontal navigation button row from the visible interface.
+- Header now acts as the clean contextual navigation area with Back, Home, Profile, and Sign Out.
+- Home screen reorganised into a clinical command-centre dashboard with KPI cards and grouped entry points.
+- Renamed Add Patient to Add Patient in visible wording while preserving the existing underlying section id and workflow code.
+- Renamed pathway entry buttons to Add Elective Surgery Patient Patient, Add Unplanned Patient, Bagging Advice for Fistula and Wounds Advice, and Add Outside Stoma Hospital Patient.
+- Applied first pass of the soft teal/blue command-centre visual style across core cards, tables, tabs, panels, and modals.
+- No database/Supabase schema changes. Appointment, roster, login, audit and existing patient-loading logic preserved.
+
+Previous baseline:
 VERSION: v66-58a (hotfix on v66-58)
 Built from: v66-57
 
@@ -30,11 +43,11 @@ v66-47 change: Staff Audit removed as a separate Follow-Up tab button and placed
 Protected areas not intentionally changed: login, patient pathways, appointments, rosters data, main menu, SQL/database.
 -->
 
-<!-- v66-44 locked baseline patch: Removed Ward from Elective Surgery patient details/save payload; removed unsupported assigned_nurse/ward fields from patients table insert path with schema-safe retry. -->
+<!-- v66-44 locked baseline patch: Removed Ward from Elective Surgery Patient patient details/save payload; removed unsupported assigned_nurse/ward fields from patients table insert path with schema-safe retry. -->
 
 
 <!--
-v66-49 change: Patient Centre visibility fix. Inpatients/Outpatients/Master List now load patients saved from Patient Pathways even when patients_main / episodes_main / stomas_main are not present. Falls back to the live patients table and keeps existing Project Bible support when available.
+v66-49 change: Patient Centre visibility fix. Inpatients/Outpatients/Master List now load patients saved from Add Patient even when patients_main / episodes_main / stomas_main are not present. Falls back to the live patients table and keeps existing Project Bible support when available.
 Protected areas not intentionally changed: Follow-Up Centre, rosters, appointments, patient pathway form layout, main navigation, SQL/database.
 -->
 
@@ -1032,7 +1045,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 
 
 
-/* v50 — Follow-Ups page only: vertical full-width professional command buttons */
+/* v50 — Follow-Up Centre page only: vertical full-width professional command buttons */
 #section-followups .patient-button-section{
   width:100%;
   margin-top:16px;
@@ -3953,7 +3966,7 @@ v66-42 emergency fix:
   <div class="lc">
     <div class="ico app-mark">MDH</div>
     <h1>MDH Stoma Care Clinic</h1>
-    <p>Roster &amp; Appointments System</p>
+    <p>Patient Dashboard System</p>
     <input type="email" id="li-email" placeholder="Clinic email" autocomplete="email"/>
     <input type="password" id="li-pass" placeholder="Password" autocomplete="current-password"/>
     <button class="btn-li" onclick="window.loginApp()">Sign In</button>
@@ -3979,60 +3992,9 @@ v66-42 emergency fix:
     </div>
   </div>
 
-  <!-- TOP NAVIGATION TABS WITH DROPDOWN MENUS -->
-  <nav class="app-menu-tabs" aria-label="Main navigation">
-    <button type="button" class="app-menu-home active" data-menu-group="home" onclick="closeTopMenus();switchSection('home',null)"><span class="app-menu-mini-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/></svg></span><span>Home</span></button>
-
-    <div class="app-menu-tab blue" data-menu-group="patient-management">
-      <button type="button" class="app-menu-tab-button" onclick="toggleTopMenu(this,event)"><span class="app-menu-mini-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="18" cy="18" r="2"/><path d="M8 6h8"/><path d="M18 8v8"/><path d="M8 6v12h8"/></svg></span><span>Patient Management</span><span class="app-menu-caret">▾</span></button>
-      <div class="app-menu-dropdown">
-        <button type="button" class="app-menu-item" onclick="closeTopMenus();switchSection('patient-pathways',null)" style="--item-colour:#2563eb;--item-dark:#1d4ed8;--item-soft:#eff6ff;"><span class="app-menu-item-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="18" cy="18" r="2"/><path d="M8 6h8"/><path d="M18 8v8"/><path d="M8 6v12h8"/></svg></span><span><span class="app-menu-item-title">Patient Pathways</span><span class="app-menu-item-sub">Elective, emergency, fistula/wounds and OSH stoma</span></span></button>
-        <button type="button" class="app-menu-item" onclick="closeTopMenus();switchSection('patient-outcomes',null)" style="--item-colour:#7c3aed;--item-dark:#5b21b6;--item-soft:#f5f3ff;"><span class="app-menu-item-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg></span><span><span class="app-menu-item-title">Patient Outcomes</span><span class="app-menu-item-sub">Active, reversed, deceased and relocated views</span></span></button>
-        <button type="button" class="app-menu-item" onclick="closeTopMenus();switchSection('followups',null)" style="--item-colour:#0284c7;--item-dark:#0369a1;--item-soft:#ecfeff;"><span class="app-menu-item-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="m8 16 2 2 5-5"/></svg></span><span><span class="app-menu-item-title">Follow-Ups</span><span class="app-menu-item-sub">Appointments, DNTU and rosters</span></span></button>
-        <button type="button" class="app-menu-item" onclick="closeTopMenus();openPatientCentrePage('handover')" style="--item-colour:#b45309;--item-dark:#92400e;--item-soft:#fffbeb;"><span class="app-menu-item-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M7 7h6a3 3 0 0 1 0 6H7"/><path d="m10 4-3 3 3 3"/><path d="M17 17H11a3 3 0 0 1 0-6h6"/><path d="m14 20 3-3-3-3"/></svg></span><span><span class="app-menu-item-title">Handover</span><span class="app-menu-item-sub">Patients needing handover</span></span></button>
-      </div>
-    </div>
-
-    <div class="app-menu-tab cyan" data-menu-group="followups">
-      <button type="button" class="app-menu-tab-button" onclick="toggleTopMenu(this,event)"><span class="app-menu-mini-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="m8 16 2 2 5-5"/></svg></span><span>Follow-Up Centre</span><span class="app-menu-caret">▾</span></button>
-      <div class="app-menu-dropdown">
-        <button type="button" class="app-menu-item" onclick="closeTopMenus();switchSection('followups',null);setTimeout(()=>showFollowupSubtab('appointments'),0)" style="--item-colour:#0f766e;--item-dark:#064e3b;--item-soft:#ecfdf9;"><span class="app-menu-item-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="16" rx="2"/><path d="M9 8h6"/><path d="M9 12h6"/><path d="M9 16h4"/></svg></span><span><span class="app-menu-item-title">Patient Appointments</span><span class="app-menu-item-sub">Daily clinic appointment book</span></span></button>
-        <button type="button" class="app-menu-item" onclick="closeTopMenus();switchSection('followups',null);setTimeout(()=>showFollowupSubtab('outcomes'),0)" style="--item-colour:#2563eb;--item-dark:#1d4ed8;--item-soft:#eff6ff;"><span class="app-menu-item-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-5"/><path d="M12 16V8"/><path d="M16 16v-7"/><path d="M20 6l-4 4-3-3-5 5"/></svg></span><span><span class="app-menu-item-title">Appointment Outcomes</span><span class="app-menu-item-sub">Seen, DNTU, cancelled and follow-up status</span></span></button>
-        <button type="button" class="app-menu-item" onclick="closeTopMenus();switchSection('followups',null);setTimeout(()=>showFollowupSubtab('clinic'),0)" style="--item-colour:#7c3aed;--item-dark:#5b21b6;--item-soft:#f5f3ff;"><span class="app-menu-item-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="m8 16 2 2 5-5"/></svg></span><span><span class="app-menu-item-title">Clinic Audit</span><span class="app-menu-item-sub">Monthly clinic activity view</span></span></button>
-        <button type="button" class="app-menu-item" onclick="closeTopMenus();switchSection('followups',null);setTimeout(()=>showFollowupSubtab('dntu'),0)" style="--item-colour:#c2413b;--item-dark:#7c2d12;--item-soft:#fff7ed;"><span class="app-menu-item-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="m10.29 3.86-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.71-3.14l-8-14a2 2 0 0 0-3.42 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></span><span><span class="app-menu-item-title">DNTU</span><span class="app-menu-item-sub">Did Not Turn Up tracking</span></span></button>
-        <button type="button" class="app-menu-item" onclick="closeTopMenus();switchSection('followups',null);setTimeout(()=>showFollowupSubtab('paused'),0)" style="--item-colour:#d97706;--item-dark:#92400e;--item-soft:#fffbeb;"><span class="app-menu-item-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M10 8v8"/><path d="M14 8v8"/></svg></span><span><span class="app-menu-item-title">Temporarily Paused Appointments</span><span class="app-menu-item-sub">Paused or awaiting restart</span></span></button>
-        <button type="button" class="app-menu-item" onclick="closeTopMenus();switchSection('followups',null,{followupSubtab:'rosters',followupRosterSubtab:'monthly'})" style="--item-colour:#475569;--item-dark:#0f2638;--item-soft:#f8fafc;"><span class="app-menu-item-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="M8 15h8"/><path d="M8 18h5"/></svg></span><span><span class="app-menu-item-title">Rosters</span><span class="app-menu-item-sub">Monthly roster, change of duty and staff audit</span></span></button>
-      </div>
-    </div>
-
-    <div class="app-menu-tab teal" data-menu-group="patient-centre">
-      <button type="button" class="app-menu-tab-button" onclick="toggleTopMenu(this,event)"><span class="app-menu-mini-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="16" rx="2"/><path d="M9 8h6"/><path d="M9 12h6"/><path d="M9 16h4"/></svg></span><span>Patient Center</span><span class="app-menu-caret">▾</span></button>
-      <div class="app-menu-dropdown">
-        <button type="button" class="app-menu-item" onclick="closeTopMenus();openPatientCentrePage('master')" style="--item-colour:#0f766e;--item-dark:#064e3b;--item-soft:#ecfdf9;"><span class="app-menu-item-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="16" rx="2"/><path d="M9 8h6"/><path d="M9 12h6"/><path d="M9 16h4"/></svg></span><span><span class="app-menu-item-title">Master List</span><span class="app-menu-item-sub">Complete patient register</span></span></button>
-        <button type="button" class="app-menu-item" onclick="closeTopMenus();openPatientCentrePage('inpatient')" style="--item-colour:#2563eb;--item-dark:#1d4ed8;--item-soft:#eff6ff;"><span class="app-menu-item-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M3 12h18"/><path d="M5 12V8a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v4"/><path d="M7 16v2"/><path d="M17 16v2"/><path d="M9 9h.01"/></svg></span><span><span class="app-menu-item-title">Inpatients</span><span class="app-menu-item-sub">Current inpatient workload</span></span></button>
-        <button type="button" class="app-menu-item" onclick="closeTopMenus();openPatientCentrePage('outpatient')" style="--item-colour:#7c3aed;--item-dark:#5b21b6;--item-soft:#f5f3ff;"><span class="app-menu-item-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M13 5h6v6"/><path d="M10 14 19 5"/><path d="M5 7v12h12"/></svg></span><span><span class="app-menu-item-title">Outpatients</span><span class="app-menu-item-sub">Outpatient and community list</span></span></button>
-      </div>
-    </div>
-
-    <div class="app-menu-tab violet" data-menu-group="clinical-workforce">
-      <button type="button" class="app-menu-tab-button" onclick="toggleTopMenu(this,event)"><span class="app-menu-mini-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><span>Clinical Workforce</span><span class="app-menu-caret">▾</span></button>
-      <div class="app-menu-dropdown">
-        <button type="button" class="app-menu-item" onclick="closeTopMenus();openClinicalWorkforcePage('jacqueline')" style="--item-colour:#7c3aed;--item-dark:#5b21b6;--item-soft:#f5f3ff;"><span class="app-menu-item-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><span><span class="app-menu-item-title">Jacqueline My Patients</span><span class="app-menu-item-sub">Patients linked to Jacqueline</span></span></button>
-        <button type="button" class="app-menu-item" onclick="closeTopMenus();openClinicalWorkforcePage('jason')" style="--item-colour:#0f766e;--item-dark:#064e3b;--item-soft:#ecfdf9;"><span class="app-menu-item-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><span><span class="app-menu-item-title">Jason My Patients</span><span class="app-menu-item-sub">Patients linked to Jason</span></span></button>
-        <button type="button" class="app-menu-item" onclick="closeTopMenus();openClinicalWorkforcePage('lorraine')" style="--item-colour:#2563eb;--item-dark:#1d4ed8;--item-soft:#eff6ff;"><span class="app-menu-item-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><span><span class="app-menu-item-title">Lorraine My Patients</span><span class="app-menu-item-sub">Patients linked to Lorraine</span></span></button>
-        <button type="button" class="app-menu-item" onclick="closeTopMenus();openClinicalWorkforcePage('common')" style="--item-colour:#b45309;--item-dark:#92400e;--item-soft:#fffbeb;"><span class="app-menu-item-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><span><span class="app-menu-item-title">Common Our Patients</span><span class="app-menu-item-sub">Shared patients</span></span></button>
-      </div>
-    </div>
-
-    <div class="app-menu-tab slate" data-menu-group="admin">
-      <button type="button" class="app-menu-tab-button" onclick="toggleTopMenu(this,event)"><span class="app-menu-mini-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-5"/><path d="M12 16V8"/><path d="M16 16v-7"/><path d="M20 6l-4 4-3-3-5 5"/></svg></span><span>Admin &amp; Reporting</span><span class="app-menu-caret">▾</span></button>
-      <div class="app-menu-dropdown">
-        <button type="button" class="app-menu-item" onclick="closeTopMenus();switchSection('kpi-dashboard',null)" style="--item-colour:#e11d48;--item-dark:#9f1239;--item-soft:#fff1f2;"><span class="app-menu-item-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-5"/><path d="M12 16V8"/><path d="M16 16v-7"/><path d="M20 6l-4 4-3-3-5 5"/></svg></span><span><span class="app-menu-item-title">KPIs</span><span class="app-menu-item-sub">Clinical performance indicators</span></span></button>
-        <button type="button" class="app-menu-item" onclick="closeTopMenus();switchSection('audit-trail',null)" style="--item-colour:#475569;--item-dark:#0f2638;--item-soft:#f8fafc;"><span class="app-menu-item-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/><path d="M11 8v3l2 2"/></svg></span><span><span class="app-menu-item-title">Audit Trail</span><span class="app-menu-item-sub">Full system activity log</span></span></button>
-      </div>
-    </div>
-  </nav>
-
+  <!-- TOP NAVIGATION TABS REMOVED FROM VISIBLE UI IN v66-59.
+       Main navigation now starts from the Home command-centre cards.
+       Back/Home/Profile/Sign Out remain in the header. -->
 
   <!-- MAIN CONTENT -->
   <div class="main-content" id="main-content">
@@ -4041,106 +4003,124 @@ v66-42 emergency fix:
     <!-- HOME DASHBOARD -->
     <!-- ══════════════════════════════════ -->
     <div class="section active" id="section-home">
-      <div class="phdr">
+      <div class="home-command-hero">
         <div>
-          <h2>MDH Stoma Care Command Centre</h2>
+          <div class="home-eyebrow">Mater Dei Hospital · Stoma Care Clinic</div>
+          <h2 id="home-main-title">MDH Stoma Care Command Centre</h2>
           <p id="home-date-line">Mater Dei Hospital · Stoma Care Clinic</p>
         </div>
+        <div class="home-hero-mark" aria-hidden="true">MDH</div>
       </div>
 
       <!-- Global Search Bar -->
-      <div class="global-search-wrap">
+      <div class="global-search-wrap home-command-search">
         <div class="global-search-inner">
           <span class="global-search-icon">🔍</span>
-          <input type="text" id="global-search-input" placeholder="Search patients, appointments, episodes, follow-ups, discharge letters..." autocomplete="off" oninput="handleGlobalSearch(this.value)" style="flex:1;border:none;outline:none;font-size:14px;font-family:'DM Sans',sans-serif;background:transparent;color:var(--navy);"/>
+          <input type="text" id="global-search-input" placeholder="Search patients, ID cards, appointments, episodes, follow-ups, discharge letters..." autocomplete="off" oninput="handleGlobalSearch(this.value)" style="flex:1;border:none;outline:none;font-size:14px;font-family:'DM Sans',sans-serif;background:transparent;color:var(--navy);"/>
           <button onclick="clearGlobalSearch()" style="border:none;background:none;cursor:pointer;font-size:16px;color:var(--muted);padding:0 4px;">✕</button>
         </div>
         <div id="global-search-results"></div>
       </div>
 
+      <!-- Command-centre KPI cards -->
+      <div class="home-kpi-grid" aria-label="Service summary">
+        <div class="home-kpi-card kpi-patients"><div class="home-kpi-label">Active Patients</div><div class="home-kpi-value" id="tile-active-patients">—</div><div class="home-kpi-sub">Current patient records</div></div>
+        <div class="home-kpi-card kpi-inpatients"><div class="home-kpi-label">Inpatients</div><div class="home-kpi-value" id="tile-home-inpatients">—</div><div class="home-kpi-sub">Active inpatient workload</div></div>
+        <div class="home-kpi-card kpi-outpatients"><div class="home-kpi-label">Outpatients</div><div class="home-kpi-value" id="tile-home-outpatients">—</div><div class="home-kpi-sub">Outpatient/community list</div></div>
+        <div class="home-kpi-card kpi-followups"><div class="home-kpi-label">Follow-ups Today</div><div class="home-kpi-value" id="tile-home-followups-today">—</div><div class="home-kpi-sub">Clinic appointments today</div></div>
+        <div class="home-kpi-card kpi-reviews"><div class="home-kpi-label">Reviews Today</div><div class="home-kpi-value" id="tile-home-reviews-today">—</div><div class="home-kpi-sub">Daily reviews recorded</div></div>
+      </div>
+
       <!-- GROUP: Patient Management -->
-      <div class="home-group-label">Patient Management</div>
-      <div class="home-btn-grid">
-        <div class="home-btn home-btn-blue" onclick="switchSection('patient-pathways',null)">
-          <div class="home-btn-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="18" cy="18" r="2"/><path d="M8 6h8"/><path d="M18 8v8"/><path d="M8 6v12h8"/></svg></div>
-          <div class="home-btn-title">Patient Pathways</div>
-          <div class="home-btn-sub">Elective · Emergency · Fistula/Wounds</div>
-        </div>
-        <div class="home-btn home-btn-indigo" onclick="switchSection('patient-outcomes',null)">
-          <div class="home-btn-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="16" rx="2"/><path d="M9 4.5h6"/><path d="m9 12 2 2 4-4"/><path d="M9 17h6"/></svg></div>
-          <div class="home-btn-title">Patient Outcomes</div>
-          <div class="home-btn-sub">Status &amp; lifecycle views</div>
-        </div>
-        <div class="home-btn home-btn-cyan" onclick="switchSection('followups',null)">
-          <div class="home-btn-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="m8 16 2 2 5-5"/></svg></div>
-          <div class="home-btn-title">Follow-Ups</div>
-          <div class="home-btn-sub">Appointments · DNTU · Rosters</div>
-        </div>
-        <div class="home-btn home-btn-gold" onclick="openPatientCentrePage('handover')">
-          <div class="home-btn-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M7 7h6a3 3 0 0 1 0 6H7"/><path d="m10 4-3 3 3 3"/><path d="M17 17H11a3 3 0 0 1 0-6h6"/><path d="m14 20 3-3-3-3"/></svg></div>
-          <div class="home-btn-title">Handover</div>
-          <div class="home-btn-sub">Patients needing handover</div>
-        </div>
-      </div>
-
-      <!-- GROUP: Administration -->
-      <div class="home-group-label">Administration &amp; Reporting</div>
-      <div class="home-btn-grid">
-        <div class="home-btn home-btn-rose" onclick="switchSection('kpi-dashboard',null)">
-          <div class="home-btn-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-5"/><path d="M12 16V8"/><path d="M16 16v-7"/><path d="M20 6l-4 4-3-3-5 5"/></svg></div>
-          <div class="home-btn-title">KPIs</div>
-          <div class="home-btn-sub">Clinical performance indicators</div>
-        </div>
-        <div class="home-btn home-btn-zinc" onclick="switchSection('audit-trail',null)">
-          <div class="home-btn-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/><path d="M11 8v3l2 2"/></svg></div>
-          <div class="home-btn-title">Audit Trail</div>
-          <div class="home-btn-sub">Full system activity log</div>
+      <div class="home-group-panel">
+        <div class="home-group-label">Patient Management</div>
+        <div class="home-btn-grid">
+          <div class="home-btn home-btn-blue" onclick="switchSection('patient-pathways',null)">
+            <div class="home-btn-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/><circle cx="12" cy="12" r="9"/></svg></div>
+            <div class="home-btn-title">Add Patient</div>
+            <div class="home-btn-sub">Create/start a new pathway or referral</div>
+          </div>
+          <div class="home-btn home-btn-indigo" onclick="switchSection('patient-outcomes',null)">
+            <div class="home-btn-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="16" rx="2"/><path d="M9 4.5h6"/><path d="m9 12 2 2 4-4"/><path d="M9 17h6"/></svg></div>
+            <div class="home-btn-title">Patient Outcomes</div>
+            <div class="home-btn-sub">Status and lifecycle views</div>
+          </div>
+          <div class="home-btn home-btn-cyan" onclick="switchSection('followups',null)">
+            <div class="home-btn-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="m8 16 2 2 5-5"/></svg></div>
+            <div class="home-btn-title">Follow-Up Centre</div>
+            <div class="home-btn-sub">Appointments, outcomes, DNTU and rosters</div>
+          </div>
+          <div class="home-btn home-btn-gold" onclick="openPatientCentrePage('handover')">
+            <div class="home-btn-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M7 7h6a3 3 0 0 1 0 6H7"/><path d="m10 4-3 3 3 3"/><path d="M17 17H11a3 3 0 0 1 0-6h6"/><path d="m14 20 3-3-3-3"/></svg></div>
+            <div class="home-btn-title">Handover</div>
+            <div class="home-btn-sub">Patients needing handover</div>
+          </div>
         </div>
       </div>
 
+      <!-- GROUP: Patient Centre -->
+      <div class="home-group-panel">
+        <div class="home-group-label">Patient Centre</div>
+        <div class="home-btn-grid">
+          <div class="home-btn home-btn-teal" onclick="openPatientCentrePage('master')">
+            <div class="home-btn-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="16" rx="2"/><path d="M9 8h6"/><path d="M9 12h6"/><path d="M9 16h4"/></svg></div>
+            <div class="home-btn-title">Master List</div>
+            <div class="home-btn-sub">Complete patient register</div>
+          </div>
+          <div class="home-btn home-btn-blue" onclick="openPatientCentrePage('inpatient')">
+            <div class="home-btn-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M3 12h18"/><path d="M5 12V8a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v4"/><path d="M7 16v2"/><path d="M17 16v2"/><path d="M9 9h.01"/><path d="M12 6V3"/><path d="M10 4.5h4"/></svg></div>
+            <div class="home-btn-title">Inpatients</div>
+            <div class="home-btn-sub">Current inpatient workload</div>
+          </div>
+          <div class="home-btn home-btn-violet" onclick="openPatientCentrePage('outpatient')">
+            <div class="home-btn-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M13 5h6v6"/><path d="M10 14 19 5"/><path d="M5 7v12h12"/></svg></div>
+            <div class="home-btn-title">Outpatients</div>
+            <div class="home-btn-sub">Outpatient and community list</div>
+          </div>
+        </div>
+      </div>
 
       <!-- GROUP: Clinical Workforce -->
-      <div class="home-group-label">Clinical Workforce</div>
-      <div class="home-btn-grid">
-        <div class="home-btn home-btn-violet" onclick="openClinicalWorkforcePage('jacqueline')">
-          <div class="home-btn-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M19 8v6"/><path d="M16 11h6"/></svg></div>
-          <div class="home-btn-title">Jacqueline My Patients</div>
-          <div class="home-btn-sub"><span id="tile-nurse-jacqueline">—</span> active patients</div>
-        </div>
-        <div class="home-btn home-btn-teal" onclick="openClinicalWorkforcePage('jason')">
-          <div class="home-btn-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="m16 11 2 2 4-5"/></svg></div>
-          <div class="home-btn-title">Jason My Patients</div>
-          <div class="home-btn-sub"><span id="tile-nurse-jason">—</span> active patients</div>
-        </div>
-        <div class="home-btn home-btn-blue" onclick="openClinicalWorkforcePage('lorraine')">
-          <div class="home-btn-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M17 11h5"/><path d="M19.5 8.5v5"/></svg></div>
-          <div class="home-btn-title">Lorraine My Patients</div>
-          <div class="home-btn-sub"><span id="tile-nurse-lorraine">—</span> active patients</div>
-        </div>
-        <div class="home-btn home-btn-gold" onclick="openClinicalWorkforcePage('common')">
-          <div class="home-btn-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
-          <div class="home-btn-title">Common Our Patients</div>
-          <div class="home-btn-sub"><span id="tile-nurse-common">—</span> active patients</div>
+      <div class="home-group-panel">
+        <div class="home-group-label">Clinical Workforce</div>
+        <div class="home-btn-grid">
+          <div class="home-btn home-btn-violet" onclick="openClinicalWorkforcePage('jacqueline')">
+            <div class="home-btn-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M19 8v6"/><path d="M16 11h6"/></svg></div>
+            <div class="home-btn-title">Jacqueline’s Patients</div>
+            <div class="home-btn-sub"><span id="tile-nurse-jacqueline">—</span> active patients</div>
+          </div>
+          <div class="home-btn home-btn-teal" onclick="openClinicalWorkforcePage('jason')">
+            <div class="home-btn-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="m16 11 2 2 4-5"/></svg></div>
+            <div class="home-btn-title">Jason’s Patients</div>
+            <div class="home-btn-sub"><span id="tile-nurse-jason">—</span> active patients</div>
+          </div>
+          <div class="home-btn home-btn-blue" onclick="openClinicalWorkforcePage('lorraine')">
+            <div class="home-btn-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M17 11h5"/><path d="M19.5 8.5v5"/></svg></div>
+            <div class="home-btn-title">Lorraine’s Patients</div>
+            <div class="home-btn-sub"><span id="tile-nurse-lorraine">—</span> active patients</div>
+          </div>
+          <div class="home-btn home-btn-gold" onclick="openClinicalWorkforcePage('common')">
+            <div class="home-btn-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+            <div class="home-btn-title">Shared Patients</div>
+            <div class="home-btn-sub"><span id="tile-nurse-common">—</span> active patients</div>
+          </div>
         </div>
       </div>
 
-      <!-- GROUP: Patient Center -->
-      <div class="home-group-label">Patient Center</div>
-      <div class="home-btn-grid">
-        <div class="home-btn home-btn-teal" onclick="openPatientCentrePage('master')">
-          <div class="home-btn-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="16" rx="2"/><path d="M9 8h6"/><path d="M9 12h6"/><path d="M9 16h4"/></svg></div>
-          <div class="home-btn-title">Master List</div>
-          <div class="home-btn-sub">Complete patient register</div>
-        </div>
-        <div class="home-btn home-btn-blue" onclick="openPatientCentrePage('inpatient')">
-          <div class="home-btn-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M3 12h18"/><path d="M5 12V8a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v4"/><path d="M7 16v2"/><path d="M17 16v2"/><path d="M9 9h.01"/><path d="M12 6V3"/><path d="M10 4.5h4"/></svg></div>
-          <div class="home-btn-title">Inpatients</div>
-          <div class="home-btn-sub">Current inpatient workload</div>
-        </div>
-        <div class="home-btn home-btn-violet" onclick="openPatientCentrePage('outpatient')">
-          <div class="home-btn-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M13 5h6v6"/><path d="M10 14 19 5"/><path d="M5 7v12h12"/></svg></div>
-          <div class="home-btn-title">Outpatients</div>
-          <div class="home-btn-sub">Outpatient and community list</div>
+      <!-- GROUP: Administration and Reporting -->
+      <div class="home-group-panel">
+        <div class="home-group-label">Administration &amp; Reporting</div>
+        <div class="home-btn-grid">
+          <div class="home-btn home-btn-rose" onclick="switchSection('kpi-dashboard',null)">
+            <div class="home-btn-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-5"/><path d="M12 16V8"/><path d="M16 16v-7"/><path d="M20 6l-4 4-3-3-5 5"/></svg></div>
+            <div class="home-btn-title">KPIs</div>
+            <div class="home-btn-sub">Clinical performance indicators</div>
+          </div>
+          <div class="home-btn home-btn-zinc" onclick="switchSection('audit-trail',null)">
+            <div class="home-btn-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/><path d="M11 8v3l2 2"/></svg></div>
+            <div class="home-btn-title">Audit Trail</div>
+            <div class="home-btn-sub">Full system activity log</div>
+          </div>
         </div>
       </div>
     </div>
@@ -4229,7 +4209,7 @@ v66-42 emergency fix:
     <!-- ══════════════════════════════════ -->
     <div class="section" id="section-patient-pathways">
       <div class="phdr">
-        <div><h2>Patient Pathways</h2><p>Structured admission-to-discharge trajectory for each patient type</p></div>
+        <div><h2>Add Patient</h2><p>Structured admission-to-discharge trajectory for each patient type</p></div>
         <button class="btn-refresh" onclick="loadPatientPathways();">↻ Refresh</button>
       </div>
 
@@ -4237,19 +4217,19 @@ v66-42 emergency fix:
       <div class="roster-subtab-bar" id="pathway-tab-bar" role="tablist" style="grid-template-columns:repeat(4,1fr);margin-bottom:0;">
         <button type="button" class="roster-subtab active" id="pathway-tab-elective" onclick="showPathwayTab('elective')" style="background:linear-gradient(90deg,rgba(20,184,166,.42) 0%,rgba(20,184,166,.22) 28%,rgba(20,184,166,.09) 52%,rgba(255,255,255,.93) 74%,#eefbf8 100%);">
           <span class="roster-subtab-icon" style="background:linear-gradient(135deg,#0f766e,#14b8a6);"><svg class="icon-svg" viewBox="0 0 24 24"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="18" cy="18" r="2"/><path d="M8 6h8"/><path d="M18 8v8"/><path d="M8 6v12h8"/></svg></span>
-          <span>Elective</span>
+          <span>Add Elective Surgery Patient</span>
         </button>
         <button type="button" class="roster-subtab" id="pathway-tab-emergency" onclick="showPathwayTab('emergency')" style="background:linear-gradient(90deg,rgba(185,28,28,.34) 0%,rgba(185,28,28,.17) 28%,rgba(15,38,56,.07) 52%,rgba(255,255,255,.93) 74%,#fef2f2 100%);">
           <span class="roster-subtab-icon" style="background:linear-gradient(135deg,#991b1b,#ef4444);"><svg class="icon-svg" viewBox="0 0 24 24"><path d="m10.29 3.86-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.71-3.14l-8-14a2 2 0 0 0-3.42 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></span>
-          <span>Emergency</span>
+          <span>Add Unplanned Patient</span>
         </button>
         <button type="button" class="roster-subtab" id="pathway-tab-bagging" onclick="showPathwayTab('bagging')" style="background:linear-gradient(90deg,rgba(109,40,217,.34) 0%,rgba(167,139,250,.18) 28%,rgba(15,38,56,.07) 52%,rgba(255,255,255,.93) 74%,#f5f3ff 100%);">
           <span class="roster-subtab-icon" style="background:linear-gradient(135deg,#5b21b6,#a78bfa);"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 3 4 7v10l8 4 8-4V7z"/><path d="M4 7l8 4 8-4"/><path d="M12 11v10"/></svg></span>
-          <span>Bagging Advice for Fistula and Wounds</span>
+          <span>Bagging Advice for Fistula and Wounds Advice</span>
         </button>
         <button type="button" class="roster-subtab" id="pathway-tab-readmission" onclick="showPathwayTab('readmission')" style="background:linear-gradient(90deg,rgba(180,83,9,.34) 0%,rgba(251,191,36,.20) 28%,rgba(15,38,56,.07) 52%,rgba(255,255,255,.93) 74%,#fffbeb 100%);">
           <span class="roster-subtab-icon" style="background:linear-gradient(135deg,#b45309,#fbbf24);"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M7 7h6a3 3 0 0 1 0 6H7"/><path d="m10 4-3 3 3 3"/><path d="M17 17H11a3 3 0 0 1 0-6h6"/><path d="m14 20 3-3-3-3"/></svg></span>
-          <span>OSH Stoma (Outside Hospital)</span>
+          <span>Add Outside Stoma Hospital Patient</span>
         </button>
       </div>
 
@@ -4754,7 +4734,7 @@ v66-42 emergency fix:
         <button class="audit-section-btn" id="asb-events" onclick="setAuditSection('events',this)">Clinical Events</button>
         <button class="audit-section-btn" id="asb-teaching" onclick="setAuditSection('teaching',this)">Teaching</button>
         <button class="audit-section-btn" id="asb-discharge" onclick="setAuditSection('discharge',this)">Discharge Letters</button>
-        <button class="audit-section-btn" id="asb-followups" onclick="setAuditSection('followups',this)">Follow-Ups</button>
+        <button class="audit-section-btn" id="asb-followups" onclick="setAuditSection('followups',this)">Follow-Up Centre</button>
         <button class="audit-section-btn" id="asb-roster" onclick="setAuditSection('roster',this)">Roster</button>
         <button class="audit-section-btn" id="asb-login" onclick="setAuditSection('login',this)">Login / Auth</button>
       </div>
@@ -6074,7 +6054,7 @@ async function loadAuditTrail(){
     if(t.includes('event')||t.includes('review'))return '🔵 Clinical';
     if(t.includes('teaching'))return '📚 Teaching';
     if(t.includes('discharge')||t.includes('letter'))return '📄 Discharge';
-    if(t.includes('follow'))return '🔁 Follow-Ups';
+    if(t.includes('follow'))return '🔁 Follow-Up Centre';
     if(t.includes('roster')||t.includes('leave')||t.includes('staff'))return '📅 Roster';
     if(t.includes('auth')||t.includes('login'))return '🔐 Auth';
     if(t.includes('audit')||t.includes('kpi'))return '📊 System';
@@ -6405,10 +6385,10 @@ function openPatientCentrePage(tab){
 
 function clinicalWorkforceTitleData(key){
   const map={
-    jacqueline:{eyebrow:'Clinical Workforce',title:'Jacqueline My Patients',subtitle:'Patients linked to Jacqueline for review or follow-up.',icon:'patients',colour:'#7c3aed',colourDark:'#4c1d95',soft:'#f5f3ff',nurse:'Jacqueline Sammut'},
-    jason:{eyebrow:'Clinical Workforce',title:'Jason My Patients',subtitle:'Patients linked to Jason for review or follow-up.',icon:'patients',colour:'#0f766e',colourDark:'#064e3b',soft:'#ecfdf9',nurse:'Jason Fenech'},
-    lorraine:{eyebrow:'Clinical Workforce',title:'Lorraine My Patients',subtitle:'Patients linked to Lorraine for review or follow-up.',icon:'patients',colour:'#2563eb',colourDark:'#1d4ed8',soft:'#eff6ff',nurse:'Lorraine Stivala'},
-    common:{eyebrow:'Clinical Workforce',title:'Common Our Patients',subtitle:'Shared patients not allocated to a single nurse.',icon:'patients',colour:'#b45309',colourDark:'#92400e',soft:'#fffbeb',nurse:'Common'}
+    jacqueline:{eyebrow:'Clinical Workforce',title:'Jacqueline’s Patients',subtitle:'Patients linked to Jacqueline for review or follow-up.',icon:'patients',colour:'#7c3aed',colourDark:'#4c1d95',soft:'#f5f3ff',nurse:'Jacqueline Sammut'},
+    jason:{eyebrow:'Clinical Workforce',title:'Jason’s Patients',subtitle:'Patients linked to Jason for review or follow-up.',icon:'patients',colour:'#0f766e',colourDark:'#064e3b',soft:'#ecfdf9',nurse:'Jason Fenech'},
+    lorraine:{eyebrow:'Clinical Workforce',title:'Lorraine’s Patients',subtitle:'Patients linked to Lorraine for review or follow-up.',icon:'patients',colour:'#2563eb',colourDark:'#1d4ed8',soft:'#eff6ff',nurse:'Lorraine Stivala'},
+    common:{eyebrow:'Clinical Workforce',title:'Shared Patients',subtitle:'Shared patients not allocated to a single nurse.',icon:'patients',colour:'#b45309',colourDark:'#92400e',soft:'#fffbeb',nurse:'Common'}
   };
   return map[key]||map.common;
 }
@@ -6660,7 +6640,7 @@ function switchSection(name, navEl, options={}){
   const sectionTitles={
     'home':'MDH Stoma Care — Home',
     'patients':'MDH Stoma Care — Patients',
-    'patient-pathways':'MDH Stoma Care — Patient Pathways',
+    'patient-pathways':'MDH Stoma Care — Add Patient',
     'patient-outcomes':'MDH Stoma Care — Patient Outcomes',
     'patient-detail':'MDH Stoma Care — Patient Profile',
     'followups':'MDH Stoma Care — Follow-Up Centre',
@@ -7344,10 +7324,10 @@ function platformIconSvg(key){
 }
 function getPlatformTitleData(key){
   const map={
-    'pathway-elective':{eyebrow:'Patient Pathways',title:'Elective Surgery',subtitle:'',icon:'pathway',colour:'#0f766e',colourDark:'#064e3b',soft:'#ecfdf9'},
-    'pathway-emergency':{eyebrow:'Patient Pathways',title:'Emergency Surgery',subtitle:'',icon:'warning',colour:'#991b1b',colourDark:'#7f1d1d',soft:'#fef2f2'},
-    'pathway-bagging':{eyebrow:'Patient Pathways',title:'Bagging Advice for Fistula and Wounds',subtitle:'',icon:'appliance',colour:'#5b21b6',colourDark:'#312e81',soft:'#f5f3ff'},
-    'pathway-readmission':{eyebrow:'Patient Pathways',title:'OSH Stoma (Outside Hospital)',subtitle:'',icon:'swap',colour:'#b45309',colourDark:'#92400e',soft:'#fffbeb'},
+    'pathway-elective':{eyebrow:'Add Patient',title:'Elective Surgery Patient',subtitle:'',icon:'pathway',colour:'#0f766e',colourDark:'#064e3b',soft:'#ecfdf9'},
+    'pathway-emergency':{eyebrow:'Add Patient',title:'Unplanned Patient',subtitle:'',icon:'warning',colour:'#991b1b',colourDark:'#7f1d1d',soft:'#fef2f2'},
+    'pathway-bagging':{eyebrow:'Add Patient',title:'Bagging Advice for Fistula and Wounds',subtitle:'',icon:'appliance',colour:'#5b21b6',colourDark:'#312e81',soft:'#f5f3ff'},
+    'pathway-readmission':{eyebrow:'Add Patient',title:'Outside Stoma Hospital Patient',subtitle:'',icon:'swap',colour:'#b45309',colourDark:'#92400e',soft:'#fffbeb'},
     'followup-appointments':{eyebrow:'Follow-Up Centre',title:'Patient Appointments',subtitle:'Daily clinic appointment book and patient booking slots.',icon:'document',colour:'#0f766e',colourDark:'#0f2638',soft:'#ecfdf9'},
     'followup-outcomes':{eyebrow:'Follow-Up Centre',title:'Appointment Outcomes',subtitle:'Seen, DNTU, cancelled and follow-up status views.',icon:'chart',colour:'#2563eb',colourDark:'#1d4ed8',soft:'#eff6ff'},
     'followup-clinic':{eyebrow:'Follow-Up Centre',title:'Clinic Audit',subtitle:'Monthly appointment calendar and printable clinic activity.',icon:'calendar',colour:'#7c3aed',colourDark:'#5b21b6',soft:'#f5f3ff'},
@@ -7433,10 +7413,10 @@ window.PATHWAY_WARD_OPTIONS = PATHWAY_WARD_OPTIONS;
 window.PATHWAY_LOCALITY_OPTIONS = PATHWAY_LOCALITY_OPTIONS;
 function getPathwayFormMeta(tab){
   const map={
-    elective:{label:'Elective Surgery',short:'Elective',colour:'#0f766e',pathway:'elective',status:'inpatient',episode:'Elective',subtitle:'Register a planned elective stoma patient.'},
-    emergency:{label:'Emergency Surgery',short:'Emergency',colour:'#991b1b',pathway:'emergency',status:'inpatient',episode:'Emergency',subtitle:'Register an emergency or urgent surgical stoma patient.'},
-    bagging:{label:'Bagging Advice for Fistula and Wounds',short:'Bagging Advice for Fistula and Wounds',colour:'#5b21b6',pathway:'bagging_advice',status:'outpatient',episode:'Bagging Advice for Fistula and Wounds',subtitle:'Register a patient needing appliance, leakage, skin, drain, wound, or bagging support.'},
-    readmission:{label:'OSH Stoma (Outside Hospital)',short:'OSH Stoma (Outside Hospital)',colour:'#b45309',pathway:'old_stoma_new_referral',status:'outpatient',episode:'OSH Stoma (Outside Hospital)',subtitle:'Register a patient with an old or existing stoma newly referred to our clinic.'}
+    elective:{label:'Add Elective Surgery Patient',short:'Elective',colour:'#0f766e',pathway:'elective',status:'inpatient',episode:'Elective',subtitle:'Register a planned elective stoma patient.'},
+    emergency:{label:'Add Unplanned Patient',short:'Unplanned',colour:'#991b1b',pathway:'emergency',status:'inpatient',episode:'Emergency',subtitle:'Register an emergency or urgent surgical stoma patient.'},
+    bagging:{label:'Bagging Advice for Fistula and Wounds Advice',short:'Bagging Advice',colour:'#5b21b6',pathway:'bagging_advice',status:'outpatient',episode:'Bagging Advice for Fistula and Wounds',subtitle:'Register a patient needing appliance, leakage, skin, drain, wound, or bagging support.'},
+    readmission:{label:'Add Outside Stoma Hospital Patient',short:'Outside Hospital',colour:'#b45309',pathway:'old_stoma_new_referral',status:'outpatient',episode:'Outside Stoma Hospital Patient',subtitle:'Register a patient with an old or existing stoma newly referred to our clinic.'}
   };
   return map[tab]||map.elective;
 }
@@ -14688,7 +14668,7 @@ async function loadKpiDashboard(){
     {id:'clinical',label:'🔵 Clinical',icon:'🔵'},
     {id:'teaching',label:'📚 Teaching',icon:'📚'},
     {id:'discharge',label:'📄 Discharge',icon:'📄'},
-    {id:'followups',label:'🔁 Follow-Ups',icon:'🔁'},
+    {id:'followups',label:'🔁 Follow-Up Centre',icon:'🔁'},
     {id:'stomas',label:'⭕ Stomas',icon:'⭕'},
   ];
 
@@ -14730,7 +14710,7 @@ async function loadKpiDashboard(){
       )}
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
         ${navBtn('patients','Go to Patients')}
-        ${navBtn('followups','Go to Follow-Ups')}
+        ${navBtn('followups','Go to Follow-Up Centre')}
         ${navBtn('section-discharge','Go to Discharge Letters')}
       </div>`,
 
@@ -14844,11 +14824,11 @@ async function loadKpiDashboard(){
     followups:`
       <div style="font-size:13px;font-weight:800;color:var(--navy);margin-bottom:12px;">Follow-Up Status</div>
       ${grid(
-        kBlock('Active Follow-Ups',activeFollowUps.length,'patients in follow-up'),
+        kBlock('Active Follow-Up Centre',activeFollowUps.length,'patients in follow-up'),
         kBlock('Paused',followUps.filter(f=>f.status==='paused').length,'paused follow-ups'),
         kBlock('DNTU Streak ≥3',followUps.filter(f=>f.status==='paused_dntu').length,'auto-paused by DNTU rule',pill(followUps.filter(f=>f.status==='paused_dntu').length,true,false))
       )}
-      <div style="font-size:13px;font-weight:800;color:var(--navy);margin:14px 0 10px;">Follow-Ups by Nurse</div>
+      <div style="font-size:13px;font-weight:800;color:var(--navy);margin:14px 0 10px;">Follow-Up Centre by Nurse</div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
         ${Object.entries(followUps.filter(f=>f.status==='active').reduce((acc,f)=>{const n=f.assigned_nurse||'Common';acc[n]=(acc[n]||0)+1;return acc;},{})).sort((a,b)=>b[1]-a[1]).map(([n,c])=>`<div style="padding:8px 14px;border-radius:10px;background:#f0fdf4;border:1px solid #b7dedb;font-size:12px;"><strong style="color:var(--teal);">${c}</strong> ${htmlSafe(n)}</div>`).join('')||'<span style="color:var(--muted);font-size:12px;">No follow-up data yet.</span>'}
       </div>
@@ -17275,7 +17255,7 @@ function renderPathwayStepsPanel(tab,patient,steps,completions,col,allDone,total
 
 <style>
 /* v66-43 — focused fixes from locked baseline:
-   1) Elective Surgery Step 1 no longer shows Ward; ward is recorded during Daily Stoma Review.
+   1) Elective Surgery Patient Step 1 no longer shows Ward; ward is recorded during Daily Stoma Review.
    2) Patient Pathway navigation tabs are restyled to match the compact Follow-Up Centre tab buttons. */
 #section-patient-pathways #pathway-new-form-elective .pathway-form-grid .fg:has(#pp-elective-ward){
   display:none!important;
@@ -18533,6 +18513,108 @@ function renderPathwayStepsPanel(tab,patient,steps,completions,col,allDone,total
   body{font-size:12px;}
 }
 </style>
+
+
+<style id="v66-59-stage1-command-centre-css">
+/* ─────────────────────────────────────────────────────
+   v66-59 Stage 1 — command-centre navigation/style pass
+   ───────────────────────────────────────────────────── */
+.app-menu-tabs{display:none!important;}
+.main-content{margin-top:56px!important;padding:24px clamp(12px,2vw,28px) 48px!important;max-width:none!important;width:100%!important;}
+body{background:linear-gradient(135deg,#f7fbfc 0%,#eef7f8 45%,#f8fafc 100%)!important;}
+.topbar{height:56px!important;background:linear-gradient(90deg,#082536 0%,#0f3a4a 55%,#0f766e 100%)!important;box-shadow:0 10px 30px rgba(8,37,54,.18)!important;}
+.tb-logo{font-size:16px!important;letter-spacing:.02em!important;}
+.tb-logo span{color:#99f6e4!important;}
+.tb-date{display:none!important;}
+#global-prev-btn,#global-back-btn,.topbar button[title="My Profile"],.btn-so{border-radius:999px!important;background:rgba(255,255,255,.10)!important;border:1px solid rgba(255,255,255,.18)!important;color:#effffb!important;}
+#global-prev-btn:hover,#global-back-btn:hover,.topbar button[title="My Profile"]:hover,.btn-so:hover{background:rgba(255,255,255,.18)!important;}
+.home-command-hero{display:flex;align-items:center;justify-content:space-between;gap:18px;margin:0 auto 14px;max-width:1280px;background:linear-gradient(135deg,#0f2638 0%,#0f766e 72%,#14b8a6 100%);border-radius:24px;padding:22px 24px;color:white;box-shadow:0 18px 46px rgba(15,38,56,.18);position:relative;overflow:hidden;}
+.home-command-hero:before{content:'';position:absolute;right:-80px;top:-90px;width:240px;height:240px;border-radius:999px;background:rgba(255,255,255,.12);}
+.home-command-hero:after{content:'';position:absolute;left:-110px;bottom:-140px;width:260px;height:260px;border-radius:999px;background:rgba(255,255,255,.08);}
+.home-command-hero>*{position:relative;z-index:1;}
+.home-command-hero h2{font-family:'DM Serif Display',serif;font-size:clamp(24px,3.2vw,38px);font-weight:400;letter-spacing:-.03em;line-height:1.05;margin:0 0 6px;color:white;}
+.home-command-hero p{font-size:13px;color:rgba(255,255,255,.78);line-height:1.45;margin:0;}
+.home-eyebrow{font-size:10px;font-weight:950;text-transform:uppercase;letter-spacing:.16em;color:#ccfbf1;margin-bottom:8px;}
+.home-hero-mark{width:70px;height:70px;border-radius:22px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.24);font-weight:950;letter-spacing:.04em;box-shadow:inset 0 1px 0 rgba(255,255,255,.2);flex:0 0 70px;}
+.home-command-search{max-width:1280px;margin:0 auto 14px!important;}
+.global-search-inner{border-radius:18px!important;border:1px solid rgba(15,38,56,.11)!important;box-shadow:0 10px 26px rgba(15,38,56,.08)!important;background:rgba(255,255,255,.96)!important;}
+.home-kpi-grid{max-width:1280px;margin:0 auto 16px;display:grid;grid-template-columns:repeat(5,minmax(130px,1fr));gap:12px;}
+.home-kpi-card{background:rgba(255,255,255,.96);border:1px solid rgba(15,38,56,.10);border-radius:18px;padding:15px 16px;box-shadow:0 10px 28px rgba(15,38,56,.08);position:relative;overflow:hidden;min-height:104px;}
+.home-kpi-card:before{content:'';position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--kpi-colour,#0f766e);}
+.home-kpi-card:after{content:'';position:absolute;right:-22px;bottom:-26px;width:86px;height:86px;border-radius:999px;background:color-mix(in srgb,var(--kpi-colour,#0f766e) 12%,transparent);}
+.home-kpi-label{font-size:10px;font-weight:950;text-transform:uppercase;letter-spacing:.08em;color:#64748b;}
+.home-kpi-value{font-size:30px;font-weight:950;line-height:1;color:#0f2638;margin-top:9px;}
+.home-kpi-sub{font-size:11px;color:#64748b;font-weight:700;margin-top:5px;line-height:1.25;}
+.kpi-patients{--kpi-colour:#0f766e}.kpi-inpatients{--kpi-colour:#2563eb}.kpi-outpatients{--kpi-colour:#7c3aed}.kpi-followups{--kpi-colour:#0284c7}.kpi-reviews{--kpi-colour:#b45309}
+.home-group-panel{max-width:1280px;margin:0 auto 14px;background:rgba(255,255,255,.74);border:1px solid rgba(15,38,56,.09);border-radius:20px;padding:12px;box-shadow:0 10px 28px rgba(15,38,56,.05);}
+.home-group-label{max-width:100%!important;margin:0 0 10px!important;padding:0 2px!important;color:#0f2638!important;font-size:11px!important;letter-spacing:.12em!important;display:flex;align-items:center;gap:8px;}
+.home-group-label:before{content:'';width:8px;height:8px;border-radius:999px;background:#14b8a6;box-shadow:0 0 0 4px rgba(20,184,166,.13);}
+.home-btn-grid{max-width:100%!important;margin:0!important;grid-template-columns:repeat(auto-fit,minmax(245px,1fr))!important;gap:12px!important;}
+.home-btn{border-radius:18px!important;min-height:82px!important;padding:14px 16px!important;background:linear-gradient(135deg,#ffffff 0%,#f8fbfc 66%,#eefbf8 100%)!important;border:1px solid rgba(15,38,56,.12)!important;border-left:6px solid var(--teal)!important;box-shadow:0 8px 22px rgba(15,38,56,.07)!important;}
+.home-btn:hover{background:linear-gradient(135deg,#ffffff 0%,#ecfdf9 100%)!important;box-shadow:0 16px 34px rgba(15,38,56,.12)!important;transform:translateY(-2px)!important;}
+.home-btn-title{font-size:15px!important;color:#0f2638!important;}
+.home-btn-sub{font-size:11.5px!important;color:#64748b!important;}
+.home-btn-icon{width:46px!important;height:46px!important;border-radius:15px!important;}
+.card,.patient-command,.daily-shell,.clinic-wrap,.clinic-month-book,.staff-month-book,.account-card,.report-card,.sbox,.patient-summary-card,.roster-wrap,.pt-snap,.cod-section,.mo .mb{border-radius:18px!important;border-color:rgba(15,38,56,.10)!important;box-shadow:0 10px 28px rgba(15,38,56,.07)!important;background:#ffffff!important;}
+.phdr{max-width:1280px;margin-left:auto!important;margin-right:auto!important;background:rgba(255,255,255,.84);border:1px solid rgba(15,38,56,.08);border-radius:20px;padding:16px 18px;box-shadow:0 8px 22px rgba(15,38,56,.05);}
+.phdr h2{font-family:'DM Serif Display',serif!important;font-size:26px!important;color:#0f2638!important;}
+.dt th{background:#f1f7f8!important;color:#0f2638!important;font-weight:950!important;}
+.dt td{border-bottom-color:#e5eef1!important;}
+.roster-subtab-bar{background:rgba(255,255,255,.86)!important;border:1px solid rgba(15,38,56,.09)!important;border-radius:18px!important;padding:8px!important;box-shadow:0 10px 28px rgba(15,38,56,.06)!important;}
+.roster-subtab{border-radius:14px!important;min-height:58px!important;white-space:normal!important;line-height:1.18!important;}
+#pathway-tab-bar{grid-template-columns:repeat(4,minmax(180px,1fr))!important;overflow-x:auto!important;}
+#pathway-tab-bar .roster-subtab{padding:10px 12px!important;font-size:12.5px!important;}
+#section-patient-pathways .phdr p:after{content:' · Add Patient is for creating/starting a case only. Ongoing care continues from Patient Centre, Inpatients or Outpatients.';}
+.pathway-form-tabs,.pd-tabs,.followup-tabs-bar{border-radius:18px!important;background:#ffffff!important;border:1px solid rgba(15,38,56,.10)!important;box-shadow:0 8px 22px rgba(15,38,56,.06)!important;}
+.pathway-form-tab,.pd-tab,.followup-tab{border-radius:14px!important;}
+.btn-add,.btn-save,.btn-refresh,.daily-btn,.btn-record{border-radius:999px!important;box-shadow:0 8px 20px rgba(15,118,110,.13)!important;}
+input,select,textarea{border-radius:12px!important;}
+@media(max-width:1100px){.home-kpi-grid{grid-template-columns:repeat(3,minmax(140px,1fr));}.home-btn-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;}}
+@media(max-width:760px){.main-content{margin-top:56px!important;padding:14px 10px 36px!important;}.topbar{padding:0 10px!important;}.tb-user{display:none!important;}.home-command-hero{border-radius:20px;padding:18px 16px;}.home-hero-mark{display:none;}.home-kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;}.home-kpi-card{min-height:92px;padding:13px 14px;}.home-kpi-value{font-size:26px;}.home-group-panel{border-radius:18px;padding:10px;}.home-btn-grid{grid-template-columns:1fr!important;}.home-btn{min-height:74px!important;}#pathway-tab-bar{grid-template-columns:1fr!important;}.phdr{padding:14px!important;border-radius:18px!important;}.phdr h2{font-size:23px!important;}#global-prev-btn,#global-back-btn{padding:6px 10px!important;font-size:12px!important;}.topbar button[title="My Profile"]{display:none!important;}}
+@media(max-width:460px){.home-kpi-grid{grid-template-columns:1fr;}.topbar .tb-logo{font-size:14px!important;}.btn-so{padding:6px 10px!important;}}
+</style>
+
+<script id="v66-59-stage1-command-centre-js">
+(function(){
+  function text(id,value){const el=document.getElementById(id); if(el)el.textContent=value;}
+  async function refreshStage1HomeKpis(){
+    try{
+      let patients=[];
+      if(typeof window.getProjectPatients==='function') patients=await window.getProjectPatients();
+      const active=(patients||[]).filter(p=>p && p.is_active!==false && p.is_deleted!==true);
+      const lc=v=>String(v||'').toLowerCase();
+      const isIn=p=>lc([p.status,p.patient_status,p.current_status,p.location_status,p.episode_status,p.ward].join(' ')).includes('inpatient') || !!p.ward;
+      const isOut=p=>lc([p.status,p.patient_status,p.current_status,p.location_status,p.episode_status].join(' ')).includes('outpatient');
+      text('tile-home-inpatients',active.filter(isIn).length);
+      text('tile-home-outpatients',active.filter(p=>isOut(p)&&!isIn(p)).length);
+      if(document.getElementById('tile-active-patients') && document.getElementById('tile-active-patients').textContent==='—') text('tile-active-patients',active.length);
+    }catch(e){console.warn('v66-59 patient KPI refresh skipped',e?.message||e);}
+    try{
+      if(window.SB && window.TODAY){
+        const ap=await SB.from('appointments').select('id,status,appt_date').eq('appt_date',TODAY);
+        text('tile-home-followups-today',(ap.data||[]).filter(a=>String(a.status||'booked')!=='cancelled').length);
+      }
+    }catch(e){console.warn('v66-59 appointment KPI refresh skipped',e?.message||e);}
+    try{
+      if(window.SB && window.TODAY){
+        const rv=await SB.from('daily_reviews').select('id').eq('review_date',TODAY).eq('is_deleted',false);
+        text('tile-home-reviews-today',(rv.data||[]).length);
+      }
+    }catch(e){console.warn('v66-59 review KPI refresh skipped',e?.message||e);}
+  }
+  const previous=window.loadHomeDashboard;
+  if(typeof previous==='function'){
+    window.loadHomeDashboard=async function(){
+      const result=await previous.apply(this,arguments);
+      await refreshStage1HomeKpis();
+      return result;
+    };
+  }else{
+    window.addEventListener('load',refreshStage1HomeKpis);
+  }
+  window.refreshStage1HomeKpis=refreshStage1HomeKpis;
+})();
+</script>
 </body>
 </html>
 
