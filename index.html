@@ -9060,333 +9060,7 @@ function renderMdhLetterHtml(data, p){
       Ministry of Health, The Elderly and Community Care
     </div>
   </div>
-  
-
-<!-- v66-52: Patient record action workflow — move to inpatient, add episode, and start daily/post-op reviews from the patient record. -->
-<style>
-.patient-record-actions{
-  display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:14px 0 10px;padding:10px 12px;
-  background:#f8fafc;border:1px solid #dbe6ef;border-radius:14px;
-}
-.patient-record-action-btn{
-  border:1px solid #cbd5e1;background:#fff;color:#0f2638;border-radius:12px;padding:8px 12px;
-  font-size:12px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;gap:7px;
-  box-shadow:0 1px 4px rgba(15,38,56,.06);
-}
-.patient-record-action-btn.primary{background:#0f766e;color:#fff;border-color:#0f766e;}
-.patient-record-action-btn.blue{background:#eff6ff;color:#1d4ed8;border-color:#bfdbfe;}
-.patient-record-action-btn.amber{background:#fffbeb;color:#92400e;border-color:#fde68a;}
-.patient-record-action-btn.red{background:#fff1f2;color:#9f1239;border-color:#fecdd3;}
-.patient-record-action-btn:hover{transform:translateY(-1px);box-shadow:0 6px 14px rgba(15,38,56,.10);}
-.patient-record-review-panel{
-  margin:12px 0 16px;padding:14px;border:1px solid #cbd5e1;border-left:5px solid #0f766e;border-radius:16px;background:#fff;
-  box-shadow:0 8px 22px rgba(15,38,56,.08);
-}
-.patient-record-review-panel h4{margin:0 0 10px;color:#0f2638;font-size:16px;}
-.record-review-grid{display:grid;grid-template-columns:repeat(4,minmax(150px,1fr));gap:10px 12px;}
-.record-review-grid .fg{display:flex;flex-direction:column;gap:4px;}
-.record-review-grid .fg.full{grid-column:1/-1;}
-.record-review-grid label{font-size:10px;font-weight:900;letter-spacing:.04em;text-transform:uppercase;color:#475569;}
-.record-review-grid input,.record-review-grid select,.record-review-grid textarea{
-  width:100%;box-sizing:border-box;border:1px solid #d8e1ea;border-radius:10px;padding:9px 10px;font-size:12px;background:#fff;color:#0f2638;
-}
-.record-review-grid textarea{min-height:74px;resize:vertical;}
-.record-review-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:12px;}
-.record-episode-action-row{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 10px;}
-.record-status-pill{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:4px 9px;font-size:10px;font-weight:900;background:#ecfdf5;color:#065f46;border:1px solid #bbf7d0;}
-@media(max-width:900px){.record-review-grid{grid-template-columns:1fr 1fr;}.patient-record-action-btn{font-size:11px;padding:7px 9px;}}
-@media(max-width:640px){.record-review-grid{grid-template-columns:1fr;}.patient-record-actions{align-items:stretch}.patient-record-action-btn{width:100%;justify-content:center;}}
-</style>
-<script>
-(function(){
-  function e(v){
-    try{ if(typeof htmlSafe==='function') return htmlSafe(v); }catch(err){}
-    return String(v??'').replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});
-  }
-  function j(v){return String(v??'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\n/g,'\\n').replace(/\r/g,'');}
-  function today(){return new Date().toISOString().slice(0,10);}
-  function nowTime(){return new Date().toTimeString().slice(0,5);}
-  function displayDate(v){
-    if(!v)return '—';
-    const s=String(v).trim(); if(!s || s.includes('${'))return '—';
-    try{const d=new Date(s); if(!isNaN(d))return d.toLocaleDateString('en-MT');}catch(err){}
-    return e(s);
-  }
-  function cleanStatus(v){return String(v||'').trim().toLowerCase();}
-  function userName(){try{return getLoggedInSubmitterName?.()||currentLoginProfile?.full_name||currentAuthUser?.email||'Logged-in user';}catch(err){return 'Logged-in user';}}
-  function fullName(p){return `${p?.first_name||''} ${p?.surname||''}`.trim()||p?.name||'Unnamed patient';}
-  function idCard(p){return p?.id_card||p?.id_card_number||p?.hospital_number||p?.patient_number||'—';}
-  function opt(list,selected){return '<option value="">Select...</option>'+list.map(function(x){return '<option value="'+e(x)+'"'+(String(x)===String(selected||'')?' selected':'')+'>'+e(x)+'</option>';}).join('');}
-  async function selectSafe(table, queryFn){
-    try{const q=queryFn(SB.from(table).select('*')); const r=await q; if(r.error)throw r.error; return r.data||[];}catch(err){return [];}
-  }
-  async function patientRelatedRows(patientId){
-    const [em,el,sm,sl,cm,cl]=await Promise.all([
-      selectSafe('episodes_main',q=>q.eq('patient_id',patientId).order('created_at',{ascending:false})),
-      selectSafe('episodes',q=>q.eq('patient_id',patientId).order('created_at',{ascending:false})),
-      selectSafe('stomas_main',q=>q.eq('patient_id',patientId).order('created_at',{ascending:false})),
-      selectSafe('stomas',q=>q.eq('patient_id',patientId).order('created_at',{ascending:false})),
-      selectSafe('encounters_main',q=>q.eq('patient_id',patientId).order('created_at',{ascending:false})),
-      selectSafe('encounters',q=>q.eq('patient_id',patientId).order('created_at',{ascending:false}))
-    ]);
-    return {episodes:[...em,...el],stomas:[...sm,...sl],encounters:[...cm,...cl]};
-  }
-  async function updateWithSchemaRetry(table,id,payload){
-    let body={...payload}; let last=null;
-    for(let i=0;i<16;i++){
-      try{
-        const r=await SB.from(table).update(body).eq('id',id).select('id');
-        if(!r.error)return {ok:true,data:r.data,body};
-        last=r.error;
-        const msg=String(r.error.message||'');
-        const m=msg.match(/Could not find the '([^']+)' column/i);
-        if(m && Object.prototype.hasOwnProperty.call(body,m[1])){delete body[m[1]]; continue;}
-        break;
-      }catch(err){last=err; break;}
-    }
-    return {ok:false,error:last,body};
-  }
-  async function insertWithSchemaRetry(table,payload){
-    let body={...payload}; let last=null;
-    for(let i=0;i<18;i++){
-      try{
-        const r=await SB.from(table).insert(body).select('*').single();
-        if(!r.error)return {ok:true,data:r.data,body};
-        last=r.error;
-        const msg=String(r.error.message||'');
-        const m=msg.match(/Could not find the '([^']+)' column/i);
-        if(m && Object.prototype.hasOwnProperty.call(body,m[1])){delete body[m[1]]; continue;}
-        break;
-      }catch(err){last=err; break;}
-    }
-    return {ok:false,error:last,body};
-  }
-  async function updatePatientAsInpatient(patientId,ward,reason){
-    const wardValue=(ward||'').trim()||null;
-    const stamp=new Date().toISOString();
-    const common={patient_type:'inpatient',patient_status:'inpatient',status:'inpatient',pathway_status:reason||'Active inpatient episode',episode_status:'Active',admission_date:today(),ward:wardValue,current_ward:wardValue,is_active:true,modified_at:stamp,updated_at:stamp};
-    const legacy=await updateWithSchemaRetry('patients',patientId,common);
-    const main=await updateWithSchemaRetry('patients_main',patientId,{patient_status:'Inpatient',status:'Inpatient',current_ward:wardValue,ward:wardValue,is_active:true,modified_at:stamp,updated_at:stamp});
-    return legacy.ok||main.ok;
-  }
-  async function updatePatientAsOutpatient(patientId){
-    const stamp=new Date().toISOString();
-    const legacy=await updateWithSchemaRetry('patients',patientId,{patient_type:'outpatient',patient_status:'outpatient',status:'outpatient',pathway_status:'Outpatient / episode closed',ward:null,current_ward:null,modified_at:stamp,updated_at:stamp});
-    const main=await updateWithSchemaRetry('patients_main',patientId,{patient_status:'Outpatient',status:'Outpatient',current_ward:null,ward:null,modified_at:stamp,updated_at:stamp});
-    return legacy.ok||main.ok;
-  }
-  async function createEpisode(patientId,options){
-    const payload={
-      patient_id:patientId,
-      episode_type:options?.type||'Inpatient episode',
-      episode_status:'Active',
-      status:'Active',
-      pathway_stage:options?.stage||'Active inpatient episode',
-      admission_date:options?.date||today(),
-      opened_date:options?.date||today(),
-      admission_ward:options?.ward||null,
-      ward:options?.ward||null,
-      surgery_date:options?.surgery_date||null,
-      operation_performed:options?.operation||null,
-      episode_summary:options?.summary||null,
-      notes:options?.summary||null,
-      created_by:userName(),
-      updated_by:userName()
-    };
-    let r=await insertWithSchemaRetry('episodes_main',payload);
-    if(r.ok)return r.data;
-    r=await insertWithSchemaRetry('episodes',payload);
-    if(r.ok)return r.data;
-    return null;
-  }
-  async function createEncounter(patientId,episodeId,payload){
-    const body={
-      patient_id:patientId,
-      episode_id:episodeId && episodeId!=='current' ? episodeId : null,
-      encounter_number:`ENC-${new Date().getFullYear()}-${String(Date.now()).slice(-6)}`,
-      encounter_date:payload.review_date||today(),
-      review_date:payload.review_date||today(),
-      encounter_time:payload.review_time||nowTime(),
-      review_time:payload.review_time||nowTime(),
-      ward:payload.ward||null,
-      location:payload.ward||null,
-      encounter_type:payload.encounter_type||'Daily Stoma Review',
-      encounter_status:'Closed',
-      status:'Closed',
-      clinical_summary:payload.summary||null,
-      stoma_summary:payload.stoma_summary||null,
-      notes:payload.notes||payload.summary||null,
-      plan:payload.plan||null,
-      follow_up_plan:payload.plan||null,
-      care_plan:payload.plan||null,
-      appliance_used:payload.appliance_used||null,
-      accessories_used:payload.accessories_used||null,
-      created_by:userName(),
-      closed_by:userName(),
-      closed_at:new Date().toISOString()
-    };
-    let r=await insertWithSchemaRetry('encounters_main',body);
-    if(r.ok)return r.data;
-    r=await insertWithSchemaRetry('encounters',body);
-    if(r.ok)return r.data;
-    return null;
-  }
-  window.movePatientRecordToInpatient=async function(patientId){
-    const ward=prompt('Ward / location for this inpatient episode:', '')||'';
-    const reason=prompt('Reason for opening inpatient episode:', 'Active inpatient episode')||'Active inpatient episode';
-    try{
-      const ok=await updatePatientAsInpatient(patientId,ward,reason);
-      await createEpisode(patientId,{type:reason,stage:'Active inpatient episode',ward:ward,date:today(),summary:reason});
-      if(typeof loadPatients==='function')loadPatients();
-      await window.openPatientRecordPage(patientId);
-      alert(ok?'Patient moved to Inpatients and active episode opened.':'Episode opened. Patient status update may need the matching database column.');
-    }catch(err){alert('Could not move patient to Inpatients: '+(err.message||err));}
-  };
-  window.addPatientRecordEpisode=async function(patientId){
-    const reason=prompt('Reason / type for the new episode:', 'Readmission / complication review')||'';
-    if(!reason.trim())return;
-    const ward=prompt('Ward / location, if admitted:', '')||'';
-    try{
-      await updatePatientAsInpatient(patientId,ward,reason);
-      await createEpisode(patientId,{type:reason.trim(),stage:'Active inpatient episode',ward:ward,date:today(),summary:reason.trim()});
-      if(typeof loadPatients==='function')loadPatients();
-      await window.openPatientRecordPage(patientId);
-      alert('New episode opened and patient is now shown as an inpatient.');
-    }catch(err){alert('Could not add episode: '+(err.message||err));}
-  };
-  window.closePatientRecordEpisode=async function(patientId,episodeId){
-    if(!confirm('Close this episode and move the patient back to Outpatients?'))return;
-    const stamp=new Date().toISOString();
-    try{
-      if(episodeId && episodeId!=='current'){
-        await updateWithSchemaRetry('episodes_main',episodeId,{episode_status:'Closed',status:'Closed',discharge_date:today(),closed_at:stamp,updated_at:stamp});
-        await updateWithSchemaRetry('episodes',episodeId,{episode_status:'Closed',status:'Closed',discharge_date:today(),closed_at:stamp,updated_at:stamp});
-      }
-      await updatePatientAsOutpatient(patientId);
-      if(typeof loadPatients==='function')loadPatients();
-      await window.openPatientRecordPage(patientId);
-      alert('Episode closed. Patient moved back to Outpatients.');
-    }catch(err){alert('Could not close episode: '+(err.message||err));}
-  };
-  window.openRecordDailyReviewPanel=function(patientId,episodeId,mode){
-    const host=document.getElementById('patient-record-action-panel')||document.getElementById('patient-record-page');
-    if(!host)return;
-    const title=mode==='postop'?'Post-op 1–7 Day Review Chart entry':'Stoma Review Record';
-    const type=mode==='postop'?'Post-op 1–7 Day Review':'Daily Stoma Review';
-    const existing=document.getElementById('record-daily-review-panel'); if(existing)existing.remove();
-    const div=document.createElement('div');
-    div.id='record-daily-review-panel';
-    div.className='patient-record-review-panel';
-    div.innerHTML=`
-      <h4>${e(title)}</h4>
-      <div class="record-review-grid">
-        <div class="fg"><label>Review date</label><input type="date" id="rr-date" value="${today()}"></div>
-        <div class="fg"><label>Review time</label><input type="time" id="rr-time" value="${nowTime()}"></div>
-        <div class="fg"><label>Ward / Location</label><input id="rr-ward" placeholder="Ward or location"></div>
-        <div class="fg"><label>Review type</label><input id="rr-type" value="${e(type)}"></div>
-        <div class="fg"><label>Stoma colour</label><select id="rr-colour">${opt(['Pink / healthy','Red / viable','Dusky','Pale','Black / necrotic','Other'])}</select></div>
-        <div class="fg"><label>Stoma morphology</label><select id="rr-morphology">${opt(['Protruding','Flush','Retracted','Oedematous','Bleeding','Mucocutaneous separation','Other'])}</select></div>
-        <div class="fg"><label>Output / function</label><select id="rr-output">${opt(['No output yet','Haemoserous','Green / bilious','Liquid stool','Semi-formed / formed','High output','Urine','Other'])}</select></div>
-        <div class="fg"><label>Peristomal skin</label><select id="rr-skin">${opt(['Healthy / intact','Red','Broken / excoriated','Leaking-related irritation','Other'])}</select></div>
-        <div class="fg full"><label>Changes / concerns / notes</label><textarea id="rr-notes" placeholder="What changed today, concerns, patient condition, education readiness, complications..."></textarea></div>
-        <div class="fg"><label>Appliance used today</label><input id="rr-appliance" placeholder="Carry forward if unchanged"></div>
-        <div class="fg"><label>Accessories used today</label><input id="rr-accessories" placeholder="Carry forward if unchanged"></div>
-        <div class="fg full"><label>Care considerations / plan</label><textarea id="rr-plan" placeholder="Plan, next review, escalation, teaching plan, discharge impact..."></textarea></div>
-      </div>
-      <div class="record-review-actions">
-        <button class="patient-record-action-btn" type="button" onclick="document.getElementById('record-daily-review-panel')?.remove()">Cancel</button>
-        <button class="patient-record-action-btn primary" type="button" onclick="saveRecordDailyReview('${j(patientId)}','${j(episodeId||'current')}')">Save Review</button>
-      </div>`;
-    host.prepend(div);
-    div.scrollIntoView({behavior:'smooth',block:'start'});
-  };
-  window.saveRecordDailyReview=async function(patientId,episodeId){
-    const get=id=>(document.getElementById(id)?.value||'').trim();
-    const parts=[];
-    if(get('rr-colour'))parts.push('Colour: '+get('rr-colour'));
-    if(get('rr-morphology'))parts.push('Morphology: '+get('rr-morphology'));
-    if(get('rr-output'))parts.push('Output: '+get('rr-output'));
-    if(get('rr-skin'))parts.push('Skin: '+get('rr-skin'));
-    if(get('rr-notes'))parts.push('Notes: '+get('rr-notes'));
-    const summary=parts.join(' | ');
-    try{
-      await updatePatientAsInpatient(patientId,get('rr-ward'),get('rr-type')||'Daily Stoma Review');
-      let epId=episodeId;
-      if(!epId || epId==='current'){
-        const newEp=await createEpisode(patientId,{type:'Active inpatient episode',stage:'Active inpatient episode',ward:get('rr-ward'),date:get('rr-date')||today(),summary:'Episode opened from patient record review'});
-        epId=newEp?.id||episodeId;
-      }
-      const saved=await createEncounter(patientId,epId,{review_date:get('rr-date')||today(),review_time:get('rr-time')||nowTime(),ward:get('rr-ward'),encounter_type:get('rr-type')||'Daily Stoma Review',summary:summary,stoma_summary:summary,notes:get('rr-notes'),plan:get('rr-plan'),appliance_used:get('rr-appliance'),accessories_used:get('rr-accessories')});
-      if(!saved){alert('The review could not be saved because no encounters table accepted the data. The patient was still moved to Inpatients if the patient table allowed it.');}
-      if(typeof loadPatients==='function')loadPatients();
-      await window.openPatientRecordPage(patientId);
-      alert('Review saved and patient record refreshed.');
-    }catch(err){alert('Could not save review: '+(err.message||err));}
-  };
-  function episodeRowsFor(ep,encounters){
-    const eid=String(ep?.id||'current');
-    if(eid==='current')return encounters||[];
-    const filtered=(encounters||[]).filter(x=>String(x.episode_id||'')===eid || !x.episode_id);
-    return filtered;
-  }
-  function renderEpisodeCardV52(patientId,ep,encounters,stoma,open){
-    const related=episodeRowsFor(ep,encounters);
-    const eid='episode-'+String(ep.id||'current').replace(/[^a-zA-Z0-9_-]/g,'');
-    const status=ep.episode_status||ep.status||'Active';
-    const closed=cleanStatus(status).includes('closed')||cleanStatus(status).includes('completed')||!!ep.discharge_date;
-    const overview=[['Reason / type',ep.episode_type||ep.pathway_stage||'—'],['Status',status||'—'],['Admitted / referred',displayDate(ep.admission_date||ep.opened_date||ep.created_at)],['Ward / location',ep.admission_ward||ep.ward||'—'],['Date of surgery',displayDate(ep.surgery_date)],['Stoma',ep.actual_stoma_type||ep.intended_stoma_type||stoma?.stoma_type||'—'],['Operation',ep.operation_performed||'—'],['Critical information',ep.critical_information||ep.episode_summary||ep.notes||'—']];
-    return `<div class="episode-card ${open?'open':''}" id="${e(eid)}">
-      <div class="episode-card-head" onclick="document.getElementById('${e(eid)}').classList.toggle('open')">
-        <div><div class="episode-card-title">${e(ep.episode_number||ep.episode_type||'Episode')}</div><div class="episode-card-meta">${e(ep.episode_type||'Episode')} · ${displayDate(ep.admission_date||ep.created_at)} · ${related.length} encounter${related.length===1?'':'s'}</div></div>
-        <span class="episode-card-badge">${closed?'Closed / read-only':e(status||'Active')}</span>
-      </div>
-      <div class="episode-card-body">
-        <div class="record-episode-action-row">
-          <button class="patient-record-action-btn primary" type="button" onclick="movePatientRecordToInpatient('${j(patientId)}')">🏥 Move to Inpatients / Open Episode</button>
-          <button class="patient-record-action-btn amber" type="button" onclick="openRecordDailyReviewPanel('${j(patientId)}','${j(ep.id||'current')}','postop')">🗓️ Start Post-op 1–7 Review</button>
-          <button class="patient-record-action-btn blue" type="button" onclick="openRecordDailyReviewPanel('${j(patientId)}','${j(ep.id||'current')}','daily')">📝 New Daily Stoma Review</button>
-          <button class="patient-record-action-btn" type="button" onclick="addPatientRecordEpisode('${j(patientId)}')">➕ Add New Episode</button>
-          ${closed?'':`<button class="patient-record-action-btn red" type="button" onclick="closePatientRecordEpisode('${j(patientId)}','${j(ep.id||'current')}')">🔒 Close Episode → Outpatients</button>`}
-        </div>
-        <div class="episode-overview-grid">${overview.map(([a,b])=>`<div class="episode-overview-item"><div class="label">${e(a)}</div><div class="value">${e(b)}</div></div>`).join('')}</div>
-        <div class="pathway-table-wrap"><table class="pathway-paper-table"><thead><tr><th>Date</th><th>Encounter No.</th><th>Type</th><th>Stoma / Skin / Output / Changes</th><th>Care considerations / plan</th><th>Status</th></tr></thead><tbody>${related.length?related.map(function(r){return `<tr><td>${displayDate(r.encounter_date||r.review_date||r.created_at)}</td><td><strong>${e(r.encounter_number||'—')}</strong></td><td>${e(r.encounter_type||'Review')}</td><td>${e(r.clinical_summary||r.stoma_summary||r.notes||'—')}</td><td>${e(r.plan||r.follow_up_plan||r.care_plan||'—')}</td><td><span class="closed-lock-pill">🔒 ${e(r.encounter_status||r.status||'Closed')}</span></td></tr>`;}).join(''):`<tr><td colspan="6" class="empty">No encounters recorded for this episode yet. Use the buttons above to start a post-op or daily stoma review.</td></tr>`}</tbody></table></div>
-      </div>
-    </div>`;
-  }
-  window.openPatientRecordPage=async function(patientId){
-    const section=document.getElementById('section-patients'); if(!section)return;
-    section.classList.add('patient-record-open','platform-focused');
-    document.getElementById('patient-record-page')?.remove();
-    if(typeof setPlatformFocusTitle==='function')setPlatformFocusTitle('section-patients',{eyebrow:'Patient Record',title:'Patient Episodes & Encounters',subtitle:'Open inpatient episodes, daily stoma reviews, and encounter history.',icon:'document',colour:'#0f766e',colourDark:'#0f2638',soft:'#ecfdf9'},'backToPatientList()');
-    const page=document.createElement('div'); page.id='patient-record-page'; page.className='patient-record-page'; page.innerHTML='<div class="empty">Loading patient record...</div>'; section.appendChild(page);
-    let p=null, related={episodes:[],stomas:[],encounters:[]};
-    try{
-      p=await window.getProjectPatientById(patientId);
-      related=await patientRelatedRows(patientId);
-    }catch(err){page.innerHTML=`<div class="empty">Error loading record: ${e(err.message||err)}</div>`;return;}
-    if(!p){page.innerHTML='<div class="empty">Patient not found.</div>';return;}
-    let episodes=related.episodes||[];
-    const encounters=related.encounters||[];
-    const stomas=related.stomas||[];
-    if(!episodes.length){episodes=[{id:'current',episode_number:'Current record',episode_type:p.episode_type||p.pathway_type||p.patient_status||'Patient record',episode_status:p.episode_status||p.patient_status||'Outpatient',pathway_stage:p.pathway_status||'—',admission_date:p.admission_date||p.created_at,surgery_date:p.surgery_date,admission_ward:p.ward||p.current_ward,consultant:p.consultant,operation_performed:p.diagnosis||p.op_performed_findings||'',episode_summary:p.notes||p.latest_outcome||''}];}
-    const stoma=stomas[0]||{};
-    const statusText=p.patient_type==='inpatient'||String(p.patient_status||'').toLowerCase().includes('inpatient')?'Inpatient / active care':'Outpatient / planned or closed';
-    page.innerHTML=`
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;"><div><h3 style="margin:0;color:var(--navy);font-size:18px;">${e(fullName(p))}</h3><div style="font-size:12px;color:var(--muted);margin-top:3px;">ID Card: ${e(idCard(p))} · <span class="record-status-pill">${e(statusText)}</span></div></div><button class="platform-title-back" onclick="backToPatientList()">← Back to list</button></div>
-      <div class="patient-record-summary"><div class="patient-record-chip"><div class="label">Stoma</div><div class="value">${e(p.stoma_type||stoma.stoma_type||'—')}</div></div><div class="patient-record-chip"><div class="label">Current appliance</div><div class="value">${e(p.appliance_used||p.bag_brand||stoma.bag_brand||'—')}</div></div><div class="patient-record-chip"><div class="label">Accessories</div><div class="value">${e(p.accessories_used||p.flange_size||'—')}</div></div><div class="patient-record-chip"><div class="label">Locality / Phone</div><div class="value">${e(p.locality||'—')} · ${e(p.phone_number||p.contact_number||p.mobile_number||'—')}</div></div></div>
-      <div class="patient-record-actions" id="patient-record-action-panel">
-        <button class="patient-record-action-btn primary" onclick="movePatientRecordToInpatient('${j(patientId)}')">🏥 Move to Inpatients / Open Episode</button>
-        <button class="patient-record-action-btn amber" onclick="openRecordDailyReviewPanel('${j(patientId)}','current','postop')">🗓️ Continue Post-op 1–7 Review</button>
-        <button class="patient-record-action-btn blue" onclick="openRecordDailyReviewPanel('${j(patientId)}','current','daily')">📝 Open Daily Stoma Review</button>
-        <button class="patient-record-action-btn" onclick="addPatientRecordEpisode('${j(patientId)}')">➕ Add Second / New Episode</button>
-      </div>
-      <div class="pc-table-note">Use these buttons to move an outpatient into Inpatients, open the first post-operative review, or start a Daily Stoma Review for a later episode. Closed encounters remain read-only.</div>
-      ${episodes.map(function(ep,i){return renderEpisodeCardV52(patientId,ep,encounters,stoma,i===0);}).join('')}`;
-  };
-})();
-</script>
-
-</body></html>`;
+  </body></html>`;
 }
 function printDischargeLetter(letterId){
   SB.from('discharge_letters').select('*').eq('id',letterId).single().then(({data,error})=>{
@@ -17530,6 +17204,332 @@ function renderPathwayStepsPanel(tab,patient,steps,completions,col,allDone,total
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',rebuildFollowupButtonTabsV6648);
   setTimeout(rebuildFollowupButtonTabsV6648,0);
   setTimeout(rebuildFollowupButtonTabsV6648,250);
+})();
+</script>
+
+
+<!-- v66-53: safe patient record action workflow inserted outside the main application script. -->
+<!-- v66-52: Patient record action workflow — move to inpatient, add episode, and start daily/post-op reviews from the patient record. -->
+<style>
+.patient-record-actions{
+  display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:14px 0 10px;padding:10px 12px;
+  background:#f8fafc;border:1px solid #dbe6ef;border-radius:14px;
+}
+.patient-record-action-btn{
+  border:1px solid #cbd5e1;background:#fff;color:#0f2638;border-radius:12px;padding:8px 12px;
+  font-size:12px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;gap:7px;
+  box-shadow:0 1px 4px rgba(15,38,56,.06);
+}
+.patient-record-action-btn.primary{background:#0f766e;color:#fff;border-color:#0f766e;}
+.patient-record-action-btn.blue{background:#eff6ff;color:#1d4ed8;border-color:#bfdbfe;}
+.patient-record-action-btn.amber{background:#fffbeb;color:#92400e;border-color:#fde68a;}
+.patient-record-action-btn.red{background:#fff1f2;color:#9f1239;border-color:#fecdd3;}
+.patient-record-action-btn:hover{transform:translateY(-1px);box-shadow:0 6px 14px rgba(15,38,56,.10);}
+.patient-record-review-panel{
+  margin:12px 0 16px;padding:14px;border:1px solid #cbd5e1;border-left:5px solid #0f766e;border-radius:16px;background:#fff;
+  box-shadow:0 8px 22px rgba(15,38,56,.08);
+}
+.patient-record-review-panel h4{margin:0 0 10px;color:#0f2638;font-size:16px;}
+.record-review-grid{display:grid;grid-template-columns:repeat(4,minmax(150px,1fr));gap:10px 12px;}
+.record-review-grid .fg{display:flex;flex-direction:column;gap:4px;}
+.record-review-grid .fg.full{grid-column:1/-1;}
+.record-review-grid label{font-size:10px;font-weight:900;letter-spacing:.04em;text-transform:uppercase;color:#475569;}
+.record-review-grid input,.record-review-grid select,.record-review-grid textarea{
+  width:100%;box-sizing:border-box;border:1px solid #d8e1ea;border-radius:10px;padding:9px 10px;font-size:12px;background:#fff;color:#0f2638;
+}
+.record-review-grid textarea{min-height:74px;resize:vertical;}
+.record-review-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:12px;}
+.record-episode-action-row{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 10px;}
+.record-status-pill{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:4px 9px;font-size:10px;font-weight:900;background:#ecfdf5;color:#065f46;border:1px solid #bbf7d0;}
+@media(max-width:900px){.record-review-grid{grid-template-columns:1fr 1fr;}.patient-record-action-btn{font-size:11px;padding:7px 9px;}}
+@media(max-width:640px){.record-review-grid{grid-template-columns:1fr;}.patient-record-actions{align-items:stretch}.patient-record-action-btn{width:100%;justify-content:center;}}
+</style>
+<script>
+(function(){
+  function e(v){
+    try{ if(typeof htmlSafe==='function') return htmlSafe(v); }catch(err){}
+    return String(v??'').replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});
+  }
+  function j(v){return String(v??'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\n/g,'\\n').replace(/\r/g,'');}
+  function today(){return new Date().toISOString().slice(0,10);}
+  function nowTime(){return new Date().toTimeString().slice(0,5);}
+  function displayDate(v){
+    if(!v)return '—';
+    const s=String(v).trim(); if(!s || s.includes('${'))return '—';
+    try{const d=new Date(s); if(!isNaN(d))return d.toLocaleDateString('en-MT');}catch(err){}
+    return e(s);
+  }
+  function cleanStatus(v){return String(v||'').trim().toLowerCase();}
+  function userName(){try{return getLoggedInSubmitterName?.()||currentLoginProfile?.full_name||currentAuthUser?.email||'Logged-in user';}catch(err){return 'Logged-in user';}}
+  function fullName(p){return `${p?.first_name||''} ${p?.surname||''}`.trim()||p?.name||'Unnamed patient';}
+  function idCard(p){return p?.id_card||p?.id_card_number||p?.hospital_number||p?.patient_number||'—';}
+  function opt(list,selected){return '<option value="">Select...</option>'+list.map(function(x){return '<option value="'+e(x)+'"'+(String(x)===String(selected||'')?' selected':'')+'>'+e(x)+'</option>';}).join('');}
+  async function selectSafe(table, queryFn){
+    try{const q=queryFn(SB.from(table).select('*')); const r=await q; if(r.error)throw r.error; return r.data||[];}catch(err){return [];}
+  }
+  async function patientRelatedRows(patientId){
+    const [em,el,sm,sl,cm,cl]=await Promise.all([
+      selectSafe('episodes_main',q=>q.eq('patient_id',patientId).order('created_at',{ascending:false})),
+      selectSafe('episodes',q=>q.eq('patient_id',patientId).order('created_at',{ascending:false})),
+      selectSafe('stomas_main',q=>q.eq('patient_id',patientId).order('created_at',{ascending:false})),
+      selectSafe('stomas',q=>q.eq('patient_id',patientId).order('created_at',{ascending:false})),
+      selectSafe('encounters_main',q=>q.eq('patient_id',patientId).order('created_at',{ascending:false})),
+      selectSafe('encounters',q=>q.eq('patient_id',patientId).order('created_at',{ascending:false}))
+    ]);
+    return {episodes:[...em,...el],stomas:[...sm,...sl],encounters:[...cm,...cl]};
+  }
+  async function updateWithSchemaRetry(table,id,payload){
+    let body={...payload}; let last=null;
+    for(let i=0;i<16;i++){
+      try{
+        const r=await SB.from(table).update(body).eq('id',id).select('id');
+        if(!r.error)return {ok:true,data:r.data,body};
+        last=r.error;
+        const msg=String(r.error.message||'');
+        const m=msg.match(/Could not find the '([^']+)' column/i);
+        if(m && Object.prototype.hasOwnProperty.call(body,m[1])){delete body[m[1]]; continue;}
+        break;
+      }catch(err){last=err; break;}
+    }
+    return {ok:false,error:last,body};
+  }
+  async function insertWithSchemaRetry(table,payload){
+    let body={...payload}; let last=null;
+    for(let i=0;i<18;i++){
+      try{
+        const r=await SB.from(table).insert(body).select('*').single();
+        if(!r.error)return {ok:true,data:r.data,body};
+        last=r.error;
+        const msg=String(r.error.message||'');
+        const m=msg.match(/Could not find the '([^']+)' column/i);
+        if(m && Object.prototype.hasOwnProperty.call(body,m[1])){delete body[m[1]]; continue;}
+        break;
+      }catch(err){last=err; break;}
+    }
+    return {ok:false,error:last,body};
+  }
+  async function updatePatientAsInpatient(patientId,ward,reason){
+    const wardValue=(ward||'').trim()||null;
+    const stamp=new Date().toISOString();
+    const common={patient_type:'inpatient',patient_status:'inpatient',status:'inpatient',pathway_status:reason||'Active inpatient episode',episode_status:'Active',admission_date:today(),ward:wardValue,current_ward:wardValue,is_active:true,modified_at:stamp,updated_at:stamp};
+    const legacy=await updateWithSchemaRetry('patients',patientId,common);
+    const main=await updateWithSchemaRetry('patients_main',patientId,{patient_status:'Inpatient',status:'Inpatient',current_ward:wardValue,ward:wardValue,is_active:true,modified_at:stamp,updated_at:stamp});
+    return legacy.ok||main.ok;
+  }
+  async function updatePatientAsOutpatient(patientId){
+    const stamp=new Date().toISOString();
+    const legacy=await updateWithSchemaRetry('patients',patientId,{patient_type:'outpatient',patient_status:'outpatient',status:'outpatient',pathway_status:'Outpatient / episode closed',ward:null,current_ward:null,modified_at:stamp,updated_at:stamp});
+    const main=await updateWithSchemaRetry('patients_main',patientId,{patient_status:'Outpatient',status:'Outpatient',current_ward:null,ward:null,modified_at:stamp,updated_at:stamp});
+    return legacy.ok||main.ok;
+  }
+  async function createEpisode(patientId,options){
+    const payload={
+      patient_id:patientId,
+      episode_type:options?.type||'Inpatient episode',
+      episode_status:'Active',
+      status:'Active',
+      pathway_stage:options?.stage||'Active inpatient episode',
+      admission_date:options?.date||today(),
+      opened_date:options?.date||today(),
+      admission_ward:options?.ward||null,
+      ward:options?.ward||null,
+      surgery_date:options?.surgery_date||null,
+      operation_performed:options?.operation||null,
+      episode_summary:options?.summary||null,
+      notes:options?.summary||null,
+      created_by:userName(),
+      updated_by:userName()
+    };
+    let r=await insertWithSchemaRetry('episodes_main',payload);
+    if(r.ok)return r.data;
+    r=await insertWithSchemaRetry('episodes',payload);
+    if(r.ok)return r.data;
+    return null;
+  }
+  async function createEncounter(patientId,episodeId,payload){
+    const body={
+      patient_id:patientId,
+      episode_id:episodeId && episodeId!=='current' ? episodeId : null,
+      encounter_number:`ENC-${new Date().getFullYear()}-${String(Date.now()).slice(-6)}`,
+      encounter_date:payload.review_date||today(),
+      review_date:payload.review_date||today(),
+      encounter_time:payload.review_time||nowTime(),
+      review_time:payload.review_time||nowTime(),
+      ward:payload.ward||null,
+      location:payload.ward||null,
+      encounter_type:payload.encounter_type||'Daily Stoma Review',
+      encounter_status:'Closed',
+      status:'Closed',
+      clinical_summary:payload.summary||null,
+      stoma_summary:payload.stoma_summary||null,
+      notes:payload.notes||payload.summary||null,
+      plan:payload.plan||null,
+      follow_up_plan:payload.plan||null,
+      care_plan:payload.plan||null,
+      appliance_used:payload.appliance_used||null,
+      accessories_used:payload.accessories_used||null,
+      created_by:userName(),
+      closed_by:userName(),
+      closed_at:new Date().toISOString()
+    };
+    let r=await insertWithSchemaRetry('encounters_main',body);
+    if(r.ok)return r.data;
+    r=await insertWithSchemaRetry('encounters',body);
+    if(r.ok)return r.data;
+    return null;
+  }
+  window.movePatientRecordToInpatient=async function(patientId){
+    const ward=prompt('Ward / location for this inpatient episode:', '')||'';
+    const reason=prompt('Reason for opening inpatient episode:', 'Active inpatient episode')||'Active inpatient episode';
+    try{
+      const ok=await updatePatientAsInpatient(patientId,ward,reason);
+      await createEpisode(patientId,{type:reason,stage:'Active inpatient episode',ward:ward,date:today(),summary:reason});
+      if(typeof loadPatients==='function')loadPatients();
+      await window.openPatientRecordPage(patientId);
+      alert(ok?'Patient moved to Inpatients and active episode opened.':'Episode opened. Patient status update may need the matching database column.');
+    }catch(err){alert('Could not move patient to Inpatients: '+(err.message||err));}
+  };
+  window.addPatientRecordEpisode=async function(patientId){
+    const reason=prompt('Reason / type for the new episode:', 'Readmission / complication review')||'';
+    if(!reason.trim())return;
+    const ward=prompt('Ward / location, if admitted:', '')||'';
+    try{
+      await updatePatientAsInpatient(patientId,ward,reason);
+      await createEpisode(patientId,{type:reason.trim(),stage:'Active inpatient episode',ward:ward,date:today(),summary:reason.trim()});
+      if(typeof loadPatients==='function')loadPatients();
+      await window.openPatientRecordPage(patientId);
+      alert('New episode opened and patient is now shown as an inpatient.');
+    }catch(err){alert('Could not add episode: '+(err.message||err));}
+  };
+  window.closePatientRecordEpisode=async function(patientId,episodeId){
+    if(!confirm('Close this episode and move the patient back to Outpatients?'))return;
+    const stamp=new Date().toISOString();
+    try{
+      if(episodeId && episodeId!=='current'){
+        await updateWithSchemaRetry('episodes_main',episodeId,{episode_status:'Closed',status:'Closed',discharge_date:today(),closed_at:stamp,updated_at:stamp});
+        await updateWithSchemaRetry('episodes',episodeId,{episode_status:'Closed',status:'Closed',discharge_date:today(),closed_at:stamp,updated_at:stamp});
+      }
+      await updatePatientAsOutpatient(patientId);
+      if(typeof loadPatients==='function')loadPatients();
+      await window.openPatientRecordPage(patientId);
+      alert('Episode closed. Patient moved back to Outpatients.');
+    }catch(err){alert('Could not close episode: '+(err.message||err));}
+  };
+  window.openRecordDailyReviewPanel=function(patientId,episodeId,mode){
+    const host=document.getElementById('patient-record-action-panel')||document.getElementById('patient-record-page');
+    if(!host)return;
+    const title=mode==='postop'?'Post-op 1–7 Day Review Chart entry':'Stoma Review Record';
+    const type=mode==='postop'?'Post-op 1–7 Day Review':'Daily Stoma Review';
+    const existing=document.getElementById('record-daily-review-panel'); if(existing)existing.remove();
+    const div=document.createElement('div');
+    div.id='record-daily-review-panel';
+    div.className='patient-record-review-panel';
+    div.innerHTML=`
+      <h4>${e(title)}</h4>
+      <div class="record-review-grid">
+        <div class="fg"><label>Review date</label><input type="date" id="rr-date" value="${today()}"></div>
+        <div class="fg"><label>Review time</label><input type="time" id="rr-time" value="${nowTime()}"></div>
+        <div class="fg"><label>Ward / Location</label><input id="rr-ward" placeholder="Ward or location"></div>
+        <div class="fg"><label>Review type</label><input id="rr-type" value="${e(type)}"></div>
+        <div class="fg"><label>Stoma colour</label><select id="rr-colour">${opt(['Pink / healthy','Red / viable','Dusky','Pale','Black / necrotic','Other'])}</select></div>
+        <div class="fg"><label>Stoma morphology</label><select id="rr-morphology">${opt(['Protruding','Flush','Retracted','Oedematous','Bleeding','Mucocutaneous separation','Other'])}</select></div>
+        <div class="fg"><label>Output / function</label><select id="rr-output">${opt(['No output yet','Haemoserous','Green / bilious','Liquid stool','Semi-formed / formed','High output','Urine','Other'])}</select></div>
+        <div class="fg"><label>Peristomal skin</label><select id="rr-skin">${opt(['Healthy / intact','Red','Broken / excoriated','Leaking-related irritation','Other'])}</select></div>
+        <div class="fg full"><label>Changes / concerns / notes</label><textarea id="rr-notes" placeholder="What changed today, concerns, patient condition, education readiness, complications..."></textarea></div>
+        <div class="fg"><label>Appliance used today</label><input id="rr-appliance" placeholder="Carry forward if unchanged"></div>
+        <div class="fg"><label>Accessories used today</label><input id="rr-accessories" placeholder="Carry forward if unchanged"></div>
+        <div class="fg full"><label>Care considerations / plan</label><textarea id="rr-plan" placeholder="Plan, next review, escalation, teaching plan, discharge impact..."></textarea></div>
+      </div>
+      <div class="record-review-actions">
+        <button class="patient-record-action-btn" type="button" onclick="document.getElementById('record-daily-review-panel')?.remove()">Cancel</button>
+        <button class="patient-record-action-btn primary" type="button" onclick="saveRecordDailyReview('${j(patientId)}','${j(episodeId||'current')}')">Save Review</button>
+      </div>`;
+    host.prepend(div);
+    div.scrollIntoView({behavior:'smooth',block:'start'});
+  };
+  window.saveRecordDailyReview=async function(patientId,episodeId){
+    const get=id=>(document.getElementById(id)?.value||'').trim();
+    const parts=[];
+    if(get('rr-colour'))parts.push('Colour: '+get('rr-colour'));
+    if(get('rr-morphology'))parts.push('Morphology: '+get('rr-morphology'));
+    if(get('rr-output'))parts.push('Output: '+get('rr-output'));
+    if(get('rr-skin'))parts.push('Skin: '+get('rr-skin'));
+    if(get('rr-notes'))parts.push('Notes: '+get('rr-notes'));
+    const summary=parts.join(' | ');
+    try{
+      await updatePatientAsInpatient(patientId,get('rr-ward'),get('rr-type')||'Daily Stoma Review');
+      let epId=episodeId;
+      if(!epId || epId==='current'){
+        const newEp=await createEpisode(patientId,{type:'Active inpatient episode',stage:'Active inpatient episode',ward:get('rr-ward'),date:get('rr-date')||today(),summary:'Episode opened from patient record review'});
+        epId=newEp?.id||episodeId;
+      }
+      const saved=await createEncounter(patientId,epId,{review_date:get('rr-date')||today(),review_time:get('rr-time')||nowTime(),ward:get('rr-ward'),encounter_type:get('rr-type')||'Daily Stoma Review',summary:summary,stoma_summary:summary,notes:get('rr-notes'),plan:get('rr-plan'),appliance_used:get('rr-appliance'),accessories_used:get('rr-accessories')});
+      if(!saved){alert('The review could not be saved because no encounters table accepted the data. The patient was still moved to Inpatients if the patient table allowed it.');}
+      if(typeof loadPatients==='function')loadPatients();
+      await window.openPatientRecordPage(patientId);
+      alert('Review saved and patient record refreshed.');
+    }catch(err){alert('Could not save review: '+(err.message||err));}
+  };
+  function episodeRowsFor(ep,encounters){
+    const eid=String(ep?.id||'current');
+    if(eid==='current')return encounters||[];
+    const filtered=(encounters||[]).filter(x=>String(x.episode_id||'')===eid || !x.episode_id);
+    return filtered;
+  }
+  function renderEpisodeCardV52(patientId,ep,encounters,stoma,open){
+    const related=episodeRowsFor(ep,encounters);
+    const eid='episode-'+String(ep.id||'current').replace(/[^a-zA-Z0-9_-]/g,'');
+    const status=ep.episode_status||ep.status||'Active';
+    const closed=cleanStatus(status).includes('closed')||cleanStatus(status).includes('completed')||!!ep.discharge_date;
+    const overview=[['Reason / type',ep.episode_type||ep.pathway_stage||'—'],['Status',status||'—'],['Admitted / referred',displayDate(ep.admission_date||ep.opened_date||ep.created_at)],['Ward / location',ep.admission_ward||ep.ward||'—'],['Date of surgery',displayDate(ep.surgery_date)],['Stoma',ep.actual_stoma_type||ep.intended_stoma_type||stoma?.stoma_type||'—'],['Operation',ep.operation_performed||'—'],['Critical information',ep.critical_information||ep.episode_summary||ep.notes||'—']];
+    return `<div class="episode-card ${open?'open':''}" id="${e(eid)}">
+      <div class="episode-card-head" onclick="document.getElementById('${e(eid)}').classList.toggle('open')">
+        <div><div class="episode-card-title">${e(ep.episode_number||ep.episode_type||'Episode')}</div><div class="episode-card-meta">${e(ep.episode_type||'Episode')} · ${displayDate(ep.admission_date||ep.created_at)} · ${related.length} encounter${related.length===1?'':'s'}</div></div>
+        <span class="episode-card-badge">${closed?'Closed / read-only':e(status||'Active')}</span>
+      </div>
+      <div class="episode-card-body">
+        <div class="record-episode-action-row">
+          <button class="patient-record-action-btn primary" type="button" onclick="movePatientRecordToInpatient('${j(patientId)}')">🏥 Move to Inpatients / Open Episode</button>
+          <button class="patient-record-action-btn amber" type="button" onclick="openRecordDailyReviewPanel('${j(patientId)}','${j(ep.id||'current')}','postop')">🗓️ Start Post-op 1–7 Review</button>
+          <button class="patient-record-action-btn blue" type="button" onclick="openRecordDailyReviewPanel('${j(patientId)}','${j(ep.id||'current')}','daily')">📝 New Daily Stoma Review</button>
+          <button class="patient-record-action-btn" type="button" onclick="addPatientRecordEpisode('${j(patientId)}')">➕ Add New Episode</button>
+          ${closed?'':`<button class="patient-record-action-btn red" type="button" onclick="closePatientRecordEpisode('${j(patientId)}','${j(ep.id||'current')}')">🔒 Close Episode → Outpatients</button>`}
+        </div>
+        <div class="episode-overview-grid">${overview.map(([a,b])=>`<div class="episode-overview-item"><div class="label">${e(a)}</div><div class="value">${e(b)}</div></div>`).join('')}</div>
+        <div class="pathway-table-wrap"><table class="pathway-paper-table"><thead><tr><th>Date</th><th>Encounter No.</th><th>Type</th><th>Stoma / Skin / Output / Changes</th><th>Care considerations / plan</th><th>Status</th></tr></thead><tbody>${related.length?related.map(function(r){return `<tr><td>${displayDate(r.encounter_date||r.review_date||r.created_at)}</td><td><strong>${e(r.encounter_number||'—')}</strong></td><td>${e(r.encounter_type||'Review')}</td><td>${e(r.clinical_summary||r.stoma_summary||r.notes||'—')}</td><td>${e(r.plan||r.follow_up_plan||r.care_plan||'—')}</td><td><span class="closed-lock-pill">🔒 ${e(r.encounter_status||r.status||'Closed')}</span></td></tr>`;}).join(''):`<tr><td colspan="6" class="empty">No encounters recorded for this episode yet. Use the buttons above to start a post-op or daily stoma review.</td></tr>`}</tbody></table></div>
+      </div>
+    </div>`;
+  }
+  window.openPatientRecordPage=async function(patientId){
+    const section=document.getElementById('section-patients'); if(!section)return;
+    section.classList.add('patient-record-open','platform-focused');
+    document.getElementById('patient-record-page')?.remove();
+    if(typeof setPlatformFocusTitle==='function')setPlatformFocusTitle('section-patients',{eyebrow:'Patient Record',title:'Patient Episodes & Encounters',subtitle:'Open inpatient episodes, daily stoma reviews, and encounter history.',icon:'document',colour:'#0f766e',colourDark:'#0f2638',soft:'#ecfdf9'},'backToPatientList()');
+    const page=document.createElement('div'); page.id='patient-record-page'; page.className='patient-record-page'; page.innerHTML='<div class="empty">Loading patient record...</div>'; section.appendChild(page);
+    let p=null, related={episodes:[],stomas:[],encounters:[]};
+    try{
+      p=await window.getProjectPatientById(patientId);
+      related=await patientRelatedRows(patientId);
+    }catch(err){page.innerHTML=`<div class="empty">Error loading record: ${e(err.message||err)}</div>`;return;}
+    if(!p){page.innerHTML='<div class="empty">Patient not found.</div>';return;}
+    let episodes=related.episodes||[];
+    const encounters=related.encounters||[];
+    const stomas=related.stomas||[];
+    if(!episodes.length){episodes=[{id:'current',episode_number:'Current record',episode_type:p.episode_type||p.pathway_type||p.patient_status||'Patient record',episode_status:p.episode_status||p.patient_status||'Outpatient',pathway_stage:p.pathway_status||'—',admission_date:p.admission_date||p.created_at,surgery_date:p.surgery_date,admission_ward:p.ward||p.current_ward,consultant:p.consultant,operation_performed:p.diagnosis||p.op_performed_findings||'',episode_summary:p.notes||p.latest_outcome||''}];}
+    const stoma=stomas[0]||{};
+    const statusText=p.patient_type==='inpatient'||String(p.patient_status||'').toLowerCase().includes('inpatient')?'Inpatient / active care':'Outpatient / planned or closed';
+    page.innerHTML=`
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;"><div><h3 style="margin:0;color:var(--navy);font-size:18px;">${e(fullName(p))}</h3><div style="font-size:12px;color:var(--muted);margin-top:3px;">ID Card: ${e(idCard(p))} · <span class="record-status-pill">${e(statusText)}</span></div></div><button class="platform-title-back" onclick="backToPatientList()">← Back to list</button></div>
+      <div class="patient-record-summary"><div class="patient-record-chip"><div class="label">Stoma</div><div class="value">${e(p.stoma_type||stoma.stoma_type||'—')}</div></div><div class="patient-record-chip"><div class="label">Current appliance</div><div class="value">${e(p.appliance_used||p.bag_brand||stoma.bag_brand||'—')}</div></div><div class="patient-record-chip"><div class="label">Accessories</div><div class="value">${e(p.accessories_used||p.flange_size||'—')}</div></div><div class="patient-record-chip"><div class="label">Locality / Phone</div><div class="value">${e(p.locality||'—')} · ${e(p.phone_number||p.contact_number||p.mobile_number||'—')}</div></div></div>
+      <div class="patient-record-actions" id="patient-record-action-panel">
+        <button class="patient-record-action-btn primary" onclick="movePatientRecordToInpatient('${j(patientId)}')">🏥 Move to Inpatients / Open Episode</button>
+        <button class="patient-record-action-btn amber" onclick="openRecordDailyReviewPanel('${j(patientId)}','current','postop')">🗓️ Continue Post-op 1–7 Review</button>
+        <button class="patient-record-action-btn blue" onclick="openRecordDailyReviewPanel('${j(patientId)}','current','daily')">📝 Open Daily Stoma Review</button>
+        <button class="patient-record-action-btn" onclick="addPatientRecordEpisode('${j(patientId)}')">➕ Add Second / New Episode</button>
+      </div>
+      <div class="pc-table-note">Use these buttons to move an outpatient into Inpatients, open the first post-operative review, or start a Daily Stoma Review for a later episode. Closed encounters remain read-only.</div>
+      ${episodes.map(function(ep,i){return renderEpisodeCardV52(patientId,ep,encounters,stoma,i===0);}).join('')}`;
+  };
 })();
 </script>
 </body>
