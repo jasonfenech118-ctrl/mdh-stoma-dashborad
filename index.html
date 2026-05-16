@@ -20362,6 +20362,317 @@ Protected: Add Patient flow, episode movement, patient record redesign, Follow-U
 })();
 </script>
 
+
+
+<style id="v66-65d-unified-navigation-tabs-css">
+/* ─────────────────────────────────────────────────────
+   v66-65d — unified platform navigation tabs
+   Matches patient-record tabs to the compact Follow-Up Centre tab style.
+   No Supabase/database logic changed.
+   ───────────────────────────────────────────────────── */
+:root{
+  --mdh-tab-height:44px;
+  --mdh-tab-border:#d8e3e7;
+  --mdh-tab-muted:#64748b;
+  --mdh-tab-active:#0f766e;
+  --mdh-tab-active-soft:#f8fafc;
+}
+
+/* Patient record/new rule-set tabs */
+#patient-record-page .v6661-tabs,
+.v6661-record .v6661-tabs,
+#v6661-patient-record-tabs .v6661-tabs,
+/* Older patient profile tabs */
+.pd-tabs{
+  display:flex!important;
+  flex-direction:row!important;
+  align-items:stretch!important;
+  justify-content:flex-start!important;
+  gap:0!important;
+  width:100%!important;
+  max-width:none!important;
+  margin:14px 0 14px!important;
+  padding:0 10px!important;
+  background:#ffffff!important;
+  border:1px solid var(--mdh-tab-border)!important;
+  border-radius:10px!important;
+  box-shadow:0 2px 7px rgba(15,38,56,.06)!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  white-space:nowrap!important;
+  flex-wrap:nowrap!important;
+}
+#patient-record-page .v6661-tabs::-webkit-scrollbar,
+.v6661-record .v6661-tabs::-webkit-scrollbar,
+.pd-tabs::-webkit-scrollbar{height:5px!important;}
+#patient-record-page .v6661-tabs::-webkit-scrollbar-thumb,
+.v6661-record .v6661-tabs::-webkit-scrollbar-thumb,
+.pd-tabs::-webkit-scrollbar-thumb{background:#cbd5e1!important;border-radius:999px!important;}
+
+#patient-record-page .v6661-tab,
+.v6661-record .v6661-tab,
+#v6661-patient-record-tabs .v6661-tab,
+.pd-tab{
+  display:inline-flex!important;
+  flex:0 0 auto!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:8px!important;
+  height:var(--mdh-tab-height)!important;
+  min-height:var(--mdh-tab-height)!important;
+  min-width:auto!important;
+  width:auto!important;
+  padding:0 14px!important;
+  margin:0!important;
+  border:0!important;
+  border-right:1px solid rgba(216,227,231,.86)!important;
+  border-left:0!important;
+  border-bottom:0!important;
+  border-radius:0!important;
+  background:#ffffff!important;
+  color:var(--mdh-tab-muted)!important;
+  box-shadow:none!important;
+  font-family:'DM Sans',sans-serif!important;
+  font-size:12px!important;
+  font-weight:780!important;
+  line-height:1!important;
+  letter-spacing:.01em!important;
+  text-align:center!important;
+  cursor:pointer!important;
+  position:relative!important;
+  overflow:visible!important;
+  transform:none!important;
+}
+#patient-record-page .v6661-tab:first-child,
+.v6661-record .v6661-tab:first-child,
+.pd-tab:first-child{border-radius:9px 0 0 9px!important;}
+#patient-record-page .v6661-tab:last-child,
+.v6661-record .v6661-tab:last-child,
+.pd-tab:last-child{border-right:0!important;border-radius:0 9px 9px 0!important;}
+
+#patient-record-page .v6661-tab:hover,
+.v6661-record .v6661-tab:hover,
+.pd-tab:hover{
+  background:#f8fafc!important;
+  color:#0f2638!important;
+  box-shadow:none!important;
+  transform:none!important;
+}
+#patient-record-page .v6661-tab.active,
+.v6661-record .v6661-tab.active,
+#v6661-patient-record-tabs .v6661-tab.active,
+.pd-tab.active{
+  background:var(--mdh-tab-active-soft)!important;
+  color:#0f2638!important;
+  font-weight:950!important;
+  box-shadow:inset 0 -3px 0 var(--mdh-tab-active)!important;
+}
+
+/* Add small platform icon markers to the newer text-only tabs */
+#patient-record-page .v6661-tab::before,
+.v6661-record .v6661-tab::before,
+#v6661-patient-record-tabs .v6661-tab::before{
+  content:''!important;
+  display:inline-flex!important;
+  width:24px!important;
+  height:24px!important;
+  min-width:24px!important;
+  border-radius:7px!important;
+  background:linear-gradient(135deg,#0f2638,#0f766e)!important;
+  box-shadow:0 3px 7px rgba(15,38,56,.12)!important;
+}
+#patient-record-page .v6661-tab:nth-child(2)::before,.v6661-record .v6661-tab:nth-child(2)::before{background:linear-gradient(135deg,#1d4ed8,#075985)!important;}
+#patient-record-page .v6661-tab:nth-child(3)::before,.v6661-record .v6661-tab:nth-child(3)::before{background:linear-gradient(135deg,#5b21b6,#312e81)!important;}
+#patient-record-page .v6661-tab:nth-child(4)::before,.v6661-record .v6661-tab:nth-child(4)::before{background:linear-gradient(135deg,#92400e,#b45309)!important;}
+#patient-record-page .v6661-tab:nth-child(5)::before,.v6661-record .v6661-tab:nth-child(5)::before{background:linear-gradient(135deg,#065f46,#059669)!important;}
+#patient-record-page .v6661-tab:nth-child(6)::before,.v6661-record .v6661-tab:nth-child(6)::before{background:linear-gradient(135deg,#9f1239,#e11d48)!important;}
+#patient-record-page .v6661-tab:nth-child(7)::before,.v6661-record .v6661-tab:nth-child(7)::before{background:linear-gradient(135deg,#0369a1,#0284c7)!important;}
+#patient-record-page .v6661-tab:nth-child(8)::before,.v6661-record .v6661-tab:nth-child(8)::before{background:linear-gradient(135deg,#334155,#475569)!important;}
+#patient-record-page .v6661-tab.active::before,
+.v6661-record .v6661-tab.active::before{
+  transform:scale(1.04)!important;
+  box-shadow:0 4px 9px rgba(15,118,110,.18)!important;
+}
+
+/* Older patient-profile tab icons should use the same size and colour rhythm */
+.pd-tab .tab-icon{
+  width:24px!important;
+  height:24px!important;
+  min-width:24px!important;
+  border-radius:7px!important;
+  background:linear-gradient(135deg,#0f2638,#0f766e)!important;
+  color:#ffffff!important;
+  box-shadow:0 3px 7px rgba(15,38,56,.12)!important;
+  border:none!important;
+}
+.pd-tab .tab-icon svg{width:15px!important;height:15px!important;stroke-width:2.2!important;}
+.pd-tab:nth-child(2) .tab-icon{background:linear-gradient(135deg,#1d4ed8,#075985)!important;}
+.pd-tab:nth-child(3) .tab-icon{background:linear-gradient(135deg,#5b21b6,#312e81)!important;}
+.pd-tab:nth-child(4) .tab-icon{background:linear-gradient(135deg,#92400e,#b45309)!important;}
+.pd-tab:nth-child(5) .tab-icon{background:linear-gradient(135deg,#065f46,#059669)!important;}
+.pd-tab:nth-child(6) .tab-icon{background:linear-gradient(135deg,#9f1239,#e11d48)!important;}
+.pd-tab:nth-child(7) .tab-icon{background:linear-gradient(135deg,#0369a1,#0284c7)!important;}
+.pd-tab:nth-child(8) .tab-icon{background:linear-gradient(135deg,#334155,#475569)!important;}
+
+/* Make patient-record hero/actions unmistakably command-centre styled if older CSS is cached/overridden */
+#patient-record-page.v6661-record .v6661-profile-hero,
+#section-patients #patient-record-page .v6661-profile-hero{
+  display:block!important;
+  position:relative!important;
+  overflow:hidden!important;
+  border:1px solid rgba(255,255,255,.12)!important;
+  border-left:7px solid #14b8a6!important;
+  border-radius:24px!important;
+  padding:20px 22px!important;
+  margin:0 0 14px!important;
+  color:#ffffff!important;
+  background:linear-gradient(135deg,#0f2638 0%,#0f766e 72%,#14b8a6 100%)!important;
+  box-shadow:0 18px 46px rgba(15,38,56,.18)!important;
+}
+#patient-record-page .v6661-profile-title,
+#patient-record-page .v6661-profile-chip .value{color:#ffffff!important;}
+#patient-record-page .v6661-profile-sub{color:rgba(255,255,255,.78)!important;}
+#patient-record-page .v6661-profile-chip{
+  background:rgba(255,255,255,.12)!important;
+  border:1px solid rgba(255,255,255,.20)!important;
+  border-radius:16px!important;
+}
+#patient-record-page .v6661-record-actions{
+  display:flex!important;
+  flex-wrap:wrap!important;
+  gap:9px!important;
+  align-items:center!important;
+  padding:12px!important;
+  margin:0 0 14px!important;
+  background:rgba(255,255,255,.92)!important;
+  border:1px solid rgba(15,38,56,.10)!important;
+  border-radius:18px!important;
+  box-shadow:0 10px 28px rgba(15,38,56,.06)!important;
+}
+#patient-record-page .v6661-btn{
+  border-radius:999px!important;
+  padding:9px 13px!important;
+  font-family:'DM Sans',sans-serif!important;
+  font-size:12px!important;
+  font-weight:900!important;
+  border:1px solid #cbd5e1!important;
+  background:#ffffff!important;
+  color:#0f2638!important;
+  box-shadow:0 1px 4px rgba(15,38,56,.06)!important;
+}
+#patient-record-page .v6661-btn.primary{background:#0f766e!important;color:#ffffff!important;border-color:#0f766e!important;}
+#patient-record-page .v6661-btn.blue{background:#eff6ff!important;color:#1d4ed8!important;border-color:#bfdbfe!important;}
+#patient-record-page .v6661-btn.amber{background:#fffbeb!important;color:#92400e!important;border-color:#fde68a!important;}
+#patient-record-page .v6661-btn.red{background:#fff1f2!important;color:#9f1239!important;border-color:#fecdd3!important;}
+
+@media(max-width:760px){
+  #patient-record-page .v6661-tabs,.v6661-record .v6661-tabs,.pd-tabs{padding:0 6px!important;border-radius:8px!important;}
+  #patient-record-page .v6661-tab,.v6661-record .v6661-tab,.pd-tab{height:40px!important;min-height:40px!important;padding:0 10px!important;font-size:11px!important;}
+  #patient-record-page .v6661-tab::before,.v6661-record .v6661-tab::before,.pd-tab .tab-icon{width:22px!important;height:22px!important;min-width:22px!important;}
+}
+</style>
+
+
+<!-- =============================================================
+     v66-65e — Patient Centre compact tabs + Clinical Workforce back fix
+     - Patient Centre Master/Inpatients/Outpatients/Handover now use the same
+       compact horizontal tab style as Follow-Up Centre.
+     - Back from nurse-specific Clinical Workforce pages returns to Home/Main Menu,
+       not the Patient Centre hub.
+     - No Supabase/database logic changed.
+     ============================================================= -->
+<style id="v66-65e-patient-centre-tabs-backfix-css">
+#section-patients #patient-subtab-bar{
+  display:flex!important;flex-direction:row!important;flex-wrap:nowrap!important;align-items:stretch!important;justify-content:flex-start!important;gap:0!important;width:100%!important;max-width:none!important;margin:0 0 12px!important;padding:0 8px!important;background:#ffffff!important;border:1px solid #d8e3e7!important;border-radius:12px!important;box-shadow:0 2px 9px rgba(15,38,56,.07)!important;overflow-x:auto!important;overflow-y:hidden!important;white-space:nowrap!important;grid-template-columns:none!important;
+}
+#section-patients #patient-subtab-bar::-webkit-scrollbar{height:5px!important;}
+#section-patients #patient-subtab-bar::-webkit-scrollbar-thumb{background:#cbd5e1!important;border-radius:999px!important;}
+#section-patients #patient-subtab-bar .roster-subtab{
+  display:inline-flex!important;flex:0 0 auto!important;grid-template-columns:none!important;align-items:center!important;justify-content:center!important;gap:8px!important;height:44px!important;min-height:44px!important;min-width:150px!important;width:auto!important;margin:0!important;padding:0 15px!important;border:0!important;border-right:1px solid rgba(216,227,231,.90)!important;border-left:0!important;border-radius:0!important;background:#ffffff!important;box-shadow:none!important;color:#64748b!important;font-size:12px!important;font-weight:850!important;line-height:1!important;text-align:center!important;transform:none!important;overflow:visible!important;
+}
+#section-patients #patient-subtab-bar .roster-subtab:first-child{border-radius:11px 0 0 11px!important;}
+#section-patients #patient-subtab-bar .roster-subtab:last-child{border-right:0!important;border-radius:0 11px 11px 0!important;}
+#section-patients #patient-subtab-bar .roster-subtab::before,#section-patients #patient-subtab-bar .roster-subtab::after{content:none!important;display:none!important;}
+#section-patients #patient-subtab-bar .roster-subtab:hover{background:#f8fafc!important;color:#0f2638!important;border-color:rgba(216,227,231,.90)!important;box-shadow:none!important;transform:none!important;}
+#section-patients #patient-subtab-bar .roster-subtab.active{background:#f8fafc!important;color:#0f2638!important;font-weight:950!important;box-shadow:inset 0 -3px 0 #0f766e!important;border-color:rgba(216,227,231,.90)!important;}
+#section-patients #patient-subtab-bar .roster-subtab-icon{display:inline-flex!important;flex:0 0 auto!important;width:28px!important;height:28px!important;min-width:28px!important;border-radius:8px!important;margin:0!important;align-items:center!important;justify-content:center!important;color:#ffffff!important;background:linear-gradient(135deg,#0f2638,#0f766e)!important;box-shadow:0 3px 8px rgba(15,38,56,.14)!important;grid-column:auto!important;justify-self:auto!important;}
+#section-patients #patient-subtab-bar .roster-subtab-icon svg{width:16px!important;height:16px!important;stroke-width:2.2!important;}
+#section-patients #patient-subtab-bar .roster-subtab > span:not(.roster-subtab-icon){display:inline-flex!important;align-items:center!important;grid-column:auto!important;justify-self:auto!important;color:inherit!important;font-size:12px!important;font-weight:inherit!important;line-height:1!important;text-align:center!important;margin:0!important;white-space:nowrap!important;}
+#section-patients #patient-subtab-bar .roster-subtab:nth-child(2) .roster-subtab-icon{background:linear-gradient(135deg,#1d4ed8,#0f766e)!important;}
+#section-patients #patient-subtab-bar .roster-subtab:nth-child(3) .roster-subtab-icon{background:linear-gradient(135deg,#5b21b6,#0f2638)!important;}
+#section-patients #patient-subtab-bar .roster-subtab:nth-child(4) .roster-subtab-icon{background:linear-gradient(135deg,#92400e,#b45309)!important;}
+#section-patients .patient-centre-toolbar{background:#ffffff!important;border:1px solid rgba(15,38,56,.09)!important;border-radius:16px!important;box-shadow:0 8px 24px rgba(15,38,56,.06)!important;padding:10px!important;margin-bottom:12px!important;}
+#section-patients .patient-active-view-pill{margin-top:2px!important;}
+@media(max-width:760px){#section-patients #patient-subtab-bar{padding:0 6px!important;border-radius:10px!important;margin-bottom:10px!important;}#section-patients #patient-subtab-bar .roster-subtab{height:42px!important;min-height:42px!important;min-width:138px!important;padding:0 12px!important;font-size:11.5px!important;}#section-patients #patient-subtab-bar .roster-subtab-icon{width:26px!important;height:26px!important;min-width:26px!important;}#section-patients #patient-subtab-bar .roster-subtab-icon svg{width:15px!important;height:15px!important;}}
+</style>
+<script id="v66-65e-clinical-workforce-backfix-js">
+(function(){
+  function isPatientsActive(){const s=document.getElementById('section-patients');return !!(s&&s.classList.contains('active'));}
+  function isWorkforceContext(){
+    const s=document.getElementById('section-patients');
+    if(!s)return false;
+    if(s.classList.contains('clinical-workforce-focused'))return true;
+    if(s.dataset.backTarget==='home'&&window.__patientMode==='workforce')return true;
+    if(window.__patientMode==='workforce')return true;
+    if(window.__lastPatientSource==='clinical-workforce')return true;
+    const title=s.querySelector('.platform-title-card .eyebrow')?.textContent||'';
+    return /clinical\s+workforce/i.test(title);
+  }
+  function markWorkforceBackHome(){
+    const s=document.getElementById('section-patients');
+    if(!s)return;
+    if(isWorkforceContext()){
+      s.dataset.backTarget='home';
+      const back=s.querySelector('.platform-title-card .platform-title-back');
+      if(back){back.textContent='← Back to main menu';back.setAttribute('onclick',"switchSection('home',null,{fromBack:true})");}
+    }
+  }
+  const prevOpenClinical=window.openClinicalWorkforcePage;
+  if(typeof prevOpenClinical==='function'){
+    window.openClinicalWorkforcePage=function(){
+      window.__patientMode='workforce';
+      window.__patientBackTarget='home';
+      window.__lastPatientSource='clinical-workforce';
+      const res=prevOpenClinical.apply(this,arguments);
+      setTimeout(markWorkforceBackHome,0);setTimeout(markWorkforceBackHome,120);
+      return res;
+    };
+  }
+  const prevGoBack=window.goBackSection;
+  window.goBackSection=function(){
+    if(isPatientsActive()&&isWorkforceContext()){switchSection('home',null,{fromBack:true});return;}
+    if(typeof prevGoBack==='function')return prevGoBack.apply(this,arguments);
+    if(window.currentSectionName&&window.currentSectionName!=='home')switchSection('home',null,{fromBack:true});
+  };
+  const prevBackToPatientList=window.backToPatientList;
+  window.backToPatientList=function(){
+    if(isWorkforceContext()){
+      document.getElementById('patient-record-page')?.remove();
+      const s=document.getElementById('section-patients');
+      if(s){s.classList.remove('patient-record-open');}
+      switchSection('home',null,{fromBack:true});
+      return;
+    }
+    if(typeof prevBackToPatientList==='function')return prevBackToPatientList.apply(this,arguments);
+    document.getElementById('patient-record-page')?.remove();
+    if(typeof showPatientSubtab==='function')showPatientSubtab(window._patientCentrePrevView||'master');
+  };
+  const prevShowPatientSubtab=window.showPatientSubtab;
+  if(typeof prevShowPatientSubtab==='function'){
+    window.showPatientSubtab=function(tab,options){
+      const res=prevShowPatientSubtab.apply(this,arguments);
+      const s=document.getElementById('section-patients');
+      if(s&&options&&options.backTarget==='home')s.dataset.backTarget='home';
+      setTimeout(markWorkforceBackHome,60);
+      return res;
+    };
+  }
+  const obs=new MutationObserver(()=>{if(isPatientsActive())setTimeout(markWorkforceBackHome,40);});
+  if(document.body)obs.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',markWorkforceBackHome); else setTimeout(markWorkforceBackHome,0);
+})();
+</script>
+
 </body>
 </html>
 
