@@ -6872,10 +6872,48 @@ function staffOrderValue(name){
   return STAFF_ORDER[key]||999;
 }
 function sortStaffRows(rows){
-  return [...(rows||[])].sort((a,b)=>{
+  // v66-68E: practical roster view — protect against duplicate active roster_staff rows.
+  // The database is not changed here. Duplicates are hidden from the monthly roster so each staff member appears once.
+  const seen=new Map();
+  const duplicates=[];
+  function staffKey(r){
+    return fullDisplayName(r?.full_name||'')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g,' ')
+      .trim()
+      .replace(/\s+/g,' ');
+  }
+  function roleScore(r){
+    const role=String(r?.role||'').toLowerCase();
+    if(role.includes('administrator'))return 50;
+    if(role.includes('practice'))return 1;
+    if(role.includes('senior'))return 2;
+    if(role.includes('staff nurse'))return 3;
+    if(role.includes('stoma'))return 4;
+    if(role.includes('nurse'))return 5;
+    return 10;
+  }
+  function recordScore(r){
+    let score=roleScore(r);
+    if(r?.email)score-=0.2;
+    if(r?.roster_pattern)score-=0.2;
+    if(r?.home_ward||r?.roster_group)score-=0.1;
+    return score;
+  }
+  (rows||[]).forEach(r=>{
+    const key=staffKey(r)||String(r?.id||Math.random());
+    const current=seen.get(key);
+    if(!current){seen.set(key,r);return;}
+    const keepNew=recordScore(r)<recordScore(current);
+    if(keepNew){duplicates.push(current);seen.set(key,r);}else duplicates.push(r);
+  });
+  window.lastRosterDuplicateStaffRows=duplicates;
+  return [...seen.values()].sort((a,b)=>{
     const av=staffOrderValue(a.full_name), bv=staffOrderValue(b.full_name);
     if(av!==bv)return av-bv;
-    return String(a.full_name||'').localeCompare(String(b.full_name||''));
+    const ar=roleRank(a.role), br=roleRank(b.role);
+    if(ar!==br)return ar-br;
+    return String(fullDisplayName(a.full_name)||'').localeCompare(String(fullDisplayName(b.full_name)||''));
   });
 }
 
@@ -11117,7 +11155,10 @@ async function renderRoster(){
   });
 
   const th=isHol(TODAY);
-  document.getElementById('hban-roster').innerHTML=th?`<div class="hban">🇲🇹 Today is a Malta Public Holiday: <strong>${th}</strong></div>`:'';
+  const dupCount=(window.lastRosterDuplicateStaffRows||[]).length;
+  const holHtml=th?`<div class="hban">🇲🇹 Today is a Malta Public Holiday: <strong>${th}</strong></div>`:'';
+  const dupHtml=dupCount?`<div class="hban" style="background:#fff7ed;border-color:#fdba74;color:#9a3412;">⚠️ ${dupCount} duplicate active roster staff ${dupCount===1?'row is':'rows are'} hidden in this view. Clean the duplicate roster_staff records later in Admin/Settings or Supabase.</div>`:'';
+  document.getElementById('hban-roster').innerHTML=holHtml+dupHtml;
 
   const DN=['Su','Mo','Tu','We','Th','Fr','Sa'];
   let html='<thead><tr><th class="th-name">Staff Member</th><th class="th-role">Role</th>';
@@ -21929,6 +21970,319 @@ Protected: Add Patient flow, episode movement, patient record redesign, Follow-U
   window.addEventListener('load',run);
   document.addEventListener('click',function(){ setTimeout(run,80); },true);
   setInterval(run,1800);
+})();
+</script>
+
+
+
+<style id="v66-68E-practical-testing-css">
+/* v66-68E — practical testing checklist and safer roster duplicate visibility */
+#section-system-testing .v6665-test-hero{
+  padding:20px!important;
+  margin-bottom:12px!important;
+  align-items:stretch!important;
+}
+#section-system-testing .v6665-test-hero h3{
+  font-size:22px!important;
+  margin-bottom:5px!important;
+}
+#section-system-testing .v6665-test-hero p{
+  max-width:900px!important;
+}
+.v6668-ready-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  padding:8px 12px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:950;
+  text-transform:uppercase;
+  letter-spacing:.35px;
+  background:#fef3c7;
+  color:#92400e;
+  border:1px solid #fde68a;
+  margin-top:10px;
+}
+.v6668-ready-pill.ready{background:#dcfce7;color:#166534;border-color:#bbf7d0;}
+.v6668-practical-toolbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  flex-wrap:wrap;
+  margin:0 0 12px;
+  padding:12px;
+  background:#ffffff;
+  border:1px solid var(--border);
+  border-radius:16px;
+  box-shadow:var(--shadow);
+}
+.v6668-filter-row{display:flex;gap:7px;flex-wrap:wrap;align-items:center;}
+.v6668-filter-btn{
+  border:1px solid var(--border);
+  background:#fff;
+  color:var(--navy);
+  border-radius:999px;
+  padding:7px 11px;
+  font-size:11px;
+  font-weight:900;
+  cursor:pointer;
+  font-family:'DM Sans',sans-serif;
+}
+.v6668-filter-btn.active{background:var(--teal);border-color:var(--teal);color:#fff;}
+.v6668-filter-btn:focus-visible{outline:3px solid rgba(20,184,166,.25);outline-offset:2px;}
+.v6668-action-btn{
+  border:none;
+  background:var(--teal);
+  color:#fff;
+  border-radius:10px;
+  padding:8px 12px;
+  font-size:11px;
+  font-weight:900;
+  cursor:pointer;
+  font-family:'DM Sans',sans-serif;
+  box-shadow:0 4px 12px rgba(15,118,110,.18);
+}
+.v6668-action-btn.secondary{background:#fff;color:var(--navy);border:1px solid var(--border);box-shadow:none;}
+.v6668-action-btn.danger{background:#fee2e2;color:#991b1b;border:1px solid #fecaca;box-shadow:none;}
+.v6668-focus-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+  gap:10px;
+  margin-bottom:12px;
+}
+.v6668-focus-card{
+  background:#fff;
+  border:1px solid var(--border);
+  border-left:5px solid var(--teal);
+  border-radius:15px;
+  padding:13px 14px;
+  box-shadow:var(--shadow);
+}
+.v6668-focus-card.warn{border-left-color:#f59e0b;}
+.v6668-focus-card.danger{border-left-color:#dc2626;}
+.v6668-focus-card strong{display:block;color:var(--navy);font-size:13px;font-weight:950;margin-bottom:4px;}
+.v6668-focus-card span{display:block;color:var(--muted);font-size:11.5px;line-height:1.35;}
+.v6668-practical-groups{display:grid;gap:14px;}
+.v6668-test-group{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:18px;
+  box-shadow:var(--shadow);
+  overflow:hidden;
+}
+.v6668-test-group-head{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:center;
+  padding:12px 14px;
+  background:#f8fafc;
+  border-bottom:1px solid var(--border);
+}
+.v6668-test-group-head h4{font-size:14px;font-weight:950;color:var(--navy);margin:0;}
+.v6668-test-group-head span{font-size:10px;font-weight:900;color:var(--muted);text-transform:uppercase;letter-spacing:.35px;}
+.v6668-test-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:10px;padding:12px;}
+.v6668-test-item{
+  border:1px solid var(--border);
+  border-radius:14px;
+  background:#fbfdfe;
+  padding:12px;
+  display:flex;
+  flex-direction:column;
+  gap:9px;
+  min-height:160px;
+}
+.v6668-test-item[data-status="passed"]{background:#f0fdf4;border-color:#bbf7d0;}
+.v6668-test-item[data-status="fix"]{background:#fff7f7;border-color:#fecaca;}
+.v6668-test-title-row{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
+.v6668-test-title{font-size:13px;font-weight:950;color:var(--navy);line-height:1.2;}
+.v6668-test-sub{font-size:11.5px;color:var(--muted);line-height:1.38;margin-top:2px;}
+.v6668-test-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto;}
+.v6668-test-actions button{
+  border:1px solid var(--border);
+  background:#fff;
+  color:var(--navy);
+  border-radius:9px;
+  padding:6px 8px;
+  font-size:10px;
+  font-weight:950;
+  cursor:pointer;
+  font-family:'DM Sans',sans-serif;
+}
+.v6668-test-actions .pass{background:#dcfce7;color:#166534;border-color:#bbf7d0;}
+.v6668-test-actions .fix{background:#fee2e2;color:#991b1b;border-color:#fecaca;}
+.v6668-test-note{margin-top:2px;}
+.v6668-test-note summary{cursor:pointer;font-size:10.5px;font-weight:900;color:var(--teal);}
+.v6668-test-note textarea{
+  width:100%;
+  min-height:62px;
+  margin-top:7px;
+  border:1.5px solid var(--border);
+  border-radius:10px;
+  padding:8px 9px;
+  font-size:12px;
+  font-family:'DM Sans',sans-serif;
+  resize:vertical;
+  outline:none;
+}
+.v6668-test-note textarea:focus{border-color:var(--teal);}
+.v6668-fix-list{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:18px;
+  box-shadow:var(--shadow);
+  padding:14px;
+  margin:12px 0 14px;
+}
+.v6668-fix-list h3{font-size:15px;color:var(--navy);font-weight:950;margin:0 0 8px;}
+.v6668-fix-row{border:1px solid var(--border);border-radius:12px;padding:9px 10px;margin-top:7px;background:#f8fafc;font-size:12px;color:var(--navy);}
+.v6668-fix-row.fix{background:#fff7f7;border-color:#fecaca;}
+.v6668-fix-row strong{display:block;font-size:12.5px;margin-bottom:2px;}
+#section-system-testing .print-guidance{display:none;}
+@media(max-width:760px){
+  .v6668-test-grid{grid-template-columns:1fr;padding:10px;}
+  .v6668-practical-toolbar{align-items:stretch;}
+  .v6668-filter-row{width:100%;}
+  .v6668-filter-btn,.v6668-action-btn{flex:1 1 auto;justify-content:center;}
+  #section-system-testing .v6665-test-kpis{grid-template-columns:repeat(3,1fr)!important;gap:6px!important;}
+  #section-system-testing .v6665-test-kpis div{padding:10px 6px!important;}
+  #section-system-testing .v6665-test-kpis strong{font-size:20px!important;}
+}
+@media print{
+  body.v6665-print-testing .v6668-practical-toolbar,
+  body.v6665-print-testing .v6668-test-actions,
+  body.v6665-print-testing .v6668-test-note summary{display:none!important;}
+  body.v6665-print-testing .v6668-test-grid{grid-template-columns:repeat(2,1fr)!important;}
+  body.v6665-print-testing .v6668-test-item{break-inside:avoid;page-break-inside:avoid;min-height:0!important;}
+  body.v6665-print-testing .v6668-test-note textarea{display:block!important;border:1px solid #ccc!important;min-height:38px!important;}
+}
+</style>
+
+<script id="v66-68E-practical-testing-script">
+/* v66-68E — practical Testing Checklist replacement. Browser-only; no clinical records changed. */
+(function(){
+  const d=document;
+  const KEY='mdh_stoma_v6665_testing_checklist';
+  let activeFilter='action';
+  const checks=[
+    {id:'db',group:'Must work before go-live',title:'Database support SQL',sub:'Run the required SQL. Confirm there are no Supabase 404/400 resource errors on normal pages.',priority:'critical'},
+    {id:'login',group:'Must work before go-live',title:'Login and profile',sub:'Sign in as Jason, confirm the name/profile, then sign out safely.',priority:'critical'},
+    {id:'home',group:'Must work before go-live',title:'Home command centre',sub:'Home cards open the correct sections. Back/Home controls return to the expected place.',priority:'critical'},
+    {id:'add_patient',group:'Must work before go-live',title:'Add Patient',sub:'New patient opens directly. Elective, Unplanned, Bagging Advice and Outside Hospital flows are readable.',priority:'critical'},
+    {id:'duplicate',group:'Must work before go-live',title:'Duplicate patient warning',sub:'Matching ID card/name warns before another patient is created.',priority:'critical'},
+    {id:'patient_record',group:'Must work before go-live',title:'Patient record readability',sub:'Summary, Episodes, Stomas & Appliances, Reviews, Follow-ups and Notes are clear and not cramped.',priority:'critical'},
+    {id:'episode',group:'Clinical safety',title:'First vs later episodes',sub:'First episode shows the full pathway. Later episodes are simpler continuity-of-care records.',priority:'critical'},
+    {id:'movement',group:'Clinical safety',title:'Episode closure and movement',sub:'Closing requires destination/outcome/follow-up plan and moves the patient to the correct list.',priority:'critical'},
+    {id:'stoma_appliance',group:'Clinical safety',title:'Stoma & appliance history',sub:'Each stoma keeps its own history. Appliance changes do not overwrite older records.',priority:'important'},
+    {id:'reviews',group:'Clinical safety',title:'Closed reviews are locked',sub:'Finalised encounters/reviews cannot be casually changed. Corrections use amendment workflow.',priority:'critical'},
+    {id:'alerts',group:'Clinical safety',title:'Critical alerts and handover',sub:'Critical alert is clearly visible. Handover/print summary is practical for nurses.',priority:'important'},
+    {id:'followups',group:'Follow-up / workforce',title:'Follow-Up Centre',sub:'Appointments, booking modal, outcomes, DNTU, cancelled history, rebooking and audit still work.',priority:'critical'},
+    {id:'rosters',group:'Follow-up / workforce',title:'Roster and workforce tools',sub:'Monthly Roster opens without duplicate staff rows. COD, Staff Audit, Clinic Audit and daily views open.',priority:'critical'},
+    {id:'admin',group:'Go-live admin',title:'Admin & Settings',sub:'Standard lists can be edited/exported/imported. Admin-only areas stay controlled.',priority:'important'},
+    {id:'mobile',group:'Must work before go-live',title:'Mobile/tablet readability',sub:'Tabs, forms, modal windows and tables are readable on phone/tablet and not clipped.',priority:'critical'},
+    {id:'print',group:'Go-live admin',title:'Print/export summaries',sub:'Patient summary, episode/handover, clinic audit and testing print views are tidy.',priority:'important'},
+    {id:'audit',group:'Clinical safety',title:'Audit trail',sub:'Alerts, amendments, closures and safety actions are logged with user/date/time.',priority:'critical'},
+    {id:'rollback',group:'Go-live admin',title:'Rollback file saved',sub:'Previous known-good HTML is saved before replacing the live GitHub Pages file.',priority:'critical'}
+  ];
+  function load(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){return {};}}
+  function save(v){localStorage.setItem(KEY,JSON.stringify(v));}
+  function safe(v){try{return htmlSafe(v);}catch(e){return String(v||'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}}
+  function statusClass(st){return st==='passed'?'passed':(st==='fix'?'fix':'untested');}
+  function statusLabel(st){return st==='passed'?'Passed':(st==='fix'?'Needs fix':'Untested');}
+  function counts(state){let passed=0,fix=0,untested=0;checks.forEach(c=>{const st=state[c.id]?.status||'untested';if(st==='passed')passed++;else if(st==='fix')fix++;else untested++;});return {passed,fix,untested,total:checks.length};}
+  function filteredChecks(state){
+    return checks.filter(c=>{
+      const st=state[c.id]?.status||'untested';
+      if(activeFilter==='all')return true;
+      if(activeFilter==='action')return st!=='passed';
+      if(activeFilter==='critical')return c.priority==='critical' && st!=='passed';
+      return st===activeFilter;
+    });
+  }
+  function groupRows(rows){
+    const order=['Must work before go-live','Clinical safety','Follow-up / workforce','Go-live admin'];
+    const grouped={}; rows.forEach(r=>{(grouped[r.group]||(grouped[r.group]=[])).push(r);});
+    return order.filter(g=>grouped[g]).map(g=>[g,grouped[g]]);
+  }
+  function updateStaticText(c){
+    const section=d.getElementById('section-system-testing'); if(!section)return;
+    const h=section.querySelector('.phdr h2'); if(h)h.textContent='Practical Testing Checklist';
+    const p=section.querySelector('.phdr p'); if(p)p.textContent='Use this as a quick go-live board: fix the red/untested items first, then export or print the report.';
+    const heroTitle=section.querySelector('.v6665-test-hero h3'); if(heroTitle)heroTitle.textContent='v66-68E practical go-live board';
+    const heroP=section.querySelector('.v6665-test-hero p'); if(heroP)heroP.textContent='Focused checks for the things that matter before replacing the working dashboard. This checklist saves only in this browser and does not change clinical records.';
+    let ready=section.querySelector('#v6668-ready-pill');
+    if(!ready && heroP){ready=d.createElement('div');ready.id='v6668-ready-pill';heroP.insertAdjacentElement('afterend',ready);}
+    if(ready){
+      const isReady=c.fix===0 && c.untested===0;
+      ready.className='v6668-ready-pill '+(isReady?'ready':'');
+      ready.textContent=isReady?'Ready for controlled rollout':'Not ready yet — finish untested / needs-fix items';
+    }
+    const strips=section.querySelectorAll('.v6665-status-strip div span');
+    if(strips[0])strips[0].textContent='v66-68E Practical checklist';
+    if(strips[1])strips[1].textContent='Run required SQL first, then test frontend';
+    if(strips[2])strips[2].textContent='Action-focused manual checks';
+  }
+  function toolbarHtml(){
+    const filters=[['action','Action needed'],['critical','Critical'],['fix','Needs fix'],['untested','Untested'],['passed','Passed'],['all','All']];
+    return `<div class="v6668-practical-toolbar"><div class="v6668-filter-row">${filters.map(([id,label])=>`<button class="v6668-filter-btn ${activeFilter===id?'active':''}" onclick="v6668SetTestingFilter('${id}')">${label}</button>`).join('')}</div><div class="v6668-filter-row"><button class="v6668-action-btn" onclick="v6665RunSelfChecks()">Run frontend checks</button><button class="v6668-action-btn secondary" onclick="v6665ExportTestingReport()">Export</button><button class="v6668-action-btn secondary" onclick="v6665PrintTestingReport()">Print</button><button class="v6668-action-btn danger" onclick="v6665ResetChecklist()">Reset</button></div></div>`;
+  }
+  function focusHtml(c){
+    return `<div class="v6668-focus-grid"><div class="v6668-focus-card ${c.fix?'danger':''}"><strong>${c.fix} needs fix</strong><span>Fix these before replacing the live dashboard.</span></div><div class="v6668-focus-card ${c.untested?'warn':''}"><strong>${c.untested} untested</strong><span>Untested items are treated as not ready.</span></div><div class="v6668-focus-card"><strong>${c.passed} passed</strong><span>Keep evidence/notes for anything important.</span></div></div>`;
+  }
+  function itemHtml(item,state){
+    const row=state[item.id]||{}; const st=row.status||'untested'; const note=row.note||'';
+    return `<div class="v6668-test-item" data-status="${safe(st)}"><div class="v6668-test-title-row"><div><div class="v6668-test-title">${safe(item.title)}</div><div class="v6668-test-sub">${safe(item.sub)}</div></div><span class="v6665-pill ${statusClass(st)}">${statusLabel(st)}</span></div><details class="v6668-test-note" ${note?'open':''}><summary>${note?'Edit note':'Add note'}</summary><textarea placeholder="What failed / what was checked / action needed..." onchange="v6665SetNote('${item.id}',this.value)">${safe(note)}</textarea></details><div class="v6668-test-actions"><button class="pass" onclick="v6665SetStatus('${item.id}','passed')">Pass</button><button class="fix" onclick="v6665SetStatus('${item.id}','fix')">Needs fix</button><button onclick="v6665SetStatus('${item.id}','untested')">Untested</button></div></div>`;
+  }
+  function fixListHtml(state){
+    const rows=checks.filter(x=>['fix','untested'].includes(state[x.id]?.status||'untested'));
+    if(!rows.length)return `<div class="v6668-fix-list"><h3>Action list</h3><div class="v6668-fix-row"><strong>All checks are passed.</strong>The board is ready to export or print.</div></div>`;
+    return `<div class="v6668-fix-list"><h3>Action list</h3>${rows.map(x=>{const st=state[x.id]?.status||'untested'; const note=state[x.id]?.note||''; return `<div class="v6668-fix-row ${st==='fix'?'fix':''}"><strong>${safe(x.title)} — ${statusLabel(st)}</strong>${safe(note||x.sub)}</div>`;}).join('')}</div>`;
+  }
+  window.v6668SetTestingFilter=function(filter){activeFilter=filter||'action';v6665RenderChecklist();};
+  window.v6665RenderChecklist=function(){
+    const box=d.getElementById('v6665-checklist-table'); if(!box)return;
+    const state=load(); const c=counts(state);
+    const p=d.getElementById('v6665-kpi-passed'), f=d.getElementById('v6665-kpi-fix'), t=d.getElementById('v6665-kpi-total');
+    if(p)p.textContent=c.passed; if(f)f.textContent=c.fix; if(t)t.textContent=c.total;
+    updateStaticText(c);
+    const rows=filteredChecks(state);
+    const groups=groupRows(rows);
+    box.className='v6668-practical-board';
+    box.innerHTML=toolbarHtml()+focusHtml(c)+fixListHtml(state)+`<div class="v6668-practical-groups">${groups.length?groups.map(([group,items])=>`<section class="v6668-test-group"><div class="v6668-test-group-head"><h4>${safe(group)}</h4><span>${items.length} shown</span></div><div class="v6668-test-grid">${items.map(item=>itemHtml(item,state)).join('')}</div></section>`).join(''):`<section class="v6668-test-group"><div class="v6668-test-group-head"><h4>No checks in this filter</h4><span>Change filter</span></div></section>`}</div>`;
+  };
+  window.v6665SetStatus=function(id,status){const state=load();state[id]=Object.assign({},state[id]||{},{status:status,updated_at:new Date().toISOString()});save(state);v6665RenderChecklist();};
+  window.v6665SetNote=function(id,note){const state=load();state[id]=Object.assign({},state[id]||{},{note:String(note||''),updated_at:new Date().toISOString()});save(state);};
+  window.v6665MarkAllPassed=function(){if(!confirm('Mark all practical testing items as passed?'))return;const state=load();checks.forEach(c=>{state[c.id]=Object.assign({},state[c.id]||{},{status:'passed',updated_at:new Date().toISOString()});});save(state);activeFilter='all';v6665RenderChecklist();};
+  window.v6665ResetChecklist=function(){if(!confirm('Reset the testing checklist on this browser?'))return;localStorage.removeItem(KEY);activeFilter='action';v6665RenderChecklist();};
+  window.v6665ExportTestingReport=function(){
+    const state=load(); const c=counts(state);
+    const report={build:'v66-68E Practical Testing + Roster Dedupe',created_at:new Date().toISOString(),ready:(c.fix===0&&c.untested===0),summary:c,checks:checks.map(item=>Object.assign({},item,state[item.id]||{status:'untested'}))};
+    const blob=new Blob([JSON.stringify(report,null,2)],{type:'application/json'}); const url=URL.createObjectURL(blob); const a=d.createElement('a'); a.href=url; a.download='MDH_Stoma_Care_v66-68E_practical_testing_report_'+new Date().toISOString().slice(0,10)+'.json'; d.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),500);
+  };
+  window.v6665PrintTestingReport=function(){d.body.classList.add('v6665-print-testing');setTimeout(()=>{window.print();setTimeout(()=>d.body.classList.remove('v6665-print-testing'),400);},80);};
+  window.v6665RunSelfChecks=function(){
+    const probes=[
+      ['Home section',!!d.getElementById('section-home')],
+      ['Add Patient section',!!d.getElementById('section-patient-pathways')],
+      ['Patient Centre section',!!d.getElementById('section-patients')],
+      ['Patient record/detail section',!!d.getElementById('section-patient-detail')],
+      ['Follow-Up Centre area',!!d.getElementById('section-followups') || !!d.getElementById('page-appointments')],
+      ['Roster section',!!d.getElementById('section-roster') || !!d.getElementById('page-roster')],
+      ['Admin & Settings section',!!d.getElementById('section-admin-settings')],
+      ['Testing checklist section',!!d.getElementById('section-system-testing')],
+      ['switchSection function',typeof window.switchSection==='function'],
+      ['Supabase client object',typeof window.SB!=='undefined'],
+      ['Safe HTML helper',typeof window.htmlSafe==='function' || typeof htmlSafe==='function'],
+      ['Friendly message helper',typeof window.v6664ShowFriendlyMessage==='function']
+    ];
+    const failed=probes.filter(x=>!x[1]);
+    const el=d.getElementById('v6665-self-check-results');
+    if(el){el.className='v6665-self-check-results '+(failed.length?'warn':'ok');el.innerHTML=(failed.length?'Some frontend checks need attention: ':'Frontend checks passed: ')+probes.map(x=>(x[1]?'✓ ':'⚠ ')+safe(x[0])).join(' · ');}
+    if(typeof v6664ShowFriendlyMessage==='function')v6664ShowFriendlyMessage(failed.length?'Frontend checks completed with warnings.':'Frontend checks passed.','');
+  };
+  if(d.readyState==='loading')d.addEventListener('DOMContentLoaded',()=>setTimeout(v6665RenderChecklist,0)); else setTimeout(v6665RenderChecklist,0);
 })();
 </script>
 
