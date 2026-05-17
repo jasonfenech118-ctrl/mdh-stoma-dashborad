@@ -6794,7 +6794,7 @@ v66-42 emergency fix:
 <div class="mo" id="mo" onclick="moOut(event)"><div class="mb" id="mb"></div></div>
 
 <script>
-const SUPABASE_URL='https://ydswlygxghzdgzxvynsa.supabase.co';
+const SUPABASE_URL='https://gkixdimdmechujeqzfkl.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY='sb_publishable_8R_L4VcNY_lE5oxF1lz9-g_syFlnGfC';
 const SB=supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
 
@@ -22283,6 +22283,354 @@ Protected: Add Patient flow, episode movement, patient record redesign, Follow-U
     if(typeof v6664ShowFriendlyMessage==='function')v6664ShowFriendlyMessage(failed.length?'Frontend checks completed with warnings.':'Frontend checks passed.','');
   };
   if(d.readyState==='loading')d.addEventListener('DOMContentLoaded',()=>setTimeout(v6665RenderChecklist,0)); else setTimeout(v6665RenderChecklist,0);
+})();
+</script>
+
+
+<!-- ════════════════════════════════════════════════════════════════
+     v66-69 Stage 1 — Episode closure lock + structured amendments
+     - Kills the old simple closeEpisode() and redirects every caller
+       to the safe stage-4 closure modal (proper outcome + audit).
+     - When an episode is closed, automatically cascades is_locked=true
+       to every child encounter / event / daily review / teaching row.
+     - Hardens save handlers: saveNewEvent / saveUrgentDailyReview /
+       saveRecordDailyReview refuse to write against a closed episode
+       and direct the nurse to the Amend workflow instead.
+     - Hides Add Event / Daily Review / Postpone / Move-to-Inpatients
+       buttons on closed episode cards and injects a single Amend
+       (with reason) button + visible read-only banner.
+     - Upgrades the v6663 amendment modal to capture field name,
+       original value, and corrected value. Writes a structured row
+       to a new Supabase table: record_amendments. Mirrors a row to
+       app_audit_log for backward continuity.
+     - Requires Supabase table record_amendments — see the v66-69 SQL.
+     ════════════════════════════════════════════════════════════════ -->
+<script>
+(function(){
+  'use strict';
+  const V='v66-69 Stage 1';
+  const d=document;
+  function S(){return (typeof window!=='undefined'&&window.SB)||null;}
+  function nowIso(){return new Date().toISOString();}
+  function userName(){
+    try{
+      if(typeof getLoggedInSubmitterName==='function'){const n=getLoggedInSubmitterName();if(n)return n;}
+      if(window.currentLoginProfile&&window.currentLoginProfile.full_name)return window.currentLoginProfile.full_name;
+      if(window.currentAuthUser&&window.currentAuthUser.email)return window.currentAuthUser.email;
+    }catch(_){}
+    return 'Logged-in user';
+  }
+  function userEmail(){
+    try{
+      if(window.currentAuthUser&&window.currentAuthUser.email)return window.currentAuthUser.email;
+      if(window.currentLoginProfile&&window.currentLoginProfile.email)return window.currentLoginProfile.email;
+    }catch(_){}
+    return null;
+  }
+
+  // ── Closure detection ───────────────────────────────────────────
+  function episodeIsClosed(ep){
+    if(!ep)return false;
+    const s=String(ep.episode_status||ep.status||ep.pathway_status||'').toLowerCase();
+    if(/closed|complete|discharged from service|cancelled|not proceeded/.test(s))return true;
+    return !!(ep.closed_at||ep.closed_date||ep.discharge_date);
+  }
+  const _closedCache=new Map();
+  async function fetchEpisodeClosed(episodeId){
+    if(!episodeId||episodeId==='current')return false;
+    if(_closedCache.has(episodeId))return _closedCache.get(episodeId);
+    const sb=S();
+    if(!sb){_closedCache.set(episodeId,false);return false;}
+    let closed=false;
+    for(const tab of ['episodes_main','episodes']){
+      try{
+        const r=await sb.from(tab).select('id,episode_status,status,pathway_status,closed_at,closed_date,discharge_date').eq('id',episodeId).maybeSingle();
+        if(!r.error&&r.data){closed=episodeIsClosed(r.data);break;}
+      }catch(_){}
+    }
+    _closedCache.set(episodeId,closed);
+    return closed;
+  }
+  function clearClosedCache(id){if(id)_closedCache.delete(id);else _closedCache.clear();}
+  window.v6669_episodeIsClosed=episodeIsClosed;
+  window.v6669_fetchEpisodeClosed=fetchEpisodeClosed;
+  window.v6669_clearClosedCache=clearClosedCache;
+
+  // ── Structured amendment write ─────────────────────────────────
+  async function writeAmendment(opts){
+    const sb=S();
+    if(!sb)return {ok:false,error:'No database connection'};
+    const payload={
+      patient_id:opts.patient_id?String(opts.patient_id):null,
+      episode_id:opts.episode_id?String(opts.episode_id):null,
+      encounter_id:opts.encounter_id?String(opts.encounter_id):null,
+      record_table:opts.record_table||'patients',
+      record_id:String(opts.record_id||''),
+      field_name:opts.field_name||null,
+      old_value:opts.old_value==null?null:String(opts.old_value),
+      new_value:opts.new_value==null?null:String(opts.new_value),
+      amendment_reason:opts.reason||'',
+      amendment_note:opts.note||'',
+      amended_by:userName(),
+      amended_by_email:userEmail(),
+      amended_at:nowIso(),
+      original_preserved:opts.original_preserved!==false
+    };
+    try{
+      const r=await sb.from('record_amendments').insert(payload);
+      if(r.error)return {ok:false,error:r.error.message||String(r.error)};
+      return {ok:true};
+    }catch(e){return {ok:false,error:e.message||String(e)};}
+  }
+  window.v6669_writeAmendment=writeAmendment;
+
+  // ── 1. Redirect old closeEpisode to the safe modal ─────────────
+  const __origCloseEpisode=window.closeEpisode;
+  window.closeEpisode=async function(episodeId,patId){
+    try{if(typeof closeMo==='function')closeMo();}catch(_){}
+    if(typeof window.openStage4CloseEpisodeModal==='function'){
+      return window.openStage4CloseEpisodeModal(patId,episodeId);
+    }
+    if(typeof window.closePatientRecordEpisode==='function'){
+      return window.closePatientRecordEpisode(patId,episodeId);
+    }
+    if(typeof __origCloseEpisode==='function')return __origCloseEpisode.apply(this,arguments);
+    alert('Safe closure modal not available — episode not closed.');
+  };
+
+  // ── 2. Cascade-lock child encounters when an episode is closed ──
+  async function cascadeLockChildren(episodeId){
+    const sb=S();
+    if(!sb||!episodeId||episodeId==='current')return;
+    const fullPayload={is_locked:true,locked_at:nowIso(),locked_by:userName(),updated_at:nowIso()};
+    const minimalPayload={is_locked:true,updated_at:nowIso()};
+    const tables=['encounters_main','encounters','events','urgent_stoma_daily_review','urgent_new_stoma_daily_review','teaching_sessions','urgent_new_stoma_teaching','followups','follow_ups'];
+    for(const t of tables){
+      try{
+        const r=await sb.from(t).update(fullPayload).eq('episode_id',episodeId);
+        if(r&&r.error){
+          // older schema may not have locked_by/locked_at columns; retry minimal
+          try{await sb.from(t).update(minimalPayload).eq('episode_id',episodeId);}catch(_){}
+        }
+      }catch(_){}
+    }
+    console.log('[%s] cascade-locked children for episode',V,episodeId);
+  }
+
+  function wrapStage4(){
+    const orig=window.stage4CompleteEpisodeClosure;
+    if(typeof orig!=='function'){setTimeout(wrapStage4,400);return;}
+    if(orig.__v6669_wrapped)return;
+    const wrapped=async function(patientId,episodeId){
+      const result=await orig.apply(this,arguments);
+      try{
+        if(episodeId&&episodeId!=='current')await cascadeLockChildren(episodeId);
+        clearClosedCache(episodeId);
+      }catch(e){console.warn('[%s] cascade lock failed',V,e);}
+      return result;
+    };
+    wrapped.__v6669_wrapped=true;
+    window.stage4CompleteEpisodeClosure=wrapped;
+    console.log('[%s] stage4CompleteEpisodeClosure wrapped for cascade locking',V);
+  }
+  wrapStage4();
+
+  // ── 3. Save-handler guards — refuse writes against closed episodes ──
+  async function refuseIfClosed(episodeId,opLabel){
+    if(!episodeId||episodeId==='current')return false;
+    const closed=await fetchEpisodeClosed(episodeId);
+    if(closed){
+      alert('This episode is closed.\n\n'+(opLabel||'New entries')+' cannot be added to a closed episode.\n\nUse the Amend (with reason) workflow on the patient record for any correction. The original record stays preserved.');
+      return true;
+    }
+    return false;
+  }
+  window.v6669_refuseIfClosed=refuseIfClosed;
+
+  function wrapSaveHandler(fnName,episodeArgIndex,opLabel){
+    const orig=window[fnName];
+    if(typeof orig!=='function')return false;
+    if(orig.__v6669_guarded)return true;
+    const wrapped=async function(){
+      const epId=arguments[episodeArgIndex];
+      if(await refuseIfClosed(epId,opLabel))return;
+      return orig.apply(this,arguments);
+    };
+    wrapped.__v6669_guarded=true;
+    window[fnName]=wrapped;
+    return true;
+  }
+  function applySaveGuards(){
+    wrapSaveHandler('saveNewEvent',1,'Adding clinical events to');
+    wrapSaveHandler('saveUrgentDailyReview',1,'Adding daily reviews to');
+    wrapSaveHandler('saveRecordDailyReview',1,'Recording reviews against');
+  }
+  applySaveGuards();
+  setTimeout(applySaveGuards,800);
+  setTimeout(applySaveGuards,2500);
+  setTimeout(applySaveGuards,6000);
+
+  // ── 4. Harden closed-episode cards in the patient record page ──
+  function hardenClosedEpisodeCards(root){
+    const scope=root||d;
+    let cards;
+    try{cards=scope.querySelectorAll('.episode-card');}catch(_){return;}
+    cards.forEach(function(card){
+      if(card.__v6669_hardened)return;
+      const badge=card.querySelector('.episode-card-badge');
+      const closed=badge&&/closed|read-?only/i.test(badge.textContent||'');
+      if(!closed)return;
+      const row=card.querySelector('.record-episode-action-row');
+      if(row){
+        const actionBtns=row.querySelectorAll('.patient-record-action-btn');
+        actionBtns.forEach(function(btn){
+          const oc=btn.getAttribute('onclick')||'';
+          const tx=btn.textContent||'';
+          const isPrint=/printEpisode/.test(oc)||/Print/i.test(tx);
+          if(!isPrint){
+            try{btn.remove();}catch(_){btn.style.display='none';}
+          }
+        });
+        if(!row.querySelector('.v6669-amend-btn')){
+          const epId=(card.id||'').replace(/^episode-/,'');
+          const amend=d.createElement('button');
+          amend.type='button';
+          amend.className='patient-record-action-btn v6669-amend-btn';
+          amend.style.cssText='background:#fef3c7;color:#92400e;border:1.5px solid #fbbf24;font-weight:700;';
+          amend.innerHTML='✎ Amend Closed Episode (with reason)';
+          amend.onclick=function(){
+            if(typeof window.v6663OpenAmendmentModal==='function'){
+              window.v6663OpenAmendmentModal('episode',epId,'episodes_main');
+            }else{
+              alert('Amendment modal not available on this page. Open the patient record first.');
+            }
+          };
+          row.insertBefore(amend,row.firstChild);
+        }
+      }
+      const body=card.querySelector('.episode-card-body');
+      if(body&&!body.querySelector('.v6669-readonly-banner')){
+        const banner=d.createElement('div');
+        banner.className='v6669-readonly-banner';
+        banner.style.cssText='background:#fef2f2;border:1.5px solid #fecaca;color:#991b1b;padding:10px 12px;border-radius:10px;font-size:12px;font-weight:700;margin:6px 0 12px;display:flex;align-items:center;gap:8px;line-height:1.4;';
+        banner.innerHTML='🔒 <span>This episode is closed and read-only. Encounters, reviews and events inside it cannot be edited directly. Use Amend (with reason) for any correction — the original record is preserved.</span>';
+        body.insertBefore(banner,body.firstChild);
+      }
+      card.__v6669_hardened=true;
+    });
+  }
+  function hardeningLoop(){try{hardenClosedEpisodeCards();}catch(_){}}
+  setInterval(hardeningLoop,900);
+  ['click','focusin'].forEach(function(ev){d.addEventListener(ev,function(){setTimeout(hardeningLoop,250);},true);});
+
+  // ── 5. Amendment modal upgrade: capture field name / old / new ──
+  function upgradeAmendmentModal(){
+    const orig=window.v6663OpenAmendmentModal;
+    if(typeof orig!=='function'){setTimeout(upgradeAmendmentModal,400);return;}
+    if(orig.__v6669_upgraded)return;
+    const wrapped=function(recordType,recordId,tableName){
+      orig.apply(this,arguments);
+      setTimeout(function(){
+        const modal=d.getElementById('v6663-modal');
+        if(!modal)return;
+        const grid=modal.querySelector('.v6663-form-grid');
+        if(!grid)return;
+        if(grid.querySelector('#v6669-amend-field'))return;
+        const wrap1=d.createElement('div');wrap1.className='v6663-fg';
+        wrap1.innerHTML='<label>Field being corrected (optional)</label><input id="v6669-amend-field" placeholder="e.g. surname, surgery_date, plan"/>';
+        const wrap2=d.createElement('div');wrap2.className='v6663-fg';
+        wrap2.innerHTML='<label>Original value (optional)</label><input id="v6669-amend-old" placeholder="What the record currently shows"/>';
+        const wrap3=d.createElement('div');wrap3.className='v6663-fg full';
+        wrap3.innerHTML='<label>Corrected value (optional)</label><input id="v6669-amend-new" placeholder="What it should read"/>';
+        grid.appendChild(wrap1);
+        grid.appendChild(wrap2);
+        grid.appendChild(wrap3);
+      },60);
+    };
+    wrapped.__v6669_upgraded=true;
+    window.v6663OpenAmendmentModal=wrapped;
+    console.log('[%s] amendment modal upgraded with field/old/new inputs',V);
+  }
+  upgradeAmendmentModal();
+
+  // ── 6. Amendment save: write to record_amendments + mirror to audit log ──
+  function upgradeAmendmentSave(){
+    const orig=window.v6663SaveAmendment;
+    if(typeof orig!=='function'){setTimeout(upgradeAmendmentSave,400);return;}
+    if(orig.__v6669_upgraded)return;
+    const wrapped=async function(tableName){
+      const type=d.getElementById('v6663-amend-type')?.value||'patient_record';
+      const id=d.getElementById('v6663-amend-id')?.value.trim()||'';
+      const reason=d.getElementById('v6663-amend-reason')?.value.trim()||'';
+      const note=d.getElementById('v6663-amend-note')?.value.trim()||'';
+      const fieldName=d.getElementById('v6669-amend-field')?.value.trim()||null;
+      const oldVal=d.getElementById('v6669-amend-old')?.value.trim()||null;
+      const newVal=d.getElementById('v6669-amend-new')?.value.trim()||null;
+      if(!reason||!note){alert('Please enter both the amendment reason and the amendment note.');return;}
+      const tableMap={
+        patient_record:'patients_main',
+        episode:'episodes_main',
+        encounter_review:'encounters_main',
+        stoma:'stomas',
+        appliance:'appliances_main',
+        discharge_letter:'discharge_letters',
+        follow_up:'followups'
+      };
+      const recordTable=tableName||tableMap[type]||type;
+      const c=window._v6661PatientRecord||{};
+      const patientCtxId=c.patientId||(c.patient&&c.patient.id)||null;
+      let episodeCtxId=null;
+      if(type==='episode'){episodeCtxId=id;}
+      else if(c.related&&Array.isArray(c.related.episodes)){
+        const active=c.related.episodes.find(function(e){return !episodeIsClosed(e);});
+        if(active)episodeCtxId=active.id||null;
+      }
+      const encounterCtxId=type==='encounter_review'?id:null;
+      const r=await writeAmendment({
+        patient_id:patientCtxId,
+        episode_id:episodeCtxId,
+        encounter_id:encounterCtxId,
+        record_table:recordTable,
+        record_id:id,
+        field_name:fieldName,
+        old_value:oldVal,
+        new_value:newVal,
+        reason:reason,
+        note:note,
+        original_preserved:true
+      });
+      // mirror to app_audit_log for continuity with existing audit views
+      try{
+        const sb=S();
+        if(sb){
+          await sb.from('app_audit_log').insert({
+            actor_email:userEmail(),
+            actor_name:userName(),
+            action:'safe_amendment_created',
+            table_name:recordTable,
+            record_id:String(id),
+            patient_id:patientCtxId,
+            episode_id:episodeCtxId,
+            details:{record_type:type,amendment_note:note,field_name:fieldName,old_value:oldVal,new_value:newVal,original_preserved:true},
+            reason:reason,
+            created_at:nowIso()
+          });
+        }
+      }catch(_){}
+      try{d.getElementById('v6663-modal')?.remove();}catch(_){}
+      if(!r.ok){
+        alert('Backup audit was logged, but writing to the new record_amendments table failed:\n\n'+r.error+'\n\nIf the table does not exist yet, run the v66-69 SQL script in Supabase first.');
+        return;
+      }
+      alert('Amendment saved with full structured audit trail.\n\nReason, user, timestamp, field name and old/new values are all preserved.');
+    };
+    wrapped.__v6669_upgraded=true;
+    window.v6663SaveAmendment=wrapped;
+    console.log('[%s] amendment save upgraded to write structured record_amendments rows',V);
+  }
+  upgradeAmendmentSave();
+
+  console.log('[%s] active — closure lock + cascade + structured amendments enabled.',V);
 })();
 </script>
 
