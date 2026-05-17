@@ -105,7 +105,7 @@ Protected/not touched: login, Follow-Up Centre layout, rosters data logic, pathw
 
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>MDH Stoma Care Clinic — Patient Dashboard</title>
+<title>MDH Stoma Care Clinic — Patient Dashboard v66-66</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230f766e'/%3E%3Ctext x='32' y='40' font-size='24' text-anchor='middle' fill='white' font-family='Arial' font-weight='700'%3EMDH%3C/text%3E%3C/svg%3E">
 <!-- Build v57: Core staff OT displayed on core row; Follow-Up buttons left-icon/center-text aligned; appointments grid fills width -->
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet"/>
@@ -4125,6 +4125,194 @@ button{font-family:'DM Sans',sans-serif;}
   #section-patients .roster-subtab{
     flex:0 0 auto!important;
     min-width:max-content!important;
+  }
+}
+</style>
+
+
+<script>
+/* v66-66 Stage 8 — hardened login aliases */
+(function(){
+  function showLoginMessage(msg){
+    var el=document.getElementById('lerr');
+    if(el) el.textContent=msg;
+  }
+  function callRealLogin(){
+    try{
+      var candidates=[
+        window.__realDoLogin,
+        window.doLogin,
+        window.loginApp,
+        window.dLogin,
+        window.dologin
+      ].filter(function(fn){return typeof fn==='function' && fn!==callRealLogin;});
+      if(candidates.length) return candidates[0]();
+      showLoginMessage('The login screen is still loading. Please refresh and try again.');
+    }catch(e){
+      console.error('Login failed:',e);
+      showLoginMessage('Could not sign in. Please check your details and try again.');
+    }
+  }
+  window.mdhSafeLogin=callRealLogin;
+  if(typeof window.dLogin!=='function') window.dLogin=callRealLogin;
+  if(typeof window.dologin!=='function') window.dologin=callRealLogin;
+  if(typeof window.loginApp!=='function') window.loginApp=callRealLogin;
+})();
+</script>
+
+
+<style>
+/* v66-66 Stage 8 — platform-wide compact clinical tabs */
+:root{
+  --mdh-tab-bg:rgba(255,255,255,.86);
+  --mdh-tab-border:rgba(15,38,56,.12);
+  --mdh-tab-soft:#f0fdfa;
+  --mdh-tab-teal:#0f766e;
+}
+.platform-tabbar,
+.patient-centre-tab-bar,
+#patient-subtab-bar,
+#followup-subtab-bar,
+.followup-tabs-bar,
+.roster-subtab-bar,
+.pd-tabs,
+.admin-tabs,
+.testing-tabs,
+.outcome-filter-buttons,
+.patient-record-tabs{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  gap:8px!important;
+  flex-wrap:wrap!important;
+  width:100%!important;
+  padding:10px 12px!important;
+  margin:0 0 14px 0!important;
+  background:var(--mdh-tab-bg)!important;
+  border:1px solid var(--border)!important;
+  border-radius:16px!important;
+  box-shadow:0 8px 22px rgba(15,38,56,.07)!important;
+  overflow-x:auto!important;
+}
+.platform-tabbar button,
+.patient-centre-tab-bar button,
+#patient-subtab-bar .roster-subtab,
+#followup-subtab-bar .roster-subtab,
+.followup-tabs-bar button,
+.roster-subtab-bar .roster-subtab,
+.pd-tabs .pd-tab,
+.admin-tabs button,
+.testing-tabs button,
+.outcome-filter-buttons .outcome-btn,
+.patient-record-tabs button{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:7px!important;
+  min-height:36px!important;
+  width:auto!important;
+  min-width:max-content!important;
+  padding:9px 14px!important;
+  border:1px solid var(--mdh-tab-border)!important;
+  border-left:1px solid var(--mdh-tab-border)!important;
+  border-radius:12px!important;
+  background:#ffffff!important;
+  color:var(--navy)!important;
+  font-family:'DM Sans',sans-serif!important;
+  font-size:12px!important;
+  font-weight:850!important;
+  line-height:1.1!important;
+  box-shadow:0 2px 8px rgba(15,38,56,.045)!important;
+  cursor:pointer!important;
+  transition:all .16s ease!important;
+  position:relative!important;
+  overflow:hidden!important;
+  flex:0 0 auto!important;
+  text-align:center!important;
+}
+.platform-tabbar button:hover,
+.patient-centre-tab-bar button:hover,
+#patient-subtab-bar .roster-subtab:hover,
+#followup-subtab-bar .roster-subtab:hover,
+.followup-tabs-bar button:hover,
+.roster-subtab-bar .roster-subtab:hover,
+.pd-tabs .pd-tab:hover,
+.admin-tabs button:hover,
+.testing-tabs button:hover,
+.outcome-filter-buttons .outcome-btn:hover,
+.patient-record-tabs button:hover{
+  border-color:#99f6e4!important;
+  background:var(--mdh-tab-soft)!important;
+  color:var(--mdh-tab-teal)!important;
+  transform:translateY(-1px)!important;
+  box-shadow:0 7px 18px rgba(15,38,56,.08)!important;
+}
+.platform-tabbar button.active,
+.patient-centre-tab-bar button.active,
+#patient-subtab-bar .roster-subtab.active,
+#followup-subtab-bar .roster-subtab.active,
+.followup-tabs-bar button.active,
+.roster-subtab-bar .roster-subtab.active,
+.pd-tabs .pd-tab.active,
+.admin-tabs button.active,
+.testing-tabs button.active,
+.outcome-filter-buttons .outcome-btn.active,
+.patient-record-tabs button.active{
+  border-color:var(--mdh-tab-teal)!important;
+  background:linear-gradient(135deg,#0f766e,#14b8a6)!important;
+  color:#ffffff!important;
+  box-shadow:0 8px 18px rgba(15,118,110,.18)!important;
+}
+#patient-subtab-bar .roster-subtab-icon,
+#followup-subtab-bar .roster-subtab-icon,
+.roster-subtab-bar .roster-subtab-icon,
+.platform-tabbar .tab-icon,
+.pd-tabs .tab-icon{
+  width:24px!important;
+  height:24px!important;
+  min-width:24px!important;
+  border-radius:8px!important;
+  background:rgba(15,118,110,.10)!important;
+  color:var(--mdh-tab-teal)!important;
+  box-shadow:none!important;
+}
+#patient-subtab-bar .roster-subtab.active .roster-subtab-icon,
+#followup-subtab-bar .roster-subtab.active .roster-subtab-icon,
+.roster-subtab-bar .roster-subtab.active .roster-subtab-icon,
+.pd-tabs .pd-tab.active .tab-icon{
+  background:rgba(255,255,255,.18)!important;
+  color:#ffffff!important;
+}
+.roster-subtab::before,
+.roster-subtab::after{
+  display:none!important;
+}
+#section-patients.clinical-workforce-focused .patient-button-section,
+#section-patients.clinical-workforce-focused .patient-button-grid,
+#section-patients.clinical-workforce-focused .patient-button-card,
+#section-patients.clinical-workforce-focused .patient-board-grid,
+#section-patients.clinical-workforce-focused .patient-command-head,
+#section-patients.platform-focused .patient-button-section,
+#section-patients.platform-focused .patient-button-grid,
+#section-patients.platform-focused .patient-button-card{
+  display:none!important;
+}
+@media(max-width:760px){
+  .platform-tabbar,
+  .patient-centre-tab-bar,
+  #patient-subtab-bar,
+  #followup-subtab-bar,
+  .followup-tabs-bar,
+  .roster-subtab-bar,
+  .pd-tabs,
+  .admin-tabs,
+  .testing-tabs,
+  .outcome-filter-buttons,
+  .patient-record-tabs{
+    flex-wrap:nowrap!important;
+    gap:6px!important;
+    padding:8px!important;
+    border-radius:14px!important;
   }
 }
 </style>
@@ -20775,6 +20963,54 @@ Protected: Add Patient flow, episode movement, patient record redesign, Follow-U
   const obs=new MutationObserver(()=>{if(isPatientsActive())setTimeout(markWorkforceBackHome,40);});
   if(document.body)obs.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',markWorkforceBackHome); else setTimeout(markWorkforceBackHome,0);
+})();
+</script>
+
+
+<script>
+/* v66-66 Stage 8 — runtime tab/back normaliser */
+(function(){
+  function markTabBars(){
+    [
+      '#patient-subtab-bar',
+      '#followup-subtab-bar',
+      '.followup-tabs-bar',
+      '.roster-subtab-bar',
+      '.pd-tabs',
+      '.admin-tabs',
+      '.testing-tabs',
+      '.outcome-filter-buttons',
+      '.patient-record-tabs'
+    ].forEach(function(sel){
+      document.querySelectorAll(sel).forEach(function(el){ el.classList.add('platform-tabbar'); });
+    });
+  }
+  function markClinicalBackTarget(){
+    var s=document.getElementById('section-patients');
+    if(!s) return;
+    if(window.__patientMode==='workforce' || window.__patientBackTarget==='home'){
+      s.classList.add('clinical-workforce-focused');
+      s.dataset.backTarget='home';
+    }
+  }
+  var oldGoBack=window.goBackSection;
+  window.goBackSection=function(){
+    if(window.__patientMode==='workforce' || window.__patientBackTarget==='home'){
+      if(typeof window.switchSection==='function'){
+        window.switchSection('home',null,{fromBack:true});
+        return;
+      }
+    }
+    if(typeof oldGoBack==='function') return oldGoBack.apply(this,arguments);
+    if(typeof window.switchSection==='function') return window.switchSection('home',null,{fromBack:true});
+  };
+  function run(){
+    markTabBars();
+    markClinicalBackTarget();
+  }
+  window.addEventListener('load',run);
+  document.addEventListener('click',function(){ setTimeout(run,40); setTimeout(run,250); },true);
+  setInterval(run,1200);
 })();
 </script>
 
