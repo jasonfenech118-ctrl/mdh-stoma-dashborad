@@ -22634,6 +22634,421 @@ Protected: Add Patient flow, episode movement, patient record redesign, Follow-U
 })();
 </script>
 
+
+<!-- ════════════════════════════════════════════════════════════════
+     v66-70 Stage 1 — Inline Edit Patient (identity only)
+     - Replaces the floating side-card Edit Patient modal with a
+       full inline panel rendered inside the patient record page.
+     - Demographic / identity fields only. Clinical fields (stoma,
+       pathway, dates, history) are NOT in this form — they belong
+       to episode/stoma workflows per the data-model canon.
+     - Read-only by default. Explicit "Enter Edit Mode" button.
+     - Mandatory reason for change. Save refused without it.
+     - One row per CHANGED field is written to record_amendments
+       (old_value, new_value, field_name, reason, user, timestamp).
+     - Mirrors a single summary row to app_audit_log.
+     - Updates patients_main AND patients with the correct column
+       names per table.
+     ════════════════════════════════════════════════════════════════ -->
+<style>
+.v6670-edit-page{background:#fff;border:1.5px solid #d8e3e7;border-radius:18px;box-shadow:0 14px 36px rgba(15,38,56,.08);padding:20px 22px 24px;margin:6px 0 18px;}
+.v6670-edit-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;border-bottom:1px solid #e2e8f0;padding-bottom:14px;margin-bottom:16px;}
+.v6670-edit-title{font-family:'DM Sans',sans-serif;font-size:18px;font-weight:800;color:#0f2638;margin:0;display:flex;align-items:center;gap:10px;}
+.v6670-edit-eyebrow{font-size:10px;font-weight:800;color:#0f766e;letter-spacing:.8px;text-transform:uppercase;margin-bottom:2px;}
+.v6670-edit-sub{font-size:12px;color:#64748b;margin-top:3px;}
+.v6670-banner{background:#fef3c7;border:1.5px solid #fbbf24;color:#7c2d12;padding:11px 14px;border-radius:11px;font-size:13px;font-weight:600;margin-bottom:18px;display:flex;gap:10px;align-items:flex-start;line-height:1.45;}
+.v6670-banner.locked{background:#ecfdf5;border-color:#86efac;color:#14532d;}
+.v6670-banner-icon{font-size:18px;flex-shrink:0;}
+.v6670-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px 18px;margin-bottom:18px;}
+.v6670-fg{display:flex;flex-direction:column;gap:6px;}
+.v6670-fg.full{grid-column:1/-1;}
+.v6670-fg label{font-size:11px;font-weight:700;color:#0f2638;text-transform:uppercase;letter-spacing:.5px;}
+.v6670-fg .required{color:#dc2626;margin-left:3px;}
+.v6670-fg input,.v6670-fg select,.v6670-fg textarea{padding:9px 11px;border:1.5px solid #d8e3e7;border-radius:9px;font-size:13px;font-family:'DM Sans',sans-serif;background:#f8fafc;color:#0f2638;outline:none;transition:border-color .15s;}
+.v6670-fg input:focus,.v6670-fg select:focus,.v6670-fg textarea:focus{border-color:#0f766e;background:#fff;}
+.v6670-fg input[readonly],.v6670-fg select[disabled],.v6670-fg textarea[readonly]{background:#f1f5f9;color:#475569;cursor:not-allowed;}
+.v6670-fg .value-display{padding:9px 11px;background:#f1f5f9;border:1.5px solid #e2e8f0;border-radius:9px;font-size:13px;color:#0f2638;min-height:38px;display:flex;align-items:center;font-weight:600;}
+.v6670-fg .value-display.empty{color:#94a3b8;font-style:italic;font-weight:400;}
+.v6670-section-head{font-size:11px;font-weight:800;color:#0f766e;letter-spacing:.8px;text-transform:uppercase;margin:6px 0 10px;padding-bottom:6px;border-bottom:1px solid #e2e8f0;}
+.v6670-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;padding-top:14px;border-top:1px solid #e2e8f0;margin-top:6px;}
+.v6670-btn{padding:9px 18px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border:1.5px solid transparent;display:inline-flex;align-items:center;gap:7px;transition:transform .1s,box-shadow .15s;}
+.v6670-btn:hover{transform:translateY(-1px);}
+.v6670-btn.primary{background:#0f766e;color:#fff;border-color:#0f766e;}
+.v6670-btn.amber{background:#f59e0b;color:#fff;border-color:#f59e0b;}
+.v6670-btn.ghost{background:#fff;color:#0f2638;border-color:#d8e3e7;}
+.v6670-btn.danger{background:#fff;color:#991b1b;border-color:#fecaca;}
+.v6670-reason-block{background:#fff7ed;border:1.5px solid #fed7aa;border-radius:11px;padding:14px 16px;margin:14px 0 18px;}
+.v6670-reason-block label{font-size:11px;font-weight:800;color:#9a3412;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px;}
+.v6670-reason-block textarea{width:100%;min-height:60px;padding:9px 11px;border:1.5px solid #fdba74;border-radius:9px;font-size:13px;font-family:'DM Sans',sans-serif;background:#fff;color:#7c2d12;outline:none;resize:vertical;}
+.v6670-reason-block textarea:focus{border-color:#ea580c;}
+.v6670-reason-help{font-size:11px;color:#9a3412;margin-top:6px;line-height:1.4;}
+.v6670-change-preview{background:#f0f9ff;border:1.5px solid #bae6fd;border-radius:10px;padding:11px 14px;font-size:12px;color:#075985;margin:10px 0 16px;line-height:1.5;}
+.v6670-change-preview strong{color:#0c4a6e;}
+@media(max-width:760px){
+  .v6670-grid{grid-template-columns:1fr;}
+  .v6670-actions{justify-content:stretch;}
+  .v6670-btn{flex:1;justify-content:center;}
+}
+</style>
+<script>
+(function(){
+  'use strict';
+  const V='v66-70 Stage 1';
+  const d=document;
+  function S(){return (typeof window!=='undefined'&&window.SB)||null;}
+  function nowIso(){return new Date().toISOString();}
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+  function userName(){
+    try{
+      if(typeof getLoggedInSubmitterName==='function'){const n=getLoggedInSubmitterName();if(n)return n;}
+      if(window.currentLoginProfile&&window.currentLoginProfile.full_name)return window.currentLoginProfile.full_name;
+      if(window.currentAuthUser&&window.currentAuthUser.email)return window.currentAuthUser.email;
+    }catch(_){}
+    return 'Logged-in user';
+  }
+  function userEmail(){
+    try{
+      if(window.currentAuthUser&&window.currentAuthUser.email)return window.currentAuthUser.email;
+      if(window.currentLoginProfile&&window.currentLoginProfile.email)return window.currentLoginProfile.email;
+    }catch(_){}
+    return null;
+  }
+
+  // Identity fields. Each entry: logical name + form id + label + type + (table-specific column names).
+  const FIELDS=[
+    {key:'first_name',     label:'First Name',     type:'text',   required:true,  cols:{patients_main:'first_name',    patients:'first_name'}},
+    {key:'surname',        label:'Surname',        type:'text',   required:true,  cols:{patients_main:'surname',       patients:'surname'}},
+    {key:'hospital_number',label:'Hospital Number',type:'text',   required:false, cols:{patients_main:'hospital_number',patients:'hospital_number'}},
+    {key:'id_card',        label:'ID Card',        type:'text',   required:false, cols:{patients_main:'id_card_number',patients:'id_card'}},
+    {key:'date_of_birth',  label:'Date of Birth',  type:'date',   required:false, cols:{patients_main:'date_of_birth', patients:'dob'}},
+    {key:'sex',            label:'Sex',            type:'select', required:false, options:['','Male','Female','Other'], cols:{patients_main:'sex', patients:'sex'}},
+    {key:'contact_number', label:'Contact Number', type:'text',   required:false, cols:{patients_main:'mobile_number', patients:'contact_number'}},
+    {key:'locality',       label:'Locality',       type:'text',   required:false, cols:{patients_main:'locality',      patients:'locality'}}
+  ];
+
+  // Pull the current value of a logical field from the patient row, tolerant of legacy column names
+  function currentValue(p,key){
+    if(!p)return '';
+    if(key==='first_name')return p.first_name||p.firstname||p.name||'';
+    if(key==='surname')return p.surname||p.last_name||p.lastname||'';
+    if(key==='hospital_number')return p.hospital_number||p.hospital_no||p.hospitalNumber||'';
+    if(key==='id_card')return p.id_card||p.id_card_number||p.idCard||'';
+    if(key==='date_of_birth'){
+      const v=p.date_of_birth||p.dob||p.birth_date||'';
+      if(!v)return '';
+      // Already YYYY-MM-DD?
+      if(/^\d{4}-\d{2}-\d{2}$/.test(String(v)))return String(v);
+      try{const dt=new Date(v); if(!isNaN(dt))return dt.toISOString().split('T')[0];}catch(_){}
+      return String(v).slice(0,10);
+    }
+    if(key==='sex')return p.sex||p.gender||'';
+    if(key==='contact_number')return p.contact_number||p.phone_number||p.mobile_number||p.contactNumber||'';
+    if(key==='locality')return p.locality||p.address_locality||'';
+    return '';
+  }
+
+  function formatDisplay(key,val){
+    if(val==null||val==='')return '—';
+    if(key==='date_of_birth'){
+      try{const dt=new Date(val); if(!isNaN(dt))return dt.toLocaleDateString('en-MT');}catch(_){}
+    }
+    return String(val);
+  }
+
+  async function fetchPatient(patientId){
+    const sb=S(); if(!sb||!patientId)return null;
+    let p=null;
+    if(typeof window.getProjectPatientById==='function'){
+      try{p=await window.getProjectPatientById(patientId);}catch(_){}
+    }
+    if(p)return p;
+    for(const tab of ['patients_main','patients']){
+      try{
+        const r=await sb.from(tab).select('*').eq('id',patientId).maybeSingle();
+        if(!r.error&&r.data)return r.data;
+      }catch(_){}
+    }
+    return null;
+  }
+
+  // ── Render the inline editor ───────────────────────────────────
+  function renderEditor(host,patient,editMode,reasonText){
+    if(!host)return;
+    const p=patient||{};
+    const fields=FIELDS.map(function(f){
+      const cur=currentValue(p,f.key);
+      let valueHtml;
+      if(!editMode){
+        valueHtml=`<div class="value-display ${cur?'':'empty'}">${esc(formatDisplay(f.key,cur))||'Not recorded'}</div>`;
+      }else if(f.type==='select'){
+        const opts=(f.options||[]).map(function(o){return `<option value="${esc(o)}"${String(cur)===o?' selected':''}>${esc(o||'Select…')}</option>`;}).join('');
+        valueHtml=`<select id="v6670-f-${f.key}">${opts}</select>`;
+      }else if(f.type==='date'){
+        valueHtml=`<input type="date" id="v6670-f-${f.key}" value="${esc(cur)}"/>`;
+      }else{
+        valueHtml=`<input type="text" id="v6670-f-${f.key}" value="${esc(cur)}" placeholder="${esc(f.label)}"/>`;
+      }
+      return `<div class="v6670-fg"><label>${esc(f.label)}${f.required?'<span class="required">*</span>':''}</label>${valueHtml}</div>`;
+    }).join('');
+
+    const banner=editMode
+      ? `<div class="v6670-banner"><span class="v6670-banner-icon">✎</span><div><strong>Edit mode is active.</strong> You are about to amend protected demographic details. A reason for the change is required before saving. Each changed field will be recorded in the amendment audit trail with old and new values.</div></div>`
+      : `<div class="v6670-banner locked"><span class="v6670-banner-icon">🔒</span><div><strong>Patient identity is read-only.</strong> Demographic details are protected. Click <em>Enter Edit Mode</em> to record a deliberate correction with reason and audit trail. Clinical state (stoma, episode, pathway) is not edited here.</div></div>`;
+
+    const reason=editMode
+      ? `<div class="v6670-reason-block"><label>Reason for amendment<span style="color:#dc2626;">*</span></label><textarea id="v6670-reason" placeholder="Why is this correction being made? (Required. Becomes part of the permanent audit trail.)">${esc(reasonText||'')}</textarea><div class="v6670-reason-help">Examples: "Surname misspelled at registration", "ID Card was recorded incorrectly", "Date of birth corrected against ID card", "Contact number updated by patient request".</div></div>`
+      : '';
+
+    const actions=editMode
+      ? `<div class="v6670-actions">
+           <button class="v6670-btn ghost" type="button" onclick="window.v6670CancelEdit()">← Cancel</button>
+           <button class="v6670-btn primary" type="button" onclick="window.v6670SaveEdit()">💾 Save Amendment (with reason)</button>
+         </div>`
+      : `<div class="v6670-actions">
+           <button class="v6670-btn ghost" type="button" onclick="window.v6670BackToRecord()">← Back to Patient Summary</button>
+           <button class="v6670-btn amber" type="button" onclick="window.v6670EnterEdit()">✎ Enter Edit Mode</button>
+         </div>`;
+
+    const fullName=[p.first_name||'',p.surname||''].filter(Boolean).join(' ')||'Patient';
+    const idLine=[p.hospital_number||p.id_card||p.id_card_number||'',p.locality||''].filter(Boolean).join(' · ')||'—';
+
+    host.innerHTML=`
+      <div class="v6670-edit-page" id="v6670-edit-page">
+        <div class="v6670-edit-head">
+          <div>
+            <div class="v6670-edit-eyebrow">${esc(V)} · Protected Demographic Edit</div>
+            <h2 class="v6670-edit-title">${editMode?'✎ Edit':'🔒 View'} Patient Details — ${esc(fullName)}</h2>
+            <div class="v6670-edit-sub">${esc(idLine)}</div>
+          </div>
+        </div>
+        ${banner}
+        <div class="v6670-section-head">Identity &amp; Contact</div>
+        <div class="v6670-grid">${fields}</div>
+        ${reason}
+        ${actions}
+      </div>
+    `;
+  }
+
+  // ── State ──────────────────────────────────────────────────────
+  let CURRENT_PATIENT_ID=null;
+  let CURRENT_PATIENT=null;
+  let EDIT_MODE=false;
+  let REASON_TEXT='';
+
+  function findHost(){
+    return d.getElementById('patient-record-page')
+        || d.getElementById('section-patient-detail')
+        || d.querySelector('.patient-record-page')
+        || d.getElementById('section-patients');
+  }
+
+  // ── Public API ─────────────────────────────────────────────────
+  async function openInlineEditPatient(patientId){
+    if(!patientId){alert('No patient id provided.');return;}
+    // Close any open legacy modal first
+    try{if(typeof closeMo==='function')closeMo();}catch(_){}
+    try{d.getElementById('mo')?.classList.remove('open');}catch(_){}
+
+    // Ensure the patient record section is visible
+    if(typeof window.switchSection==='function'){try{window.switchSection('section-patients');}catch(_){}}
+    const section=d.getElementById('section-patients');
+    if(section){section.classList.add('patient-record-open','platform-focused');}
+
+    // Make sure there's a host container; if not, create one inside section-patients
+    let host=findHost();
+    if(!host && section){
+      host=d.createElement('div');
+      host.id='patient-record-page';
+      host.className='patient-record-page';
+      section.appendChild(host);
+    }
+    if(!host){alert('No place to render the edit page (patient record section missing).');return;}
+
+    host.innerHTML='<div style="padding:24px;color:#64748b;">Loading patient…</div>';
+
+    const p=await fetchPatient(patientId);
+    if(!p){host.innerHTML='<div style="padding:24px;color:#991b1b;">Patient not found.</div>';return;}
+
+    CURRENT_PATIENT_ID=patientId;
+    CURRENT_PATIENT=p;
+    EDIT_MODE=false;
+    REASON_TEXT='';
+    renderEditor(host,p,false,'');
+  }
+  window.openInlineEditPatient=openInlineEditPatient;
+
+  window.v6670EnterEdit=function(){
+    EDIT_MODE=true;
+    const host=findHost();
+    renderEditor(host,CURRENT_PATIENT,true,REASON_TEXT);
+  };
+
+  window.v6670CancelEdit=function(){
+    if(EDIT_MODE){
+      const reason=d.getElementById('v6670-reason')?.value||'';
+      const hasChanges=collectChanges().length>0;
+      if(hasChanges || reason.trim()){
+        if(!confirm('Discard your changes and return to read-only view?'))return;
+      }
+    }
+    EDIT_MODE=false;
+    REASON_TEXT='';
+    const host=findHost();
+    renderEditor(host,CURRENT_PATIENT,false,'');
+  };
+
+  window.v6670BackToRecord=function(){
+    if(typeof window.openPatientRecordPage==='function'){
+      window.openPatientRecordPage(CURRENT_PATIENT_ID);
+    }else if(typeof window.openPatientProfile==='function'){
+      window.openPatientProfile(CURRENT_PATIENT_ID);
+    }else if(typeof window.backToPatientList==='function'){
+      window.backToPatientList();
+    }
+  };
+
+  function collectChanges(){
+    const changes=[];
+    FIELDS.forEach(function(f){
+      const el=d.getElementById('v6670-f-'+f.key);
+      if(!el)return;
+      const newVal=String(el.value||'').trim();
+      const oldVal=String(currentValue(CURRENT_PATIENT,f.key)||'').trim();
+      if(newVal!==oldVal){
+        changes.push({field:f.key,label:f.label,old_value:oldVal,new_value:newVal,cols:f.cols,required:f.required});
+      }
+    });
+    return changes;
+  }
+
+  window.v6670SaveEdit=async function(){
+    if(!CURRENT_PATIENT_ID){alert('No patient context.');return;}
+    const reason=(d.getElementById('v6670-reason')?.value||'').trim();
+    REASON_TEXT=reason;
+    const changes=collectChanges();
+    // Required-field guard
+    for(const f of FIELDS){
+      if(f.required){
+        const el=d.getElementById('v6670-f-'+f.key);
+        const val=String(el?.value||'').trim();
+        if(!val){alert(f.label+' is required and cannot be left blank.');return;}
+      }
+    }
+    if(changes.length===0){alert('No changes to save. Edit at least one field, or click Cancel to exit edit mode.');return;}
+    if(!reason){alert('A reason for the amendment is required before saving. The reason becomes part of the permanent audit trail.');d.getElementById('v6670-reason')?.focus();return;}
+    if(reason.length<6){alert('Please write a more descriptive reason (at least 6 characters).');d.getElementById('v6670-reason')?.focus();return;}
+
+    const sb=S();
+    if(!sb){alert('No database connection.');return;}
+
+    // Build per-table payload using the column-mapping in each field
+    const mainPayload={modified_at:nowIso(),updated_at:nowIso(),updated_by:userName()};
+    const patientsPayload={updated_at:nowIso()};
+    changes.forEach(function(ch){
+      if(ch.cols.patients_main)mainPayload[ch.cols.patients_main]=ch.new_value===''?null:ch.new_value;
+      if(ch.cols.patients)patientsPayload[ch.cols.patients]=ch.new_value===''?null:ch.new_value;
+    });
+
+    // 1. Update patients_main (legacy operational table)
+    let mainErr=null;
+    try{
+      const r=await sb.from('patients_main').update(mainPayload).eq('id',CURRENT_PATIENT_ID);
+      if(r.error)mainErr=r.error.message||String(r.error);
+    }catch(e){mainErr=e.message||String(e);}
+
+    // 2. Update patients (newer table). Don't fail the whole save if it errors.
+    try{await sb.from('patients').update(patientsPayload).eq('id',CURRENT_PATIENT_ID);}catch(_){}
+
+    if(mainErr){
+      alert('Patient update failed:\n\n'+mainErr+'\n\nNothing has been written to the amendment audit. Try again or contact the administrator.');
+      return;
+    }
+
+    // 3. Write one amendment row per changed field
+    let amendmentsWritten=0, amendmentsFailed=0;
+    for(const ch of changes){
+      const payload={
+        patient_id:String(CURRENT_PATIENT_ID),
+        episode_id:null,
+        encounter_id:null,
+        record_table:'patients_main',
+        record_id:String(CURRENT_PATIENT_ID),
+        field_name:ch.field,
+        old_value:ch.old_value===''?null:ch.old_value,
+        new_value:ch.new_value===''?null:ch.new_value,
+        amendment_reason:reason,
+        amendment_note:'Demographic edit via inline Edit Patient workflow. Field: '+ch.label+'.',
+        amended_by:userName(),
+        amended_by_email:userEmail(),
+        amended_at:nowIso(),
+        original_preserved:true
+      };
+      try{
+        const r=await sb.from('record_amendments').insert(payload);
+        if(r.error){amendmentsFailed++;console.warn('record_amendments insert failed:',r.error.message);}
+        else amendmentsWritten++;
+      }catch(e){amendmentsFailed++;console.warn(e);}
+    }
+
+    // 4. Mirror summary row to app_audit_log
+    try{
+      await sb.from('app_audit_log').insert({
+        actor_email:userEmail(),
+        actor_name:userName(),
+        action:'patient_demographic_amended',
+        table_name:'patients_main',
+        record_id:String(CURRENT_PATIENT_ID),
+        patient_id:String(CURRENT_PATIENT_ID),
+        details:{fields_changed:changes.map(function(c){return c.field;}),change_count:changes.length,reason:reason},
+        reason:reason,
+        created_at:nowIso()
+      });
+    }catch(_){}
+
+    // Refresh
+    const refreshed=await fetchPatient(CURRENT_PATIENT_ID);
+    if(refreshed)CURRENT_PATIENT=refreshed;
+    EDIT_MODE=false;
+    REASON_TEXT='';
+
+    if(amendmentsFailed===0){
+      alert('Saved.\n\n'+changes.length+' field'+(changes.length===1?'':'s')+' updated with audit trail.\n\nReason, user, timestamp and old/new values recorded in record_amendments.');
+    }else{
+      alert('Saved with WARNINGS.\n\n'+amendmentsWritten+' amendment row(s) written, '+amendmentsFailed+' failed.\n\nThe patient record was updated. If record_amendments writes failed, the v66-69 SQL may not have been run in this Supabase project. Check the table.');
+    }
+
+    const host=findHost();
+    renderEditor(host,CURRENT_PATIENT,false,'');
+    // Refresh ambient patient lists if available
+    try{if(typeof window.loadPatients==='function')window.loadPatients();}catch(_){}
+  };
+
+  // ── 7. Redirect every existing Edit Patient entry point ──────
+  // The legacy openEditPatientModal is referenced from many places.
+  // We override window.openEditPatientModal so every onclick lands here.
+  function installRedirect(){
+    if(window.__v6670_redirect_installed)return;
+    window.openEditPatientModal=function(id){return openInlineEditPatient(id);};
+    // Also redirect the v66-61 alias if present
+    if(typeof window.openInlineEditPatient!=='undefined')window.openInlineEditPatient=openInlineEditPatient;
+    window.__v6670_redirect_installed=true;
+    console.log('[%s] Edit Patient redirected to inline workflow',V);
+  }
+  installRedirect();
+  // Reinstall in case any later script restores the legacy function
+  setTimeout(installRedirect,800);
+  setTimeout(installRedirect,3000);
+  setInterval(function(){
+    if(window.openEditPatientModal!==openInlineEditPatient){
+      window.openEditPatientModal=function(id){return openInlineEditPatient(id);};
+    }
+  },2500);
+
+  console.log('[%s] active — inline Edit Patient with mandatory reason + field-level audit enabled.',V);
+})();
+</script>
+
 </body>
 </html>
 
