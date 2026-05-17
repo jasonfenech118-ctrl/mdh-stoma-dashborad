@@ -4706,6 +4706,430 @@ textarea{
 }
 </style>
 
+
+<style id="v66-68-stage10a-consistent-navigation-tabs-css">
+/* ─────────────────────────────────────────────────────
+   v66-68 Stage 10A — Consistent Navigation Tabs
+   - Makes top navigation, Patient Centre tabs, Follow-Up Centre tabs,
+     patient record tabs, pathway tabs, roster tabs, admin/testing tabs,
+     and outcome filters share the same compact clinical tab language.
+   - Matches the Follow-Up Centre tab style shown in the user's reference:
+     soft white container, rounded pill tabs, small coloured icon blocks,
+     clear active underline/accent, horizontal scroll on mobile.
+   - Frontend/CSS only. No Supabase/database logic changed.
+   ───────────────────────────────────────────────────── */
+:root{
+  --mdh-nav-shell-bg:rgba(255,255,255,.94);
+  --mdh-nav-shell-border:#d8e3e7;
+  --mdh-nav-text:#0f2638;
+  --mdh-nav-muted:#64748b;
+  --mdh-nav-active:#0f766e;
+  --mdh-nav-hover:#f0fdfa;
+  --mdh-nav-shadow:0 2px 10px rgba(15,38,56,.065);
+  --mdh-nav-pill-shadow:0 2px 8px rgba(15,38,56,.045);
+}
+
+/* Shared navigation containers */
+.app-menu-tabs,
+.platform-tabbar,
+.patient-centre-tab-bar,
+#patient-subtab-bar,
+#followup-subtab-bar,
+.followup-tabs-bar,
+.roster-subtab-bar,
+.pd-tabs,
+.admin-tabs,
+.testing-tabs,
+.outcome-filter-buttons,
+.patient-record-tabs,
+#v6661-patient-record-tabs .v6661-tabs,
+#patient-record-page .v6661-tabs,
+.v6661-record .v6661-tabs,
+.pathway-tabs,
+.pathway-tab-bar,
+#pathway-tab-bar{
+  display:flex!important;
+  flex-direction:row!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  flex-wrap:nowrap!important;
+  gap:7px!important;
+  width:100%!important;
+  max-width:100%!important;
+  min-height:0!important;
+  margin:0 0 12px 0!important;
+  padding:8px!important;
+  background:var(--mdh-nav-shell-bg)!important;
+  border:1px solid var(--mdh-nav-shell-border)!important;
+  border-radius:14px!important;
+  box-shadow:var(--mdh-nav-shadow)!important;
+  overflow-x:auto!important;
+  overflow-y:visible!important;
+  white-space:nowrap!important;
+  scrollbar-width:thin!important;
+  -webkit-overflow-scrolling:touch!important;
+  backdrop-filter:blur(10px)!important;
+  grid-template-columns:none!important;
+}
+.app-menu-tabs::-webkit-scrollbar,
+.platform-tabbar::-webkit-scrollbar,
+.patient-centre-tab-bar::-webkit-scrollbar,
+#patient-subtab-bar::-webkit-scrollbar,
+#followup-subtab-bar::-webkit-scrollbar,
+.followup-tabs-bar::-webkit-scrollbar,
+.roster-subtab-bar::-webkit-scrollbar,
+.pd-tabs::-webkit-scrollbar,
+.admin-tabs::-webkit-scrollbar,
+.testing-tabs::-webkit-scrollbar,
+.outcome-filter-buttons::-webkit-scrollbar,
+.patient-record-tabs::-webkit-scrollbar,
+#v6661-patient-record-tabs .v6661-tabs::-webkit-scrollbar,
+#patient-record-page .v6661-tabs::-webkit-scrollbar,
+.v6661-record .v6661-tabs::-webkit-scrollbar,
+.pathway-tabs::-webkit-scrollbar,
+.pathway-tab-bar::-webkit-scrollbar,
+#pathway-tab-bar::-webkit-scrollbar{height:5px!important;}
+.app-menu-tabs::-webkit-scrollbar-thumb,
+.platform-tabbar::-webkit-scrollbar-thumb,
+.patient-centre-tab-bar::-webkit-scrollbar-thumb,
+#patient-subtab-bar::-webkit-scrollbar-thumb,
+#followup-subtab-bar::-webkit-scrollbar-thumb,
+.followup-tabs-bar::-webkit-scrollbar-thumb,
+.roster-subtab-bar::-webkit-scrollbar-thumb,
+.pd-tabs::-webkit-scrollbar-thumb,
+.admin-tabs::-webkit-scrollbar-thumb,
+.testing-tabs::-webkit-scrollbar-thumb,
+.outcome-filter-buttons::-webkit-scrollbar-thumb,
+.patient-record-tabs::-webkit-scrollbar-thumb,
+#v6661-patient-record-tabs .v6661-tabs::-webkit-scrollbar-thumb,
+#patient-record-page .v6661-tabs::-webkit-scrollbar-thumb,
+.v6661-record .v6661-tabs::-webkit-scrollbar-thumb,
+.pathway-tabs::-webkit-scrollbar-thumb,
+.pathway-tab-bar::-webkit-scrollbar-thumb,
+#pathway-tab-bar::-webkit-scrollbar-thumb{background:#cbd5e1!important;border-radius:999px!important;}
+
+/* Shared navigation tab buttons */
+.app-menu-home,
+.app-menu-tab-button,
+.platform-tabbar button,
+.patient-centre-tab-bar button,
+#patient-subtab-bar .roster-subtab,
+#followup-subtab-bar .roster-subtab,
+.followup-tabs-bar button,
+.followup-tab,
+.roster-subtab-bar .roster-subtab,
+.pd-tab,
+.admin-tabs button,
+.testing-tabs button,
+.outcome-filter-buttons .outcome-btn,
+.patient-record-tabs button,
+#v6661-patient-record-tabs .v6661-tab,
+#patient-record-page .v6661-tab,
+.v6661-record .v6661-tab,
+.pathway-tabs button,
+.pathway-tab-bar button,
+#pathway-tab-bar button{
+  appearance:none!important;
+  display:inline-flex!important;
+  flex:0 0 auto!important;
+  grid-template-columns:none!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:7px!important;
+  width:auto!important;
+  min-width:max-content!important;
+  height:38px!important;
+  min-height:38px!important;
+  max-height:38px!important;
+  margin:0!important;
+  padding:0 13px!important;
+  border:1px solid rgba(216,227,231,.96)!important;
+  border-left:1px solid rgba(216,227,231,.96)!important;
+  border-right:1px solid rgba(216,227,231,.96)!important;
+  border-bottom:1px solid rgba(216,227,231,.96)!important;
+  border-radius:11px!important;
+  background:#ffffff!important;
+  color:var(--mdh-nav-muted)!important;
+  box-shadow:var(--mdh-nav-pill-shadow)!important;
+  font-family:'DM Sans',sans-serif!important;
+  font-size:11.5px!important;
+  font-weight:850!important;
+  line-height:1!important;
+  letter-spacing:.01em!important;
+  text-align:center!important;
+  text-transform:none!important;
+  cursor:pointer!important;
+  position:relative!important;
+  overflow:hidden!important;
+  transform:none!important;
+  transition:background .16s ease,color .16s ease,border-color .16s ease,box-shadow .16s ease,transform .16s ease!important;
+}
+.app-menu-home:hover,
+.app-menu-tab-button:hover,
+.app-menu-tab.active>.app-menu-tab-button,
+.platform-tabbar button:hover,
+.patient-centre-tab-bar button:hover,
+#patient-subtab-bar .roster-subtab:hover,
+#followup-subtab-bar .roster-subtab:hover,
+.followup-tabs-bar button:hover,
+.followup-tab:hover,
+.roster-subtab-bar .roster-subtab:hover,
+.pd-tab:hover,
+.admin-tabs button:hover,
+.testing-tabs button:hover,
+.outcome-filter-buttons .outcome-btn:hover,
+.patient-record-tabs button:hover,
+#v6661-patient-record-tabs .v6661-tab:hover,
+#patient-record-page .v6661-tab:hover,
+.v6661-record .v6661-tab:hover,
+.pathway-tabs button:hover,
+.pathway-tab-bar button:hover,
+#pathway-tab-bar button:hover{
+  background:var(--mdh-nav-hover)!important;
+  color:var(--mdh-nav-text)!important;
+  border-color:#99f6e4!important;
+  box-shadow:0 7px 18px rgba(15,38,56,.08)!important;
+  transform:translateY(-1px)!important;
+}
+.platform-tabbar button.active,
+.patient-centre-tab-bar button.active,
+#patient-subtab-bar .roster-subtab.active,
+#followup-subtab-bar .roster-subtab.active,
+.followup-tabs-bar button.active,
+.followup-tab.active,
+.roster-subtab-bar .roster-subtab.active,
+.pd-tab.active,
+.admin-tabs button.active,
+.testing-tabs button.active,
+.outcome-filter-buttons .outcome-btn.active,
+.patient-record-tabs button.active,
+#v6661-patient-record-tabs .v6661-tab.active,
+#patient-record-page .v6661-tab.active,
+.v6661-record .v6661-tab.active,
+.pathway-tabs button.active,
+.pathway-tab-bar button.active,
+#pathway-tab-bar button.active{
+  background:#ffffff!important;
+  color:var(--mdh-nav-text)!important;
+  border-color:#99f6e4!important;
+  font-weight:950!important;
+  box-shadow:inset 0 -3px 0 var(--mdh-nav-active),0 5px 14px rgba(15,118,110,.08)!important;
+}
+
+/* Remove old mixed tab decorations so every tab reads the same way */
+#patient-subtab-bar .roster-subtab::before,
+#patient-subtab-bar .roster-subtab::after,
+#followup-subtab-bar .roster-subtab::before,
+#followup-subtab-bar .roster-subtab::after,
+.roster-subtab-bar .roster-subtab::before,
+.roster-subtab-bar .roster-subtab::after,
+.pd-tab::before,
+.pd-tab::after,
+.patient-record-tabs button::after,
+.pathway-tabs button::before,
+.pathway-tabs button::after,
+.pathway-tab-bar button::before,
+.pathway-tab-bar button::after,
+#pathway-tab-bar button::before,
+#pathway-tab-bar button::after{
+  content:none!important;
+  display:none!important;
+}
+
+/* Coloured icon blocks: same size/rhythm across platform */
+.app-menu-mini-icon,
+.roster-subtab-icon,
+.followup-tab-icon,
+.pd-tab .tab-icon,
+.platform-tabbar .tab-icon,
+.patient-centre-tab-bar .tab-icon,
+#patient-subtab-bar .roster-subtab-icon,
+#followup-subtab-bar .roster-subtab-icon,
+.roster-subtab-bar .roster-subtab-icon,
+.pathway-tabs .tab-icon,
+.pathway-tab-bar .tab-icon,
+#pathway-tab-bar .tab-icon{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  flex:0 0 24px!important;
+  width:24px!important;
+  height:24px!important;
+  min-width:24px!important;
+  margin:0!important;
+  border:0!important;
+  border-radius:7px!important;
+  background:linear-gradient(135deg,#0f2638,#0f766e)!important;
+  color:#ffffff!important;
+  box-shadow:0 3px 8px rgba(15,38,56,.13)!important;
+}
+.app-menu-mini-icon svg,
+.roster-subtab-icon svg,
+.followup-tab-icon svg,
+.pd-tab .tab-icon svg,
+.platform-tabbar .tab-icon svg,
+.patient-centre-tab-bar .tab-icon svg,
+#patient-subtab-bar .roster-subtab-icon svg,
+#followup-subtab-bar .roster-subtab-icon svg,
+.roster-subtab-bar .roster-subtab-icon svg,
+.pathway-tabs .tab-icon svg,
+.pathway-tab-bar .tab-icon svg,
+#pathway-tab-bar .tab-icon svg{
+  width:14px!important;
+  height:14px!important;
+  stroke-width:2.2!important;
+}
+
+/* Text inside mixed tab buttons */
+#patient-subtab-bar .roster-subtab > span:not(.roster-subtab-icon),
+#followup-subtab-bar .roster-subtab > span:not(.roster-subtab-icon),
+.roster-subtab-bar .roster-subtab > span:not(.roster-subtab-icon),
+.pd-tab span:not(.tab-icon){
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  color:inherit!important;
+  font-size:inherit!important;
+  font-weight:inherit!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+  margin:0!important;
+  text-align:center!important;
+  grid-column:auto!important;
+  justify-self:auto!important;
+}
+
+/* Patient-record v66 tabs are text-only, so add the same small marker without changing JS */
+#v6661-patient-record-tabs .v6661-tab::before,
+#patient-record-page .v6661-tab::before,
+.v6661-record .v6661-tab::before{
+  content:''!important;
+  display:inline-flex!important;
+  flex:0 0 24px!important;
+  width:24px!important;
+  height:24px!important;
+  min-width:24px!important;
+  border-radius:7px!important;
+  background:linear-gradient(135deg,#0f2638,#0f766e)!important;
+  box-shadow:0 3px 8px rgba(15,38,56,.13)!important;
+}
+#v6661-patient-record-tabs .v6661-tab:nth-child(2)::before,#patient-record-page .v6661-tab:nth-child(2)::before,.v6661-record .v6661-tab:nth-child(2)::before{background:linear-gradient(135deg,#1d4ed8,#075985)!important;}
+#v6661-patient-record-tabs .v6661-tab:nth-child(3)::before,#patient-record-page .v6661-tab:nth-child(3)::before,.v6661-record .v6661-tab:nth-child(3)::before{background:linear-gradient(135deg,#5b21b6,#312e81)!important;}
+#v6661-patient-record-tabs .v6661-tab:nth-child(4)::before,#patient-record-page .v6661-tab:nth-child(4)::before,.v6661-record .v6661-tab:nth-child(4)::before{background:linear-gradient(135deg,#92400e,#b45309)!important;}
+#v6661-patient-record-tabs .v6661-tab:nth-child(5)::before,#patient-record-page .v6661-tab:nth-child(5)::before,.v6661-record .v6661-tab:nth-child(5)::before{background:linear-gradient(135deg,#065f46,#059669)!important;}
+#v6661-patient-record-tabs .v6661-tab:nth-child(6)::before,#patient-record-page .v6661-tab:nth-child(6)::before,.v6661-record .v6661-tab:nth-child(6)::before{background:linear-gradient(135deg,#9f1239,#e11d48)!important;}
+#v6661-patient-record-tabs .v6661-tab:nth-child(7)::before,#patient-record-page .v6661-tab:nth-child(7)::before,.v6661-record .v6661-tab:nth-child(7)::before{background:linear-gradient(135deg,#0369a1,#0284c7)!important;}
+#v6661-patient-record-tabs .v6661-tab:nth-child(8)::before,#patient-record-page .v6661-tab:nth-child(8)::before,.v6661-record .v6661-tab:nth-child(8)::before{background:linear-gradient(135deg,#334155,#475569)!important;}
+
+/* Keep dropdown menus attached to the updated top tabs */
+.app-menu-tabs{
+  position:fixed!important;
+  top:56px!important;
+  left:0!important;
+  right:0!important;
+  z-index:260!important;
+  margin:0!important;
+  border-radius:0!important;
+  border-left:0!important;
+  border-right:0!important;
+  border-top:0!important;
+}
+.app-menu-tab{position:relative!important;flex:0 0 auto!important;}
+.app-menu-caret{font-size:12px!important;color:#94a3b8!important;margin-left:2px!important;}
+.app-menu-dropdown{
+  top:110px!important;
+  border-radius:14px!important;
+  border:1px solid var(--mdh-nav-shell-border)!important;
+  box-shadow:0 18px 48px rgba(15,38,56,.18)!important;
+}
+
+/* Follow-Up Centre tabs retain their first-picture colour cues but use the same shell */
+#followup-subtab-bar .roster-subtab:nth-child(1) .roster-subtab-icon{background:linear-gradient(135deg,#0f766e,#14b8a6)!important;}
+#followup-subtab-bar .roster-subtab:nth-child(2) .roster-subtab-icon{background:linear-gradient(135deg,#1d4ed8,#0f766e)!important;}
+#followup-subtab-bar .roster-subtab:nth-child(3) .roster-subtab-icon{background:linear-gradient(135deg,#0f766e,#0f2638)!important;}
+#followup-subtab-bar .roster-subtab:nth-child(4) .roster-subtab-icon{background:linear-gradient(135deg,#7c2d12,#c2413b)!important;}
+#followup-subtab-bar .roster-subtab:nth-child(5) .roster-subtab-icon{background:linear-gradient(135deg,#0369a1,#0284c7)!important;}
+#followup-subtab-bar .roster-subtab:nth-child(6) .roster-subtab-icon{background:linear-gradient(135deg,#334155,#0f2638)!important;}
+
+/* Mobile/tablet tab behaviour: single readable horizontal row, not squeezed */
+@media(max-width:760px){
+  .app-menu-tabs,
+  .platform-tabbar,
+  .patient-centre-tab-bar,
+  #patient-subtab-bar,
+  #followup-subtab-bar,
+  .followup-tabs-bar,
+  .roster-subtab-bar,
+  .pd-tabs,
+  .admin-tabs,
+  .testing-tabs,
+  .outcome-filter-buttons,
+  .patient-record-tabs,
+  #v6661-patient-record-tabs .v6661-tabs,
+  #patient-record-page .v6661-tabs,
+  .v6661-record .v6661-tabs,
+  .pathway-tabs,
+  .pathway-tab-bar,
+  #pathway-tab-bar{
+    gap:6px!important;
+    padding:7px!important;
+    border-radius:12px!important;
+    flex-wrap:nowrap!important;
+  }
+  .app-menu-tabs{height:auto!important;min-height:54px!important;border-radius:0!important;}
+  .app-menu-home,
+  .app-menu-tab-button,
+  .platform-tabbar button,
+  .patient-centre-tab-bar button,
+  #patient-subtab-bar .roster-subtab,
+  #followup-subtab-bar .roster-subtab,
+  .followup-tabs-bar button,
+  .followup-tab,
+  .roster-subtab-bar .roster-subtab,
+  .pd-tab,
+  .admin-tabs button,
+  .testing-tabs button,
+  .outcome-filter-buttons .outcome-btn,
+  .patient-record-tabs button,
+  #v6661-patient-record-tabs .v6661-tab,
+  #patient-record-page .v6661-tab,
+  .v6661-record .v6661-tab,
+  .pathway-tabs button,
+  .pathway-tab-bar button,
+  #pathway-tab-bar button{
+    height:36px!important;
+    min-height:36px!important;
+    max-height:36px!important;
+    padding:0 10px!important;
+    font-size:11px!important;
+    border-radius:10px!important;
+  }
+  .app-menu-mini-icon,
+  .roster-subtab-icon,
+  .followup-tab-icon,
+  .pd-tab .tab-icon,
+  #patient-subtab-bar .roster-subtab-icon,
+  #followup-subtab-bar .roster-subtab-icon,
+  .roster-subtab-bar .roster-subtab-icon,
+  #v6661-patient-record-tabs .v6661-tab::before,
+  #patient-record-page .v6661-tab::before,
+  .v6661-record .v6661-tab::before{
+    width:22px!important;
+    height:22px!important;
+    min-width:22px!important;
+    flex-basis:22px!important;
+    border-radius:7px!important;
+  }
+  .app-menu-mini-icon svg,
+  .roster-subtab-icon svg,
+  .followup-tab-icon svg,
+  .pd-tab .tab-icon svg,
+  #patient-subtab-bar .roster-subtab-icon svg,
+  #followup-subtab-bar .roster-subtab-icon svg,
+  .roster-subtab-bar .roster-subtab-icon svg{width:13px!important;height:13px!important;}
+  .app-menu-dropdown{top:108px!important;left:8px!important;right:8px!important;min-width:auto!important;max-width:none!important;}
+}
+</style>
 </head>
 <body>
 <!--
@@ -9036,433 +9460,7 @@ function printEpisode(episodeId, patientName) {
     '<div class="label">Patient</div><div class="value">' + htmlSafe(patientName || '—') + '</div>',
     bodyHtml,
     '<div class="footer">Printed: ' + htmlSafe(printedAt) + ' - MDH Stoma Care Dashboard</div>',
-    '
-
-<style id="v66-68-stage10a-consistent-navigation-tabs-css">
-/* ─────────────────────────────────────────────────────
-   v66-68 Stage 10A — Consistent Navigation Tabs
-   - Makes top navigation, Patient Centre tabs, Follow-Up Centre tabs,
-     patient record tabs, pathway tabs, roster tabs, admin/testing tabs,
-     and outcome filters share the same compact clinical tab language.
-   - Matches the Follow-Up Centre tab style shown in the user's reference:
-     soft white container, rounded pill tabs, small coloured icon blocks,
-     clear active underline/accent, horizontal scroll on mobile.
-   - Frontend/CSS only. No Supabase/database logic changed.
-   ───────────────────────────────────────────────────── */
-:root{
-  --mdh-nav-shell-bg:rgba(255,255,255,.94);
-  --mdh-nav-shell-border:#d8e3e7;
-  --mdh-nav-text:#0f2638;
-  --mdh-nav-muted:#64748b;
-  --mdh-nav-active:#0f766e;
-  --mdh-nav-hover:#f0fdfa;
-  --mdh-nav-shadow:0 2px 10px rgba(15,38,56,.065);
-  --mdh-nav-pill-shadow:0 2px 8px rgba(15,38,56,.045);
-}
-
-/* Shared navigation containers */
-.app-menu-tabs,
-.platform-tabbar,
-.patient-centre-tab-bar,
-#patient-subtab-bar,
-#followup-subtab-bar,
-.followup-tabs-bar,
-.roster-subtab-bar,
-.pd-tabs,
-.admin-tabs,
-.testing-tabs,
-.outcome-filter-buttons,
-.patient-record-tabs,
-#v6661-patient-record-tabs .v6661-tabs,
-#patient-record-page .v6661-tabs,
-.v6661-record .v6661-tabs,
-.pathway-tabs,
-.pathway-tab-bar,
-#pathway-tab-bar{
-  display:flex!important;
-  flex-direction:row!important;
-  align-items:center!important;
-  justify-content:flex-start!important;
-  flex-wrap:nowrap!important;
-  gap:7px!important;
-  width:100%!important;
-  max-width:100%!important;
-  min-height:0!important;
-  margin:0 0 12px 0!important;
-  padding:8px!important;
-  background:var(--mdh-nav-shell-bg)!important;
-  border:1px solid var(--mdh-nav-shell-border)!important;
-  border-radius:14px!important;
-  box-shadow:var(--mdh-nav-shadow)!important;
-  overflow-x:auto!important;
-  overflow-y:visible!important;
-  white-space:nowrap!important;
-  scrollbar-width:thin!important;
-  -webkit-overflow-scrolling:touch!important;
-  backdrop-filter:blur(10px)!important;
-  grid-template-columns:none!important;
-}
-.app-menu-tabs::-webkit-scrollbar,
-.platform-tabbar::-webkit-scrollbar,
-.patient-centre-tab-bar::-webkit-scrollbar,
-#patient-subtab-bar::-webkit-scrollbar,
-#followup-subtab-bar::-webkit-scrollbar,
-.followup-tabs-bar::-webkit-scrollbar,
-.roster-subtab-bar::-webkit-scrollbar,
-.pd-tabs::-webkit-scrollbar,
-.admin-tabs::-webkit-scrollbar,
-.testing-tabs::-webkit-scrollbar,
-.outcome-filter-buttons::-webkit-scrollbar,
-.patient-record-tabs::-webkit-scrollbar,
-#v6661-patient-record-tabs .v6661-tabs::-webkit-scrollbar,
-#patient-record-page .v6661-tabs::-webkit-scrollbar,
-.v6661-record .v6661-tabs::-webkit-scrollbar,
-.pathway-tabs::-webkit-scrollbar,
-.pathway-tab-bar::-webkit-scrollbar,
-#pathway-tab-bar::-webkit-scrollbar{height:5px!important;}
-.app-menu-tabs::-webkit-scrollbar-thumb,
-.platform-tabbar::-webkit-scrollbar-thumb,
-.patient-centre-tab-bar::-webkit-scrollbar-thumb,
-#patient-subtab-bar::-webkit-scrollbar-thumb,
-#followup-subtab-bar::-webkit-scrollbar-thumb,
-.followup-tabs-bar::-webkit-scrollbar-thumb,
-.roster-subtab-bar::-webkit-scrollbar-thumb,
-.pd-tabs::-webkit-scrollbar-thumb,
-.admin-tabs::-webkit-scrollbar-thumb,
-.testing-tabs::-webkit-scrollbar-thumb,
-.outcome-filter-buttons::-webkit-scrollbar-thumb,
-.patient-record-tabs::-webkit-scrollbar-thumb,
-#v6661-patient-record-tabs .v6661-tabs::-webkit-scrollbar-thumb,
-#patient-record-page .v6661-tabs::-webkit-scrollbar-thumb,
-.v6661-record .v6661-tabs::-webkit-scrollbar-thumb,
-.pathway-tabs::-webkit-scrollbar-thumb,
-.pathway-tab-bar::-webkit-scrollbar-thumb,
-#pathway-tab-bar::-webkit-scrollbar-thumb{background:#cbd5e1!important;border-radius:999px!important;}
-
-/* Shared navigation tab buttons */
-.app-menu-home,
-.app-menu-tab-button,
-.platform-tabbar button,
-.patient-centre-tab-bar button,
-#patient-subtab-bar .roster-subtab,
-#followup-subtab-bar .roster-subtab,
-.followup-tabs-bar button,
-.followup-tab,
-.roster-subtab-bar .roster-subtab,
-.pd-tab,
-.admin-tabs button,
-.testing-tabs button,
-.outcome-filter-buttons .outcome-btn,
-.patient-record-tabs button,
-#v6661-patient-record-tabs .v6661-tab,
-#patient-record-page .v6661-tab,
-.v6661-record .v6661-tab,
-.pathway-tabs button,
-.pathway-tab-bar button,
-#pathway-tab-bar button{
-  appearance:none!important;
-  display:inline-flex!important;
-  flex:0 0 auto!important;
-  grid-template-columns:none!important;
-  align-items:center!important;
-  justify-content:center!important;
-  gap:7px!important;
-  width:auto!important;
-  min-width:max-content!important;
-  height:38px!important;
-  min-height:38px!important;
-  max-height:38px!important;
-  margin:0!important;
-  padding:0 13px!important;
-  border:1px solid rgba(216,227,231,.96)!important;
-  border-left:1px solid rgba(216,227,231,.96)!important;
-  border-right:1px solid rgba(216,227,231,.96)!important;
-  border-bottom:1px solid rgba(216,227,231,.96)!important;
-  border-radius:11px!important;
-  background:#ffffff!important;
-  color:var(--mdh-nav-muted)!important;
-  box-shadow:var(--mdh-nav-pill-shadow)!important;
-  font-family:'DM Sans',sans-serif!important;
-  font-size:11.5px!important;
-  font-weight:850!important;
-  line-height:1!important;
-  letter-spacing:.01em!important;
-  text-align:center!important;
-  text-transform:none!important;
-  cursor:pointer!important;
-  position:relative!important;
-  overflow:hidden!important;
-  transform:none!important;
-  transition:background .16s ease,color .16s ease,border-color .16s ease,box-shadow .16s ease,transform .16s ease!important;
-}
-.app-menu-home:hover,
-.app-menu-tab-button:hover,
-.app-menu-tab.active>.app-menu-tab-button,
-.platform-tabbar button:hover,
-.patient-centre-tab-bar button:hover,
-#patient-subtab-bar .roster-subtab:hover,
-#followup-subtab-bar .roster-subtab:hover,
-.followup-tabs-bar button:hover,
-.followup-tab:hover,
-.roster-subtab-bar .roster-subtab:hover,
-.pd-tab:hover,
-.admin-tabs button:hover,
-.testing-tabs button:hover,
-.outcome-filter-buttons .outcome-btn:hover,
-.patient-record-tabs button:hover,
-#v6661-patient-record-tabs .v6661-tab:hover,
-#patient-record-page .v6661-tab:hover,
-.v6661-record .v6661-tab:hover,
-.pathway-tabs button:hover,
-.pathway-tab-bar button:hover,
-#pathway-tab-bar button:hover{
-  background:var(--mdh-nav-hover)!important;
-  color:var(--mdh-nav-text)!important;
-  border-color:#99f6e4!important;
-  box-shadow:0 7px 18px rgba(15,38,56,.08)!important;
-  transform:translateY(-1px)!important;
-}
-.platform-tabbar button.active,
-.patient-centre-tab-bar button.active,
-#patient-subtab-bar .roster-subtab.active,
-#followup-subtab-bar .roster-subtab.active,
-.followup-tabs-bar button.active,
-.followup-tab.active,
-.roster-subtab-bar .roster-subtab.active,
-.pd-tab.active,
-.admin-tabs button.active,
-.testing-tabs button.active,
-.outcome-filter-buttons .outcome-btn.active,
-.patient-record-tabs button.active,
-#v6661-patient-record-tabs .v6661-tab.active,
-#patient-record-page .v6661-tab.active,
-.v6661-record .v6661-tab.active,
-.pathway-tabs button.active,
-.pathway-tab-bar button.active,
-#pathway-tab-bar button.active{
-  background:#ffffff!important;
-  color:var(--mdh-nav-text)!important;
-  border-color:#99f6e4!important;
-  font-weight:950!important;
-  box-shadow:inset 0 -3px 0 var(--mdh-nav-active),0 5px 14px rgba(15,118,110,.08)!important;
-}
-
-/* Remove old mixed tab decorations so every tab reads the same way */
-#patient-subtab-bar .roster-subtab::before,
-#patient-subtab-bar .roster-subtab::after,
-#followup-subtab-bar .roster-subtab::before,
-#followup-subtab-bar .roster-subtab::after,
-.roster-subtab-bar .roster-subtab::before,
-.roster-subtab-bar .roster-subtab::after,
-.pd-tab::before,
-.pd-tab::after,
-.patient-record-tabs button::after,
-.pathway-tabs button::before,
-.pathway-tabs button::after,
-.pathway-tab-bar button::before,
-.pathway-tab-bar button::after,
-#pathway-tab-bar button::before,
-#pathway-tab-bar button::after{
-  content:none!important;
-  display:none!important;
-}
-
-/* Coloured icon blocks: same size/rhythm across platform */
-.app-menu-mini-icon,
-.roster-subtab-icon,
-.followup-tab-icon,
-.pd-tab .tab-icon,
-.platform-tabbar .tab-icon,
-.patient-centre-tab-bar .tab-icon,
-#patient-subtab-bar .roster-subtab-icon,
-#followup-subtab-bar .roster-subtab-icon,
-.roster-subtab-bar .roster-subtab-icon,
-.pathway-tabs .tab-icon,
-.pathway-tab-bar .tab-icon,
-#pathway-tab-bar .tab-icon{
-  display:inline-flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  flex:0 0 24px!important;
-  width:24px!important;
-  height:24px!important;
-  min-width:24px!important;
-  margin:0!important;
-  border:0!important;
-  border-radius:7px!important;
-  background:linear-gradient(135deg,#0f2638,#0f766e)!important;
-  color:#ffffff!important;
-  box-shadow:0 3px 8px rgba(15,38,56,.13)!important;
-}
-.app-menu-mini-icon svg,
-.roster-subtab-icon svg,
-.followup-tab-icon svg,
-.pd-tab .tab-icon svg,
-.platform-tabbar .tab-icon svg,
-.patient-centre-tab-bar .tab-icon svg,
-#patient-subtab-bar .roster-subtab-icon svg,
-#followup-subtab-bar .roster-subtab-icon svg,
-.roster-subtab-bar .roster-subtab-icon svg,
-.pathway-tabs .tab-icon svg,
-.pathway-tab-bar .tab-icon svg,
-#pathway-tab-bar .tab-icon svg{
-  width:14px!important;
-  height:14px!important;
-  stroke-width:2.2!important;
-}
-
-/* Text inside mixed tab buttons */
-#patient-subtab-bar .roster-subtab > span:not(.roster-subtab-icon),
-#followup-subtab-bar .roster-subtab > span:not(.roster-subtab-icon),
-.roster-subtab-bar .roster-subtab > span:not(.roster-subtab-icon),
-.pd-tab span:not(.tab-icon){
-  display:inline-flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  color:inherit!important;
-  font-size:inherit!important;
-  font-weight:inherit!important;
-  line-height:1!important;
-  white-space:nowrap!important;
-  margin:0!important;
-  text-align:center!important;
-  grid-column:auto!important;
-  justify-self:auto!important;
-}
-
-/* Patient-record v66 tabs are text-only, so add the same small marker without changing JS */
-#v6661-patient-record-tabs .v6661-tab::before,
-#patient-record-page .v6661-tab::before,
-.v6661-record .v6661-tab::before{
-  content:''!important;
-  display:inline-flex!important;
-  flex:0 0 24px!important;
-  width:24px!important;
-  height:24px!important;
-  min-width:24px!important;
-  border-radius:7px!important;
-  background:linear-gradient(135deg,#0f2638,#0f766e)!important;
-  box-shadow:0 3px 8px rgba(15,38,56,.13)!important;
-}
-#v6661-patient-record-tabs .v6661-tab:nth-child(2)::before,#patient-record-page .v6661-tab:nth-child(2)::before,.v6661-record .v6661-tab:nth-child(2)::before{background:linear-gradient(135deg,#1d4ed8,#075985)!important;}
-#v6661-patient-record-tabs .v6661-tab:nth-child(3)::before,#patient-record-page .v6661-tab:nth-child(3)::before,.v6661-record .v6661-tab:nth-child(3)::before{background:linear-gradient(135deg,#5b21b6,#312e81)!important;}
-#v6661-patient-record-tabs .v6661-tab:nth-child(4)::before,#patient-record-page .v6661-tab:nth-child(4)::before,.v6661-record .v6661-tab:nth-child(4)::before{background:linear-gradient(135deg,#92400e,#b45309)!important;}
-#v6661-patient-record-tabs .v6661-tab:nth-child(5)::before,#patient-record-page .v6661-tab:nth-child(5)::before,.v6661-record .v6661-tab:nth-child(5)::before{background:linear-gradient(135deg,#065f46,#059669)!important;}
-#v6661-patient-record-tabs .v6661-tab:nth-child(6)::before,#patient-record-page .v6661-tab:nth-child(6)::before,.v6661-record .v6661-tab:nth-child(6)::before{background:linear-gradient(135deg,#9f1239,#e11d48)!important;}
-#v6661-patient-record-tabs .v6661-tab:nth-child(7)::before,#patient-record-page .v6661-tab:nth-child(7)::before,.v6661-record .v6661-tab:nth-child(7)::before{background:linear-gradient(135deg,#0369a1,#0284c7)!important;}
-#v6661-patient-record-tabs .v6661-tab:nth-child(8)::before,#patient-record-page .v6661-tab:nth-child(8)::before,.v6661-record .v6661-tab:nth-child(8)::before{background:linear-gradient(135deg,#334155,#475569)!important;}
-
-/* Keep dropdown menus attached to the updated top tabs */
-.app-menu-tabs{
-  position:fixed!important;
-  top:56px!important;
-  left:0!important;
-  right:0!important;
-  z-index:260!important;
-  margin:0!important;
-  border-radius:0!important;
-  border-left:0!important;
-  border-right:0!important;
-  border-top:0!important;
-}
-.app-menu-tab{position:relative!important;flex:0 0 auto!important;}
-.app-menu-caret{font-size:12px!important;color:#94a3b8!important;margin-left:2px!important;}
-.app-menu-dropdown{
-  top:110px!important;
-  border-radius:14px!important;
-  border:1px solid var(--mdh-nav-shell-border)!important;
-  box-shadow:0 18px 48px rgba(15,38,56,.18)!important;
-}
-
-/* Follow-Up Centre tabs retain their first-picture colour cues but use the same shell */
-#followup-subtab-bar .roster-subtab:nth-child(1) .roster-subtab-icon{background:linear-gradient(135deg,#0f766e,#14b8a6)!important;}
-#followup-subtab-bar .roster-subtab:nth-child(2) .roster-subtab-icon{background:linear-gradient(135deg,#1d4ed8,#0f766e)!important;}
-#followup-subtab-bar .roster-subtab:nth-child(3) .roster-subtab-icon{background:linear-gradient(135deg,#0f766e,#0f2638)!important;}
-#followup-subtab-bar .roster-subtab:nth-child(4) .roster-subtab-icon{background:linear-gradient(135deg,#7c2d12,#c2413b)!important;}
-#followup-subtab-bar .roster-subtab:nth-child(5) .roster-subtab-icon{background:linear-gradient(135deg,#0369a1,#0284c7)!important;}
-#followup-subtab-bar .roster-subtab:nth-child(6) .roster-subtab-icon{background:linear-gradient(135deg,#334155,#0f2638)!important;}
-
-/* Mobile/tablet tab behaviour: single readable horizontal row, not squeezed */
-@media(max-width:760px){
-  .app-menu-tabs,
-  .platform-tabbar,
-  .patient-centre-tab-bar,
-  #patient-subtab-bar,
-  #followup-subtab-bar,
-  .followup-tabs-bar,
-  .roster-subtab-bar,
-  .pd-tabs,
-  .admin-tabs,
-  .testing-tabs,
-  .outcome-filter-buttons,
-  .patient-record-tabs,
-  #v6661-patient-record-tabs .v6661-tabs,
-  #patient-record-page .v6661-tabs,
-  .v6661-record .v6661-tabs,
-  .pathway-tabs,
-  .pathway-tab-bar,
-  #pathway-tab-bar{
-    gap:6px!important;
-    padding:7px!important;
-    border-radius:12px!important;
-    flex-wrap:nowrap!important;
-  }
-  .app-menu-tabs{height:auto!important;min-height:54px!important;border-radius:0!important;}
-  .app-menu-home,
-  .app-menu-tab-button,
-  .platform-tabbar button,
-  .patient-centre-tab-bar button,
-  #patient-subtab-bar .roster-subtab,
-  #followup-subtab-bar .roster-subtab,
-  .followup-tabs-bar button,
-  .followup-tab,
-  .roster-subtab-bar .roster-subtab,
-  .pd-tab,
-  .admin-tabs button,
-  .testing-tabs button,
-  .outcome-filter-buttons .outcome-btn,
-  .patient-record-tabs button,
-  #v6661-patient-record-tabs .v6661-tab,
-  #patient-record-page .v6661-tab,
-  .v6661-record .v6661-tab,
-  .pathway-tabs button,
-  .pathway-tab-bar button,
-  #pathway-tab-bar button{
-    height:36px!important;
-    min-height:36px!important;
-    max-height:36px!important;
-    padding:0 10px!important;
-    font-size:11px!important;
-    border-radius:10px!important;
-  }
-  .app-menu-mini-icon,
-  .roster-subtab-icon,
-  .followup-tab-icon,
-  .pd-tab .tab-icon,
-  #patient-subtab-bar .roster-subtab-icon,
-  #followup-subtab-bar .roster-subtab-icon,
-  .roster-subtab-bar .roster-subtab-icon,
-  #v6661-patient-record-tabs .v6661-tab::before,
-  #patient-record-page .v6661-tab::before,
-  .v6661-record .v6661-tab::before{
-    width:22px!important;
-    height:22px!important;
-    min-width:22px!important;
-    flex-basis:22px!important;
-    border-radius:7px!important;
-  }
-  .app-menu-mini-icon svg,
-  .roster-subtab-icon svg,
-  .followup-tab-icon svg,
-  .pd-tab .tab-icon svg,
-  #patient-subtab-bar .roster-subtab-icon svg,
-  #followup-subtab-bar .roster-subtab-icon svg,
-  .roster-subtab-bar .roster-subtab-icon svg{width:13px!important;height:13px!important;}
-  .app-menu-dropdown{top:108px!important;left:8px!important;right:8px!important;min-width:auto!important;max-width:none!important;}
-}
-</style>
-
-</body>',
+    '</body>',
     '</html>'
   ].join('');
   win.document.open();
