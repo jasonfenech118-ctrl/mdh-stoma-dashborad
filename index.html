@@ -8217,7 +8217,7 @@ async function loadHomeDashboard(){
     safeQ('appointments','id,status,appt_date',q=>q.eq('appt_date',TODAY)),
     safeQ('daily_reviews','id',q=>q.eq('review_date',TODAY).eq('is_deleted',false)),
     safeQ('community_referrals','id',q=>q.eq('referral_status','Pending').eq('is_active',true)),
-    safeQ('roster_staff','id,status',q=>q),
+    safeQ('roster_staff','id,is_active',q=>q),
     safeQ('teaching_education','id',q=>q.eq('is_deleted',false)),
     safeQ('appliances_main','id',q=>q.eq('is_active',true)),
     safeQ('discharge_planning','id,actual_discharge_date',q=>q.eq('is_active',true)),
