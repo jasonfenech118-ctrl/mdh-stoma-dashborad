@@ -23049,6 +23049,69 @@ Protected: Add Patient flow, episode movement, patient record redesign, Follow-U
 })();
 </script>
 
+<style id="v66-70-patient-record-tab-theme">
+/* v66-70 — Patient record navigation tabs aligned to Patient Pathway visual style */
+#patient-detail-modal .pd-tabs,
+#patient-record-page .pd-tabs{
+  display:grid!important;
+  grid-template-columns:repeat(auto-fit,minmax(170px,1fr))!important;
+  gap:8px!important;
+  border:1px solid rgba(15,38,56,.12)!important;
+  border-radius:18px!important;
+  background:#fff!important;
+  padding:10px!important;
+  box-shadow:0 10px 24px rgba(15,38,56,.08)!important;
+}
+#patient-detail-modal .pd-tab,
+#patient-record-page .pd-tab{
+  border:1px solid rgba(15,38,56,.10)!important;
+  border-radius:12px!important;
+  min-height:42px!important;
+  justify-content:flex-start!important;
+  font-weight:800!important;
+  color:#0f2638!important;
+  background:linear-gradient(135deg,#f8fafc,#eef2ff)!important;
+}
+#patient-detail-modal .pd-tab:hover,
+#patient-record-page .pd-tab:hover{
+  transform:translateY(-1px);
+  box-shadow:0 8px 18px rgba(15,38,56,.10)!important;
+}
+#patient-detail-modal .pd-tab.active,
+#patient-record-page .pd-tab.active{
+  color:#fff!important;
+  border-color:transparent!important;
+  box-shadow:0 10px 20px rgba(15,38,56,.20)!important;
+}
+#patient-detail-modal .pd-tab:nth-child(1),
+#patient-record-page .pd-tab:nth-child(1){background:linear-gradient(135deg,#e6fffa,#ccfbf1)!important;}
+#patient-detail-modal .pd-tab:nth-child(2),
+#patient-record-page .pd-tab:nth-child(2){background:linear-gradient(135deg,#eff6ff,#dbeafe)!important;}
+#patient-detail-modal .pd-tab:nth-child(3),
+#patient-record-page .pd-tab:nth-child(3){background:linear-gradient(135deg,#f5f3ff,#ede9fe)!important;}
+#patient-detail-modal .pd-tab:nth-child(4),
+#patient-record-page .pd-tab:nth-child(4){background:linear-gradient(135deg,#fff7ed,#ffedd5)!important;}
+#patient-detail-modal .pd-tab:nth-child(5),
+#patient-record-page .pd-tab:nth-child(5){background:linear-gradient(135deg,#f0fdfa,#ccfbf1)!important;}
+#patient-detail-modal .pd-tab:nth-child(6),
+#patient-record-page .pd-tab:nth-child(6){background:linear-gradient(135deg,#fdf2f8,#fce7f3)!important;}
+#patient-detail-modal .pd-tab:nth-child(7),
+#patient-record-page .pd-tab:nth-child(7){background:linear-gradient(135deg,#f8fafc,#e2e8f0)!important;}
+#patient-detail-modal .pd-tab.active:nth-child(1),
+#patient-record-page .pd-tab.active:nth-child(1){background:linear-gradient(135deg,#0f766e,#14b8a6)!important;}
+#patient-detail-modal .pd-tab.active:nth-child(2),
+#patient-record-page .pd-tab.active:nth-child(2){background:linear-gradient(135deg,#1d4ed8,#2563eb)!important;}
+#patient-detail-modal .pd-tab.active:nth-child(3),
+#patient-record-page .pd-tab.active:nth-child(3){background:linear-gradient(135deg,#6d28d9,#7c3aed)!important;}
+#patient-detail-modal .pd-tab.active:nth-child(4),
+#patient-record-page .pd-tab.active:nth-child(4){background:linear-gradient(135deg,#c2410c,#ea580c)!important;}
+#patient-detail-modal .pd-tab.active:nth-child(5),
+#patient-record-page .pd-tab.active:nth-child(5){background:linear-gradient(135deg,#0f766e,#0d9488)!important;}
+#patient-detail-modal .pd-tab.active:nth-child(6),
+#patient-record-page .pd-tab.active:nth-child(6){background:linear-gradient(135deg,#be185d,#db2777)!important;}
+#patient-detail-modal .pd-tab.active:nth-child(7),
+#patient-record-page .pd-tab.active:nth-child(7){background:linear-gradient(135deg,#334155,#475569)!important;}
+</style>
+
 </body>
 </html>
-
