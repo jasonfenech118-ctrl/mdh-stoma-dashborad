@@ -3718,6 +3718,23 @@ button{font-family:'DM Sans',sans-serif;}
 }
 </style>
 
+<style>
+/* v66-50 — Patient Centre navigation tabs aligned to pathway tab style with per-view colours */
+#section-patients #patient-subtab-bar{display:flex!important;flex-direction:row!important;flex-wrap:wrap!important;align-items:stretch!important;justify-content:flex-start!important;gap:0!important;width:100%!important;margin:0 0 12px!important;padding:0 10px!important;background:#fff!important;border:1px solid var(--border)!important;border-radius:10px!important;box-shadow:0 2px 7px rgba(15,38,56,.06)!important;}
+#section-patients #patient-subtab-bar .roster-subtab{display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:8px!important;min-height:43px!important;height:43px!important;padding:0 14px!important;margin:0!important;border:0!important;border-right:1px solid rgba(221,227,234,.85)!important;border-radius:0!important;background:#fff!important;box-shadow:none!important;color:#64748b!important;font-size:12px!important;font-weight:750!important;white-space:nowrap!important;}
+#section-patients #patient-subtab-bar .roster-subtab:first-child{border-radius:9px 0 0 9px!important;}
+#section-patients #patient-subtab-bar .roster-subtab:last-child{border-right:0!important;border-radius:0 9px 9px 0!important;}
+#section-patients #patient-subtab-bar .roster-subtab:hover{background:#f8fafc!important;color:#0f2638!important;transform:none!important;}
+#section-patients #patient-subtab-bar .roster-subtab.active{background:#f8fafc!important;color:#0f2638!important;box-shadow:inset 0 -3px 0 var(--patient-tab-colour,#0f766e)!important;}
+#section-patients #patient-subtab-master{--patient-tab-colour:#0f766e;}
+#section-patients #patient-subtab-inpatient{--patient-tab-colour:#2563eb;}
+#section-patients #patient-subtab-outpatient{--patient-tab-colour:#7c3aed;}
+#section-patients #patient-subtab-handover{--patient-tab-colour:#b45309;}
+#section-patients #patient-subtab-bar .roster-subtab-icon{width:25px!important;height:25px!important;min-width:25px!important;border-radius:7px!important;color:#fff!important;background:linear-gradient(135deg,var(--patient-tab-colour,#0f766e),#0f2638)!important;box-shadow:0 3px 7px rgba(15,38,56,.12)!important;}
+#section-patients #patient-subtab-bar .roster-subtab-icon svg{width:15px!important;height:15px!important;stroke-width:2.2!important;}
+@media(max-width:760px){#section-patients #patient-subtab-bar{flex-wrap:nowrap!important;overflow-x:auto!important;overflow-y:hidden!important;padding:0 6px!important;}#section-patients #patient-subtab-bar .roster-subtab{height:40px!important;min-height:40px!important;padding:0 10px!important;font-size:11px!important;}#section-patients #patient-subtab-bar .roster-subtab-icon{width:22px!important;height:22px!important;min-width:22px!important;}}
+</style>
+
 <script>
 // v66-19 login safety handler: keeps Sign In working even if older cached HTML calls dLogin/dologin.
 (function(){
@@ -15672,7 +15689,7 @@ function renderPathwayStepsPanel(tab,patient,steps,completions,col,allDone,total
 
   window.renderPathwaySearch=function(tab){
     const meta=getPathwayFormMeta(tab);
-    return `<div class="pathway-page-shell" style="--pathway-colour:${meta.colour};"><div class="pathway-form-card" id="pathway-new-form-${tab}"><div class="pathway-form-head" style="padding:18px 18px 0;"><div><h3>Add new ${esc(meta.label)} patient</h3><p>Start the pathway. Patient details are saved and locked first, then the stoma/surgery and review sections can be completed later.</p></div></div>${renderPathwayRegistrationTabs(tab)}<div class="pathway-form-actions"><div class="pathway-form-note">Step 1: Adding Patient Details is protected after saving. Date of surgery is completed in Step 2. Ward / location is recorded in Daily Reviews when the patient is seen.</div><div style="display:flex;gap:8px;flex-wrap:wrap;"><button type="button" class="pathway-reset-btn" onclick="resetPathwayRegistrationForm('${tab}')">Clear form</button><button type="button" class="pathway-save-btn" data-pathway-main-save="true" onclick="savePathwayPagePatient('${tab}')">Save &amp; Lock Patient Details</button></div></div></div></div>`;
+    return `<div class="pathway-page-shell" style="--pathway-colour:${meta.colour};"><div class="pathway-form-card" id="pathway-new-form-${tab}"><div class="pathway-form-head" style="padding:18px 18px 0;"><div><h3>Add new patient</h3><p>Start the pathway. Patient details are saved and locked first, then the stoma/surgery and review sections can be completed later.</p></div></div>${renderPathwayRegistrationTabs(tab)}<div class="pathway-form-actions"><div class="pathway-form-note">Step 1: Adding Patient Details is protected after saving. Date of surgery is completed in Step 2. Ward / location is recorded in Daily Reviews when the patient is seen.</div><div style="display:flex;gap:8px;flex-wrap:wrap;"><button type="button" class="pathway-reset-btn" onclick="resetPathwayRegistrationForm('${tab}')">Clear form</button><button type="button" class="pathway-save-btn" data-pathway-main-save="true" onclick="savePathwayPagePatient('${tab}')">Save &amp; Lock Patient Details</button></div></div></div></div>`;
   };
 
   async function createInitialEncounter(patientId,meta,patientPayload){
@@ -16994,4 +17011,3 @@ function renderPathwayStepsPanel(tab,patient,steps,completions,col,allDone,total
 </script>
 </body>
 </html>
-
