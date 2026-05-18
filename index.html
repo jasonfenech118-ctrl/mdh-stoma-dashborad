@@ -3205,7 +3205,7 @@ async function loadPatientsList(tabName){
   if(select)select.value=currentPatientsTab;
   const cfg=PATIENT_TAB_FILTERS[currentPatientsTab]||PATIENT_TAB_FILTERS['patients-active'];
   const searchInput=document.getElementById('patients-list-search');
-  if(searchInput)searchInput.placeholder=cfg.status==='deceased'?'Search name, ID number, RIP date, stoma type, locality...':(cfg.status==='relocated_overseas'?'Search name, ID card, last seen, discharge date, stoma type...':'Search name, ID card, phone, locality...');
+  if(searchInput)searchInput.placeholder=cfg.status==='deceased'?'Search name, ID number, RIP date, stoma type, locality...':(cfg.status==='relocated_overseas'?'Search ID number, name, last seen, discharge date, stoma type...':'Search name, ID card, phone, locality...');
   const title=document.getElementById('patients-list-title');
   const subtitle=document.getElementById('patients-list-subtitle');
   const cardTitle=document.getElementById('patients-list-card-title');
@@ -3270,7 +3270,7 @@ function renderPatientsList(){
     thead.innerHTML=isDeceased
       ? '<tr><th>ID Number</th><th>Patient</th><th>Sex</th><th>DOB</th><th>Date of RIP</th><th>Age at Death</th><th>Surgery Date</th><th>Stoma Days</th><th>Stoma Type Summary</th><th>Locality</th><th>Actions</th></tr>'
       : (isRelocatedOverseas
-        ? '<tr><th>Patient</th><th>ID Card</th><th>Status</th><th>Last Seen</th><th>Date of Discharge</th><th>Stoma Type Summary</th><th>Actions</th></tr>'
+        ? '<tr><th>ID Number</th><th>Patient</th><th>Status</th><th>Last Seen</th><th>Date of Discharge</th><th>Stoma Type Summary</th><th>Actions</th></tr>'
         : '<tr><th>Patient</th><th>ID Card</th><th>Phone</th><th>Status</th><th>Owner</th><th>Due Month</th><th>Last Outcome</th><th>Next Follow-up</th><th>Locality</th><th>Actions</th></tr>');
   }
   if(!tbody)return;
@@ -3300,8 +3300,8 @@ function renderPatientsList(){
     const next=p.next_followup_mirror||'—';
     if(isRelocatedOverseas){
       return `<tr class="followup-click-row" onclick="openFollowupHistory('${p.id}')">
+        <td><strong>${htmlSafe(p.id_card||'—')}</strong></td>
         <td><strong>${htmlSafe(nm)}</strong><br/><span style="font-size:10px;color:var(--muted);">Click row for history</span></td>
-        <td>${htmlSafe(p.id_card||'—')}</td>
         <td>${patientStatusChip(st)}${p.patient_status_raw?`<br/><span style="font-size:10px;color:var(--muted);">${htmlSafe(p.patient_status_raw)}</span>`:''}</td>
         <td>${patientDateText(p.last_outcome_date)}</td>
         <td><strong>${patientDateText(p.discharged_date)}</strong></td>
@@ -3968,7 +3968,7 @@ async function loadReportPatientGroup(tabName){
   if(title)title.textContent=cfg.title;
   if(subtitle)subtitle.textContent=cfg.subtitle;
   if(cardTitle)cardTitle.textContent=cfg.title;
-  if(search){search.value='';search.placeholder=cfg.status==='deceased'?'Search name, ID number, RIP date, stoma type, locality...':(cfg.status==='relocated_overseas'?'Search name, ID card, last seen, discharge date, stoma type...':'Search name, ID card, phone, owner, locality...');}
+  if(search){search.value='';search.placeholder=cfg.status==='deceased'?'Search name, ID number, RIP date, stoma type, locality...':(cfg.status==='relocated_overseas'?'Search ID number, name, last seen, discharge date, stoma type...':'Search name, ID card, phone, owner, locality...');}
   if(tbody)tbody.innerHTML='<tr><td colspan="11" class="empty">Loading report...</td></tr>';
   let fields='id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type,patient_status_raw,locality,sex,dob,surgery_date,stoma_type_summary,last_outcome_date,discharged_date,next_followup_mirror,rip_date,reversal_date,stoma_days,age_at_death';
   let res=await SB.from('patients').select(fields).order('surname',{ascending:true}).limit(3000);
@@ -4035,7 +4035,7 @@ function renderReportPatientGroup(){
     if(isDeceased){
       thead.innerHTML='<tr><th>ID Number</th><th>Patient</th><th>Sex</th><th>DOB</th><th>Date of RIP</th><th>Age at Death</th><th>Surgery Date</th><th>Stoma Days</th><th>Stoma Type Summary</th><th>Locality</th></tr>';
     }else if(isRelocatedOverseas){
-      thead.innerHTML='<tr><th>Patient</th><th>ID Card</th><th>Status</th><th>Last Seen</th><th>Date of Discharge</th><th>Stoma Type Summary</th></tr>';
+      thead.innerHTML='<tr><th>ID Number</th><th>Patient</th><th>Status</th><th>Last Seen</th><th>Date of Discharge</th><th>Stoma Type Summary</th></tr>';
     }else if(isFollowups){
       thead.innerHTML='<tr><th>Patient</th><th>ID Card</th><th>Phone</th><th>Status</th><th>Owner</th><th>Due Month</th><th>Follow-up Year</th><th>Last Outcome</th><th>Next Follow-up</th><th>Locality</th></tr>';
     }else{
@@ -4063,8 +4063,8 @@ function renderReportPatientGroup(){
     }
     if(isRelocatedOverseas){
       return `<tr>
+        <td style="font-family:monospace;font-size:12px;"><strong>${htmlSafe(p.id_card||'—')}</strong></td>
         <td><strong>${htmlSafe(nm)}</strong></td>
-        <td style="font-family:monospace;font-size:12px;">${htmlSafe(p.id_card||'—')}</td>
         <td>${patientStatusChip(st)}${p.patient_status_raw?`<br/><span style="font-size:10px;color:var(--muted);">${htmlSafe(p.patient_status_raw)}</span>`:''}</td>
         <td>${patientDateText(p.last_outcome_date)}</td>
         <td><strong>${patientDateText(p.discharged_date)}</strong></td>
