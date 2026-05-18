@@ -1158,6 +1158,21 @@ function mapById(rows){
   (rows||[]).forEach(r=>{m[String(r.id)]=r;});
   return m;
 }
+async function fetchRowsByIdsInChunks(tableName, selectColumns, ids, chunkSize=80){
+  const out=[];
+  const cleanIds=uniqueNonEmpty(ids);
+  for(let i=0;i<cleanIds.length;i+=chunkSize){
+    const batch=cleanIds.slice(i,i+chunkSize);
+    if(!batch.length)continue;
+    const{data,error}=await SB.from(tableName).select(selectColumns).in('id',batch);
+    if(error){
+      console.error(`Could not load ${tableName} batch:`,error);
+      continue;
+    }
+    out.push(...(data||[]));
+  }
+  return out;
+}
 async function enrichAppointments(rows){
   const base=rows||[];
   const patientIds=uniqueNonEmpty(base.map(a=>a.patient_id));
@@ -1166,17 +1181,24 @@ async function enrichAppointments(rows){
 
   let patientsMap={}, staffMap={}, bankMap={};
 
+  // Appointment Outcomes can load hundreds of appointments at once. Supabase .in() with hundreds of IDs
+  // can exceed the browser/request URL limit, which makes patient names/ID cards/phones appear blank.
+  // Load related records in small batches so every appointment can be linked back to the patient registry.
   if(patientIds.length){
-    const{data}=await SB.from('patients').select('id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type').in('id',patientIds);
-    patientsMap=mapById(data||[]);
+    const patients=await fetchRowsByIdsInChunks(
+      'patients',
+      'id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type',
+      patientIds
+    );
+    patientsMap=mapById(patients||[]);
   }
   if(staffIds.length){
-    const{data}=await SB.from('staff').select('id,full_name,role').in('id',staffIds);
-    staffMap=mapById(data||[]);
+    const staff=await fetchRowsByIdsInChunks('staff','id,full_name,role',staffIds);
+    staffMap=mapById(staff||[]);
   }
   if(bankIds.length){
-    const{data}=await SB.from('bank_staff').select('id,full_name,role').in('id',bankIds);
-    bankMap=mapById(data||[]);
+    const bank=await fetchRowsByIdsInChunks('bank_staff','id,full_name,role',bankIds);
+    bankMap=mapById(bank||[]);
   }
 
   return base.map(a=>({
