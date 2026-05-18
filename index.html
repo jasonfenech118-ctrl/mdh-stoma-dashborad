@@ -539,9 +539,16 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
       </div>
     </div>
     <div class="tab-group">
-      <button type="button" class="tab" data-tabs="reports" onclick="toggleTabGroup(event,this)">Reports <span class="tab-caret">▾</span></button>
+      <button type="button" class="tab" data-tabs="reports,report-followups,report-active-patients,report-deceased,report-reversed,report-relocated-overseas,report-relocated-gozo,report-patients" onclick="toggleTabGroup(event,this)">Reports <span class="tab-caret">▾</span></button>
       <div class="tab-dd-menu">
         <button type="button" class="tab-dd-item" data-tab="reports" onclick="switchTab('reports',this)">Reports &amp; Charts <small>KPIs</small></button>
+        <button type="button" class="tab-dd-item" data-tab="report-followups" onclick="switchTab('report-followups',this)">Follow-Ups <small>Due lists</small></button>
+        <button type="button" class="tab-dd-item" data-tab="report-active-patients" onclick="switchTab('report-active-patients',this)">Active Patients <small>Register</small></button>
+        <button type="button" class="tab-dd-item" data-tab="report-deceased" onclick="switchTab('report-deceased',this)">Deceased <small>Register</small></button>
+        <button type="button" class="tab-dd-item" data-tab="report-reversed" onclick="switchTab('report-reversed',this)">Reversed <small>Register</small></button>
+        <button type="button" class="tab-dd-item" data-tab="report-relocated-overseas" onclick="switchTab('report-relocated-overseas',this)">Relocated Overseas <small>Register</small></button>
+        <button type="button" class="tab-dd-item" data-tab="report-relocated-gozo" onclick="switchTab('report-relocated-gozo',this)">Relocated to Gozo <small>Register</small></button>
+        <button type="button" class="tab-dd-item" data-tab="report-patients" onclick="switchTab('report-patients',this)">Patients <small>Booked period</small></button>
       </div>
     </div>
   </div>
@@ -991,6 +998,38 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 
       <div class="kpi-row" id="report-kpis"></div>
 
+
+
+
+
+
+    <!-- REPORT PATIENTS BOOKED -->
+    <div class="page" id="page-report-patients">
+      <div class="phdr">
+        <div>
+          <h2>Patients</h2>
+          <p>Patients booked for the selected month or period.</p>
+        </div>
+        <button class="btn-add" onclick="printReportPatientList()">Print</button>
+      </div>
+      <div class="report-filters">
+        <label>Year:</label>
+        <select id="rep-pat-year" onchange="loadReportPatientsPage()">
+          <option value="2025">2025</option>
+          <option value="2026">2026</option>
+          <option value="2027">2027</option>
+          <option value="2028">2028</option>
+        </select>
+        <label>Month:</label>
+        <select id="rep-pat-month" onchange="loadReportPatientsPage()">
+          <option value="">Full Year</option>
+          <option value="01">January</option><option value="02">February</option><option value="03">March</option>
+          <option value="04">April</option><option value="05">May</option><option value="06">June</option>
+          <option value="07">July</option><option value="08">August</option><option value="09">September</option>
+          <option value="10">October</option><option value="11">November</option><option value="12">December</option>
+        </select>
+        <button onclick="loadReportPatientsPage()">Update Patient Report</button>
+      </div>
       <div class="report-card wide" style="min-height:auto;">
         <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px;">
           <h3 style="margin:0;">👥 Patients Booked for Selected Month / Period</h3>
@@ -1025,8 +1064,30 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
           <tbody id="rep-patient-tbody"><tr><td colspan="10" class="empty">Select a period to load patients.</td></tr></tbody>
         </table></div>
       </div>
+    </div>
 
-
+    <!-- REPORT PATIENT GROUPS -->
+    <div class="page" id="page-report-patient-group">
+      <div class="phdr">
+        <div><h2 id="report-patient-group-title">Patient Report</h2><p id="report-patient-group-subtitle">Printable patient report.</p></div>
+        <button class="btn-add" onclick="printReportPatientGroup()">Print</button>
+      </div>
+      <div class="followup-toolbar patient-register-toolbar">
+        <label>Search:</label>
+        <input type="text" id="report-patient-group-search" placeholder="Search patient report..." oninput="renderReportPatientGroup()"/>
+      </div>
+      <div class="srow" id="report-patient-group-stats"></div>
+      <div class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px;">
+          <div class="card-title" id="report-patient-group-card-title" style="margin-bottom:0;">Patient Report</div>
+          <button class="btn-add" onclick="printReportPatientGroup()" style="padding:7px 14px;">Print</button>
+        </div>
+        <div style="overflow-x:auto;"><table class="dt" id="report-patient-group-table">
+          <thead id="report-patient-group-head"><tr><th>Patient</th><th>ID Card</th><th>Phone</th><th>Status</th><th>Owner</th><th>Due Month</th><th>Last Outcome</th><th>Next Follow-up</th><th>Locality</th></tr></thead>
+          <tbody id="report-patient-group-tbody"><tr><td colspan="9" class="empty">Select a report.</td></tr></tbody>
+        </table></div>
+      </div>
+    </div>
     </div>
 
   </div>
@@ -1058,6 +1119,9 @@ const FOLLOWUP_OWNER_FILTERS=['Common','All Patients','Jacqueline','Jason','Lorr
 const AUTO_AVAILABILITY_VALUE='auto_availability';
 let reportCharts={};
 let reportPatientRows=[];
+const REPORT_PATIENT_GROUP_TABS=['report-followups','report-active-patients','report-deceased','report-reversed','report-relocated-overseas','report-relocated-gozo'];
+let currentReportPatientGroup='report-followups';
+let reportPatientGroupRows=[];
 let currentPatientsTab='patients-active';
 let patientsListRows=[];
 
@@ -1315,6 +1379,7 @@ async function startApp(){
   populateCODDropdowns();
   loadCOD();
   const ry=document.getElementById('rep-year'); if(ry) ry.value=String(new Date().getFullYear());
+  const rpy=document.getElementById('rep-pat-year'); if(rpy) rpy.value=String(new Date().getFullYear());
   initNewPatientYearOptions();
 }
 
@@ -1421,7 +1486,9 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeTabGroups();});
 function switchTab(name,el){
   if(!name)name='roster';
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  const pageName=String(name).startsWith('patients-')?'patients-list':name;
+  const requestedName=String(name);
+  const reportGroupPage=REPORT_PATIENT_GROUP_TABS.includes(requestedName)?'report-patient-group':requestedName;
+  const pageName=requestedName.startsWith('patients-')?'patients-list':reportGroupPage;
   const page=document.getElementById('page-'+pageName);
   if(page)page.classList.add('active');
   document.querySelectorAll('.tab').forEach(t=>{
@@ -1438,6 +1505,8 @@ function switchTab(name,el){
   if(name==='appointment-outcomes')loadAppointmentOutcomes();
   if(name==='dntu-policy')loadDntuPolicy();
   if(name==='reports')loadReports();
+  if(name==='report-patients')loadReportPatientsPage();
+  if(REPORT_PATIENT_GROUP_TABS.includes(String(name)))loadReportPatientGroup(String(name));
   if(name==='appointments')loadAppts();
   if(name==='roster')renderRoster();
   if(name==='cod'){populateCODDropdowns();loadCOD();}
@@ -1447,6 +1516,7 @@ function refreshActivePage(){
   const active=document.querySelector('.page.active');
   let name=active?.id?.replace('page-','')||'roster';
   if(name==='patients-list')name=currentPatientsTab||'patients-active';
+  if(name==='report-patient-group')name=currentReportPatientGroup||'report-followups';
   const el=document.querySelector(`.nav-tile[data-tab="${name}"]`)||document.querySelector(`.tab-dd-item[data-tab="${name}"]`);
   switchTab(name,el);
 }
@@ -3823,10 +3893,177 @@ function renderReportPatientList(){
 function printReportPatientList(){
   const table=document.getElementById('rep-patient-table');
   if(!table){window.print();return;}
-  const year=document.getElementById('rep-year')?.value||'';
-  const month=document.getElementById('rep-month')?.value||'Full Year';
+  const year=document.getElementById('rep-pat-year')?.value||document.getElementById('rep-year')?.value||'';
+  const month=document.getElementById('rep-pat-month')?.value||document.getElementById('rep-month')?.value||'Full Year';
   const w=window.open('','_blank');
   w.document.write(`<!DOCTYPE html><html><head><title>Patients Booked Report</title><style>body{font-family:Arial,sans-serif;padding:20px;color:#1a2e4a}h1{font-size:20px;margin:0 0 4px}h2{font-size:14px;margin:0 0 18px;color:#506070}table{width:100%;border-collapse:collapse;font-size:11px}th{background:#1a2e4a;color:white;text-align:left;padding:7px}td{border-bottom:1px solid #ddd;padding:7px;vertical-align:top}.status-badge,.followup-status-badge,.followup-type-badge{display:inline-block;padding:2px 6px;border-radius:8px;font-size:10px;font-weight:bold;background:#eef;color:#123;margin:1px}</style></head><body><h1>MDH Stoma Care Clinic</h1><h2>Patients Booked Report — ${htmlSafe(month)} ${htmlSafe(year)}</h2>${table.outerHTML}</body></html>`);
+  w.document.close();w.focus();w.print();
+}
+
+
+function ensureReportPatientDefaults(){
+  const yearEl=document.getElementById('rep-pat-year');
+  const monthEl=document.getElementById('rep-pat-month');
+  if(yearEl && !yearEl.dataset.ready){
+    const y=String(new Date().getFullYear());
+    if([...yearEl.options].some(o=>o.value===y))yearEl.value=y;
+    yearEl.dataset.ready='1';
+  }
+  if(monthEl && !monthEl.dataset.ready){monthEl.value='';monthEl.dataset.ready='1';}
+}
+async function loadReportPatientsPage(){
+  ensureReportPatientDefaults();
+  const year=document.getElementById('rep-pat-year')?.value||String(new Date().getFullYear());
+  const month=document.getElementById('rep-pat-month')?.value||'';
+  const start=month?`${year}-${month}-01`:`${year}-01-01`;
+  const end=month?monthEndDate(year,month):`${year}-12-31`;
+  const tbody=document.getElementById('rep-patient-tbody');
+  if(tbody)tbody.innerHTML='<tr><td colspan="10" class="empty">Loading patients booked for the selected period...</td></tr>';
+  const{data:raw,error}=await SB.from('appointments')
+    .select('*')
+    .gte('appt_date',start)
+    .lte('appt_date',end)
+    .order('appt_date',{ascending:true})
+    .order('appt_slot',{ascending:true});
+  if(error){
+    if(tbody)tbody.innerHTML=`<tr><td colspan="10" class="empty">Could not load patient report: ${htmlSafe(error.message||'Unknown error')}</td></tr>`;
+    return;
+  }
+  reportPatientRows=await enrichAppointments(raw||[]);
+  syncReportPatientColumnFilter(reportPatientRows);
+  renderReportPatientList();
+}
+
+const REPORT_PATIENT_GROUP_CONFIG={
+  'report-followups':{mode:'followups',title:'Follow-Ups',subtitle:'Patients requiring follow-up planning, excluding closed groups.'},
+  'report-active-patients':{status:'active',title:'Active Patients',subtitle:'Active patients from the registry.'},
+  'report-deceased':{status:'deceased',title:'Deceased',subtitle:'Deceased register, sorted by latest Date of RIP first.'},
+  'report-reversed':{status:'reversed',title:'Reversed',subtitle:'Patients in the reversed register.'},
+  'report-relocated-overseas':{status:'relocated_overseas',title:'Relocated Overseas',subtitle:'Patients marked as relocated overseas.'},
+  'report-relocated-gozo':{status:'relocated_gozo',title:'Relocated to Gozo',subtitle:'Patients marked as relocated to Gozo.'}
+};
+function reportPatientGroupConfig(){return REPORT_PATIENT_GROUP_CONFIG[currentReportPatientGroup]||REPORT_PATIENT_GROUP_CONFIG['report-followups'];}
+async function loadReportPatientGroup(tabName){
+  currentReportPatientGroup=tabName||currentReportPatientGroup||'report-followups';
+  const cfg=reportPatientGroupConfig();
+  const title=document.getElementById('report-patient-group-title');
+  const subtitle=document.getElementById('report-patient-group-subtitle');
+  const cardTitle=document.getElementById('report-patient-group-card-title');
+  const search=document.getElementById('report-patient-group-search');
+  const tbody=document.getElementById('report-patient-group-tbody');
+  if(title)title.textContent=cfg.title;
+  if(subtitle)subtitle.textContent=cfg.subtitle;
+  if(cardTitle)cardTitle.textContent=cfg.title;
+  if(search){search.value='';search.placeholder=cfg.status==='deceased'?'Search name, ID number, RIP date, stoma type, locality...':'Search name, ID card, phone, owner, locality...';}
+  if(tbody)tbody.innerHTML='<tr><td colspan="11" class="empty">Loading report...</td></tr>';
+  let fields='id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type,patient_status_raw,locality,sex,dob,surgery_date,stoma_type_summary,last_outcome_date,next_followup_mirror,rip_date,reversal_date,stoma_days,age_at_death';
+  let res=await SB.from('patients').select(fields).order('surname',{ascending:true}).limit(3000);
+  if(res.error){
+    fields='id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type';
+    res=await SB.from('patients').select(fields).order('surname',{ascending:true}).limit(3000);
+  }
+  if(res.error){
+    if(tbody)tbody.innerHTML=`<tr><td colspan="11" class="empty">Could not load report: ${htmlSafe(res.error.message||'Unknown error')}</td></tr>`;
+    return;
+  }
+  reportPatientGroupRows=res.data||[];
+  renderReportPatientGroup();
+}
+function rowsForReportPatientGroup(){
+  const cfg=reportPatientGroupConfig();
+  let rows=[...(reportPatientGroupRows||[])];
+  if(cfg.mode==='followups'){
+    rows=rows.filter(p=>!['deceased','reversed','relocated_overseas','relocated_gozo'].includes(patientRegisterStatus(p)) && !isClosedFollowupStatus(p.followup_status));
+    rows.sort((a,b)=>String(a.followup_owner||'Common').localeCompare(String(b.followup_owner||'Common')) || (Number(a.followup_year)||9999)-(Number(b.followup_year)||9999) || (Number(a.followup_due_month)||99)-(Number(b.followup_due_month)||99) || String(a.surname||'').localeCompare(String(b.surname||'')) || String(a.first_name||'').localeCompare(String(b.first_name||'')));
+  }else{
+    rows=rows.filter(p=>patientRegisterStatus(p)===cfg.status);
+    if(cfg.status==='deceased'){
+      rows.sort((a,b)=>{
+        const nameCompare=String(a.surname||'').localeCompare(String(b.surname||''))||String(a.first_name||'').localeCompare(String(b.first_name||''))||String(a.id_card||'').localeCompare(String(b.id_card||''));
+        const aHasRip=!!String(a.rip_date||'').trim();
+        const bHasRip=!!String(b.rip_date||'').trim();
+        if(aHasRip&&bHasRip)return (dateSortValue(b.rip_date)-dateSortValue(a.rip_date))||nameCompare;
+        if(aHasRip!==bHasRip)return aHasRip?-1:1;
+        return nameCompare;
+      });
+    }else{
+      rows.sort((a,b)=>String(a.surname||'').localeCompare(String(b.surname||''))||String(a.first_name||'').localeCompare(String(b.first_name||''))||String(a.id_card||'').localeCompare(String(b.id_card||'')));
+    }
+  }
+  const search=String(document.getElementById('report-patient-group-search')?.value||'').trim().toLowerCase();
+  if(search){
+    rows=rows.filter(p=>[
+      p.first_name,p.surname,p.id_card,p.phone_number,p.followup_owner,p.followup_year,followupMonthName(p.followup_due_month),p.locality,p.patient_status_raw,patientRegisterStatusText(patientRegisterStatus(p)),p.sex,p.dob,p.rip_date,p.surgery_date,patientStomaTypeText(p.stoma_type_summary)
+    ].join(' ').toLowerCase().includes(search));
+  }
+  return rows;
+}
+function renderReportPatientGroup(){
+  const cfg=reportPatientGroupConfig();
+  const thead=document.getElementById('report-patient-group-head');
+  const tbody=document.getElementById('report-patient-group-tbody');
+  const stats=document.getElementById('report-patient-group-stats');
+  const isDeceased=cfg.status==='deceased';
+  const isFollowups=cfg.mode==='followups';
+  const all=reportPatientGroupRows||[];
+  const rows=rowsForReportPatientGroup();
+  if(stats){
+    const countStatus=(st)=>all.filter(p=>patientRegisterStatus(p)===st).length;
+    stats.innerHTML=`
+      <div class="sbox"><div class="sl">Report Rows</div><div class="sv">${rows.length}</div><div class="ss">${htmlSafe(cfg.title)}</div></div>
+      <div class="sbox"><div class="sl">Active</div><div class="sv">${countStatus('active')}</div><div class="ss">patients</div></div>
+      <div class="sbox"><div class="sl">Deceased</div><div class="sv">${countStatus('deceased')}</div><div class="ss">register</div></div>
+      <div class="sbox"><div class="sl">Reversed</div><div class="sv">${countStatus('reversed')}</div><div class="ss">register</div></div>
+      <div class="sbox"><div class="sl">Relocated</div><div class="sv">${countStatus('relocated_overseas')+countStatus('relocated_gozo')}</div><div class="ss">overseas / Gozo</div></div>`;
+  }
+  if(thead){
+    if(isDeceased){
+      thead.innerHTML='<tr><th>ID Number</th><th>Patient</th><th>Sex</th><th>DOB</th><th>Date of RIP</th><th>Age at Death</th><th>Surgery Date</th><th>Stoma Days</th><th>Stoma Type Summary</th><th>Locality</th></tr>';
+    }else if(isFollowups){
+      thead.innerHTML='<tr><th>Patient</th><th>ID Card</th><th>Phone</th><th>Status</th><th>Owner</th><th>Due Month</th><th>Follow-up Year</th><th>Last Outcome</th><th>Next Follow-up</th><th>Locality</th></tr>';
+    }else{
+      thead.innerHTML='<tr><th>Patient</th><th>ID Card</th><th>Phone</th><th>Status</th><th>Owner</th><th>Due Month</th><th>Last Outcome</th><th>Next Follow-up</th><th>Locality</th></tr>';
+    }
+  }
+  if(!tbody)return;
+  if(!rows.length){tbody.innerHTML=`<tr><td colspan="${isDeceased?10:isFollowups?10:9}" class="empty">No ${htmlSafe(cfg.title.toLowerCase())} found.</td></tr>`;return;}
+  tbody.innerHTML=rows.map(p=>{
+    const nm=`${p.first_name||''} ${p.surname||''}`.trim()||'Unnamed patient';
+    const st=patientRegisterStatus(p);
+    if(isDeceased){
+      return `<tr>
+        <td><strong>${htmlSafe(p.id_card||'—')}</strong></td>
+        <td><strong>${htmlSafe(nm)}</strong></td>
+        <td>${htmlSafe(p.sex||'—')}</td>
+        <td>${patientDateText(p.dob)}</td>
+        <td><strong>${patientDateText(p.rip_date)}</strong></td>
+        <td>${htmlSafe(patientAgeAtDeath(p))}</td>
+        <td>${patientDateText(p.surgery_date)}</td>
+        <td>${htmlSafe(patientStomaDays(p))}</td>
+        <td>${patientStomaTypeText(p.stoma_type_summary)}</td>
+        <td>${htmlSafe(p.locality||'—')}</td>
+      </tr>`;
+    }
+    return `<tr>
+      <td><strong>${htmlSafe(nm)}</strong></td>
+      <td style="font-family:monospace;font-size:12px;">${htmlSafe(p.id_card||'—')}</td>
+      <td>${htmlSafe(p.phone_number||'—')}</td>
+      <td>${patientStatusChip(st)}${p.patient_status_raw?`<br/><span style="font-size:10px;color:var(--muted);">${htmlSafe(p.patient_status_raw)}</span>`:''}</td>
+      <td>${htmlSafe(p.followup_owner||'Common')}</td>
+      <td>${htmlSafe(patientDueText(p))}</td>
+      ${isFollowups?`<td>${htmlSafe(p.followup_year||'—')}</td>`:''}
+      <td>${htmlSafe(p.last_outcome_date||'—')}</td>
+      <td>${htmlSafe(p.next_followup_mirror||'—')}</td>
+      <td>${htmlSafe(p.locality||'—')}</td>
+    </tr>`;
+  }).join('');
+}
+function printReportPatientGroup(){
+  const cfg=reportPatientGroupConfig();
+  const table=document.getElementById('report-patient-group-table');
+  if(!table){window.print();return;}
+  const w=window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html><head><title>${htmlSafe(cfg.title)} Report</title><style>body{font-family:Arial,sans-serif;padding:20px;color:#1a2e4a}h1{font-size:20px;margin:0 0 4px}h2{font-size:14px;margin:0 0 18px;color:#506070}table{width:100%;border-collapse:collapse;font-size:11px}th{background:#1a2e4a;color:white;text-align:left;padding:7px}td{border-bottom:1px solid #ddd;padding:7px;vertical-align:top}.patient-status-chip,.followup-status-badge,.followup-type-badge{display:inline-block;padding:2px 6px;border-radius:8px;font-size:10px;font-weight:bold;background:#eef;color:#123;margin:1px}</style></head><body><h1>MDH Stoma Care Clinic</h1><h2>${htmlSafe(cfg.title)} Report</h2>${table.outerHTML}</body></html>`);
   w.document.close();w.focus();w.print();
 }
 
