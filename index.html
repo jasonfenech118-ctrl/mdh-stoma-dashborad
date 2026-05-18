@@ -107,7 +107,7 @@ Protected/not touched: login, Follow-Up Centre layout, rosters data logic, pathw
 
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Stoma Care Patient Dashboard — v66-75</title>
+<title>Stoma Care Patient Dashboard — v66-76</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230f766e'/%3E%3Ctext x='32' y='40' font-size='24' text-anchor='middle' fill='white' font-family='Arial' font-weight='700'%3EMDH%3C/text%3E%3C/svg%3E">
 <!-- Build v57: Core staff OT displayed on core row; Follow-Up buttons left-icon/center-text aligned; appointments grid fills width -->
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet"/>
@@ -2981,7 +2981,7 @@ button{font-family:'DM Sans',sans-serif;}
 
 
 
-/* v66-75 — Follow-Up Centre navigation tiles merged from index_NAVIGATION_TILES */
+/* v66-76 — Follow-Up Centre replaced with index_NAVIGATION_TILES navigation hub */
 .centre-hub{
   background:linear-gradient(135deg,#ffffff 0%,#f8fffd 62%,#eefbf8 100%);
   border:1px solid var(--border);
@@ -3034,6 +3034,29 @@ button{font-family:'DM Sans',sans-serif;}
   .centre-refresh{padding:7px 13px;}
 }
 
+
+
+/* v66-76 — exact Follow-Up Centre hub styling from navigation tiles file */
+#section-followups .centre-hub{background:linear-gradient(135deg,#ffffff 0%,#f8fffd 100%)!important;border:1px solid var(--border)!important;border-radius:18px!important;padding:18px 20px!important;margin-bottom:18px!important;box-shadow:0 8px 24px rgba(13,115,119,.08)!important;}
+#section-followups .centre-hub-icon{font-family:'DM Sans',sans-serif!important;font-size:22px!important;font-weight:900!important;background:linear-gradient(135deg,var(--teal),#064c4e)!important;color:#fff!important;}
+#section-followups .centre-hub h1{font-family:'DM Sans',sans-serif!important;font-size:22px!important;line-height:1.1!important;color:var(--navy)!important;font-weight:900!important;margin:0!important;letter-spacing:-.15px!important;}
+#section-followups .centre-hub p{font-size:12px!important;color:var(--muted)!important;margin-top:4px!important;}
+#section-followups .centre-nav-grid{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(210px,1fr))!important;gap:12px!important;}
+#section-followups .nav-tile{position:relative!important;display:flex!important;align-items:center!important;gap:12px!important;min-height:58px!important;background:white!important;border:1px solid var(--border)!important;border-radius:14px!important;padding:12px 16px!important;cursor:pointer!important;box-shadow:0 2px 8px rgba(0,0,0,.04)!important;text-align:left!important;transition:transform .15s,border-color .15s,box-shadow .15s,background .15s!important;overflow:hidden!important;}
+#section-followups .nav-tile:before{content:""!important;position:absolute!important;left:0!important;top:0!important;bottom:0!important;width:5px!important;background:var(--tile-colour,var(--teal))!important;}
+#section-followups .nav-tile:hover{transform:translateY(-1px)!important;border-color:var(--tile-colour,var(--teal))!important;box-shadow:0 8px 18px rgba(13,115,119,.12)!important;background:white!important;}
+#section-followups .nav-tile.active{border-color:var(--tile-colour,var(--teal))!important;background:#e8f5f4!important;box-shadow:0 8px 18px rgba(13,115,119,.16)!important;}
+#section-followups .nav-tile-icon{width:34px!important;height:34px!important;border-radius:10px!important;background:var(--tile-colour,var(--teal))!important;color:white!important;display:flex!important;align-items:center!important;justify-content:center!important;font-size:16px!important;font-weight:900!important;flex:0 0 34px!important;box-shadow:none!important;}
+#section-followups .nav-tile-label{font-size:13px!important;font-weight:900!important;color:var(--navy)!important;line-height:1.15!important;}
+#section-followups .nav-tile-sub{font-size:10px!important;color:var(--muted)!important;margin-top:2px!important;line-height:1.15!important;}
+#section-followups .nav-tile-arrow{color:var(--muted)!important;font-size:16px!important;font-weight:900!important;}
+#section-followups .nav-tile.tile-gold{--tile-colour:var(--gold,#b7791f);}
+#section-followups .nav-tile.tile-blue{--tile-colour:var(--blue,#2563eb);}
+#section-followups .nav-tile.tile-red{--tile-colour:var(--red,#c2413b);}
+#section-followups .nav-tile.tile-purple{--tile-colour:#7c3aed;}
+#section-followups .nav-tile.tile-green{--tile-colour:var(--green,#15803d);}
+#section-followups .nav-tile.tile-navy{--tile-colour:var(--navy,#0f2638);}
+@media(max-width:700px){#section-followups .centre-nav-grid{grid-template-columns:1fr 1fr!important;gap:9px!important;}#section-followups .nav-tile{min-height:54px!important;padding:10px 12px!important;gap:9px!important;}#section-followups .nav-tile-label{font-size:11px!important;}#section-followups .nav-tile-sub{display:none!important;}#section-followups .nav-tile-icon{width:30px!important;height:30px!important;font-size:14px!important;flex-basis:30px!important;}#section-followups .centre-hub h1{font-size:19px!important;}#section-followups .centre-hub-icon{width:42px!important;height:42px!important;flex-basis:42px!important;}}
 </style>
 
 <style>
@@ -5871,41 +5894,41 @@ v66-42 emergency fix:
       <div class="centre-hub" id="followup-centre-nav">
         <div class="centre-hub-head">
           <div class="centre-hub-title">
-            <div class="centre-hub-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="16" rx="2"/><path d="M9 8h6"/><path d="M9 12h6"/><path d="M9 16h4"/></svg></div>
+            <div class="centre-hub-icon">✓</div>
             <div>
               <h1>Follow-Up Centre</h1>
-              <p>Appointments, outcomes, clinic audit, DNTU, temporarily paused patients, follow-up planning and rosters.</p>
+              <p>Appointments, outcomes, clinic audit, DNTU, OT audit, follow-up planning and rosters.</p>
             </div>
           </div>
-          <button class="centre-refresh" onclick="refreshFollowupSubtab();">↻ Refresh</button>
+          <button class="centre-refresh" onclick="refreshFollowupSubtab()">↻ Refresh</button>
         </div>
         <div class="centre-nav-grid" role="tablist" aria-label="Follow-Up Centre navigation">
+          <button type="button" class="nav-tile tile-teal" id="followup-tile-roster-monthly" data-followup-tab="rosters" data-roster-view="monthly" onclick="selectFollowupRosterFromTab('monthly')">
+            <span class="nav-tile-icon">📅</span><span class="nav-tile-text"><span class="nav-tile-label">Monthly Roster</span><span class="nav-tile-sub">Core staff, OT and TIL</span></span><span class="nav-tile-arrow">›</span>
+          </button>
           <button type="button" class="nav-tile tile-teal active" id="followup-tile-appointments" data-followup-tab="appointments" onclick="showFollowupSubtab('appointments')">
-            <span class="nav-tile-icon"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="16" rx="2"/><path d="M9 8h6"/><path d="M9 12h6"/><path d="M9 16h4"/></svg></span><span class="nav-tile-text"><span class="nav-tile-label">Patient Appointments</span><span class="nav-tile-sub">Daily clinic slots and booking</span></span><span class="nav-tile-arrow">›</span>
+            <span class="nav-tile-icon">▦</span><span class="nav-tile-text"><span class="nav-tile-label">Patient Appointments</span><span class="nav-tile-sub">Book, rebook and view clinic</span></span><span class="nav-tile-arrow">›</span>
           </button>
           <button type="button" class="nav-tile tile-blue" id="followup-tile-outcomes" data-followup-tab="outcomes" onclick="showFollowupSubtab('outcomes')">
-            <span class="nav-tile-icon"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-5"/><path d="M12 16V8"/><path d="M16 16v-7"/><path d="M20 6l-4 4-3-3-5 5"/></svg></span><span class="nav-tile-text"><span class="nav-tile-label">Appointment Outcomes</span><span class="nav-tile-sub">Seen, DNTU and cancellation outcomes</span></span><span class="nav-tile-arrow">›</span>
+            <span class="nav-tile-icon">↗</span><span class="nav-tile-text"><span class="nav-tile-label">Appointment Outcomes</span><span class="nav-tile-sub">Seen, DNTU, cancelled and status</span></span><span class="nav-tile-arrow">›</span>
+          </button>
+          <button type="button" class="nav-tile tile-green" id="followup-tile-planning" data-followup-tab="planning" onclick="showFollowupSubtab('planning')">
+            <span class="nav-tile-icon">☑</span><span class="nav-tile-text"><span class="nav-tile-label">Follow-up Planning</span><span class="nav-tile-sub">Owners, due months and lists</span></span><span class="nav-tile-arrow">›</span>
+          </button>
+          <button type="button" class="nav-tile tile-gold" id="followup-tile-ot-audit" data-followup-tab="ot-audit" onclick="showFollowupSubtab('ot-audit')">
+            <span class="nav-tile-icon">⏱</span><span class="nav-tile-text"><span class="nav-tile-label">OT Audit</span><span class="nav-tile-sub">Booked and cancelled OT</span></span><span class="nav-tile-arrow">›</span>
           </button>
           <button type="button" class="nav-tile tile-purple" id="followup-tile-clinic" data-followup-tab="clinic" onclick="showFollowupSubtab('clinic')">
-            <span class="nav-tile-icon"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="M8 14h8"/><path d="M8 18h5"/></svg></span><span class="nav-tile-text"><span class="nav-tile-label">Clinic Audit</span><span class="nav-tile-sub">Calendar and clinical activity</span></span><span class="nav-tile-arrow">›</span>
+            <span class="nav-tile-icon">▣</span><span class="nav-tile-text"><span class="nav-tile-label">Clinic Audit</span><span class="nav-tile-sub">Calendar and clinical activity</span></span><span class="nav-tile-arrow">›</span>
           </button>
           <button type="button" class="nav-tile tile-red" id="followup-tile-dntu" data-followup-tab="dntu" onclick="showFollowupSubtab('dntu')">
-            <span class="nav-tile-icon"><svg class="icon-svg" viewBox="0 0 24 24"><path d="m10.29 3.86-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.71-3.14l-8-14a2 2 0 0 0-3.42 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></span><span class="nav-tile-text"><span class="nav-tile-label">DNTU</span><span class="nav-tile-sub">Non-attendance tracking</span></span><span class="nav-tile-arrow">›</span>
-          </button>
-          <button type="button" class="nav-tile tile-amber" id="followup-tile-paused" data-followup-tab="paused" onclick="showFollowupSubtab('paused')">
-            <span class="nav-tile-icon"><svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M10 8v8"/><path d="M14 8v8"/></svg></span><span class="nav-tile-text"><span class="nav-tile-label">Temporarily Paused</span><span class="nav-tile-sub">Paused patients awaiting restart</span></span><span class="nav-tile-arrow">›</span>
-          </button>
-          <button type="button" class="nav-tile tile-green" id="followup-tile-staff-audit" data-followup-tab="rosters" data-roster-view="staff-audit" onclick="selectFollowupRosterFromTab('staff-audit')">
-            <span class="nav-tile-icon"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-5"/><path d="M12 16V8"/><path d="M16 16v-7"/><path d="M20 6l-4 4-3-3-5 5"/></svg></span><span class="nav-tile-text"><span class="nav-tile-label">Staff Audit</span><span class="nav-tile-sub">Staff leave and roster audit</span></span><span class="nav-tile-arrow">›</span>
-          </button>
-          <button type="button" class="nav-tile tile-teal" id="followup-tile-roster-monthly" data-followup-tab="rosters" data-roster-view="monthly" onclick="selectFollowupRosterFromTab('monthly')">
-            <span class="nav-tile-icon"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="M8 15h8"/><path d="M8 18h5"/></svg></span><span class="nav-tile-text"><span class="nav-tile-label">Monthly Roster</span><span class="nav-tile-sub">Core staff, OT and TIL</span></span><span class="nav-tile-arrow">›</span>
-          </button>
-          <button type="button" class="nav-tile tile-blue" id="followup-tile-cod" data-followup-tab="rosters" data-roster-view="cod" onclick="selectFollowupRosterFromTab('cod')">
-            <span class="nav-tile-icon"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M7 7h6a3 3 0 0 1 0 6H7"/><path d="m10 4-3 3 3 3"/><path d="M17 17H11a3 3 0 0 1 0-6h6"/><path d="m14 20 3-3-3-3"/></svg></span><span class="nav-tile-text"><span class="nav-tile-label">Change of Duty</span><span class="nav-tile-sub">COD records and changes</span></span><span class="nav-tile-arrow">›</span>
+            <span class="nav-tile-icon">△</span><span class="nav-tile-text"><span class="nav-tile-label">DNTU</span><span class="nav-tile-sub">Non-attendance tracking</span></span><span class="nav-tile-arrow">›</span>
           </button>
           <button type="button" class="nav-tile tile-navy" id="followup-tile-reports" data-followup-tab="reports" onclick="switchSection('reports')">
-            <span class="nav-tile-icon"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-5"/><path d="M12 16V8"/><path d="M16 16v-7"/></svg></span><span class="nav-tile-text"><span class="nav-tile-label">Reports &amp; Charts</span><span class="nav-tile-sub">KPIs, charts and print lists</span></span><span class="nav-tile-arrow">›</span>
+            <span class="nav-tile-icon">◔</span><span class="nav-tile-text"><span class="nav-tile-label">Reports &amp; Charts</span><span class="nav-tile-sub">KPIs, charts and print lists</span></span><span class="nav-tile-arrow">›</span>
+          </button>
+          <button type="button" class="nav-tile tile-gold" id="followup-tile-cod" data-followup-tab="rosters" data-roster-view="cod" onclick="selectFollowupRosterFromTab('cod')">
+            <span class="nav-tile-icon">⇄</span><span class="nav-tile-text"><span class="nav-tile-label">Change of Duty</span><span class="nav-tile-sub">Normal, Sunday and public holiday swaps</span></span><span class="nav-tile-arrow">›</span>
           </button>
         </div>
       </div>
@@ -5935,6 +5958,12 @@ v66-42 emergency fix:
       </div>
       <div class="roster-subtab-panel" id="followup-pane-paused">
         <div id="followup-paused-inner"></div>
+      </div>
+      <div class="roster-subtab-panel" id="followup-pane-planning">
+        <div id="followup-planning-inner"></div>
+      </div>
+      <div class="roster-subtab-panel" id="followup-pane-ot-audit">
+        <div id="followup-ot-audit-inner"></div>
       </div>
       <div class="roster-subtab-panel" id="followup-pane-rosters">
         <div id="followup-rosters-inner"></div>
@@ -8087,7 +8116,7 @@ function showFollowupSubtab(tab){
   if(tile)tile.classList.add('active');
   if(pane)pane.classList.add('active');
   clearPlatformFocusTitle('section-followups');
-  const accentMap={appointments:'#0f766e',outcomes:'#2563eb',clinic:'#7c3aed',dntu:'#c2413b',paused:'#d97706',rosters:'#475569'};
+  const accentMap={appointments:'#0f766e',outcomes:'#2563eb',clinic:'#7c3aed',dntu:'#c2413b',paused:'#d97706',planning:'#15803d','ot-audit':'#b7791f',rosters:'#475569'};
   if(section)section.style.setProperty('--fu-tab-active', accentMap[tab] || '#0f766e');
   if(tab==='appointments'){
     const inner=document.getElementById('followup-appointments-inner');
@@ -8124,6 +8153,12 @@ function showFollowupSubtab(tab){
   }
   if(tab==='paused'){
     renderTemporarilyPausedAppointments();
+  }
+  if(tab==='planning'){
+    renderFollowupPlanningLite();
+  }
+  if(tab==='ot-audit'){
+    renderFollowupOvertimeAudit();
   }
   if(tab==='rosters'){
     renderFollowupRosterWorkspace(window.currentFollowupRosterSubtab || 'monthly');
@@ -8235,6 +8270,115 @@ async function renderTemporarilyPausedAppointments(){
     return `<tr><td><strong>${htmlSafe(name)}</strong><br/><span style="font-size:10px;color:var(--muted);">${htmlSafe(p.patient_number||'')}</span></td><td style="font-family:monospace;font-size:12px;">${htmlSafe(id)}</td><td>${htmlSafe(location)}</td><td>${htmlSafe(p.stoma_type||'—')}</td><td>${htmlSafe(nurse)}</td><td><span class="outcome-status-pill paused">Paused</span></td><td><button onclick="openPatientProfile('${p.id}')" style="padding:4px 10px;border-radius:6px;border:none;background:var(--teal);color:white;font-size:11px;font-weight:700;cursor:pointer;margin-right:4px;">Profile</button><button onclick="openEditPatientModal('${p.id}')" style="padding:4px 10px;border-radius:6px;border:none;background:#fff7ed;color:#92400e;font-size:11px;font-weight:700;cursor:pointer;">Edit</button></td></tr>`;
   }).join(''):'<tr><td colspan="7" class="empty">No temporarily paused appointments found.</td></tr>';
   inner.innerHTML=`<div class="patient-command patient-table-card" style="max-width:1120px;margin:0 auto;"><div style="overflow-x:auto;"><table class="dt"><thead><tr><th>Patient</th><th>ID Card</th><th>Ward / Locality</th><th>Stoma Type</th><th>Allocated Nurse</th><th>Status</th><th>Actions</th></tr></thead><tbody>${body}</tbody></table></div></div>`;
+}
+
+
+function renderFollowupPlanningLite(){
+  const inner=document.getElementById('followup-planning-inner');
+  if(!inner)return;
+  inner.innerHTML=`<div class="patient-command patient-table-card" style="max-width:1120px;margin:0 auto;">
+    <div class="patient-command-head">
+      <div><h3>Follow-up Planning</h3><p>Owners, due months and active follow-up lists.</p></div>
+      <div class="patient-filter-tools"><input type="text" id="fu-planning-search" placeholder="Search patient, ID card, nurse..." oninput="filterFollowupPlanningLite()" style="padding:8px 12px;border:1.5px solid var(--border);border-radius:9px;min-width:240px;"><button class="btn-refresh" onclick="renderFollowupPlanningLite()">↻ Refresh</button></div>
+    </div>
+    <div class="srow" id="fu-planning-stats"><div class="sbox"><div class="sl">Loading</div><div class="sv">…</div><div class="ss">follow-up patients</div></div></div>
+    <div style="overflow-x:auto;"><table class="dt"><thead><tr><th>Patient</th><th>ID Card</th><th>Phone</th><th>Owner</th><th>Due Month</th><th>Year</th><th>Status</th><th>Actions</th></tr></thead><tbody id="fu-planning-tbody"><tr><td colspan="8" class="empty">Loading follow-up planning...</td></tr></tbody></table></div>
+  </div>`;
+  loadFollowupPlanningLiteRows();
+}
+async function loadFollowupPlanningLiteRows(){
+  const tbody=document.getElementById('fu-planning-tbody');
+  const stats=document.getElementById('fu-planning-stats');
+  if(!tbody)return;
+  let rows=[];
+  try{rows=await getProjectPatients();}
+  catch(e){tbody.innerHTML=`<tr><td colspan="8" class="empty">Could not load follow-up planning: ${htmlSafe(e.message||e)}</td></tr>`;return;}
+  rows=(rows||[]).filter(p=>{
+    const status=String(p.followup_status||p.patient_status||p.status||'active').toLowerCase();
+    return status!=='closed' && status!=='deceased';
+  });
+  const active=rows.filter(p=>String(p.followup_status||p.status||'active').toLowerCase().includes('active')).length;
+  const paused=rows.filter(p=>String([p.followup_status,p.patient_status,p.status,p.notes].join(' ')).toLowerCase().includes('paused')).length;
+  if(stats)stats.innerHTML=`<div class="sbox"><div class="sl">Planning List</div><div class="sv">${rows.length}</div><div class="ss">patients shown</div></div><div class="sbox"><div class="sl">Active</div><div class="sv">${active}</div><div class="ss">active follow-ups</div></div><div class="sbox"><div class="sl">Paused</div><div class="sv">${paused}</div><div class="ss">temporarily paused</div></div>`;
+  if(!rows.length){tbody.innerHTML='<tr><td colspan="8" class="empty">No follow-up planning patients found.</td></tr>';return;}
+  tbody.innerHTML=rows.map(p=>{
+    const name=`${p.first_name||''} ${p.surname||''}`.trim()||'Unnamed patient';
+    const id=p.id_card||p.hospital_number||p.patient_number||'—';
+    const phone=p.phone_number||p.phone||p.telephone||'—';
+    const owner=p.followup_owner||p.allocated_nurse||p.assigned_nurse||'Common';
+    const month=followupMonthName(p.followup_due_month)||p.followup_due_month||'—';
+    const year=p.followup_year||'—';
+    const status=p.followup_status||p.patient_status||p.status||'active';
+    return `<tr class="fu-planning-row"><td><strong>${htmlSafe(name)}</strong></td><td style="font-family:monospace;font-size:12px;">${htmlSafe(id)}</td><td>${htmlSafe(phone)}</td><td>${htmlSafe(owner)}</td><td>${htmlSafe(month)}</td><td>${htmlSafe(year)}</td><td><span class="outcome-status-pill ${String(status).toLowerCase().replace(/\s+/g,'_')}">${htmlSafe(status)}</span></td><td><button onclick="openPatientProfile('${p.id}')" style="padding:4px 10px;border-radius:6px;border:none;background:var(--teal);color:white;font-size:11px;font-weight:700;cursor:pointer;margin-right:4px;">Profile</button><button onclick="openEditPatientModal('${p.id}')" style="padding:4px 10px;border-radius:6px;border:none;background:#fff7ed;color:#92400e;font-size:11px;font-weight:700;cursor:pointer;">Edit</button></td></tr>`;
+  }).join('');
+  filterFollowupPlanningLite();
+}
+function filterFollowupPlanningLite(){
+  const q=(document.getElementById('fu-planning-search')?.value||'').toLowerCase();
+  document.querySelectorAll('#fu-planning-tbody .fu-planning-row').forEach(r=>{r.style.display=(!q||r.textContent.toLowerCase().includes(q))?'':'none';});
+}
+function renderFollowupOvertimeAudit(){
+  const inner=document.getElementById('followup-ot-audit-inner');
+  if(!inner)return;
+  if(!inner.dataset.built){
+    const y=new Date().getFullYear();
+    inner.innerHTML=`<div class="patient-command patient-table-card" style="max-width:1120px;margin:0 auto;">
+      <div class="patient-command-head"><div><h3>OT Audit</h3><p>Booked and cancelled overtime / bank support records.</p></div><button class="btn-refresh" onclick="loadOvertimeAudit()">↻ Refresh</button></div>
+      <div class="filter-row" style="margin-bottom:10px;"><label>Year:</label><select id="ot-audit-year" onchange="loadOvertimeAudit()"><option value="${y-1}">${y-1}</option><option value="${y}" selected>${y}</option><option value="${y+1}">${y+1}</option><option value="${y+2}">${y+2}</option></select><label>Month:</label><select id="ot-audit-month" onchange="loadOvertimeAudit()"><option value="">All Months</option><option value="01">January</option><option value="02">February</option><option value="03">March</option><option value="04">April</option><option value="05">May</option><option value="06">June</option><option value="07">July</option><option value="08">August</option><option value="09">September</option><option value="10">October</option><option value="11">November</option><option value="12">December</option></select><label>Status:</label><select id="ot-audit-status" onchange="loadOvertimeAudit()"><option value="all">All</option><option value="active">Active / Booked</option><option value="cancelled">Cancelled</option></select><label>Search:</label><input type="text" id="ot-audit-search" placeholder="Search nurse, notes, cancelled by..." oninput="loadOvertimeAudit()" style="min-width:220px;"><button class="btn-refresh" onclick="printOvertimeAudit()">Print OT Audit</button></div>
+      <div id="ot-audit-summary" class="report-note"></div>
+      <div style="overflow-x:auto;"><table class="dt" id="ot-audit-table"><thead><tr><th>Date</th><th>Nurse</th><th>Type</th><th>Start</th><th>Until</th><th>Hours</th><th>Status</th><th>Cancelled By</th><th>Notes</th></tr></thead><tbody id="ot-audit-tbody"><tr><td colspan="9" class="empty">Loading overtime audit...</td></tr></tbody></table></div>
+    </div>`;
+    inner.dataset.built='true';
+  }
+  loadOvertimeAudit();
+}
+function ensureOvertimeAuditDefaults(){
+  const yearEl=document.getElementById('ot-audit-year');
+  const monthEl=document.getElementById('ot-audit-month');
+  if(yearEl && !yearEl.dataset.ready){const y=String(new Date().getFullYear());if([...yearEl.options].some(o=>o.value===y))yearEl.value=y;yearEl.dataset.ready='1';}
+  if(monthEl && !monthEl.dataset.ready){monthEl.value=String(new Date().getMonth()+1).padStart(2,'0');monthEl.dataset.ready='1';}
+}
+function parseNoteTimeRangeV76(notes){const m=String(notes||'').match(/\[\s*([0-9]{1,2}:[0-9]{2})\s*[–\-]\s*([0-9]{1,2}:[0-9]{2})\s*\]/);return m?{start:m[1],end:m[2]}:null;}
+function calcHourLabelV76(start,end){if(!start||!end||end==='—')return '—';const [sh,sm]=String(start).split(':').map(Number);const [eh,em]=String(end).split(':').map(Number);if(Number.isNaN(sh)||Number.isNaN(eh))return '—';const mins=(eh*60+(em||0))-(sh*60+(sm||0));if(mins<=0)return '—';return `${Math.floor(mins/60)}h${mins%60?` ${mins%60}m`:''}`;}
+async function loadOvertimeAudit(){
+  const tbody=document.getElementById('ot-audit-tbody');
+  if(!tbody)return;
+  ensureOvertimeAuditDefaults();
+  const year=document.getElementById('ot-audit-year')?.value||String(new Date().getFullYear());
+  const month=document.getElementById('ot-audit-month')?.value||'';
+  const statusFilter=document.getElementById('ot-audit-status')?.value||'all';
+  const search=(document.getElementById('ot-audit-search')?.value||'').trim().toLowerCase();
+  const start=month?`${year}-${month}-01`:`${year}-01-01`;
+  const end=month?monthEndDate(year,month):`${year}-12-31`;
+  tbody.innerHTML='<tr><td colspan="9" class="empty">Loading overtime audit...</td></tr>';
+  const{data:bankRaw,error:bankError}=await SB.from('bank_staff_assignments').select('*').gte('work_date',start).lte('work_date',end).order('work_date',{ascending:false});
+  const{data:coreRaw,error:coreError}=await SB.from('leave_records').select('*, staff(full_name,role)').eq('leave_type','overtime').gte('start_date',start).lte('start_date',end).order('start_date',{ascending:false});
+  if(bankError&&coreError){tbody.innerHTML=`<tr><td colspan="9" class="empty">Could not load overtime audit: ${htmlSafe(bankError.message||coreError.message||'Unknown error')}</td></tr>`;return;}
+  const bankIds=uniqueNonEmpty((bankRaw||[]).map(b=>b.bank_staff_id));
+  const bankMap={};
+  if(bankIds.length){const{data:bankStaff}=await SB.from('bank_staff').select('id,full_name,role').in('id',bankIds);(bankStaff||[]).forEach(b=>{bankMap[String(b.id)]=b;});}
+  const rows=[];
+  (bankRaw||[]).filter(b=>!isTILNote(b.notes)).forEach(b=>{const st=String(b.shift_start||'07:00').slice(0,5);const et=String(b.shift_end||'').slice(0,5)||'—';rows.push({date:b.work_date,nurse:bankMap[String(b.bank_staff_id)]?.full_name||'OT Nurse',type:'OT / Bank nurse',start:st,end:et,hours:calcHourLabelV76(st,et),status:b.status||'active',cancelledBy:b.cancelled_by_name||b.cancelled_by_email||'—',notes:b.notes||'—',sort:`${b.work_date} ${st}`});});
+  (coreRaw||[]).filter(r=>!isTILNote(r.notes)).forEach(r=>{const times=parseNoteTimeRangeV76(r.notes);const st=(times?.start||'07:00').slice(0,5);const et=(times?.end||'—').slice(0,5);rows.push({date:r.start_date,nurse:r.staff?.full_name||'Core staff',type:'Core staff OT',start:st,end:et,hours:calcHourLabelV76(st,et),status:'active',cancelledBy:'—',notes:r.notes||'—',sort:`${r.start_date} ${st}`});});
+  let filtered=rows;
+  if(statusFilter!=='all')filtered=filtered.filter(r=>(r.status||'active')===statusFilter);
+  if(search)filtered=filtered.filter(r=>[r.date,r.nurse,r.type,r.start,r.end,r.hours,r.status,r.cancelledBy,r.notes].join(' ').toLowerCase().includes(search));
+  filtered.sort((a,b)=>String(b.sort).localeCompare(String(a.sort)));
+  const active=filtered.filter(r=>(r.status||'active')==='active').length;
+  const cancelled=filtered.filter(r=>(r.status||'active')==='cancelled').length;
+  const summary=document.getElementById('ot-audit-summary');
+  if(summary)summary.textContent=`${filtered.length} OT audit record${filtered.length!==1?'s':''} shown — ${active} active/booked, ${cancelled} cancelled.`;
+  if(!filtered.length){tbody.innerHTML='<tr><td colspan="9" class="empty">No overtime records found for these filters.</td></tr>';return;}
+  tbody.innerHTML=filtered.map(r=>`<tr><td>${htmlSafe(r.date||'—')}</td><td><strong>${htmlSafe(r.nurse)}</strong></td><td>${htmlSafe(r.type)}</td><td>${htmlSafe(r.start)}</td><td>${htmlSafe(r.end)}</td><td><span class="ot-badge">${htmlSafe(r.hours)}</span></td><td><span class="status-badge ${r.status==='cancelled'?'sb-cancelled':'sb-booked'}">${r.status==='cancelled'?'Cancelled':'Active'}</span></td><td>${htmlSafe(r.cancelledBy)}</td><td style="color:var(--muted);">${htmlSafe(r.notes)}</td></tr>`).join('');
+}
+function printOvertimeAudit(){
+  const table=document.getElementById('ot-audit-table');
+  if(!table){alert('No overtime audit table found.');return;}
+  const year=document.getElementById('ot-audit-year')?.value||'';
+  const month=document.getElementById('ot-audit-month')?.selectedOptions?.[0]?.textContent||'All Months';
+  const w=window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html><head><title>Overtime Audit</title><style>body{font-family:Arial,sans-serif;padding:20px;color:#1a2e4a}h1{font-size:20px;margin:0 0 4px}h2{font-size:14px;margin:0 0 18px;color:#506070}table{width:100%;border-collapse:collapse;font-size:11px}th{background:#1a2e4a;color:white;text-align:left;padding:7px}td{border-bottom:1px solid #ddd;padding:7px;vertical-align:top}.status-badge,.ot-badge{display:inline-block;padding:2px 6px;border-radius:8px;font-size:10px;font-weight:bold;background:#eef;color:#123;margin:1px}</style></head><body><h1>MDH Stoma Care Clinic</h1><h2>Overtime Audit — ${htmlSafe(month)} ${htmlSafe(year)}</h2>${table.outerHTML}</body></html>`);
+  w.document.close();w.focus();setTimeout(()=>w.print(),250);
 }
 
 function refreshFollowupSubtab(){if(document.getElementById('section-followups')?.classList.contains('platform-hub'))showFollowupHub();else showFollowupSubtab(currentFollowupSubtab);}
