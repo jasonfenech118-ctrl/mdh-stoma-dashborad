@@ -107,7 +107,7 @@ Protected/not touched: login, Follow-Up Centre layout, rosters data logic, pathw
 
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Stoma Care Patient Dashboard — v66-74</title>
+<title>Stoma Care Patient Dashboard — v66-75</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230f766e'/%3E%3Ctext x='32' y='40' font-size='24' text-anchor='middle' fill='white' font-family='Arial' font-weight='700'%3EMDH%3C/text%3E%3C/svg%3E">
 <!-- Build v57: Core staff OT displayed on core row; Follow-Up buttons left-icon/center-text aligned; appointments grid fills width -->
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet"/>
@@ -2979,6 +2979,61 @@ button{font-family:'DM Sans',sans-serif;}
 .app-menu-tab.slate .app-menu-mini-icon{background:linear-gradient(135deg,#27272a,#71717a)!important;}
 .app-menu-tab.rose .app-menu-mini-icon{background:linear-gradient(135deg,#9f1239,#fb7185)!important;}
 
+
+
+/* v66-75 — Follow-Up Centre navigation tiles merged from index_NAVIGATION_TILES */
+.centre-hub{
+  background:linear-gradient(135deg,#ffffff 0%,#f8fffd 62%,#eefbf8 100%);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:18px 20px;
+  margin-bottom:18px;
+  box-shadow:0 8px 24px rgba(15,38,56,.07);
+}
+.centre-hub-head{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:16px;flex-wrap:wrap;}
+.centre-hub-title{display:flex;align-items:center;gap:14px;min-width:0;}
+.centre-hub-icon{width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,var(--teal),#064c4e);color:white;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px rgba(13,115,119,.22);flex:0 0 48px;}
+.centre-hub-icon svg{width:24px;height:24px;stroke-width:2.1;}
+.centre-hub h1{font-family:'DM Serif Display',serif;font-size:24px;line-height:1.1;color:var(--navy);font-weight:400;margin:0;letter-spacing:-.2px;}
+.centre-hub p{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.35;}
+.centre-refresh{border:1px solid var(--border);background:white;color:var(--navy);border-radius:12px;padding:8px 16px;font-size:12px;font-weight:900;cursor:pointer;font-family:'DM Sans',sans-serif;box-shadow:0 2px 6px rgba(15,38,56,.04);}
+.centre-refresh:hover{border-color:#99f6e4;color:var(--teal);background:#f0fdfa;transform:translateY(-1px);}
+.centre-nav-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;}
+.nav-tile{position:relative;display:flex;align-items:center;gap:12px;min-height:62px;background:white;border:1px solid var(--border);border-radius:15px;padding:12px 16px;cursor:pointer;box-shadow:0 2px 8px rgba(15,38,56,.05);font-family:'DM Sans',sans-serif;text-align:left;transition:transform .15s,border-color .15s,box-shadow .15s,background .15s;overflow:hidden;color:var(--navy);}
+.nav-tile:before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--tile-colour,var(--teal));}
+.nav-tile:hover{transform:translateY(-1px);border-color:#99f6e4;box-shadow:0 8px 18px rgba(13,115,119,.12);background:linear-gradient(135deg,#ffffff 0%,var(--tile-soft,#f0fdfa) 100%);}
+.nav-tile.active{border-color:var(--tile-colour,var(--teal));background:var(--tile-active,#e8f5f4);box-shadow:0 8px 18px rgba(13,115,119,.16);}
+.nav-tile-icon{width:36px;height:36px;border-radius:11px;background:var(--tile-colour,var(--teal));color:white;display:flex;align-items:center;justify-content:center;flex:0 0 36px;box-shadow:0 6px 14px rgba(15,38,56,.12);}
+.nav-tile-icon svg{width:18px;height:18px;stroke-width:2.15;}
+.nav-tile-text{flex:1;min-width:0;}
+.nav-tile-label{font-size:13px;font-weight:950;color:var(--navy);line-height:1.15;display:block;letter-spacing:-.05px;}
+.nav-tile-sub{font-size:10.5px;color:var(--muted);margin-top:3px;line-height:1.18;display:block;font-weight:650;}
+.nav-tile-arrow{color:#94a3b8;font-size:18px;font-weight:900;margin-left:auto;}
+.nav-tile.tile-teal{--tile-colour:#0f766e;--tile-soft:#ecfdf9;--tile-active:#e8f5f4;}
+.nav-tile.tile-gold{--tile-colour:#b45309;--tile-soft:#fffbeb;--tile-active:#fff7ed;}
+.nav-tile.tile-blue{--tile-colour:#2563eb;--tile-soft:#eff6ff;--tile-active:#eaf2ff;}
+.nav-tile.tile-red{--tile-colour:#c2413b;--tile-soft:#fff1f2;--tile-active:#fff1f2;}
+.nav-tile.tile-purple{--tile-colour:#7c3aed;--tile-soft:#f5f3ff;--tile-active:#f1edff;}
+.nav-tile.tile-green{--tile-colour:#15803d;--tile-soft:#f0fdf4;--tile-active:#ecfdf3;}
+.nav-tile.tile-navy{--tile-colour:#0f2638;--tile-soft:#f8fafc;--tile-active:#eef2f7;}
+.nav-tile.tile-slate{--tile-colour:#475569;--tile-soft:#f8fafc;--tile-active:#eef2f7;}
+.nav-tile.tile-amber{--tile-colour:#d97706;--tile-soft:#fffbeb;--tile-active:#fff7ed;}
+#section-followups .roster-subtab-bar#followup-subtab-bar{display:none!important;}
+#section-followups .roster-subtab-panel{margin-top:18px;}
+@media(max-width:700px){
+  .centre-hub{padding:14px;margin-bottom:14px;border-radius:16px;}
+  .centre-hub-head{align-items:flex-start;}
+  .centre-nav-grid{grid-template-columns:1fr 1fr;gap:9px;}
+  .nav-tile{min-height:56px;padding:10px 12px;gap:9px;border-radius:14px;}
+  .nav-tile-label{font-size:11.5px;}
+  .nav-tile-sub{display:none;}
+  .nav-tile-icon{width:31px;height:31px;border-radius:10px;flex-basis:31px;}
+  .nav-tile-icon svg{width:16px;height:16px;}
+  .centre-hub h1{font-size:20px;}
+  .centre-hub-icon{width:42px;height:42px;flex-basis:42px;}
+  .centre-refresh{padding:7px 13px;}
+}
+
 </style>
 
 <style>
@@ -5812,69 +5867,57 @@ v66-42 emergency fix:
     <!-- FOLLOW UP CENTRE -->
     <!-- ══════════════════════════════════ -->
     <div class="section" id="section-followups">
-      <div class="phdr patient-page-title">
-        <div><h2>Follow-Up Centre</h2><p>Appointments, outcomes, clinic audit, DNTU and rosters</p></div>
-        <button class="btn-refresh" onclick="refreshFollowupSubtab();">↻ Refresh</button>
+
+      <div class="centre-hub" id="followup-centre-nav">
+        <div class="centre-hub-head">
+          <div class="centre-hub-title">
+            <div class="centre-hub-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="16" rx="2"/><path d="M9 8h6"/><path d="M9 12h6"/><path d="M9 16h4"/></svg></div>
+            <div>
+              <h1>Follow-Up Centre</h1>
+              <p>Appointments, outcomes, clinic audit, DNTU, temporarily paused patients, follow-up planning and rosters.</p>
+            </div>
+          </div>
+          <button class="centre-refresh" onclick="refreshFollowupSubtab();">↻ Refresh</button>
+        </div>
+        <div class="centre-nav-grid" role="tablist" aria-label="Follow-Up Centre navigation">
+          <button type="button" class="nav-tile tile-teal active" id="followup-tile-appointments" data-followup-tab="appointments" onclick="showFollowupSubtab('appointments')">
+            <span class="nav-tile-icon"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="16" rx="2"/><path d="M9 8h6"/><path d="M9 12h6"/><path d="M9 16h4"/></svg></span><span class="nav-tile-text"><span class="nav-tile-label">Patient Appointments</span><span class="nav-tile-sub">Daily clinic slots and booking</span></span><span class="nav-tile-arrow">›</span>
+          </button>
+          <button type="button" class="nav-tile tile-blue" id="followup-tile-outcomes" data-followup-tab="outcomes" onclick="showFollowupSubtab('outcomes')">
+            <span class="nav-tile-icon"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-5"/><path d="M12 16V8"/><path d="M16 16v-7"/><path d="M20 6l-4 4-3-3-5 5"/></svg></span><span class="nav-tile-text"><span class="nav-tile-label">Appointment Outcomes</span><span class="nav-tile-sub">Seen, DNTU and cancellation outcomes</span></span><span class="nav-tile-arrow">›</span>
+          </button>
+          <button type="button" class="nav-tile tile-purple" id="followup-tile-clinic" data-followup-tab="clinic" onclick="showFollowupSubtab('clinic')">
+            <span class="nav-tile-icon"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="M8 14h8"/><path d="M8 18h5"/></svg></span><span class="nav-tile-text"><span class="nav-tile-label">Clinic Audit</span><span class="nav-tile-sub">Calendar and clinical activity</span></span><span class="nav-tile-arrow">›</span>
+          </button>
+          <button type="button" class="nav-tile tile-red" id="followup-tile-dntu" data-followup-tab="dntu" onclick="showFollowupSubtab('dntu')">
+            <span class="nav-tile-icon"><svg class="icon-svg" viewBox="0 0 24 24"><path d="m10.29 3.86-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.71-3.14l-8-14a2 2 0 0 0-3.42 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></span><span class="nav-tile-text"><span class="nav-tile-label">DNTU</span><span class="nav-tile-sub">Non-attendance tracking</span></span><span class="nav-tile-arrow">›</span>
+          </button>
+          <button type="button" class="nav-tile tile-amber" id="followup-tile-paused" data-followup-tab="paused" onclick="showFollowupSubtab('paused')">
+            <span class="nav-tile-icon"><svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M10 8v8"/><path d="M14 8v8"/></svg></span><span class="nav-tile-text"><span class="nav-tile-label">Temporarily Paused</span><span class="nav-tile-sub">Paused patients awaiting restart</span></span><span class="nav-tile-arrow">›</span>
+          </button>
+          <button type="button" class="nav-tile tile-green" id="followup-tile-staff-audit" data-followup-tab="rosters" data-roster-view="staff-audit" onclick="selectFollowupRosterFromTab('staff-audit')">
+            <span class="nav-tile-icon"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-5"/><path d="M12 16V8"/><path d="M16 16v-7"/><path d="M20 6l-4 4-3-3-5 5"/></svg></span><span class="nav-tile-text"><span class="nav-tile-label">Staff Audit</span><span class="nav-tile-sub">Staff leave and roster audit</span></span><span class="nav-tile-arrow">›</span>
+          </button>
+          <button type="button" class="nav-tile tile-teal" id="followup-tile-roster-monthly" data-followup-tab="rosters" data-roster-view="monthly" onclick="selectFollowupRosterFromTab('monthly')">
+            <span class="nav-tile-icon"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="M8 15h8"/><path d="M8 18h5"/></svg></span><span class="nav-tile-text"><span class="nav-tile-label">Monthly Roster</span><span class="nav-tile-sub">Core staff, OT and TIL</span></span><span class="nav-tile-arrow">›</span>
+          </button>
+          <button type="button" class="nav-tile tile-blue" id="followup-tile-cod" data-followup-tab="rosters" data-roster-view="cod" onclick="selectFollowupRosterFromTab('cod')">
+            <span class="nav-tile-icon"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M7 7h6a3 3 0 0 1 0 6H7"/><path d="m10 4-3 3 3 3"/><path d="M17 17H11a3 3 0 0 1 0-6h6"/><path d="m14 20 3-3-3-3"/></svg></span><span class="nav-tile-text"><span class="nav-tile-label">Change of Duty</span><span class="nav-tile-sub">COD records and changes</span></span><span class="nav-tile-arrow">›</span>
+          </button>
+          <button type="button" class="nav-tile tile-navy" id="followup-tile-reports" data-followup-tab="reports" onclick="switchSection('reports')">
+            <span class="nav-tile-icon"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-5"/><path d="M12 16V8"/><path d="M16 16v-7"/></svg></span><span class="nav-tile-text"><span class="nav-tile-label">Reports &amp; Charts</span><span class="nav-tile-sub">KPIs, charts and print lists</span></span><span class="nav-tile-arrow">›</span>
+          </button>
+        </div>
       </div>
 
-      <!-- Compact Follow-Up navigation tabs with matching dropdowns -->
+      <!-- Compact Follow-Up navigation tabs retained as hidden fallback for existing logic -->
       <div class="roster-subtab-bar" id="followup-subtab-bar" role="tablist" aria-label="Follow-Up tabs" style="grid-template-columns:repeat(auto-fit,minmax(190px,1fr));">
-        <div class="followup-nav-tab-wrap" style="--dropdown-colour:#0f766e;--dropdown-dark:#064e3b;--dropdown-soft:#ecfdf9;">
-          <button type="button" class="roster-subtab active" id="followup-subtab-appointments" onclick="toggleFollowupMiniDropdown(event,'appointments')" style="background:linear-gradient(90deg,rgba(20,184,166,.42) 0%,rgba(20,184,166,.22) 28%,rgba(20,184,166,.09) 52%,rgba(255,255,255,.93) 74%,#eefbf8 100%);">
-            <span class="roster-subtab-icon" style="background:linear-gradient(135deg,#0f766e,#14b8a6);"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="16" rx="2"/><path d="M9 8h6"/><path d="M9 12h6"/><path d="M9 16h4"/></svg></span>
-            <span>Patient Appointments</span><span class="followup-roster-caret" aria-hidden="true">▾</span>
-          </button>
-          <div class="followup-mini-dropdown" id="followup-appointments-dropdown" aria-label="Patient appointment options">
-            <button type="button" onclick="selectFollowupTabFromDropdown('appointments')"><span class="mini-roster-icon teal"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="16" rx="2"/><path d="M9 8h6"/><path d="M9 12h6"/><path d="M9 16h4"/></svg></span><span><strong>Patient Appointments</strong><small>Daily clinic slots and booking</small></span></button>
-          </div>
-        </div>
-        <div class="followup-nav-tab-wrap" style="--dropdown-colour:#2563eb;--dropdown-dark:#1d4ed8;--dropdown-soft:#eff6ff;">
-          <button type="button" class="roster-subtab" id="followup-subtab-outcomes" onclick="toggleFollowupMiniDropdown(event,'outcomes')" style="background:linear-gradient(90deg,rgba(37,99,235,.38) 0%,rgba(59,130,246,.18) 28%,rgba(20,184,166,.08) 52%,rgba(255,255,255,.93) 74%,#eff6ff 100%);">
-            <span class="roster-subtab-icon" style="background:linear-gradient(135deg,#1d4ed8,#0f766e);"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-5"/><path d="M12 16V8"/><path d="M16 16v-7"/><path d="M20 6l-4 4-3-3-5 5"/></svg></span>
-            <span>Appointment Outcomes</span><span class="followup-roster-caret" aria-hidden="true">▾</span>
-          </button>
-          <div class="followup-mini-dropdown" id="followup-outcomes-dropdown" aria-label="Appointment outcome options">
-            <button type="button" onclick="selectFollowupTabFromDropdown('outcomes')"><span class="mini-roster-icon blue"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-5"/><path d="M12 16V8"/><path d="M16 16v-7"/><path d="M20 6l-4 4-3-3-5 5"/></svg></span><span><strong>Appointment Outcomes</strong><small>Seen, DNTU and cancellation outcomes</small></span></button>
-          </div>
-        </div>
-        <div class="followup-nav-tab-wrap" style="--dropdown-colour:#7c3aed;--dropdown-dark:#5b21b6;--dropdown-soft:#f5f3ff;">
-          <button type="button" class="roster-subtab" id="followup-subtab-clinic" onclick="toggleFollowupMiniDropdown(event,'clinic')" style="background:linear-gradient(90deg,rgba(109,40,217,.34) 0%,rgba(167,139,250,.18) 28%,rgba(15,38,56,.07) 52%,rgba(255,255,255,.93) 74%,#f5f3ff 100%);">
-            <span class="roster-subtab-icon" style="background:linear-gradient(135deg,#5b21b6,#a78bfa);"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="M8 14h8"/><path d="M8 18h5"/></svg></span>
-            <span>Clinic Audit</span><span class="followup-roster-caret" aria-hidden="true">▾</span>
-          </button>
-          <div class="followup-mini-dropdown" id="followup-clinic-dropdown" aria-label="Clinic audit options">
-            <button type="button" onclick="selectFollowupTabFromDropdown('clinic')"><span class="mini-roster-icon violet"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="M8 14h8"/><path d="M8 18h5"/></svg></span><span><strong>Clinic Audit</strong><small>Monthly clinical activity overview</small></span></button>
-          </div>
-        </div>
-        <div class="followup-nav-tab-wrap" style="--dropdown-colour:#c2413b;--dropdown-dark:#7c2d12;--dropdown-soft:#fff7ed;">
-          <button type="button" class="roster-subtab" id="followup-subtab-dntu" onclick="toggleFollowupMiniDropdown(event,'dntu')" style="background:linear-gradient(90deg,rgba(194,65,59,.34) 0%,rgba(194,65,59,.17) 28%,rgba(180,83,9,.08) 52%,rgba(255,255,255,.93) 74%,#fff7ed 100%);">
-            <span class="roster-subtab-icon" style="background:linear-gradient(135deg,#7c2d12,#c2413b);"><svg class="icon-svg" viewBox="0 0 24 24"><path d="m10.29 3.86-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.71-3.14l-8-14a2 2 0 0 0-3.42 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></span>
-            <span>DNTU</span><span class="followup-roster-caret" aria-hidden="true">▾</span>
-          </button>
-          <div class="followup-mini-dropdown" id="followup-dntu-dropdown" aria-label="DNTU options">
-            <button type="button" onclick="selectFollowupTabFromDropdown('dntu')"><span class="mini-roster-icon red"><svg class="icon-svg" viewBox="0 0 24 24"><path d="m10.29 3.86-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.71-3.14l-8-14a2 2 0 0 0-3.42 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></span><span><strong>DNTU</strong><small>Did Not Turn Up tracking</small></span></button>
-          </div>
-        </div>
-        <div class="followup-nav-tab-wrap" style="--dropdown-colour:#d97706;--dropdown-dark:#92400e;--dropdown-soft:#fffbeb;">
-          <button type="button" class="roster-subtab" id="followup-subtab-paused" onclick="toggleFollowupMiniDropdown(event,'paused')" style="background:linear-gradient(90deg,rgba(217,119,6,.30) 0%,rgba(251,191,36,.15) 28%,rgba(255,255,255,.93) 74%,#fffbeb 100%);">
-            <span class="roster-subtab-icon" style="background:linear-gradient(135deg,#92400e,#d97706);"><svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M10 8v8"/><path d="M14 8v8"/></svg></span>
-            <span>Temporarily Paused Appointments</span><span class="followup-roster-caret" aria-hidden="true">▾</span>
-          </button>
-          <div class="followup-mini-dropdown" id="followup-paused-dropdown" aria-label="Temporarily paused appointment options">
-            <button type="button" onclick="selectFollowupTabFromDropdown('paused')"><span class="mini-roster-icon amber"><svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M10 8v8"/><path d="M14 8v8"/></svg></span><span><strong>Temporarily Paused Appointments</strong><small>Paused patients awaiting restart</small></span></button>
-          </div>
-        </div>
-        <div class="followup-nav-tab-wrap followup-roster-tab-wrap" style="--dropdown-colour:#475569;--dropdown-dark:#0f2638;--dropdown-soft:#f8fafc;">
-          <button type="button" class="roster-subtab" id="followup-subtab-rosters" onclick="toggleFollowupRosterDropdown(event)" style="background:linear-gradient(90deg,rgba(71,85,105,.28) 0%,rgba(15,38,56,.12) 30%,rgba(255,255,255,.95) 74%,#f8fafc 100%);">
-            <span class="roster-subtab-icon" style="background:linear-gradient(135deg,#0f2638,#475569);"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="M8 15h8"/><path d="M8 18h5"/></svg></span>
-            <span>Rosters</span><span class="followup-roster-caret" aria-hidden="true">▾</span>
-          </button>
-          <div class="followup-roster-dropdown followup-mini-dropdown" id="followup-roster-dropdown" aria-label="Roster options">
-            <button type="button" onclick="selectFollowupRosterFromTab('monthly')"><span class="mini-roster-icon"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="M8 15h8"/><path d="M8 18h5"/></svg></span><span><strong>Monthly Roster</strong><small>Roster calendar and OT/TIL</small></span></button>
-            <button type="button" onclick="selectFollowupRosterFromTab('cod')"><span class="mini-roster-icon blue"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M7 7h6a3 3 0 0 1 0 6H7"/><path d="m10 4-3 3 3 3"/><path d="M17 17H11a3 3 0 0 1 0-6h6"/><path d="m14 20 3-3-3-3"/></svg></span><span><strong>Change of Duty</strong><small>COD records and changes</small></span></button>
-            <button type="button" onclick="selectFollowupRosterFromTab('staff-audit')"><span class="mini-roster-icon violet"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-5"/><path d="M12 16V8"/><path d="M16 16v-7"/><path d="M20 6l-4 4-3-3-5 5"/></svg></span><span><strong>Staff Audit</strong><small>Staff leave and roster audit</small></span></button>
-          </div>
-        </div>
+        <button type="button" class="roster-subtab active" id="followup-subtab-appointments" onclick="showFollowupSubtab('appointments')"><span>Patient Appointments</span></button>
+        <button type="button" class="roster-subtab" id="followup-subtab-outcomes" onclick="showFollowupSubtab('outcomes')"><span>Appointment Outcomes</span></button>
+        <button type="button" class="roster-subtab" id="followup-subtab-clinic" onclick="showFollowupSubtab('clinic')"><span>Clinic Audit</span></button>
+        <button type="button" class="roster-subtab" id="followup-subtab-dntu" onclick="showFollowupSubtab('dntu')"><span>DNTU</span></button>
+        <button type="button" class="roster-subtab" id="followup-subtab-paused" onclick="showFollowupSubtab('paused')"><span>Temporarily Paused Appointments</span></button>
+        <button type="button" class="roster-subtab" id="followup-subtab-rosters" onclick="showFollowupSubtab('rosters')"><span>Rosters</span></button>
       </div>
 
       <!-- Subtab panels -->
@@ -8027,8 +8070,7 @@ function filterPatientTable(val){
 
 let currentFollowupSubtab='appointments';
 function showFollowupHub(){
-  // v66-30: Follow-Up Centre now opens directly into the compact clinical tab layout.
-  // There is no large card-option hub; default to Patient Appointments.
+  // v66-75: Follow-Up Centre opens into the navigation-tile hub; default to Patient Appointments.
   showFollowupSubtab(currentFollowupSubtab || 'appointments');
 }
 function showFollowupSubtab(tab){
@@ -8036,10 +8078,13 @@ function showFollowupSubtab(tab){
   const section=document.getElementById('section-followups');
   if(section){section.classList.remove('platform-hub');section.classList.add('platform-focused');}
   document.querySelectorAll('#followup-subtab-bar .roster-subtab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('#followup-centre-nav .nav-tile').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('#section-followups .roster-subtab-panel').forEach(p=>p.classList.remove('active'));
   const btn=document.getElementById('followup-subtab-'+tab);
   const pane=document.getElementById('followup-pane-'+tab);
+  const tile=document.querySelector(`#followup-centre-nav .nav-tile[data-followup-tab="${tab}"]:not([data-roster-view])`);
   if(btn)btn.classList.add('active');
+  if(tile)tile.classList.add('active');
   if(pane)pane.classList.add('active');
   clearPlatformFocusTitle('section-followups');
   const accentMap={appointments:'#0f766e',outcomes:'#2563eb',clinic:'#7c3aed',dntu:'#c2413b',paused:'#d97706',rosters:'#475569'};
@@ -8142,6 +8187,9 @@ function renderFollowupRosterWorkspace(selected='monthly'){
   if(!inner)return;
   const tab=(selected==='cod'||selected==='staff-audit')?selected:'monthly';
   window.currentFollowupRosterSubtab=tab;
+  document.querySelectorAll('#followup-centre-nav .nav-tile').forEach(t=>t.classList.remove('active'));
+  const rosterTile=document.querySelector(`#followup-centre-nav .nav-tile[data-followup-tab="rosters"][data-roster-view="${tab}"]`);
+  if(rosterTile)rosterTile.classList.add('active');
   if(!inner.dataset.built){
     inner.innerHTML=`
       <div class="followup-roster-panel" id="followup-roster-panel-monthly"><div id="followup-roster-monthly-inner"></div></div>
