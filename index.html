@@ -106,6 +106,8 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .phdr p{font-size:12px;color:var(--muted);margin-top:3px;}
 .btn-add{padding:8px 18px;background:var(--teal);color:white;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;}
 .btn-add:hover{opacity:.85;}
+.btn-return{background:var(--navy)!important;}
+.btn-return:hover{opacity:.85;}
 
 /* LEGEND */
 .legend{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px;padding:10px 14px;background:white;border-radius:8px;border:1px solid var(--border);}
@@ -585,7 +587,10 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
     <div class="page" id="page-patients-list">
       <div class="phdr">
         <div><h2 id="patients-list-title">Patients</h2><p id="patients-list-subtitle">View patient groups from the registry.</p></div>
-        <button class="btn-add" onclick="loadPatientsList()">Refresh</button>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+          <button class="btn-add btn-return" onclick="returnToPatientsOverview()">← Return</button>
+          <button class="btn-add" onclick="loadPatientsList()">Refresh</button>
+        </div>
       </div>
       <div class="followup-toolbar patient-register-toolbar">
         <label>Patient Group:</label>
@@ -1519,6 +1524,9 @@ function refreshActivePage(){
   if(name==='report-patient-group')name=currentReportPatientGroup||'report-followups';
   const el=document.querySelector(`.nav-tile[data-tab="${name}"]`)||document.querySelector(`.tab-dd-item[data-tab="${name}"]`);
   switchTab(name,el);
+}
+function returnToPatientsOverview(){
+  switchTab('patients-active',document.querySelector('.tab-dd-item[data-tab="patients-active"]'));
 }
 
 async function loadHolidays(){
@@ -3205,7 +3213,7 @@ async function loadPatientsList(tabName){
   if(select)select.value=currentPatientsTab;
   const cfg=PATIENT_TAB_FILTERS[currentPatientsTab]||PATIENT_TAB_FILTERS['patients-active'];
   const searchInput=document.getElementById('patients-list-search');
-  if(searchInput)searchInput.placeholder=cfg.status==='deceased'?'Search name, ID number, RIP date, stoma type, locality...':(cfg.status==='relocated_overseas'?'Search ID number, name, last seen, discharge date, stoma type...':'Search name, ID card, phone, locality...');
+  if(searchInput)searchInput.placeholder=cfg.status==='deceased'?'Search name, ID number, RIP date, stoma type, locality...':((cfg.status==='relocated_overseas'||cfg.status==='relocated_gozo')?'Search ID number, name, last seen, discharge date, stoma type...':'Search name, ID card, phone, locality...');
   const title=document.getElementById('patients-list-title');
   const subtitle=document.getElementById('patients-list-subtitle');
   const cardTitle=document.getElementById('patients-list-card-title');
@@ -3236,7 +3244,7 @@ function renderPatientsList(){
   const search=String(document.getElementById('patients-list-search')?.value||'').trim().toLowerCase();
   const all=patientsListRows||[];
   const isDeceased=currentPatientsTab==='patients-deceased'||cfg.status==='deceased';
-  const isRelocatedOverseas=currentPatientsTab==='patients-relocated-overseas'||cfg.status==='relocated_overseas';
+  const isRelocatedOverseas=currentPatientsTab==='patients-relocated-overseas'||currentPatientsTab==='patients-relocated-gozo'||cfg.status==='relocated_overseas'||cfg.status==='relocated_gozo';
   const countStatus=(st)=>all.filter(p=>patientRegisterStatus(p)===st).length;
   if(stats){
     stats.innerHTML=`
@@ -3264,6 +3272,13 @@ function renderPatientsList(){
       }
       if(aHasRip!==bHasRip)return aHasRip?-1:1;
       return nameCompare;
+    });
+  }else if(isRelocatedOverseas){
+    rows=[...rows].sort((a,b)=>{
+      const nameCompare=String(a.surname||'').localeCompare(String(b.surname||''))||String(a.first_name||'').localeCompare(String(b.first_name||''))||String(a.id_card||'').localeCompare(String(b.id_card||''));
+      const lastSeenCompare=dateSortValue(b.last_outcome_date)-dateSortValue(a.last_outcome_date);
+      const dischargeCompare=dateSortValue(b.discharged_date)-dateSortValue(a.discharged_date);
+      return lastSeenCompare||dischargeCompare||nameCompare;
     });
   }
   if(thead){
@@ -3968,7 +3983,7 @@ async function loadReportPatientGroup(tabName){
   if(title)title.textContent=cfg.title;
   if(subtitle)subtitle.textContent=cfg.subtitle;
   if(cardTitle)cardTitle.textContent=cfg.title;
-  if(search){search.value='';search.placeholder=cfg.status==='deceased'?'Search name, ID number, RIP date, stoma type, locality...':(cfg.status==='relocated_overseas'?'Search ID number, name, last seen, discharge date, stoma type...':'Search name, ID card, phone, owner, locality...');}
+  if(search){search.value='';search.placeholder=cfg.status==='deceased'?'Search name, ID number, RIP date, stoma type, locality...':((cfg.status==='relocated_overseas'||cfg.status==='relocated_gozo')?'Search ID number, name, last seen, discharge date, stoma type...':'Search name, ID card, phone, owner, locality...');}
   if(tbody)tbody.innerHTML='<tr><td colspan="11" class="empty">Loading report...</td></tr>';
   let fields='id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type,patient_status_raw,locality,sex,dob,surgery_date,stoma_type_summary,last_outcome_date,discharged_date,next_followup_mirror,rip_date,reversal_date,stoma_days,age_at_death';
   let res=await SB.from('patients').select(fields).order('surname',{ascending:true}).limit(3000);
@@ -4000,6 +4015,13 @@ function rowsForReportPatientGroup(){
         if(aHasRip!==bHasRip)return aHasRip?-1:1;
         return nameCompare;
       });
+    }else if(cfg.status==='relocated_overseas'||cfg.status==='relocated_gozo'){
+      rows.sort((a,b)=>{
+        const nameCompare=String(a.surname||'').localeCompare(String(b.surname||''))||String(a.first_name||'').localeCompare(String(b.first_name||''))||String(a.id_card||'').localeCompare(String(b.id_card||''));
+        const lastSeenCompare=dateSortValue(b.last_outcome_date)-dateSortValue(a.last_outcome_date);
+        const dischargeCompare=dateSortValue(b.discharged_date)-dateSortValue(a.discharged_date);
+        return lastSeenCompare||dischargeCompare||nameCompare;
+      });
     }else{
       rows.sort((a,b)=>String(a.surname||'').localeCompare(String(b.surname||''))||String(a.first_name||'').localeCompare(String(b.first_name||''))||String(a.id_card||'').localeCompare(String(b.id_card||'')));
     }
@@ -4018,7 +4040,7 @@ function renderReportPatientGroup(){
   const tbody=document.getElementById('report-patient-group-tbody');
   const stats=document.getElementById('report-patient-group-stats');
   const isDeceased=cfg.status==='deceased';
-  const isRelocatedOverseas=cfg.status==='relocated_overseas';
+  const isRelocatedOverseas=cfg.status==='relocated_overseas'||cfg.status==='relocated_gozo';
   const isFollowups=cfg.mode==='followups';
   const all=reportPatientGroupRows||[];
   const rows=rowsForReportPatientGroup();
