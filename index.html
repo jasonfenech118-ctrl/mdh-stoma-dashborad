@@ -470,7 +470,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
     <div class="tab" data-tab="appointments" onclick="switchTab('appointments',this)">Patient Appointments</div>
     <div class="tab" data-tab="appointment-outcomes" onclick="switchTab('appointment-outcomes',this)">Appointment Outcomes</div>
     <div class="tab" data-tab="cod" onclick="switchTab('cod',this)">Change of Duty</div>
-    <div class="tab" data-tab="ot-audit" onclick="switchTab('ot-audit',this)">OT Audit</div>
+    <div class="tab" data-tab="ot-audit" onclick="switchTab('ot-audit',this)">Over Time Audit</div>
     <div class="tab" data-tab="staff-audit" onclick="switchTab('staff-audit',this)">Follow-up Planning</div>
     <div class="tab" data-tab="clinic-audit" onclick="switchTab('clinic-audit',this)">Clinic Audit</div>
     <div class="tab" data-tab="dntu-policy" onclick="switchTab('dntu-policy',this)">DNTU</div>
@@ -486,7 +486,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
           <div class="centre-hub-icon">✓</div>
           <div>
             <h1>Follow-Up Centre</h1>
-            <p>Appointments, outcomes, clinic audit, DNTU, OT audit, follow-up planning and rosters</p>
+            <p>Appointments, outcomes, clinic audit, DNTU, Over Time Audit, follow-up planning and rosters</p>
           </div>
         </div>
         <button class="centre-refresh" onclick="refreshActivePage()">↻ Refresh</button>
@@ -505,7 +505,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
           <span class="nav-tile-icon">☑</span><span class="nav-tile-text"><span class="nav-tile-label">Follow-up Planning</span><span class="nav-tile-sub">Owners, due months and lists</span></span><span class="nav-tile-arrow">›</span>
         </button>
         <button class="nav-tile tile-gold" data-tab="ot-audit" onclick="switchTab('ot-audit',this)">
-          <span class="nav-tile-icon">⏱</span><span class="nav-tile-text"><span class="nav-tile-label">OT Audit</span><span class="nav-tile-sub">Booked and cancelled OT</span></span><span class="nav-tile-arrow">›</span>
+          <span class="nav-tile-icon">⏱</span><span class="nav-tile-text"><span class="nav-tile-label">Over Time Audit</span><span class="nav-tile-sub">Booked and cancelled OT</span></span><span class="nav-tile-arrow">›</span>
         </button>
         <button class="nav-tile tile-purple" data-tab="clinic-audit" onclick="switchTab('clinic-audit',this)">
           <span class="nav-tile-icon">▣</span><span class="nav-tile-text"><span class="nav-tile-label">Clinic Audit</span><span class="nav-tile-sub">Calendar and clinical activity</span></span><span class="nav-tile-arrow">›</span>
@@ -755,13 +755,13 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
     <!-- OT AUDIT -->
     <div class="page" id="page-ot-audit">
       <div class="phdr">
-        <div><h2>OT Audit</h2><p>Overtime and bank/extra support records, including booked, cancelled and printable audit history.</p></div>
+        <div><h2>Over Time Audit</h2><p>Overtime and bank/extra support records, including booked, cancelled and printable audit history.</p></div>
         <button class="btn-add" onclick="loadOvertimeAudit()">Refresh</button>
       </div>
       <div class="card mt16">
         <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px;">
-          <div class="card-title" style="margin-bottom:0;">⏰ Overtime Audit</div>
-          <button class="btn-add" onclick="printOvertimeAudit()" style="padding:7px 14px;">Print OT Audit</button>
+          <div class="card-title" style="margin-bottom:0;">⏰ Over Time Audit</div>
+          <button class="btn-add" onclick="printOvertimeAudit()" style="padding:7px 14px;">Print Over Time Audit</button>
         </div>
         <div class="report-note">This shows overtime/TIL support records, including cancelled OT entries that are kept for audit instead of disappearing.</div>
         <div class="filter-row" style="margin-bottom:10px;">
@@ -789,7 +789,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
         <div id="ot-audit-summary" class="report-note"></div>
         <div style="overflow-x:auto;"><table class="dt" id="ot-audit-table">
           <thead><tr><th>Date</th><th>Nurse</th><th>Type</th><th>Start</th><th>Until</th><th>Hours</th><th>Status</th><th>Cancelled By</th><th>Notes</th></tr></thead>
-          <tbody id="ot-audit-tbody"><tr><td colspan="9" class="empty">Loading overtime audit...</td></tr></tbody>
+          <tbody id="ot-audit-tbody"><tr><td colspan="9" class="empty">Loading Over Time Audit...</td></tr></tbody>
         </table></div>
       </div>
     </div>
@@ -956,8 +956,8 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 
 <script>
 const SB=supabase.createClient(
-  'https://gkixdimdmechujeqzfkl.supabase.co',
-  'sb_publishable_o3y-iFcJ80dKRfrHA3mHuw_XI2qqjvS'
+  'https://jucunagrwqkzdfajmblg.supabase.co',
+  'sb_publishable_oaTKxc-aLZB2J6aE-_unMw_wFI_WMIE'
 );
 
 let holidays={},staffList=[],rCache={};
@@ -3467,12 +3467,12 @@ async function loadOvertimeAudit(){
   const search=(document.getElementById('ot-audit-search')?.value||'').trim().toLowerCase();
   const start=month?`${year}-${month}-01`:`${year}-01-01`;
   const end=month?monthEndDate(year,month):`${year}-12-31`;
-  tbody.innerHTML='<tr><td colspan="9" class="empty">Loading overtime audit...</td></tr>';
+  tbody.innerHTML='<tr><td colspan="9" class="empty">Loading Over Time Audit...</td></tr>';
 
   const{data:bankRaw,error:bankError}=await SB.from('bank_staff_assignments').select('*').gte('work_date',start).lte('work_date',end).order('work_date',{ascending:false});
   const{data:coreRaw,error:coreError}=await SB.from('leave_records').select('*, staff(full_name,role)').eq('leave_type','overtime').gte('start_date',start).lte('start_date',end).order('start_date',{ascending:false});
   if(bankError&&coreError){
-    tbody.innerHTML=`<tr><td colspan="9" class="empty">Could not load overtime audit: ${htmlSafe(bankError.message||coreError.message||'Unknown error')}</td></tr>`;
+    tbody.innerHTML=`<tr><td colspan="9" class="empty">Could not load Over Time Audit: ${htmlSafe(bankError.message||coreError.message||'Unknown error')}</td></tr>`;
     return;
   }
   const bankIds=uniqueNonEmpty((bankRaw||[]).map(b=>b.bank_staff_id));
@@ -3524,7 +3524,7 @@ async function loadOvertimeAudit(){
   const active=filtered.filter(r=>(r.status||'active')==='active').length;
   const cancelled=filtered.filter(r=>(r.status||'active')==='cancelled').length;
   const summary=document.getElementById('ot-audit-summary');
-  if(summary)summary.textContent=`${filtered.length} OT audit record${filtered.length!==1?'s':''} shown — ${active} active/booked, ${cancelled} cancelled.`;
+  if(summary)summary.textContent=`${filtered.length} Over Time Audit record${filtered.length!==1?'s':''} shown — ${active} active/booked, ${cancelled} cancelled.`;
   if(!filtered.length){tbody.innerHTML='<tr><td colspan="9" class="empty">No overtime records found for these filters.</td></tr>';return;}
   tbody.innerHTML=filtered.map(r=>`<tr>
     <td>${htmlSafe(r.date||'—')}</td>
@@ -3540,11 +3540,11 @@ async function loadOvertimeAudit(){
 }
 function printOvertimeAudit(){
   const table=document.getElementById('ot-audit-table');
-  if(!table){alert('No overtime audit table found.');return;}
+  if(!table){alert('No Over Time Audit table found.');return;}
   const year=document.getElementById('ot-audit-year')?.value||'';
   const month=document.getElementById('ot-audit-month')?.selectedOptions?.[0]?.textContent||'All Months';
   const w=window.open('','_blank');
-  w.document.write(`<!DOCTYPE html><html><head><title>Overtime Audit</title><style>body{font-family:Arial,sans-serif;padding:20px;color:#1a2e4a}h1{font-size:20px;margin:0 0 4px}h2{font-size:14px;margin:0 0 18px;color:#506070}table{width:100%;border-collapse:collapse;font-size:11px}th{background:#1a2e4a;color:white;text-align:left;padding:7px}td{border-bottom:1px solid #ddd;padding:7px;vertical-align:top}.status-badge,.ot-badge{display:inline-block;padding:2px 6px;border-radius:8px;font-size:10px;font-weight:bold;background:#eef;color:#123;margin:1px}</style></head><body><h1>MDH Stoma Care Clinic</h1><h2>Overtime Audit — ${htmlSafe(month)} ${htmlSafe(year)}</h2>${table.outerHTML}</body></html>`);
+  w.document.write(`<!DOCTYPE html><html><head><title>Over Time Audit</title><style>body{font-family:Arial,sans-serif;padding:20px;color:#1a2e4a}h1{font-size:20px;margin:0 0 4px}h2{font-size:14px;margin:0 0 18px;color:#506070}table{width:100%;border-collapse:collapse;font-size:11px}th{background:#1a2e4a;color:white;text-align:left;padding:7px}td{border-bottom:1px solid #ddd;padding:7px;vertical-align:top}.status-badge,.ot-badge{display:inline-block;padding:2px 6px;border-radius:8px;font-size:10px;font-weight:bold;background:#eef;color:#123;margin:1px}</style></head><body><h1>MDH Stoma Care Clinic</h1><h2>Over Time Audit — ${htmlSafe(month)} ${htmlSafe(year)}</h2>${table.outerHTML}</body></html>`);
   w.document.close();w.focus();setTimeout(()=>w.print(),250);
 }
 
@@ -3635,11 +3635,11 @@ async function saveLeave(){
 }
 
 async function delOT(id){
-  if(!confirm('Cancel this OT entry and keep it in the overtime audit?'))return;
+  if(!confirm('Cancel this OT entry and keep it in the Over Time Audit?'))return;
   const currentUser=await getCurrentUserForAudit();
   let{error}=await SB.from('bank_staff_assignments').update({status:'cancelled',cancelled_at:new Date().toISOString(),cancelled_by_email:currentUser.email,cancelled_by_name:currentUser.name}).eq('id',id);
   if(error && String(error.message||'').toLowerCase().includes('column')){
-    alert('OT audit columns are not installed yet. Please run the OT audit SQL first, then cancel the OT entry again.');
+    alert('Over Time Audit columns are not installed yet. Please run the Over Time Audit SQL first, then cancel the OT entry again.');
     return;
   }
   if(error){alert('Could not cancel OT entry: '+error.message);return;}
