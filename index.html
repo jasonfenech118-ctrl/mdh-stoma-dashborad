@@ -597,7 +597,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
       <div class="card">
         <div class="card-title" id="patients-list-card-title">Patient Register</div>
         <div style="overflow-x:auto;"><table class="dt">
-          <thead><tr><th>Patient</th><th>ID Card</th><th>Phone</th><th>Status</th><th>Owner</th><th>Due Month</th><th>Last Outcome</th><th>Next Follow-up</th><th>Locality</th><th>Actions</th></tr></thead>
+          <thead id="patients-list-head"><tr><th>Patient</th><th>ID Card</th><th>Phone</th><th>Status</th><th>Owner</th><th>Due Month</th><th>Last Outcome</th><th>Next Follow-up</th><th>Locality</th><th>Actions</th></tr></thead>
           <tbody id="patients-list-tbody"><tr><td colspan="10" class="empty">Select a patient group.</td></tr></tbody>
         </table></div>
       </div>
@@ -3076,6 +3076,59 @@ function patientDueText(p){
   const year=p?.followup_year||'';
   return month==='—'?'—':`${month} ${year}`.trim();
 }
+function patientDateText(value){
+  if(!value)return '—';
+  const raw=String(value).slice(0,10);
+  const d=new Date(raw+'T12:00:00');
+  if(Number.isNaN(d.getTime()))return htmlSafe(raw||'—');
+  return d.toLocaleDateString('en-MT',{day:'2-digit',month:'short',year:'numeric'});
+}
+function dateSortValue(value){
+  if(!value)return 0;
+  const d=new Date(String(value).slice(0,10)+'T12:00:00');
+  return Number.isNaN(d.getTime())?0:d.getTime();
+}
+function yearsBetween(start,end){
+  if(!start||!end)return null;
+  const s=new Date(String(start).slice(0,10)+'T12:00:00');
+  const e=new Date(String(end).slice(0,10)+'T12:00:00');
+  if(Number.isNaN(s.getTime())||Number.isNaN(e.getTime())||e<s)return null;
+  let age=e.getFullYear()-s.getFullYear();
+  const beforeBirthday=(e.getMonth()<s.getMonth())||(e.getMonth()===s.getMonth()&&e.getDate()<s.getDate());
+  if(beforeBirthday)age--;
+  return age>=0?age:null;
+}
+function daysBetween(start,end){
+  if(!start||!end)return null;
+  const s=new Date(String(start).slice(0,10)+'T12:00:00');
+  const e=new Date(String(end).slice(0,10)+'T12:00:00');
+  if(Number.isNaN(s.getTime())||Number.isNaN(e.getTime())||e<s)return null;
+  return Math.round((e-s)/86400000);
+}
+function patientAgeAtDeath(p){
+  if(p?.age_at_death!==null&&p?.age_at_death!==undefined&&String(p.age_at_death).trim()!=='')return Math.floor(Number(p.age_at_death));
+  const calc=yearsBetween(p?.dob,p?.rip_date);
+  return calc===null?'—':calc;
+}
+function patientStomaDays(p){
+  if(p?.stoma_days!==null&&p?.stoma_days!==undefined&&String(p.stoma_days).trim()!=='')return Math.floor(Number(p.stoma_days));
+  const end=p?.rip_date||new Date().toISOString().slice(0,10);
+  const calc=daysBetween(p?.surgery_date,end);
+  return calc===null?'—':calc;
+}
+function patientStomaTypeText(value){
+  if(value===null||value===undefined||value==='')return '—';
+  let v=value;
+  if(typeof v==='string'){
+    try{v=JSON.parse(v);}catch(e){return htmlSafe(v||'—');}
+  }
+  if(Array.isArray(v))return htmlSafe(v.filter(Boolean).join(', ')||'—');
+  if(typeof v==='object')return htmlSafe(Object.values(v).flat().filter(Boolean).join(', ')||JSON.stringify(v));
+  return htmlSafe(String(v));
+}
+function patientRegisterActions(p,includeRebook=true){
+  return `<div class="followup-actions" onclick="event.stopPropagation();"><button class="ncb-btn" onclick="openNewPatientFromExisting('${p.id}')" style="background:#e8f5f4;color:var(--teal);">Edit</button>${includeRebook?`<button class="ncb-btn" onclick="openPatientRebookModal('${p.id}')" style="background:#fff8e1;color:#856404;">Rebook</button>`:''}<button class="ncb-btn" onclick="openFollowupHistory('${p.id}')" style="background:#edf1f5;color:var(--navy);">History</button></div>`;
+}
 async function loadPatientsList(tabName){
   currentPatientsTab=tabName||currentPatientsTab||'patients-active';
   const select=document.getElementById('patients-list-filter');
@@ -3089,7 +3142,7 @@ async function loadPatientsList(tabName){
   if(cardTitle)cardTitle.textContent=cfg.title;
   const tbody=document.getElementById('patients-list-tbody');
   if(tbody)tbody.innerHTML='<tr><td colspan="10" class="empty">Loading patients...</td></tr>';
-  let fields='id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type,patient_status_raw,locality,surgery_date,last_outcome_date,next_followup_mirror,rip_date,reversal_date';
+  let fields='id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type,patient_status_raw,locality,sex,dob,surgery_date,stoma_type_summary,last_outcome_date,next_followup_mirror,rip_date,reversal_date,stoma_days,age_at_death';
   let res=await SB.from('patients').select(fields).order('surname',{ascending:true}).limit(3000);
   if(res.error){
     console.warn('Extended patient register fields unavailable, using core patient fields:',res.error);
@@ -3106,9 +3159,11 @@ async function loadPatientsList(tabName){
 function renderPatientsList(){
   const cfg=PATIENT_TAB_FILTERS[currentPatientsTab]||PATIENT_TAB_FILTERS['patients-active'];
   const tbody=document.getElementById('patients-list-tbody');
+  const thead=document.getElementById('patients-list-head');
   const stats=document.getElementById('patients-list-stats');
   const search=String(document.getElementById('patients-list-search')?.value||'').trim().toLowerCase();
   const all=patientsListRows||[];
+  const isDeceased=currentPatientsTab==='patients-deceased'||cfg.status==='deceased';
   const countStatus=(st)=>all.filter(p=>patientRegisterStatus(p)===st).length;
   if(stats){
     stats.innerHTML=`
@@ -3122,17 +3177,41 @@ function renderPatientsList(){
   let rows=all.filter(p=>patientRegisterStatus(p)===cfg.status);
   if(search){
     rows=rows.filter(p=>[
-      p.first_name,p.surname,p.id_card,p.phone_number,p.followup_owner,p.locality,p.patient_status_raw,patientRegisterStatusText(patientRegisterStatus(p))
+      p.first_name,p.surname,p.id_card,p.phone_number,p.followup_owner,p.locality,p.patient_status_raw,patientRegisterStatusText(patientRegisterStatus(p)),p.sex,p.dob,p.rip_date,p.surgery_date,patientStomaTypeText(p.stoma_type_summary)
     ].join(' ').toLowerCase().includes(search));
+  }
+  if(isDeceased){
+    rows=[...rows].sort((a,b)=>dateSortValue(b.rip_date)-dateSortValue(a.rip_date)||String(a.surname||'').localeCompare(String(b.surname||''))||String(a.first_name||'').localeCompare(String(b.first_name||'')));
+  }
+  if(thead){
+    thead.innerHTML=isDeceased
+      ? '<tr><th>Patient</th><th>ID Card</th><th>Phone</th><th>Sex</th><th>DOB</th><th>Date of RIP</th><th>Age at Death</th><th>Surgery Date</th><th>Stoma Days</th><th>Stoma Type Summary</th><th>Locality</th><th>Actions</th></tr>'
+      : '<tr><th>Patient</th><th>ID Card</th><th>Phone</th><th>Status</th><th>Owner</th><th>Due Month</th><th>Last Outcome</th><th>Next Follow-up</th><th>Locality</th><th>Actions</th></tr>';
   }
   if(!tbody)return;
   if(!rows.length){
-    tbody.innerHTML=`<tr><td colspan="10" class="empty">No ${htmlSafe(cfg.title.toLowerCase())} found${search?' for this search':''}.</td></tr>`;
+    tbody.innerHTML=`<tr><td colspan="${isDeceased?12:10}" class="empty">No ${htmlSafe(cfg.title.toLowerCase())} found${search?' for this search':''}.</td></tr>`;
     return;
   }
   tbody.innerHTML=rows.map(p=>{
     const nm=`${p.first_name||''} ${p.surname||''}`.trim()||'Unnamed patient';
     const st=patientRegisterStatus(p);
+    if(isDeceased){
+      return `<tr class="followup-click-row" onclick="openFollowupHistory('${p.id}')">
+        <td><strong>${htmlSafe(nm)}</strong><br/><span style="font-size:10px;color:var(--muted);">Click row for history</span></td>
+        <td>${htmlSafe(p.id_card||'—')}</td>
+        <td>${htmlSafe(p.phone_number||'—')}</td>
+        <td>${htmlSafe(p.sex||'—')}</td>
+        <td>${patientDateText(p.dob)}</td>
+        <td><strong>${patientDateText(p.rip_date)}</strong></td>
+        <td>${htmlSafe(patientAgeAtDeath(p))}</td>
+        <td>${patientDateText(p.surgery_date)}</td>
+        <td>${htmlSafe(patientStomaDays(p))}</td>
+        <td>${patientStomaTypeText(p.stoma_type_summary)}</td>
+        <td>${htmlSafe(p.locality||'—')}</td>
+        <td>${patientRegisterActions(p,false)}</td>
+      </tr>`;
+    }
     const latest=p.last_outcome_date||'—';
     const next=p.next_followup_mirror||'—';
     return `<tr class="followup-click-row" onclick="openFollowupHistory('${p.id}')">
@@ -3145,10 +3224,11 @@ function renderPatientsList(){
       <td>${htmlSafe(latest)}</td>
       <td>${htmlSafe(next)}</td>
       <td>${htmlSafe(p.locality||'—')}</td>
-      <td><div class="followup-actions" onclick="event.stopPropagation();"><button class="ncb-btn" onclick="openNewPatientFromExisting('${p.id}')" style="background:#e8f5f4;color:var(--teal);">Edit</button><button class="ncb-btn" onclick="openPatientRebookModal('${p.id}')" style="background:#fff8e1;color:#856404;">Rebook</button><button class="ncb-btn" onclick="openFollowupHistory('${p.id}')" style="background:#edf1f5;color:var(--navy);">History</button></div></td>
+      <td>${patientRegisterActions(p,true)}</td>
     </tr>`;
   }).join('');
 }
+
 async function openNewPatientFromExisting(patientId){
   switchTab('new-patient',document.querySelector('.tab[data-tab="new-patient"]'));
   const {data,error}=await SB.from('patients').select('id_card').eq('id',patientId).maybeSingle();
