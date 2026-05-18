@@ -58,6 +58,18 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .new-patient-note.success{background:#e8f5f4;color:var(--teal);border-color:#b7ddd9;}
 .new-patient-note.error{background:#f8d7da;color:#721c24;border-color:#f1b0b7;}
 
+
+/* PATIENT REGISTER LIST */
+.patient-status-chip{display:inline-block;padding:4px 9px;border-radius:14px;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.2px;white-space:nowrap;}
+.patient-status-chip.active{background:#dcfce7;color:#166534;border:1px solid #86efac;}
+.patient-status-chip.inpatient{background:#fef3c7;color:#92400e;border:1px solid #fcd34d;}
+.patient-status-chip.reversed{background:#dbeafe;color:#1e40af;border:1px solid #93c5fd;}
+.patient-status-chip.deceased{background:#e5e7eb;color:#374151;border:1px solid #9ca3af;}
+.patient-status-chip.relocated_overseas{background:#f3e8ff;color:#6b21a8;border:1px solid #d8b4fe;}
+.patient-status-chip.relocated_gozo{background:#ecfeff;color:#155e75;border:1px solid #67e8f9;}
+.patient-register-toolbar input{padding:7px 12px;border:1.5px solid var(--border);border-radius:8px;background:white;font-size:12px;font-family:'Inter',sans-serif;outline:none;min-width:240px;}
+.patient-register-toolbar input:focus{border-color:var(--teal);}
+
 /* FOLLOW-UP CENTRE NAVIGATION TILES */
 .centre-hub{background:linear-gradient(135deg,#ffffff 0%,#f8fffd 100%);border:1px solid var(--border);border-radius:18px;padding:18px 20px;margin-bottom:18px;box-shadow:0 8px 24px rgba(13,115,119,.08);}
 .centre-hub-head{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:16px;flex-wrap:wrap;}
@@ -409,6 +421,9 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .followup-status-badge.paused{background:#fff7ed;color:#9a3412;border:1px solid #fed7aa;}
 .followup-status-badge.deceased{background:#e5e7eb;color:#374151;border:1px solid #9ca3af;}
 .followup-status-badge.reversed{background:#dbeafe;color:#1e40af;border:1px solid #93c5fd;}
+.followup-status-badge.inpatient{background:#fef3c7;color:#92400e;border:1px solid #fcd34d;}
+.followup-status-badge.relocated_overseas{background:#f3e8ff;color:#6b21a8;border:1px solid #d8b4fe;}
+.followup-status-badge.relocated_gozo{background:#ecfeff;color:#155e75;border:1px solid #67e8f9;}
 .followup-type-badge{display:inline-block;width:max-content;margin:5px 4px 2px 0;padding:3px 9px;border-radius:12px;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.2px;white-space:nowrap;}
 .followup-type-badge.follow_up{background:#e0f2fe;color:#075985;border:1px solid #7dd3fc;}
 .followup-type-badge.new_case{background:#fef3c7;color:#92400e;border:1px solid #fcd34d;}
@@ -488,7 +503,18 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
     <button class="btn-so" onclick="doLogout()">Sign Out</button>
   </div>
   <div class="tabs grouped-tabs">
-    <button type="button" class="tab tab-single" data-tab="new-patient" onclick="switchTab('new-patient',this)">New Patient</button>
+    <button type="button" class="tab tab-single" data-tab="new-patient" onclick="switchTab('new-patient',this)">Add Patient</button>
+    <div class="tab-group">
+      <button type="button" class="tab" data-tabs="patients-active,patients-inpatients,patients-reversed,patients-deceased,patients-relocated-overseas,patients-relocated-gozo" onclick="toggleTabGroup(event,this)">Patients <span class="tab-caret">▾</span></button>
+      <div class="tab-dd-menu">
+        <button type="button" class="tab-dd-item" data-tab="patients-active" onclick="switchTab('patients-active',this)">Active Patients <small>Current</small></button>
+        <button type="button" class="tab-dd-item" data-tab="patients-inpatients" onclick="switchTab('patients-inpatients',this)">Inpatients <small>Ward</small></button>
+        <button type="button" class="tab-dd-item" data-tab="patients-reversed" onclick="switchTab('patients-reversed',this)">Reversed <small>Register</small></button>
+        <button type="button" class="tab-dd-item" data-tab="patients-deceased" onclick="switchTab('patients-deceased',this)">Deceased <small>Register</small></button>
+        <button type="button" class="tab-dd-item" data-tab="patients-relocated-overseas" onclick="switchTab('patients-relocated-overseas',this)">Relocated Overseas <small>Register</small></button>
+        <button type="button" class="tab-dd-item" data-tab="patients-relocated-gozo" onclick="switchTab('patients-relocated-gozo',this)">Relocated to Gozo <small>Register</small></button>
+      </div>
+    </div>
     <div class="tab-group">
       <button type="button" class="tab active" data-tabs="roster,cod,ot-audit" onclick="toggleTabGroup(event,this)">Staffing <span class="tab-caret">▾</span></button>
       <div class="tab-dd-menu">
@@ -525,7 +551,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
     <!-- NEW PATIENT -->
     <div class="page" id="page-new-patient">
       <div class="phdr">
-        <div><h2>New Patient</h2><p>Add a patient to the registry. If the ID card already exists, the saved patient record will be updated instead of duplicated.</p></div>
+        <div><h2>Add Patient</h2><p>Add a patient to the registry. If the ID card already exists, the saved patient record will be updated instead of duplicated.</p></div>
       </div>
       <div class="card">
         <div class="card-title">Patient Details</div>
@@ -536,7 +562,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
           <div class="fg"><label>Phone Number</label><input type="tel" id="np-phone" placeholder="Phone number"/></div>
           <div class="fg"><label>Booking Type / Episode</label><select id="np-followup-type"><option value="new_case">New case</option><option value="follow_up">Follow-up</option></select></div>
           <div class="fg"><label>Follow-up Owner</label><select id="np-followup-owner"><option value="Common">Common</option><option value="Jason">Jason</option><option value="Jacqueline">Jacqueline</option><option value="Lorraine">Lorraine</option></select></div>
-          <div class="fg"><label>Follow-up Status</label><select id="np-followup-status"><option value="active">Active</option><option value="awaiting_feedback">Awaiting Feedback</option><option value="paused">Paused</option><option value="deceased">Deceased</option><option value="reversed">Reversed</option></select></div>
+          <div class="fg"><label>Follow-up Status</label><select id="np-followup-status"><option value="active">Active</option><option value="inpatient">Inpatient</option><option value="awaiting_feedback">Awaiting Feedback</option><option value="paused">Paused</option><option value="deceased">Deceased</option><option value="reversed">Reversed</option><option value="relocated_overseas">Relocated Overseas</option><option value="relocated_gozo">Relocated to Gozo</option></select></div>
           <div class="fg"><label>Follow-up Due Month</label><select id="np-followup-month"><option value="">No Due Month</option><option value="1">January</option><option value="2">February</option><option value="3">March</option><option value="4">April</option><option value="5">May</option><option value="6">June</option><option value="7">July</option><option value="8">August</option><option value="9">September</option><option value="10">October</option><option value="11">November</option><option value="12">December</option></select></div>
           <div class="fg"><label>Follow-up Due Year</label><select id="np-followup-year"></select></div>
         </div>
@@ -545,6 +571,35 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
           <button class="btn-save" onclick="saveNewPatientTab()">Save Patient</button>
           <button class="btn-cancel" onclick="clearNewPatientForm()">Clear Form</button>
         </div>
+      </div>
+    </div>
+
+    <!-- PATIENTS REGISTER -->
+    <div class="page" id="page-patients-list">
+      <div class="phdr">
+        <div><h2 id="patients-list-title">Patients</h2><p id="patients-list-subtitle">View patient groups from the registry.</p></div>
+        <button class="btn-add" onclick="loadPatientsList()">Refresh</button>
+      </div>
+      <div class="followup-toolbar patient-register-toolbar">
+        <label>Patient Group:</label>
+        <select id="patients-list-filter" onchange="switchTab(this.value)">
+          <option value="patients-active">Active Patients</option>
+          <option value="patients-inpatients">Inpatients</option>
+          <option value="patients-reversed">Reversed</option>
+          <option value="patients-deceased">Deceased</option>
+          <option value="patients-relocated-overseas">Relocated Overseas</option>
+          <option value="patients-relocated-gozo">Relocated to Gozo</option>
+        </select>
+        <label>Search:</label>
+        <input type="text" id="patients-list-search" placeholder="Search name, ID card, phone, locality..." oninput="renderPatientsList()"/>
+      </div>
+      <div class="srow" id="patients-list-stats"></div>
+      <div class="card">
+        <div class="card-title" id="patients-list-card-title">Patient Register</div>
+        <div style="overflow-x:auto;"><table class="dt">
+          <thead><tr><th>Patient</th><th>ID Card</th><th>Phone</th><th>Status</th><th>Owner</th><th>Due Month</th><th>Last Outcome</th><th>Next Follow-up</th><th>Locality</th><th>Actions</th></tr></thead>
+          <tbody id="patients-list-tbody"><tr><td colspan="10" class="empty">Select a patient group.</td></tr></tbody>
+        </table></div>
       </div>
     </div>
 
@@ -1003,6 +1058,8 @@ const FOLLOWUP_OWNER_FILTERS=['Common','All Patients','Jacqueline','Jason','Lorr
 const AUTO_AVAILABILITY_VALUE='auto_availability';
 let reportCharts={};
 let reportPatientRows=[];
+let currentPatientsTab='patients-active';
+let patientsListRows=[];
 
 function normaliseFollowupOwner(owner){
   const raw=String(owner||'Common').trim();
@@ -1362,8 +1419,10 @@ document.addEventListener('click',e=>{if(!e.target.closest('.tab-group'))closeTa
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeTabGroups();});
 
 function switchTab(name,el){
+  if(!name)name='roster';
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  const page=document.getElementById('page-'+name);
+  const pageName=String(name).startsWith('patients-')?'patients-list':name;
+  const page=document.getElementById('page-'+pageName);
   if(page)page.classList.add('active');
   document.querySelectorAll('.tab').forEach(t=>{
     const groupedTabs=String(t.dataset.tabs||t.dataset.tab||'').split(',').map(x=>x.trim()).filter(Boolean);
@@ -1382,10 +1441,12 @@ function switchTab(name,el){
   if(name==='appointments')loadAppts();
   if(name==='roster')renderRoster();
   if(name==='cod'){populateCODDropdowns();loadCOD();}
+  if(String(name).startsWith('patients-'))loadPatientsList(name);
 }
 function refreshActivePage(){
   const active=document.querySelector('.page.active');
-  const name=active?.id?.replace('page-','')||'roster';
+  let name=active?.id?.replace('page-','')||'roster';
+  if(name==='patients-list')name=currentPatientsTab||'patients-active';
   const el=document.querySelector(`.nav-tile[data-tab="${name}"]`)||document.querySelector(`.tab-dd-item[data-tab="${name}"]`);
   switchTab(name,el);
 }
@@ -2936,22 +2997,28 @@ async function openFollowupHistory(patientId){
 
 
 function normaliseFollowupStatus(status){
-  let st=String(status||'active').trim().toLowerCase().replace(/\s+/g,'_');
+  let st=String(status||'active').trim().toLowerCase().replace(/[\s-]+/g,'_');
   if(st==='reversal')st='reversed';
-  return (st==='awaiting_feedback'||st==='paused'||st==='deceased'||st==='reversed')?st:'active';
+  if(st==='inpatients')st='inpatient';
+  if(st==='relocated_abroad')st='relocated_overseas';
+  if(st==='discharged_to_gozo')st='relocated_gozo';
+  return (st==='awaiting_feedback'||st==='paused'||st==='deceased'||st==='reversed'||st==='inpatient'||st==='relocated_overseas'||st==='relocated_gozo')?st:'active';
 }
 function isClosedFollowupStatus(status){
   const st=normaliseFollowupStatus(status);
-  return st==='deceased'||st==='reversed';
+  return st==='deceased'||st==='reversed'||st==='relocated_overseas'||st==='relocated_gozo';
 }
 function followupStatusText(status){
   const st=normaliseFollowupStatus(status);
   return {
     active:'Active',
+    inpatient:'Inpatient',
     awaiting_feedback:'Awaiting Feedback',
     paused:'Paused',
     deceased:'Deceased',
-    reversed:'Reversed'
+    reversed:'Reversed',
+    relocated_overseas:'Relocated Overseas',
+    relocated_gozo:'Relocated to Gozo'
   }[st]||'Active';
 }
 function followupStatusBadge(status,showActive=false){
@@ -2960,6 +3027,135 @@ function followupStatusBadge(status,showActive=false){
   return `<span class="followup-status-badge ${htmlSafe(st)}">${htmlSafe(followupStatusText(st))}</span>`;
 }
 function patientFollowupStatus(a){return normaliseFollowupStatus(a?.patients?.followup_status);}
+
+const PATIENT_TAB_FILTERS={
+  'patients-active':{status:'active',title:'Active Patients',subtitle:'Patients currently active in the registry.'},
+  'patients-inpatients':{status:'inpatient',title:'Inpatients',subtitle:'Patients marked as inpatient or inpatient status.'},
+  'patients-reversed':{status:'reversed',title:'Reversed Patients',subtitle:'Patients with reversal status or reversal date.'},
+  'patients-deceased':{status:'deceased',title:'Deceased Patients',subtitle:'Patients kept in the deceased register.'},
+  'patients-relocated-overseas':{status:'relocated_overseas',title:'Relocated Overseas',subtitle:'Patients marked as relocated overseas.'},
+  'patients-relocated-gozo':{status:'relocated_gozo',title:'Relocated to Gozo',subtitle:'Patients marked as relocated or discharged to Gozo.'}
+};
+function patientStatusFromRaw(raw){
+  const r=String(raw||'').trim().toLowerCase().replace(/[\s-]+/g,'_');
+  if(!r)return '';
+  if(r.includes('deceased')||r.includes('rip'))return 'deceased';
+  if(r.includes('reversed')||r.includes('reversal'))return 'reversed';
+  if(r.includes('overseas')||r.includes('abroad'))return 'relocated_overseas';
+  if(r.includes('gozo'))return 'relocated_gozo';
+  if(r.includes('inpatient')||r.includes('in_patient'))return 'inpatient';
+  if(r.includes('active'))return 'active';
+  return '';
+}
+function patientRegisterStatus(p){
+  const rawStatus=patientStatusFromRaw(p?.patient_status_raw);
+  if(rawStatus&&rawStatus!=='active')return rawStatus;
+  const st=normaliseFollowupStatus(p?.followup_status);
+  if(st==='deceased'||st==='reversed'||st==='relocated_overseas'||st==='relocated_gozo'||st==='inpatient')return st;
+  if(p?.rip_date)return 'deceased';
+  if(p?.reversal_date)return 'reversed';
+  return rawStatus||'active';
+}
+function patientRegisterStatusText(status){
+  const st=String(status||'active');
+  return {
+    active:'Active',
+    inpatient:'Inpatient',
+    reversed:'Reversed',
+    deceased:'Deceased',
+    relocated_overseas:'Relocated Overseas',
+    relocated_gozo:'Relocated to Gozo'
+  }[st]||'Active';
+}
+function patientStatusChip(status){
+  const st=String(status||'active');
+  return `<span class="patient-status-chip ${htmlSafe(st)}">${htmlSafe(patientRegisterStatusText(st))}</span>`;
+}
+function patientDueText(p){
+  const month=p?.followup_due_month?followupMonthName(p.followup_due_month):'—';
+  const year=p?.followup_year||'';
+  return month==='—'?'—':`${month} ${year}`.trim();
+}
+async function loadPatientsList(tabName){
+  currentPatientsTab=tabName||currentPatientsTab||'patients-active';
+  const select=document.getElementById('patients-list-filter');
+  if(select)select.value=currentPatientsTab;
+  const cfg=PATIENT_TAB_FILTERS[currentPatientsTab]||PATIENT_TAB_FILTERS['patients-active'];
+  const title=document.getElementById('patients-list-title');
+  const subtitle=document.getElementById('patients-list-subtitle');
+  const cardTitle=document.getElementById('patients-list-card-title');
+  if(title)title.textContent=cfg.title;
+  if(subtitle)subtitle.textContent=cfg.subtitle;
+  if(cardTitle)cardTitle.textContent=cfg.title;
+  const tbody=document.getElementById('patients-list-tbody');
+  if(tbody)tbody.innerHTML='<tr><td colspan="10" class="empty">Loading patients...</td></tr>';
+  let fields='id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type,patient_status_raw,locality,surgery_date,last_outcome_date,next_followup_mirror,rip_date,reversal_date';
+  let res=await SB.from('patients').select(fields).order('surname',{ascending:true}).limit(3000);
+  if(res.error){
+    console.warn('Extended patient register fields unavailable, using core patient fields:',res.error);
+    fields='id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type';
+    res=await SB.from('patients').select(fields).order('surname',{ascending:true}).limit(3000);
+  }
+  if(res.error){
+    if(tbody)tbody.innerHTML=`<tr><td colspan="10" class="empty">Could not load patients: ${htmlSafe(res.error.message||'Unknown error')}</td></tr>`;
+    return;
+  }
+  patientsListRows=res.data||[];
+  renderPatientsList();
+}
+function renderPatientsList(){
+  const cfg=PATIENT_TAB_FILTERS[currentPatientsTab]||PATIENT_TAB_FILTERS['patients-active'];
+  const tbody=document.getElementById('patients-list-tbody');
+  const stats=document.getElementById('patients-list-stats');
+  const search=String(document.getElementById('patients-list-search')?.value||'').trim().toLowerCase();
+  const all=patientsListRows||[];
+  const countStatus=(st)=>all.filter(p=>patientRegisterStatus(p)===st).length;
+  if(stats){
+    stats.innerHTML=`
+      <div class="sbox"><div class="sl">Selected Group</div><div class="sv" style="font-size:22px;">${all.filter(p=>patientRegisterStatus(p)===cfg.status).length}</div><div class="ss">${htmlSafe(cfg.title)}</div></div>
+      <div class="sbox"><div class="sl">Active</div><div class="sv">${countStatus('active')}</div><div class="ss">current patients</div></div>
+      <div class="sbox"><div class="sl">Inpatients</div><div class="sv">${countStatus('inpatient')}</div><div class="ss">ward patients</div></div>
+      <div class="sbox"><div class="sl">Reversed</div><div class="sv">${countStatus('reversed')}</div><div class="ss">reversal register</div></div>
+      <div class="sbox"><div class="sl">Deceased</div><div class="sv">${countStatus('deceased')}</div><div class="ss">deceased register</div></div>
+      <div class="sbox"><div class="sl">Relocated</div><div class="sv">${countStatus('relocated_overseas')+countStatus('relocated_gozo')}</div><div class="ss">overseas / Gozo</div></div>`;
+  }
+  let rows=all.filter(p=>patientRegisterStatus(p)===cfg.status);
+  if(search){
+    rows=rows.filter(p=>[
+      p.first_name,p.surname,p.id_card,p.phone_number,p.followup_owner,p.locality,p.patient_status_raw,patientRegisterStatusText(patientRegisterStatus(p))
+    ].join(' ').toLowerCase().includes(search));
+  }
+  if(!tbody)return;
+  if(!rows.length){
+    tbody.innerHTML=`<tr><td colspan="10" class="empty">No ${htmlSafe(cfg.title.toLowerCase())} found${search?' for this search':''}.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML=rows.map(p=>{
+    const nm=`${p.first_name||''} ${p.surname||''}`.trim()||'Unnamed patient';
+    const st=patientRegisterStatus(p);
+    const latest=p.last_outcome_date||'—';
+    const next=p.next_followup_mirror||'—';
+    return `<tr class="followup-click-row" onclick="openFollowupHistory('${p.id}')">
+      <td><strong>${htmlSafe(nm)}</strong><br/><span style="font-size:10px;color:var(--muted);">Click row for history</span></td>
+      <td>${htmlSafe(p.id_card||'—')}</td>
+      <td>${htmlSafe(p.phone_number||'—')}</td>
+      <td>${patientStatusChip(st)}${p.patient_status_raw?`<br/><span style="font-size:10px;color:var(--muted);">${htmlSafe(p.patient_status_raw)}</span>`:''}</td>
+      <td>${htmlSafe(p.followup_owner||'Common')}</td>
+      <td>${htmlSafe(patientDueText(p))}</td>
+      <td>${htmlSafe(latest)}</td>
+      <td>${htmlSafe(next)}</td>
+      <td>${htmlSafe(p.locality||'—')}</td>
+      <td><div class="followup-actions" onclick="event.stopPropagation();"><button class="ncb-btn" onclick="openNewPatientFromExisting('${p.id}')" style="background:#e8f5f4;color:var(--teal);">Edit</button><button class="ncb-btn" onclick="openPatientRebookModal('${p.id}')" style="background:#fff8e1;color:#856404;">Rebook</button><button class="ncb-btn" onclick="openFollowupHistory('${p.id}')" style="background:#edf1f5;color:var(--navy);">History</button></div></td>
+    </tr>`;
+  }).join('');
+}
+async function openNewPatientFromExisting(patientId){
+  switchTab('new-patient',document.querySelector('.tab[data-tab="new-patient"]'));
+  const {data,error}=await SB.from('patients').select('id_card').eq('id',patientId).maybeSingle();
+  if(error||!data?.id_card){alert('Could not open this patient for editing.');return;}
+  const idEl=document.getElementById('np-id');
+  if(idEl){idEl.value=data.id_card;await lookupNewPatientById();}
+}
 
 
 // APPOINTMENT OUTCOMES TAB — filter fix
