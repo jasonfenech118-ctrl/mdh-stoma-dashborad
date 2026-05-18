@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- Build v66-72: Legible light navigation cards, renamed Patient Dashboard title, and cleaned duplicate patient-record action buttons. Built from v66-71 SafetyBoard. -->
 <!-- Build v66-68 Stage 10A: consistent navigation tabs across platform. Built from v66-67 Stage 9. -->
 <!-- v66-65c: Patient Record Lookup Fix — opens records from legacy patients or patients_main by UUID, ID card, hospital number, or patient number. -->
 <!--
@@ -106,7 +107,7 @@ Protected/not touched: login, Follow-Up Centre layout, rosters data logic, pathw
 
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>MDH Stoma Care Clinic — Patient Dashboard v66-68</title>
+<title>Stoma Care Patient Dashboard — v66-74</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230f766e'/%3E%3Ctext x='32' y='40' font-size='24' text-anchor='middle' fill='white' font-family='Arial' font-weight='700'%3EMDH%3C/text%3E%3C/svg%3E">
 <!-- Build v57: Core staff OT displayed on core row; Follow-Up buttons left-icon/center-text aligned; appointments grid fills width -->
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet"/>
@@ -5130,6 +5131,126 @@ textarea{
   .app-menu-dropdown{top:108px!important;left:8px!important;right:8px!important;min-width:auto!important;max-width:none!important;}
 }
 </style>
+
+
+<style id="v66-72-legible-nav-cleanup-css">
+/* v66-72 — lighter, more legible dashboard navigation and cleaner patient-record action area */
+:root{
+  --v6672-bg:#f6fbfc;
+  --v6672-card:#ffffff;
+  --v6672-soft:#eefbf8;
+  --v6672-border:rgba(15,38,56,.12);
+  --v6672-shadow:0 10px 28px rgba(15,38,56,.08);
+  --v6672-shadow-hover:0 14px 34px rgba(15,38,56,.13);
+}
+body{background:linear-gradient(135deg,#f7fbfc 0%,#eef7f8 50%,#f8fafc 100%)!important;}
+
+/* Home title panel: same light clinical style as the Patient Centre and Patient Record pages */
+.home-command-hero{
+  max-width:1280px!important;
+  margin:0 auto 16px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:18px!important;
+  padding:24px 26px!important;
+  border-radius:24px!important;
+  border:1px solid var(--v6672-border)!important;
+  border-left:7px solid #0f766e!important;
+  background:linear-gradient(135deg,#ffffff 0%,#f8fbfc 62%,#eefbf8 100%)!important;
+  color:#0f2638!important;
+  box-shadow:var(--v6672-shadow)!important;
+}
+.home-command-hero:before{
+  content:''!important;
+  position:absolute!important;
+  right:-70px!important;
+  top:-95px!important;
+  width:250px!important;
+  height:250px!important;
+  border-radius:999px!important;
+  background:rgba(15,118,110,.08)!important;
+}
+.home-command-hero:after{display:none!important;}
+.home-command-hero h2{
+  color:#0f2638!important;
+  font-family:'DM Serif Display',serif!important;
+  font-size:clamp(25px,3.1vw,39px)!important;
+  font-weight:700!important;
+  letter-spacing:-.025em!important;
+  line-height:1.06!important;
+  margin:0 0 6px!important;
+}
+.home-command-hero p{color:#64748b!important;font-size:13px!important;font-weight:700!important;line-height:1.45!important;}
+.home-eyebrow{color:#0f766e!important;font-size:10.5px!important;font-weight:950!important;letter-spacing:.16em!important;text-transform:uppercase!important;}
+.home-hero-mark{
+  background:#ffffff!important;
+  color:#0f766e!important;
+  border:1px solid rgba(15,118,110,.14)!important;
+  box-shadow:0 10px 24px rgba(15,38,56,.09)!important;
+}
+
+/* Search and KPI cards: stronger text and softer tones */
+.global-search-inner{background:#ffffff!important;border:1px solid var(--v6672-border)!important;box-shadow:0 8px 22px rgba(15,38,56,.07)!important;}
+#global-search-input{font-weight:700!important;color:#0f2638!important;}
+.home-kpi-card{background:#ffffff!important;border:1px solid var(--v6672-border)!important;box-shadow:0 8px 22px rgba(15,38,56,.06)!important;}
+.home-kpi-label{color:#334155!important;font-weight:950!important;letter-spacing:.10em!important;}
+.home-kpi-value{color:#0f2638!important;font-weight:950!important;}
+.home-kpi-sub{color:#475569!important;font-weight:800!important;}
+
+/* Navigation buttons: white cards, coloured icon, left accent line, bold text and chevron */
+.home-group-panel{
+  background:rgba(255,255,255,.86)!important;
+  border:1px solid var(--v6672-border)!important;
+  box-shadow:0 8px 24px rgba(15,38,56,.06)!important;
+}
+.home-group-label{color:#0f2638!important;font-size:11.5px!important;font-weight:950!important;letter-spacing:.12em!important;}
+.home-btn-grid{gap:12px!important;}
+.home-btn{
+  display:grid!important;
+  grid-template-columns:56px minmax(0,1fr) 20px!important;
+  grid-template-rows:auto auto!important;
+  align-items:center!important;
+  column-gap:14px!important;
+  row-gap:2px!important;
+  min-height:80px!important;
+  padding:14px 16px!important;
+  border-radius:18px!important;
+  border:1px solid var(--v6672-border)!important;
+  border-left:6px solid var(--teal)!important;
+  background:linear-gradient(135deg,#ffffff 0%,#fbfdfd 68%,#eefbf8 100%)!important;
+  box-shadow:0 7px 20px rgba(15,38,56,.07)!important;
+  text-align:left!important;
+}
+.home-btn:hover{transform:translateY(-2px)!important;box-shadow:var(--v6672-shadow-hover)!important;background:linear-gradient(135deg,#ffffff 0%,#f2fffc 100%)!important;border-color:#99f6e4!important;}
+.home-btn::after{content:'›'!important;grid-column:3!important;grid-row:1 / span 2!important;position:static!important;transform:none!important;justify-self:end!important;align-self:center!important;color:#94a3b8!important;font-size:24px!important;line-height:1!important;font-weight:300!important;}
+.home-btn-icon{grid-column:1!important;grid-row:1 / span 2!important;width:46px!important;height:46px!important;min-width:46px!important;border-radius:14px!important;margin:0!important;box-shadow:0 8px 18px rgba(15,38,56,.14)!important;}
+.home-btn-title{grid-column:2!important;grid-row:1!important;color:#0f2638!important;font-size:15.5px!important;font-weight:950!important;line-height:1.16!important;letter-spacing:-.005em!important;}
+.home-btn-sub{grid-column:2!important;grid-row:2!important;color:#475569!important;font-size:11.5px!important;font-weight:750!important;line-height:1.28!important;}
+
+/* Patient record: only one concise action row, no duplicated buttons inside summary information boxes */
+#patient-record-page .v6661-record-actions.clean-actions{justify-content:flex-start!important;gap:10px!important;}
+#patient-record-page .v6661-record-actions.clean-actions .v6661-btn{min-height:42px!important;padding:10px 16px!important;font-size:12.5px!important;}
+#patient-record-page .v6661-empty-state > div:last-child:empty{display:none!important;}
+#patient-record-page .v6661-empty-state{grid-template-columns:1fr!important;}
+#patient-record-page #v6663-safety-toolbar,.v6663-safety-toolbar{display:none!important;}
+
+@media(max-width:760px){
+  .home-command-hero{padding:18px 16px!important;border-radius:20px!important;}
+  .home-command-hero h2{font-size:27px!important;}
+  .home-kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+  .home-btn{grid-template-columns:52px minmax(0,1fr) 18px!important;min-height:76px!important;padding:13px 14px!important;}
+  .home-btn-icon{width:44px!important;height:44px!important;min-width:44px!important;}
+  .home-btn-title{font-size:15px!important;}
+  .home-btn-sub{font-size:11px!important;}
+  #patient-record-page .v6661-record-actions.clean-actions{display:grid!important;grid-template-columns:1fr 1fr!important;}
+  #patient-record-page .v6661-record-actions.clean-actions .v6661-btn{width:100%!important;justify-content:center!important;}
+}
+@media(max-width:460px){
+  .home-kpi-grid{grid-template-columns:1fr!important;}
+  #patient-record-page .v6661-record-actions.clean-actions{grid-template-columns:1fr!important;}
+}
+</style>
 </head>
 <body>
 <!--
@@ -5186,7 +5307,7 @@ v66-42 emergency fix:
       <div class="home-command-hero">
         <div>
           <div class="home-eyebrow">Mater Dei Hospital · Stoma Care Clinic</div>
-          <h2 id="home-main-title">MDH Stoma Care Command Centre</h2>
+          <h2 id="home-main-title">Stoma Care Patient Dashboard</h2>
           <p id="home-date-line">Mater Dei Hospital · Stoma Care Clinic</p>
         </div>
         <div class="home-hero-mark" aria-hidden="true">MDH</div>
@@ -5224,6 +5345,11 @@ v66-42 emergency fix:
             <div class="home-btn-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="16" rx="2"/><path d="M9 4.5h6"/><path d="m9 12 2 2 4-4"/><path d="M9 17h6"/></svg></div>
             <div class="home-btn-title">Patient Outcomes</div>
             <div class="home-btn-sub">Status and lifecycle views</div>
+          </div>
+          <div class="home-btn home-btn-rose" onclick="switchSection('safety-board',null)">
+            <div class="home-btn-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="M9 12l2 2 4-5"/></svg></div>
+            <div class="home-btn-title">Safety Board</div>
+            <div class="home-btn-sub">Risks, tasks, stock watch and handover</div>
           </div>
           <div class="home-btn home-btn-cyan" onclick="switchSection('followups',null)">
             <div class="home-btn-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="m8 16 2 2 5-5"/></svg></div>
@@ -5879,6 +6005,90 @@ v66-42 emergency fix:
     <!-- ══════════════════════════════════ -->
     <div class="section" id="section-reports">
       <div id="page-reports-inner"></div>
+    </div>
+
+    <!-- ══════════════════════════════════ -->
+    <!-- CLINICAL SAFETY BOARD — v66-71 additive module -->
+    <!-- ══════════════════════════════════ -->
+    <div class="section" id="section-safety-board">
+      <div class="phdr patient-page-title">
+        <div>
+          <h2>Clinical Safety Board</h2>
+          <p>Live workload risks, local task tracking, stock watch and handover summary.</p>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+          <button class="btn-refresh" onclick="loadSafetyBoard()">↻ Refresh</button>
+          <button class="btn-refresh" onclick="printSafetyBoard()">Print / Save PDF</button>
+          <button class="btn-add" onclick="copySafetyHandover()">Copy Handover</button>
+        </div>
+      </div>
+
+      <div class="safety-hero">
+        <div>
+          <div class="safety-eyebrow">v66-71 additive workspace</div>
+          <h3>One screen for today’s risks and actions</h3>
+          <p>This board reads the existing patient and appointment data where available. Tasks and stock watch items are saved locally in this browser, so it adds useful tracking without needing a new Supabase table.</p>
+        </div>
+        <div class="safety-score-card">
+          <span>Open safety items</span>
+          <strong id="safety-open-count">—</strong>
+          <em id="safety-updated-at">Not loaded</em>
+        </div>
+      </div>
+
+      <div class="safety-kpi-grid">
+        <div class="safety-kpi critical"><span>Overdue / Unknown Review</span><strong id="safety-kpi-overdue">—</strong><em>&gt;7 days or no review date</em></div>
+        <div class="safety-kpi warning"><span>Upcoming Surgery</span><strong id="safety-kpi-surgery">—</strong><em>Next 7 days</em></div>
+        <div class="safety-kpi info"><span>DNTU Watch</span><strong id="safety-kpi-dntu">—</strong><em>2+ missed follow-ups</em></div>
+        <div class="safety-kpi good"><span>Local Tasks</span><strong id="safety-kpi-tasks">—</strong><em>Open / due actions</em></div>
+      </div>
+
+      <div class="safety-grid-main">
+        <div class="safety-panel wide">
+          <div class="safety-panel-head">
+            <div><h3>Patient risk radar</h3><p>Calculated from existing patient fields and review dates.</p></div>
+            <select id="safety-risk-filter" onchange="renderSafetyRisks()">
+              <option value="all">All risks</option>
+              <option value="review">Overdue / unknown review</option>
+              <option value="surgery">Upcoming surgery</option>
+              <option value="dntu">DNTU watch</option>
+              <option value="contact">Missing contact details</option>
+            </select>
+          </div>
+          <div id="safety-risk-list" class="safety-risk-list"><div class="empty">Click Refresh to load patient risk radar.</div></div>
+        </div>
+
+        <div class="safety-panel">
+          <div class="safety-panel-head"><div><h3>Handover summary</h3><p>Auto-generated from risks and open tasks.</p></div></div>
+          <textarea id="safety-handover-text" class="safety-handover-text" readonly placeholder="Refresh to generate handover text..."></textarea>
+          <div class="safety-help">Use Copy Handover to paste into email, Teams, or printed handover notes.</div>
+        </div>
+      </div>
+
+      <div class="safety-grid-main">
+        <div class="safety-panel">
+          <div class="safety-panel-head"><div><h3>Local task register</h3><p>Saved on this device only.</p></div></div>
+          <div class="safety-add-form">
+            <input id="safety-task-title" placeholder="Task, e.g. Chase appliance order"/>
+            <input id="safety-task-patient" placeholder="Patient / ID optional"/>
+            <select id="safety-task-priority"><option>Routine</option><option>Important</option><option>Urgent</option></select>
+            <input id="safety-task-due" type="date"/>
+            <button class="btn-add" onclick="addSafetyTask()">Add Task</button>
+          </div>
+          <div id="safety-task-list" class="safety-mini-list"><div class="empty">No local tasks yet.</div></div>
+        </div>
+
+        <div class="safety-panel">
+          <div class="safety-panel-head"><div><h3>Stock watch</h3><p>Quick list for supplies that need attention.</p></div></div>
+          <div class="safety-add-form stock">
+            <input id="safety-stock-item" placeholder="Item, e.g. convex bags"/>
+            <input id="safety-stock-note" placeholder="Size / code / note"/>
+            <select id="safety-stock-level"><option>Monitor</option><option>Low</option><option>Critical</option></select>
+            <button class="btn-add" onclick="addSafetyStock()">Add Stock Item</button>
+          </div>
+          <div id="safety-stock-list" class="safety-mini-list"><div class="empty">No stock watch items yet.</div></div>
+        </div>
+      </div>
     </div>
 
     <!-- ══════════════════════════════════ -->
@@ -8033,6 +8243,7 @@ function switchSection(name, navEl, options={}){
     'patients':'MDH Stoma Care — Patients',
     'patient-pathways':'MDH Stoma Care — Add Patient',
     'patient-outcomes':'MDH Stoma Care — Patient Outcomes',
+    'safety-board':'MDH Stoma Care — Safety Board',
     'patient-detail':'MDH Stoma Care — Patient Profile',
     'followups':'MDH Stoma Care — Follow-Up Centre',
     'appointments':'MDH Stoma Care — Patient Appointments',
@@ -8075,6 +8286,7 @@ function switchSection(name, navEl, options={}){
   }
   if(name==='patient-pathways')loadPatientPathways();
   if(name==='patient-outcomes'){showPatientOutcomesHub();loadPatients();loadPatientCommandCounts();}
+  if(name==='safety-board')loadSafetyBoard();
   if(name==='clinical-reviews'){populatePatientDropdowns();loadReviews();}
   if(name==='teaching'){populatePatientDropdowns();loadTeaching();}
   if(name==='referrals'){populatePatientDropdowns();loadReferrals();}
@@ -20705,14 +20917,13 @@ input,select,textarea{border-radius:12px!important;}
     </div>`;
   }
   function renderActions(patientId,p,rel){
-    const active=activeEpisode(rel.episodes); const activeId=active?.id||active?.episode_id_label||'current';
-    return `<div class="v6661-record-actions">
+    // v66-72: keep patient-record actions focused and avoid duplicate workflow buttons.
+    // Episode-specific review/print/safety tools remain available inside the relevant episode/safety workspaces.
+    return `<div class="v6661-record-actions clean-actions" aria-label="Patient record actions">
       ${actionOpenEpisode(patientId,fullName(p))}
       ${actionAddStoma(patientId)}
-      ${active? actionReview(patientId,activeId):''}
       ${actionFollowup(patientId)}
       ${actionEdit(patientId)}
-      <button class="v6661-btn" type="button" onclick="stage3PrintPatientSummary()">🖨️ Print Summary</button>
       <button class="v6661-btn" type="button" onclick="backToPatientList()">← Back to List</button>
     </div>`;
   }
@@ -20738,9 +20949,9 @@ input,select,textarea{border-radius:12px!important;}
       <div class="v6661-summary-card" style="--card-colour:#0284c7"><div class="label">Follow-ups</div><div class="value">${rel.followups.length}</div><div class="sub">Linked appointments and follow-up plans.</div></div>
     </div>`;
     const empties=[
-      !active?emptyState('Patient profile created — no active episode open','This patient record can be reviewed, but episode-specific pathway tools should only appear after an episode is opened.',actionOpenEpisode(patientId,fullName(p))):'',
-      (!rel.stomas.length && !(p.stoma_type||p.stoma_type_summary))?emptyState('No stoma recorded yet','Add the stoma record so appliance history, reviews and complications can be linked correctly.',actionAddStoma(patientId)):'',
-      !rel.encounters.length?emptyState('No encounters or daily reviews recorded','Once an episode is open, add the first review from the patient record or inpatient workspace.',active?actionReview(patientId,active.id||'current'):''):'',
+      !active?emptyState('Patient profile created — no active episode open','This patient record can be reviewed, but episode-specific pathway tools should only appear after an episode is opened.',''):'',
+      (!rel.stomas.length && !(p.stoma_type||p.stoma_type_summary))?emptyState('No stoma recorded yet','Add the stoma record so appliance history, reviews and complications can be linked correctly.',''):'',
+      !rel.encounters.length?emptyState('No encounters or daily reviews recorded','Once an episode is open, add the first review from the patient record or inpatient workspace.',''):'',
     ].join('');
     return `<div class="v6661-section-head"><div><h3>Patient Summary</h3><p>Patient-level overview. Episode-specific pathway progress is shown inside the episode cards, not globally.</p></div></div>${renderClinicalAlerts(p,rel)}${cards}${empties}`;
   }
@@ -21207,9 +21418,9 @@ Protected: Add Patient flow, episode movement, patient record redesign, Follow-U
     if(anchor)anchor.insertAdjacentHTML(anchor.id==='patient-record-page'?'afterbegin':'beforebegin',`<div class="v6663-alert-strip" id="v6663-alert-strip"><strong>Critical patient alert</strong><span>${esc(txt)}</span></div>`);
   }
   function injectToolbar(){
-    const c=ctx(); if(!c||d.getElementById('v6663-safety-toolbar'))return;
-    const actions=d.querySelector('.v6661-record-actions'); if(!actions)return;
-    actions.insertAdjacentHTML('afterend',`<div class="v6663-safety-toolbar" id="v6663-safety-toolbar"><div class="v6663-safety-toolbar-label">Clinical safety</div><button class="v6663-btn red" onclick="v6663OpenAlertModal()">⚠ Critical Alert</button><button class="v6663-btn amber" onclick="v6663OpenAmendmentModal()">✎ Create Amendment</button><button class="v6663-btn blue" onclick="v6663PrintPatientHandover()">🖨 Handover / Print</button><button class="v6663-btn dark" onclick="v6663OpenRecordSafetyModal()">🔒 Record Safety</button></div>`);
+    // v66-72: toolbar removed from the patient record to avoid duplicate/unnecessary buttons.
+    // The Safety Board remains the central place for safety workflow actions.
+    return;
   }
   function refreshPatientRecordSoon(){
     const c=ctx(); if(c?.patientId&&typeof window.openPatientRecordPage==='function')setTimeout(()=>window.openPatientRecordPage(c.patientId),350);
@@ -23049,69 +23260,669 @@ Protected: Add Patient flow, episode movement, patient record redesign, Follow-U
 })();
 </script>
 
-<style id="v66-70-patient-record-tab-theme">
-/* v66-70 — Patient record navigation tabs aligned to Patient Pathway visual style */
-#patient-detail-modal .pd-tabs,
-#patient-record-page .pd-tabs{
-  display:grid!important;
-  grid-template-columns:repeat(auto-fit,minmax(170px,1fr))!important;
-  gap:8px!important;
-  border:1px solid rgba(15,38,56,.12)!important;
-  border-radius:18px!important;
-  background:#fff!important;
-  padding:10px!important;
-  box-shadow:0 10px 24px rgba(15,38,56,.08)!important;
-}
-#patient-detail-modal .pd-tab,
-#patient-record-page .pd-tab{
-  border:1px solid rgba(15,38,56,.10)!important;
-  border-radius:12px!important;
-  min-height:42px!important;
-  justify-content:flex-start!important;
-  font-weight:800!important;
-  color:#0f2638!important;
-  background:linear-gradient(135deg,#f8fafc,#eef2ff)!important;
-}
-#patient-detail-modal .pd-tab:hover,
-#patient-record-page .pd-tab:hover{
-  transform:translateY(-1px);
-  box-shadow:0 8px 18px rgba(15,38,56,.10)!important;
-}
-#patient-detail-modal .pd-tab.active,
-#patient-record-page .pd-tab.active{
-  color:#fff!important;
-  border-color:transparent!important;
-  box-shadow:0 10px 20px rgba(15,38,56,.20)!important;
-}
-#patient-detail-modal .pd-tab:nth-child(1),
-#patient-record-page .pd-tab:nth-child(1){background:linear-gradient(135deg,#e6fffa,#ccfbf1)!important;}
-#patient-detail-modal .pd-tab:nth-child(2),
-#patient-record-page .pd-tab:nth-child(2){background:linear-gradient(135deg,#eff6ff,#dbeafe)!important;}
-#patient-detail-modal .pd-tab:nth-child(3),
-#patient-record-page .pd-tab:nth-child(3){background:linear-gradient(135deg,#f5f3ff,#ede9fe)!important;}
-#patient-detail-modal .pd-tab:nth-child(4),
-#patient-record-page .pd-tab:nth-child(4){background:linear-gradient(135deg,#fff7ed,#ffedd5)!important;}
-#patient-detail-modal .pd-tab:nth-child(5),
-#patient-record-page .pd-tab:nth-child(5){background:linear-gradient(135deg,#f0fdfa,#ccfbf1)!important;}
-#patient-detail-modal .pd-tab:nth-child(6),
-#patient-record-page .pd-tab:nth-child(6){background:linear-gradient(135deg,#fdf2f8,#fce7f3)!important;}
-#patient-detail-modal .pd-tab:nth-child(7),
-#patient-record-page .pd-tab:nth-child(7){background:linear-gradient(135deg,#f8fafc,#e2e8f0)!important;}
-#patient-detail-modal .pd-tab.active:nth-child(1),
-#patient-record-page .pd-tab.active:nth-child(1){background:linear-gradient(135deg,#0f766e,#14b8a6)!important;}
-#patient-detail-modal .pd-tab.active:nth-child(2),
-#patient-record-page .pd-tab.active:nth-child(2){background:linear-gradient(135deg,#1d4ed8,#2563eb)!important;}
-#patient-detail-modal .pd-tab.active:nth-child(3),
-#patient-record-page .pd-tab.active:nth-child(3){background:linear-gradient(135deg,#6d28d9,#7c3aed)!important;}
-#patient-detail-modal .pd-tab.active:nth-child(4),
-#patient-record-page .pd-tab.active:nth-child(4){background:linear-gradient(135deg,#c2410c,#ea580c)!important;}
-#patient-detail-modal .pd-tab.active:nth-child(5),
-#patient-record-page .pd-tab.active:nth-child(5){background:linear-gradient(135deg,#0f766e,#0d9488)!important;}
-#patient-detail-modal .pd-tab.active:nth-child(6),
-#patient-record-page .pd-tab.active:nth-child(6){background:linear-gradient(135deg,#be185d,#db2777)!important;}
-#patient-detail-modal .pd-tab.active:nth-child(7),
-#patient-record-page .pd-tab.active:nth-child(7){background:linear-gradient(135deg,#334155,#475569)!important;}
-</style>
+<script>
+/* v66-71 — Clinical Safety Board: additive local module, no database schema change required. */
+(function(){
+  const STYLE_ID='v6671-safety-board-style';
+  const TASK_KEY='mdh_v6671_safety_tasks';
+  const STOCK_KEY='mdh_v6671_stock_watch';
+  const state={patients:[],risks:[],tasks:[],stock:[]};
+  const esc=(v)=>{try{return typeof htmlSafe==='function'?htmlSafe(v):String(v??'').replace(/[&<>"']/g,(c)=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}catch(_){return String(v??'');}};
+  const today=()=>{try{return typeof TODAY!=='undefined'?TODAY:new Date().toISOString().slice(0,10);}catch(_){return new Date().toISOString().slice(0,10);}};
+  const parseDate=(v)=>{if(!v)return null;const d=new Date(String(v).slice(0,10)+'T00:00:00');return isNaN(d)?null:d;};
+  const daysBetween=(a,b)=>Math.floor((parseDate(b)-parseDate(a))/(24*60*60*1000));
+  const getJSON=(key)=>{try{return JSON.parse(localStorage.getItem(key)||'[]')||[];}catch(_){return [];}};
+  const setJSON=(key,val)=>localStorage.setItem(key,JSON.stringify(val||[]));
 
+  function installStyle(){
+    if(document.getElementById(STYLE_ID))return;
+    const css=`
+      .safety-hero{display:grid;grid-template-columns:minmax(0,1fr) 220px;gap:16px;align-items:stretch;background:linear-gradient(135deg,#0f2638,#0f766e);border-radius:20px;padding:22px;color:white;box-shadow:var(--shadow-lg);margin-bottom:16px;overflow:hidden;position:relative;}
+      .safety-hero:after{content:'';position:absolute;right:-80px;top:-80px;width:210px;height:210px;border-radius:50%;background:rgba(255,255,255,.10);}
+      .safety-eyebrow{font-size:10px;font-weight:950;letter-spacing:.12em;text-transform:uppercase;color:#99f6e4;margin-bottom:8px;}
+      .safety-hero h3{font-size:24px;font-weight:950;letter-spacing:-.3px;margin:0 0 6px;}
+      .safety-hero p{max-width:790px;font-size:13px;line-height:1.55;color:rgba(255,255,255,.78);margin:0;}
+      .safety-score-card{position:relative;z-index:1;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);border-radius:18px;padding:18px;text-align:center;display:flex;flex-direction:column;justify-content:center;}
+      .safety-score-card span{font-size:11px;font-weight:850;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.75);}
+      .safety-score-card strong{font-size:46px;line-height:1;font-weight:950;margin:8px 0;color:#fff;}
+      .safety-score-card em{font-size:10.5px;color:rgba(255,255,255,.68);font-style:normal;}
+      .safety-kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-bottom:16px;}
+      .safety-kpi{background:#fff;border:1px solid var(--border);border-radius:16px;padding:15px 16px;box-shadow:var(--shadow);border-left:6px solid #0f766e;}
+      .safety-kpi.critical{border-left-color:#c2413b}.safety-kpi.warning{border-left-color:#b45309}.safety-kpi.info{border-left-color:#2563eb}.safety-kpi.good{border-left-color:#0f766e}
+      .safety-kpi span{display:block;font-size:10px;font-weight:950;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);}
+      .safety-kpi strong{display:block;font-size:32px;line-height:1;font-weight:950;color:var(--navy);margin-top:8px;}
+      .safety-kpi em{display:block;font-size:11px;color:var(--muted);font-style:normal;margin-top:5px;}
+      .safety-grid-main{display:grid;grid-template-columns:1.2fr .8fr;gap:16px;margin-bottom:16px;align-items:start;}
+      .safety-panel{background:#fff;border:1px solid var(--border);border-radius:18px;box-shadow:var(--shadow);padding:16px;min-width:0;}
+      .safety-panel.wide{min-height:360px;}
+      .safety-panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px;}
+      .safety-panel-head h3{font-size:15px;font-weight:950;color:var(--navy);margin:0;}
+      .safety-panel-head p{font-size:11.5px;color:var(--muted);margin:3px 0 0;line-height:1.35;}
+      .safety-panel-head select{padding:8px 10px;border:1.5px solid var(--border);border-radius:10px;background:#fff;color:var(--navy);font-size:12px;font-weight:800;font-family:'DM Sans',sans-serif;outline:none;}
+      .safety-risk-list{display:grid;gap:8px;}
+      .safety-risk-card{border:1px solid #e2e8f0;border-left:5px solid #0f766e;border-radius:14px;background:#f8fafc;padding:11px 12px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:start;}
+      .safety-risk-card.review{border-left-color:#c2413b;background:#fff7f7}.safety-risk-card.surgery{border-left-color:#b45309;background:#fffaf0}.safety-risk-card.dntu{border-left-color:#2563eb;background:#f7fbff}.safety-risk-card.contact{border-left-color:#475569;background:#f8fafc}
+      .safety-risk-name{font-size:13px;font-weight:950;color:var(--navy);line-height:1.2;}
+      .safety-risk-meta{font-size:11px;color:var(--muted);margin-top:3px;line-height:1.35;}
+      .safety-risk-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px;}
+      .safety-tag{display:inline-flex;align-items:center;padding:3px 8px;border-radius:999px;font-size:9.5px;font-weight:950;text-transform:uppercase;background:#eef2f7;color:#334155;}
+      .safety-tag.review{background:#fee2e2;color:#7f1d1d}.safety-tag.surgery{background:#fff3cd;color:#856404}.safety-tag.dntu{background:#dbeafe;color:#1e40af}.safety-tag.contact{background:#e2e8f0;color:#334155}.safety-tag.urgent{background:#fee2e2;color:#991b1b}.safety-tag.important{background:#fffbeb;color:#92400e}.safety-tag.routine{background:#ecfdf9;color:#0f766e}
+      .safety-risk-action{display:flex;gap:6px;align-items:center;justify-content:flex-end;flex-wrap:wrap;}
+      .safety-chip-btn{border:1px solid var(--border);background:white;border-radius:10px;padding:6px 9px;font-size:10.5px;font-weight:900;color:var(--navy);cursor:pointer;font-family:'DM Sans',sans-serif;}
+      .safety-chip-btn:hover{border-color:#99f6e4;color:#0f766e;background:#f0fdfa;}
+      .safety-handover-text{width:100%;min-height:265px;border:1.5px solid var(--border);border-radius:14px;padding:12px;font-family:'DM Sans',sans-serif;font-size:12px;line-height:1.45;color:var(--navy);resize:vertical;background:#f8fafc;}
+      .safety-help{font-size:11px;color:var(--muted);margin-top:8px;line-height:1.35;}
+      .safety-add-form{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr) 120px 130px auto;gap:8px;margin-bottom:12px;align-items:center;}
+      .safety-add-form.stock{grid-template-columns:minmax(0,1.2fr) minmax(0,1.2fr) 120px auto;}
+      .safety-add-form input,.safety-add-form select{width:100%;padding:9px 11px;border:1.5px solid var(--border);border-radius:10px;font-size:12px;font-family:'DM Sans',sans-serif;outline:none;}
+      .safety-mini-list{display:grid;gap:8px;}
+      .safety-mini-row{border:1px solid #e2e8f0;border-radius:13px;background:#f8fafc;padding:10px 11px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;}
+      .safety-mini-title{font-size:13px;font-weight:950;color:var(--navy);line-height:1.2;}
+      .safety-mini-meta{font-size:11px;color:var(--muted);line-height:1.35;margin-top:3px;}
+      .safety-mini-actions{display:flex;gap:5px;align-items:center;justify-content:flex-end;flex-wrap:wrap;}
+      .safety-complete{opacity:.58;text-decoration:line-through;}
+      @media(max-width:980px){.safety-hero,.safety-grid-main{grid-template-columns:1fr}.safety-score-card{text-align:left}.safety-add-form,.safety-add-form.stock{grid-template-columns:1fr}.safety-risk-card,.safety-mini-row{grid-template-columns:1fr}.safety-risk-action,.safety-mini-actions{justify-content:flex-start}}
+      @media print{body.print-safety-board #login-screen,body.print-safety-board .topbar,body.print-safety-board .app-menu-tabs,body.print-safety-board .tabs,body.print-safety-board .phdr button,body.print-safety-board .safety-add-form,body.print-safety-board .safety-chip-btn,body.print-safety-board .safety-mini-actions{display:none!important}body.print-safety-board .main-content{margin-top:0!important;padding:0!important}body.print-safety-board .section{display:none!important}body.print-safety-board #section-safety-board{display:block!important}body.print-safety-board .safety-hero{background:white!important;color:#111!important;border:1px solid #ddd!important;box-shadow:none!important}body.print-safety-board .safety-hero p,body.print-safety-board .safety-eyebrow{color:#333!important}.safety-panel,.safety-kpi{box-shadow:none!important;page-break-inside:avoid}}
+    `;
+    const style=document.createElement('style');
+    style.id=STYLE_ID;
+    style.textContent=css;
+    document.head.appendChild(style);
+  }
+
+  function patientName(p){return `${p.first_name||''} ${p.surname||''}`.trim()||p.full_name||'Unnamed patient';}
+  function patientId(p){return p.id_card||p.id_card_number||p.hospital_number||p.patient_number||'—';}
+  function patientPhone(p){return p.phone_number||p.mobile_number||p.contact_number||p.home_number||'';}
+  function currentLocation(p){return [p.ward,p.locality,p.care_setting].filter(Boolean).join(' / ')||'—';}
+  function lastReviewDate(p){return p.last_review_date||p.review_date||p.last_review||p.last_reviewed_at||p.last_outcome_date||p.updated_at||'';}
+  function isActivePatient(p){return p.is_active!==false && String(p.status||p.patient_status||'').toLowerCase()!=='inactive';}
+
+  function buildRisks(patients){
+    const t=today();
+    const risks=[];
+    (patients||[]).filter(isActivePatient).forEach(p=>{
+      const name=patientName(p);
+      const pid=patientId(p);
+      const loc=currentLocation(p);
+      const lr=lastReviewDate(p);
+      const daysSince=lr?daysBetween(lr,t):null;
+      if(!lr || daysSince>7){
+        risks.push({type:'review',patient:p,name,pid,loc,priority:!lr?'Important':(daysSince>14?'Urgent':'Important'),title:!lr?'No review date recorded':`Last review ${daysSince} days ago`,detail:`${loc} · ${p.stoma_type||p.stoma_type_summary||'Stoma type not recorded'}`});
+      }
+      const sx=p.surgery_date||p.date_of_surgery||p.operation_date;
+      const untilSx=sx?daysBetween(t,sx):null;
+      if(untilSx!==null && untilSx>=0 && untilSx<=7){
+        risks.push({type:'surgery',patient:p,name,pid,loc,priority:untilSx<=1?'Urgent':'Important',title:untilSx===0?'Surgery today':`Surgery in ${untilSx} day${untilSx===1?'':'s'}`,detail:`Surgery date ${sx} · ${loc}`});
+      }
+      const streak=Number(p.dntu_streak||p.dntu_count||0);
+      if(streak>=2){
+        risks.push({type:'dntu',patient:p,name,pid,loc,priority:streak>=3?'Urgent':'Important',title:`${streak} DNTU${streak===1?'':'s'} recorded`,detail:`Check follow-up plan and contact details · ${patientPhone(p)||'No phone recorded'}`});
+      }
+      if(!patientPhone(p)){
+        risks.push({type:'contact',patient:p,name,pid,loc,priority:'Routine',title:'Missing contact number',detail:`ID ${pid} · ${loc}`});
+      }
+    });
+    const weight={Urgent:0,Important:1,Routine:2};
+    return risks.sort((a,b)=>(weight[a.priority]??9)-(weight[b.priority]??9)||a.name.localeCompare(b.name));
+  }
+
+  async function loadPatientsForSafety(){
+    try{if(typeof getProjectPatients==='function')return await getProjectPatients();}catch(e){console.warn('Safety Board getProjectPatients skipped:',e?.message||e);}
+    try{const {data}=await SB.from('patients').select('*').order('created_at',{ascending:false});return data||[];}catch(e){console.warn('Safety Board fallback patients skipped:',e?.message||e);return [];}
+  }
+
+  window.loadSafetyBoard=async function(){
+    installStyle();
+    const openEl=document.getElementById('safety-open-count');
+    if(openEl)openEl.textContent='…';
+    state.tasks=getJSON(TASK_KEY);
+    state.stock=getJSON(STOCK_KEY);
+    state.patients=await loadPatientsForSafety();
+    state.risks=buildRisks(state.patients);
+    renderSafetyRisks();
+    renderSafetyTasks();
+    renderSafetyStock();
+    renderSafetySummary();
+  };
+
+  window.renderSafetyRisks=function(){
+    const list=document.getElementById('safety-risk-list');
+    if(!list)return;
+    const filter=document.getElementById('safety-risk-filter')?.value||'all';
+    const rows=state.risks.filter(r=>filter==='all'||r.type===filter);
+    if(!rows.length){list.innerHTML='<div class="empty">No matching safety risks found.</div>';return;}
+    list.innerHTML=rows.slice(0,80).map(r=>{
+      const p=r.patient||{};
+      const safeId=encodeURIComponent(String(p.id||''));
+      const profileBtn=p.id?`<button class="safety-chip-btn" onclick="openPatientProfile(decodeURIComponent('${safeId}'))">Open Profile</button>`:'';
+      const taskTitle=`${r.title} — ${r.name}`.replace(/`/g,'');
+      const safeTitle=encodeURIComponent(taskTitle);
+      const safePatient=encodeURIComponent(r.name||'');
+      const safePriority=encodeURIComponent(r.priority||'Important');
+      return `<div class="safety-risk-card ${esc(r.type)}">
+        <div>
+          <div class="safety-risk-name">${esc(r.name)} <span style="font-family:monospace;font-size:11px;color:var(--muted);font-weight:800;">${esc(r.pid)}</span></div>
+          <div class="safety-risk-meta"><strong>${esc(r.title)}</strong><br>${esc(r.detail)}</div>
+          <div class="safety-risk-tags"><span class="safety-tag ${esc(r.type)}">${esc(r.type)}</span><span class="safety-tag ${String(r.priority||'').toLowerCase()}">${esc(r.priority)}</span></div>
+        </div>
+        <div class="safety-risk-action">${profileBtn}<button class="safety-chip-btn" onclick="prefillSafetyTask(decodeURIComponent('${safeTitle}'),decodeURIComponent('${safePatient}'),decodeURIComponent('${safePriority}'))">Make Task</button></div>
+      </div>`;
+    }).join('');
+  };
+
+  function openTasks(){return state.tasks.filter(t=>!t.done);}
+  function openStock(){return state.stock.filter(s=>!s.done);}
+
+  function renderSafetySummary(){
+    const review=state.risks.filter(r=>r.type==='review').length;
+    const surgery=state.risks.filter(r=>r.type==='surgery').length;
+    const dntu=state.risks.filter(r=>r.type==='dntu').length;
+    const tasks=openTasks().length;
+    const open=state.risks.length+tasks+openStock().filter(s=>String(s.level).toLowerCase()!=='monitor').length;
+    const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+    set('safety-kpi-overdue',review);set('safety-kpi-surgery',surgery);set('safety-kpi-dntu',dntu);set('safety-kpi-tasks',tasks);set('safety-open-count',open);
+    const upd=document.getElementById('safety-updated-at');if(upd)upd.textContent='Updated '+new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+    generateSafetyHandover();
+  }
+
+  window.prefillSafetyTask=function(title,patient,priority){
+    const a=document.getElementById('safety-task-title'); if(a)a.value=title||'';
+    const b=document.getElementById('safety-task-patient'); if(b)b.value=patient||'';
+    const c=document.getElementById('safety-task-priority'); if(c)c.value=priority||'Important';
+    document.getElementById('safety-task-due')?.focus();
+  };
+
+  window.addSafetyTask=function(){
+    const title=document.getElementById('safety-task-title')?.value.trim();
+    if(!title){alert('Please enter a task title.');return;}
+    const task={id:crypto?.randomUUID?crypto.randomUUID():String(Date.now()),title,patient:document.getElementById('safety-task-patient')?.value.trim()||'',priority:document.getElementById('safety-task-priority')?.value||'Routine',due:document.getElementById('safety-task-due')?.value||'',createdAt:new Date().toISOString(),done:false};
+    state.tasks.unshift(task);setJSON(TASK_KEY,state.tasks);
+    ['safety-task-title','safety-task-patient','safety-task-due'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+    renderSafetyTasks();renderSafetySummary();
+  };
+  window.toggleSafetyTask=function(id){state.tasks=state.tasks.map(t=>t.id===id?{...t,done:!t.done}:t);setJSON(TASK_KEY,state.tasks);renderSafetyTasks();renderSafetySummary();};
+  window.deleteSafetyTask=function(id){if(!confirm('Delete this local task?'))return;state.tasks=state.tasks.filter(t=>t.id!==id);setJSON(TASK_KEY,state.tasks);renderSafetyTasks();renderSafetySummary();};
+
+  function renderSafetyTasks(){
+    const list=document.getElementById('safety-task-list');if(!list)return;
+    const rows=state.tasks||[];
+    if(!rows.length){list.innerHTML='<div class="empty">No local tasks yet.</div>';return;}
+    list.innerHTML=rows.map(t=>`<div class="safety-mini-row ${t.done?'safety-complete':''}"><div><div class="safety-mini-title">${esc(t.title)}</div><div class="safety-mini-meta">${esc(t.patient||'No patient linked')} · ${esc(t.priority)}${t.due?' · Due '+esc(t.due):''}</div><div class="safety-risk-tags"><span class="safety-tag ${String(t.priority||'routine').toLowerCase()}">${esc(t.priority)}</span>${t.done?'<span class="safety-tag routine">Done</span>':'<span class="safety-tag important">Open</span>'}</div></div><div class="safety-mini-actions"><button class="safety-chip-btn" onclick="toggleSafetyTask('${esc(t.id)}')">${t.done?'Reopen':'Done'}</button><button class="safety-chip-btn" onclick="deleteSafetyTask('${esc(t.id)}')">Delete</button></div></div>`).join('');
+  }
+
+  window.addSafetyStock=function(){
+    const item=document.getElementById('safety-stock-item')?.value.trim();
+    if(!item){alert('Please enter a stock item.');return;}
+    const stock={id:crypto?.randomUUID?crypto.randomUUID():String(Date.now()),item,note:document.getElementById('safety-stock-note')?.value.trim()||'',level:document.getElementById('safety-stock-level')?.value||'Monitor',createdAt:new Date().toISOString(),done:false};
+    state.stock.unshift(stock);setJSON(STOCK_KEY,state.stock);
+    ['safety-stock-item','safety-stock-note'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+    renderSafetyStock();renderSafetySummary();
+  };
+  window.toggleSafetyStock=function(id){state.stock=state.stock.map(s=>s.id===id?{...s,done:!s.done}:s);setJSON(STOCK_KEY,state.stock);renderSafetyStock();renderSafetySummary();};
+  window.deleteSafetyStock=function(id){if(!confirm('Delete this stock watch item?'))return;state.stock=state.stock.filter(s=>s.id!==id);setJSON(STOCK_KEY,state.stock);renderSafetyStock();renderSafetySummary();};
+
+  function renderSafetyStock(){
+    const list=document.getElementById('safety-stock-list');if(!list)return;
+    const rows=state.stock||[];
+    if(!rows.length){list.innerHTML='<div class="empty">No stock watch items yet.</div>';return;}
+    list.innerHTML=rows.map(s=>`<div class="safety-mini-row ${s.done?'safety-complete':''}"><div><div class="safety-mini-title">${esc(s.item)}</div><div class="safety-mini-meta">${esc(s.note||'No note')} · ${esc(s.level)}</div><div class="safety-risk-tags"><span class="safety-tag ${String(s.level).toLowerCase()==='critical'?'urgent':String(s.level).toLowerCase()==='low'?'important':'routine'}">${esc(s.level)}</span>${s.done?'<span class="safety-tag routine">Resolved</span>':'<span class="safety-tag important">Open</span>'}</div></div><div class="safety-mini-actions"><button class="safety-chip-btn" onclick="toggleSafetyStock('${esc(s.id)}')">${s.done?'Reopen':'Resolve'}</button><button class="safety-chip-btn" onclick="deleteSafetyStock('${esc(s.id)}')">Delete</button></div></div>`).join('');
+  }
+
+  function generateSafetyHandover(){
+    const text=document.getElementById('safety-handover-text');if(!text)return;
+    const t=today();
+    const urgent=state.risks.filter(r=>r.priority==='Urgent').slice(0,8);
+    const important=state.risks.filter(r=>r.priority!=='Urgent').slice(0,10);
+    const tasks=openTasks().slice(0,10);
+    const stock=openStock().filter(s=>String(s.level).toLowerCase()!=='monitor').slice(0,8);
+    const lines=[];
+    lines.push(`MDH Stoma Care Safety Handover — ${t}`);
+    lines.push('');
+    lines.push(`Open safety items: ${state.risks.length + tasks.length + stock.length}`);
+    lines.push('');
+    lines.push('URGENT PATIENT RISKS');
+    if(urgent.length)urgent.forEach((r,i)=>lines.push(`${i+1}. ${r.name} (${r.pid}) — ${r.title}. ${r.detail}`)); else lines.push('No urgent patient risks flagged by the board.');
+    lines.push('');
+    lines.push('OTHER WATCH ITEMS');
+    if(important.length)important.forEach((r,i)=>lines.push(`${i+1}. ${r.name} (${r.pid}) — ${r.title}. ${r.detail}`)); else lines.push('No additional watch items.');
+    lines.push('');
+    lines.push('OPEN LOCAL TASKS');
+    if(tasks.length)tasks.forEach((task,i)=>lines.push(`${i+1}. ${task.priority}: ${task.title}${task.patient?' — '+task.patient:''}${task.due?' (due '+task.due+')':''}`)); else lines.push('No open local tasks.');
+    lines.push('');
+    lines.push('STOCK WATCH');
+    if(stock.length)stock.forEach((s,i)=>lines.push(`${i+1}. ${s.level}: ${s.item}${s.note?' — '+s.note:''}`)); else lines.push('No low or critical stock watch items.');
+    text.value=lines.join('\n');
+  }
+
+  window.copySafetyHandover=async function(){
+    generateSafetyHandover();
+    const text=document.getElementById('safety-handover-text')?.value||'';
+    if(!text){alert('Nothing to copy yet. Click Refresh first.');return;}
+    try{await navigator.clipboard.writeText(text);alert('Handover copied.');}
+    catch(_){const box=document.getElementById('safety-handover-text');box?.select();document.execCommand('copy');alert('Handover copied.');}
+  };
+
+  window.printSafetyBoard=function(){
+    document.body.classList.add('print-safety-board');
+    window.print();
+    setTimeout(()=>document.body.classList.remove('print-safety-board'),600);
+  };
+
+  installStyle();
+  window.addEventListener('load',()=>{if(document.getElementById('section-safety-board')?.classList.contains('active'))loadSafetyBoard();});
+})();
+</script>
+
+
+<style id="v66-73-followup-legible-navigation-css">
+/* v66-73 — Follow-Up Centre brought into the same lighter, bold navigation style */
+#section-followups{
+  --fu-card:#ffffff;
+  --fu-soft:#f4fbfb;
+  --fu-border:rgba(15,38,56,.12);
+  --fu-shadow:0 10px 28px rgba(15,38,56,.075);
+  --fu-shadow-hover:0 14px 34px rgba(15,38,56,.12);
+}
+
+/* Follow-Up page header: light clinical title card */
+#section-followups > .phdr.patient-page-title{
+  display:grid!important;
+  grid-template-columns:58px minmax(0,1fr) auto!important;
+  align-items:center!important;
+  gap:16px!important;
+  margin:0 0 14px!important;
+  padding:20px 22px!important;
+  border-radius:22px!important;
+  border:1px solid var(--fu-border)!important;
+  border-left:7px solid #0f766e!important;
+  background:linear-gradient(135deg,#ffffff 0%,#f8fbfc 62%,#eefbf8 100%)!important;
+  box-shadow:var(--fu-shadow)!important;
+  color:#0f2638!important;
+}
+#section-followups > .phdr.patient-page-title::before{
+  content:'✓'!important;
+  width:48px!important;
+  height:48px!important;
+  border-radius:15px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  background:linear-gradient(135deg,#0f2638,#0f766e)!important;
+  color:#ffffff!important;
+  font-size:24px!important;
+  font-weight:950!important;
+  box-shadow:0 10px 22px rgba(15,38,56,.16)!important;
+}
+#section-followups > .phdr.patient-page-title h2{
+  margin:0!important;
+  color:#0f2638!important;
+  font-size:26px!important;
+  line-height:1.08!important;
+  font-weight:800!important;
+  letter-spacing:-.02em!important;
+}
+#section-followups > .phdr.patient-page-title p{
+  margin-top:4px!important;
+  color:#475569!important;
+  font-size:12.5px!important;
+  font-weight:750!important;
+  line-height:1.35!important;
+}
+#section-followups > .phdr.patient-page-title .btn-refresh{
+  min-height:38px!important;
+  padding:0 16px!important;
+  border-radius:999px!important;
+  background:#ffffff!important;
+  color:#0f2638!important;
+  border:1px solid rgba(15,38,56,.14)!important;
+  box-shadow:0 5px 16px rgba(15,38,56,.07)!important;
+  font-size:12px!important;
+  font-weight:950!important;
+}
+
+/* Follow-Up navigation buttons: same card language as the updated home buttons */
+#section-followups #followup-subtab-bar,
+#section-followups #followup-subtab-bar.followup-button-mode{
+  display:grid!important;
+  grid-template-columns:repeat(auto-fit,minmax(210px,1fr))!important;
+  gap:10px!important;
+  align-items:stretch!important;
+  width:100%!important;
+  padding:12px!important;
+  margin:0 0 14px!important;
+  border-radius:18px!important;
+  border:1px solid var(--fu-border)!important;
+  background:rgba(255,255,255,.90)!important;
+  box-shadow:0 8px 24px rgba(15,38,56,.06)!important;
+  overflow:visible!important;
+}
+#section-followups #followup-subtab-bar .followup-nav-tab-wrap,
+#section-followups #followup-subtab-bar.followup-button-mode .followup-nav-tab-wrap,
+#section-followups #followup-subtab-bar .followup-roster-tab-wrap{
+  display:block!important;
+  width:100%!important;
+  min-width:0!important;
+  flex:none!important;
+  position:relative!important;
+  overflow:visible!important;
+}
+#section-followups #followup-subtab-bar .roster-subtab,
+#section-followups #followup-subtab-bar.followup-button-mode .roster-subtab{
+  display:grid!important;
+  grid-template-columns:42px minmax(0,1fr) 14px!important;
+  justify-content:stretch!important;
+  justify-items:start!important;
+  align-items:center!important;
+  gap:10px!important;
+  width:100%!important;
+  height:auto!important;
+  min-height:58px!important;
+  max-height:none!important;
+  padding:10px 13px 10px 12px!important;
+  border:1px solid rgba(15,38,56,.12)!important;
+  border-left:5px solid var(--dropdown-colour,var(--tab-colour,#0f766e))!important;
+  border-radius:16px!important;
+  background:linear-gradient(135deg,#ffffff 0%,#fbfdfd 70%,var(--dropdown-soft,var(--tab-soft,#eefbf8)) 100%)!important;
+  box-shadow:0 7px 20px rgba(15,38,56,.06)!important;
+  color:#0f2638!important;
+  white-space:normal!important;
+  text-align:left!important;
+  font-size:13px!important;
+  font-weight:950!important;
+  line-height:1.15!important;
+  overflow:hidden!important;
+}
+#section-followups #followup-subtab-bar .roster-subtab::after,
+#section-followups #followup-subtab-bar.followup-button-mode .roster-subtab::after{
+  content:'›'!important;
+  display:block!important;
+  grid-column:3!important;
+  grid-row:1!important;
+  justify-self:end!important;
+  align-self:center!important;
+  color:#94a3b8!important;
+  font-size:20px!important;
+  font-weight:300!important;
+  line-height:1!important;
+}
+#section-followups #followup-subtab-bar .roster-subtab:hover,
+#section-followups #followup-subtab-bar.followup-button-mode .roster-subtab:hover{
+  transform:translateY(-2px)!important;
+  border-color:#99f6e4!important;
+  background:linear-gradient(135deg,#ffffff 0%,#f2fffc 100%)!important;
+  box-shadow:var(--fu-shadow-hover)!important;
+}
+#section-followups #followup-subtab-bar .roster-subtab.active,
+#section-followups #followup-subtab-bar.followup-button-mode .roster-subtab.active{
+  border-color:var(--dropdown-colour,var(--tab-colour,#0f766e))!important;
+  border-left-color:var(--dropdown-colour,var(--tab-colour,#0f766e))!important;
+  background:linear-gradient(135deg,#ffffff 0%,var(--dropdown-soft,var(--tab-soft,#eefbf8)) 100%)!important;
+  box-shadow:inset 0 0 0 2px rgba(20,184,166,.08),0 9px 24px rgba(15,38,56,.08)!important;
+}
+#section-followups #followup-subtab-bar .roster-subtab-icon,
+#section-followups #followup-subtab-bar.followup-button-mode .roster-subtab-icon{
+  grid-column:1!important;
+  width:38px!important;
+  height:38px!important;
+  min-width:38px!important;
+  border-radius:12px!important;
+  box-shadow:0 8px 18px rgba(15,38,56,.14)!important;
+}
+#section-followups #followup-subtab-bar .roster-subtab-icon svg,
+#section-followups #followup-subtab-bar.followup-button-mode .roster-subtab-icon svg{
+  width:19px!important;
+  height:19px!important;
+  stroke-width:2.2!important;
+}
+#section-followups #followup-subtab-bar .roster-subtab > span:not(.roster-subtab-icon):not(.followup-roster-caret),
+#section-followups #followup-subtab-bar.followup-button-mode .roster-subtab > span:not(.roster-subtab-icon):not(.followup-roster-caret){
+  grid-column:2!important;
+  display:block!important;
+  width:100%!important;
+  color:#0f2638!important;
+  font-size:13px!important;
+  font-weight:950!important;
+  line-height:1.15!important;
+  text-align:left!important;
+  white-space:normal!important;
+}
+#section-followups .followup-roster-caret{display:none!important;}
+
+/* Dropdowns: card list, bold text, left accent colour */
+#section-followups .followup-mini-dropdown,
+#section-followups .followup-roster-dropdown,
+#section-followups #followup-subtab-bar.followup-button-mode .followup-mini-dropdown,
+#section-followups #followup-subtab-bar.followup-button-mode .followup-roster-dropdown{
+  width:min(345px,calc(100vw - 24px))!important;
+  min-width:280px!important;
+  padding:9px!important;
+  border-radius:18px!important;
+  border:1px solid rgba(15,38,56,.13)!important;
+  border-left:5px solid var(--dropdown-colour,#0f766e)!important;
+  background:#ffffff!important;
+  box-shadow:0 24px 58px rgba(15,38,56,.22)!important;
+  z-index:2147483000!important;
+}
+#section-followups .followup-mini-dropdown.open,
+#section-followups .followup-roster-dropdown.open,
+#section-followups #followup-subtab-bar.followup-button-mode .followup-mini-dropdown.open,
+#section-followups #followup-subtab-bar.followup-button-mode .followup-roster-dropdown.open{
+  display:grid!important;
+  gap:7px!important;
+}
+#section-followups .followup-mini-dropdown button,
+#section-followups .followup-roster-dropdown button{
+  min-height:58px!important;
+  grid-template-columns:42px minmax(0,1fr)!important;
+  gap:11px!important;
+  align-items:center!important;
+  padding:11px 12px!important;
+  border-radius:14px!important;
+  border:1px solid rgba(15,38,56,.10)!important;
+  background:linear-gradient(135deg,#ffffff 0%,#fbfdfd 70%,var(--dropdown-soft,#f8fafc) 100%)!important;
+  color:#0f2638!important;
+  box-shadow:0 4px 12px rgba(15,38,56,.045)!important;
+}
+#section-followups .followup-mini-dropdown button:hover,
+#section-followups .followup-roster-dropdown button:hover{
+  border-color:#99f6e4!important;
+  background:var(--dropdown-soft,#f0fdfa)!important;
+  transform:translateY(-1px)!important;
+}
+#section-followups .mini-roster-icon{
+  width:36px!important;
+  height:36px!important;
+  border-radius:12px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  color:#fff!important;
+  background:linear-gradient(135deg,#0f2638,#0f766e)!important;
+  box-shadow:0 7px 16px rgba(15,38,56,.13)!important;
+}
+#section-followups .followup-mini-dropdown strong,
+#section-followups .followup-roster-dropdown strong{font-size:13px!important;font-weight:950!important;color:#0f2638!important;line-height:1.12!important;}
+#section-followups .followup-mini-dropdown small,
+#section-followups .followup-roster-dropdown small{font-size:11px!important;font-weight:750!important;color:#475569!important;line-height:1.22!important;}
+
+/* Patient Appointments panel: stronger, cleaner and more legible */
+#section-followups #followup-appointments-inner #page-appointments,
+#section-followups #page-appointments{
+  display:block!important;
+}
+#section-followups #page-appointments > .phdr,
+#section-followups #followup-appointments-inner #page-appointments > .phdr{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:14px!important;
+  margin:0 0 12px!important;
+  padding:18px 20px!important;
+  border-radius:20px!important;
+  border:1px solid var(--fu-border)!important;
+  border-left:7px solid #2563eb!important;
+  background:linear-gradient(135deg,#ffffff 0%,#f8fbfc 62%,#eff6ff 100%)!important;
+  box-shadow:var(--fu-shadow)!important;
+}
+#section-followups #page-appointments > .phdr h2{font-size:25px!important;font-weight:800!important;color:#0f2638!important;line-height:1.08!important;margin:0!important;}
+#section-followups #page-appointments > .phdr p{font-size:12.5px!important;font-weight:750!important;color:#475569!important;margin-top:5px!important;}
+#section-followups .appointment-filter-row,
+#section-followups #page-appointments .appt-date-row.appointment-filter-row{
+  display:flex!important;
+  align-items:center!important;
+  gap:9px!important;
+  flex-wrap:wrap!important;
+  margin:0 0 12px!important;
+  padding:12px 13px!important;
+  border-radius:16px!important;
+  border:1px solid var(--fu-border)!important;
+  background:#ffffff!important;
+  box-shadow:0 7px 18px rgba(15,38,56,.055)!important;
+}
+#section-followups .appointment-filter-row label{font-size:12px!important;font-weight:950!important;color:#0f2638!important;letter-spacing:.01em!important;}
+#section-followups .appointment-filter-row button,
+#section-followups .appointment-filter-row input,
+#section-followups .appointment-filter-row select{
+  min-height:36px!important;
+  border-radius:11px!important;
+  border:1px solid rgba(15,38,56,.13)!important;
+  background:#ffffff!important;
+  color:#0f2638!important;
+  font-size:12px!important;
+  font-weight:850!important;
+  box-shadow:0 3px 10px rgba(15,38,56,.04)!important;
+}
+#section-followups .appointment-filter-row button{padding:0 12px!important;}
+#section-followups .sbadge,#section-followups #sbadge{
+  min-height:30px!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  padding:0 12px!important;
+  border-radius:999px!important;
+  background:#fce7f3!important;
+  color:#9f1239!important;
+  font-size:11px!important;
+  font-weight:950!important;
+  letter-spacing:.01em!important;
+}
+#section-followups .compact-appt-search,
+#section-followups #page-appointments .patient-search-card.compact-appt-search{
+  margin:0 0 13px!important;
+  padding:15px!important;
+  border-radius:18px!important;
+  border:1px solid var(--fu-border)!important;
+  border-left:6px solid #0f766e!important;
+  background:#ffffff!important;
+  box-shadow:var(--fu-shadow)!important;
+}
+#section-followups .appointment-search-head{display:flex!important;align-items:flex-start!important;justify-content:space-between!important;gap:12px!important;margin-bottom:10px!important;}
+#section-followups .appointment-search-head strong{font-size:14px!important;font-weight:950!important;color:#0f2638!important;}
+#section-followups .patient-search-mini-help{font-size:11.5px!important;font-weight:700!important;color:#475569!important;line-height:1.35!important;text-align:right!important;}
+#section-followups .appointment-search-row{display:flex!important;gap:8px!important;align-items:center!important;flex-wrap:wrap!important;}
+#section-followups .appointment-search-row input{
+  min-height:40px!important;
+  flex:1 1 260px!important;
+  padding:10px 12px!important;
+  border-radius:12px!important;
+  border:1px solid rgba(15,38,56,.14)!important;
+  background:#ffffff!important;
+  color:#0f2638!important;
+  font-size:13px!important;
+  font-weight:800!important;
+}
+#section-followups .appt-search-btn,
+#section-followups .appt-clear-btn{
+  min-height:40px!important;
+  padding:0 14px!important;
+  border-radius:12px!important;
+  font-size:12px!important;
+  font-weight:950!important;
+}
+#section-followups .patient-search-note{margin-top:8px!important;font-size:11px!important;color:#64748b!important;font-weight:750!important;}
+#section-followups .appointment-clinic-shell,
+#section-followups .clinic-wrap.appointment-clinic-shell{
+  border-radius:20px!important;
+  border:1px solid var(--fu-border)!important;
+  background:#ffffff!important;
+  overflow:hidden!important;
+  box-shadow:var(--fu-shadow)!important;
+}
+#section-followups .appointment-clinic-header,
+#section-followups .clinic-hdr.appointment-clinic-header{
+  min-height:50px!important;
+  padding:14px 18px!important;
+  background:linear-gradient(135deg,#0f2638,#0f766e)!important;
+  color:#ffffff!important;
+}
+#section-followups .appointment-clinic-header h3{font-size:15px!important;font-weight:950!important;margin:0!important;color:#fff!important;}
+#section-followups .appointment-clinic-header span{font-size:11px!important;font-weight:750!important;color:rgba(255,255,255,.78)!important;}
+#section-followups #slots-container{
+  padding:12px!important;
+  background:#ffffff!important;
+  overflow-x:auto!important;
+}
+#section-followups #slots-container table{
+  width:100%!important;
+  border-collapse:separate!important;
+  border-spacing:0 8px!important;
+}
+#section-followups #slots-container th{
+  background:#f8fafc!important;
+  color:#334155!important;
+  font-size:11px!important;
+  font-weight:950!important;
+  border:1px solid #e2e8f0!important;
+  padding:8px!important;
+}
+#section-followups #slots-container td{
+  background:#ffffff!important;
+  border:0!important;
+  padding:4px 6px!important;
+}
+#section-followups #slots-container .btn-book-time,
+#section-followups #slots-container button.btn-book-time{
+  width:100%!important;
+  min-height:34px!important;
+  border:1.5px dashed #cbd5e1!important;
+  border-radius:12px!important;
+  background:#fbfdfe!important;
+  color:#0f2638!important;
+  font-size:12px!important;
+  font-weight:950!important;
+  box-shadow:none!important;
+}
+#section-followups #slots-container .btn-book-time:hover{
+  border-color:#0f766e!important;
+  color:#0f766e!important;
+  background:#f0fdfa!important;
+}
+#section-followups #slots-container .appt-time-cell{
+  color:#0f766e!important;
+  font-weight:950!important;
+  background:#f8fafc!important;
+}
+
+@media(max-width:760px){
+  #section-followups > .phdr.patient-page-title{
+    grid-template-columns:48px minmax(0,1fr)!important;
+    padding:16px!important;
+    border-radius:18px!important;
+  }
+  #section-followups > .phdr.patient-page-title::before{width:42px!important;height:42px!important;border-radius:13px!important;font-size:20px!important;}
+  #section-followups > .phdr.patient-page-title .btn-refresh{grid-column:1 / -1!important;justify-self:start!important;}
+  #section-followups > .phdr.patient-page-title h2{font-size:22px!important;}
+  #section-followups #followup-subtab-bar,
+  #section-followups #followup-subtab-bar.followup-button-mode{grid-template-columns:1fr!important;padding:10px!important;gap:9px!important;}
+  #section-followups #followup-subtab-bar .roster-subtab,
+  #section-followups #followup-subtab-bar.followup-button-mode .roster-subtab{min-height:56px!important;}
+  #section-followups #page-appointments > .phdr{padding:15px!important;border-radius:18px!important;}
+  #section-followups #page-appointments > .phdr h2{font-size:22px!important;}
+  #section-followups .patient-search-mini-help{text-align:left!important;flex-basis:100%!important;}
+  #section-followups .appointment-search-row{display:grid!important;grid-template-columns:1fr 1fr!important;}
+  #section-followups .appointment-search-row input{grid-column:1 / -1!important;min-width:0!important;}
+  #section-followups .appt-search-btn,#section-followups .appt-clear-btn{width:100%!important;}
+}
+</style>
 </body>
 </html>
+
