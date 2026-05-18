@@ -46,7 +46,17 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .tab-dd-item:hover{background:#f5faf9;color:var(--teal);}
 .tab-dd-item.active{background:#e8f5f4;color:var(--teal);}
 .tab-dd-item small{font-size:10px;color:var(--muted);font-weight:600;}
-@media(max-width:700px){.tabs{padding:0 8px;gap:2px;justify-content:space-between;overflow:visible;}.tab-group{flex:1;min-width:0;}.tab{width:100%;justify-content:center;padding:0 6px;font-size:11px;}.tab-dd-menu{position:fixed;top:96px;left:10px;right:10px;min-width:auto;border-top:1px solid var(--border);border-radius:12px;}.tab-dd-item{font-size:12px;padding:11px 12px;}}
+.tab-single{flex:0 0 auto;}
+@media(max-width:700px){.tabs{padding:0 8px;gap:2px;justify-content:space-between;overflow:visible;}.tab-group{flex:1;min-width:0;}.tab{width:100%;justify-content:center;padding:0 6px;font-size:11px;}.tab-single{width:auto;min-width:78px;font-size:10px;}.tab-dd-menu{position:fixed;top:96px;left:10px;right:10px;min-width:auto;border-top:1px solid var(--border);border-radius:12px;}.tab-dd-item{font-size:12px;padding:11px 12px;}}
+
+/* NEW PATIENT PAGE */
+.new-patient-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;}
+.new-patient-grid .fg{margin-bottom:0;}
+.new-patient-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;}
+.new-patient-actions .btn-save,.new-patient-actions .btn-cancel{flex:0 0 auto;min-width:150px;}
+.new-patient-note{margin-top:14px;padding:10px 12px;border-radius:9px;font-size:12px;font-weight:700;background:#f8fafc;color:var(--muted);border:1px solid var(--border);}
+.new-patient-note.success{background:#e8f5f4;color:var(--teal);border-color:#b7ddd9;}
+.new-patient-note.error{background:#f8d7da;color:#721c24;border-color:#f1b0b7;}
 
 /* FOLLOW-UP CENTRE NAVIGATION TILES */
 .centre-hub{background:linear-gradient(135deg,#ffffff 0%,#f8fffd 100%);border:1px solid var(--border);border-radius:18px;padding:18px 20px;margin-bottom:18px;box-shadow:0 8px 24px rgba(13,115,119,.08);}
@@ -476,6 +486,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
     <button class="btn-so" onclick="doLogout()">Sign Out</button>
   </div>
   <div class="tabs grouped-tabs">
+    <button type="button" class="tab tab-single" data-tab="new-patient" onclick="switchTab('new-patient',this)">New Patient</button>
     <div class="tab-group">
       <button type="button" class="tab active" data-tabs="roster,cod,ot-audit" onclick="toggleTabGroup(event,this)">Staffing <span class="tab-caret">▾</span></button>
       <div class="tab-dd-menu">
@@ -508,6 +519,32 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
   </div>
 
   <div class="main">
+
+    <!-- NEW PATIENT -->
+    <div class="page" id="page-new-patient">
+      <div class="phdr">
+        <div><h2>New Patient</h2><p>Add a patient to the registry. If the ID card already exists, the saved patient record will be updated instead of duplicated.</p></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Patient Details</div>
+        <div class="new-patient-grid">
+          <div class="fg"><label>ID Card Number *</label><input type="text" id="np-id" placeholder="Enter ID card" onblur="lookupNewPatientById()" onkeydown="if(event.key==='Enter'){event.preventDefault();lookupNewPatientById();}"/></div>
+          <div class="fg"><label>First Name *</label><input type="text" id="np-fn" placeholder="First name"/></div>
+          <div class="fg"><label>Surname *</label><input type="text" id="np-sn" placeholder="Surname"/></div>
+          <div class="fg"><label>Phone Number</label><input type="tel" id="np-phone" placeholder="Phone number"/></div>
+          <div class="fg"><label>Booking Type / Episode</label><select id="np-followup-type"><option value="new_case">New case</option><option value="follow_up">Follow-up</option></select></div>
+          <div class="fg"><label>Follow-up Owner</label><select id="np-followup-owner"><option value="Common">Common</option><option value="Jason">Jason</option><option value="Jacqueline">Jacqueline</option><option value="Lorraine">Lorraine</option></select></div>
+          <div class="fg"><label>Follow-up Status</label><select id="np-followup-status"><option value="active">Active</option><option value="awaiting_feedback">Awaiting Feedback</option><option value="paused">Paused</option><option value="deceased">Deceased</option><option value="reversed">Reversed</option></select></div>
+          <div class="fg"><label>Follow-up Due Month</label><select id="np-followup-month"><option value="">No Due Month</option><option value="1">January</option><option value="2">February</option><option value="3">March</option><option value="4">April</option><option value="5">May</option><option value="6">June</option><option value="7">July</option><option value="8">August</option><option value="9">September</option><option value="10">October</option><option value="11">November</option><option value="12">December</option></select></div>
+          <div class="fg"><label>Follow-up Due Year</label><select id="np-followup-year"></select></div>
+        </div>
+        <div id="np-reg-note" class="new-patient-note">Enter an ID card to check whether the patient already exists.</div>
+        <div class="new-patient-actions">
+          <button class="btn-save" onclick="saveNewPatientTab()">Save Patient</button>
+          <button class="btn-cancel" onclick="clearNewPatientForm()">Clear Form</button>
+        </div>
+      </div>
+    </div>
 
     <!-- ROSTER -->
     <div class="page active" id="page-roster">
@@ -1197,6 +1234,93 @@ async function startApp(){
   populateCODDropdowns();
   loadCOD();
   const ry=document.getElementById('rep-year'); if(ry) ry.value=String(new Date().getFullYear());
+  initNewPatientYearOptions();
+}
+
+function initNewPatientYearOptions(){
+  const el=document.getElementById('np-followup-year');
+  if(!el)return;
+  const now=new Date().getFullYear();
+  el.innerHTML=[now,now+1,now+2,now+3].map(y=>`<option value="${y}">${y}</option>`).join('');
+  el.value=String(now);
+}
+function newPatientNote(text,type=''){
+  const note=document.getElementById('np-reg-note');
+  if(!note)return;
+  note.className='new-patient-note'+(type?` ${type}`:'');
+  note.textContent=text;
+}
+function clearNewPatientForm(){
+  ['np-id','np-fn','np-sn','np-phone'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  const type=document.getElementById('np-followup-type'); if(type)type.value='new_case';
+  const owner=document.getElementById('np-followup-owner'); if(owner)owner.value='Common';
+  const status=document.getElementById('np-followup-status'); if(status)status.value='active';
+  const month=document.getElementById('np-followup-month'); if(month)month.value='';
+  initNewPatientYearOptions();
+  newPatientNote('Enter an ID card to check whether the patient already exists.');
+}
+async function lookupNewPatientById(){
+  const idEl=document.getElementById('np-id');
+  if(!idEl)return null;
+  const id=normaliseIdCard(idEl.value);
+  idEl.value=id;
+  if(!id){newPatientNote('Enter an ID card to check whether the patient already exists.');return null;}
+  newPatientNote('Checking saved patient registry...');
+  const{data,error}=await SB.from('patients')
+    .select('id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type')
+    .ilike('id_card',id)
+    .maybeSingle();
+  if(error){
+    console.error('New patient lookup error:',error);
+    newPatientNote('Could not check the patient registry. You can still save, but please verify the details.','error');
+    return null;
+  }
+  if(data?.id){
+    document.getElementById('np-fn').value=data.first_name||'';
+    document.getElementById('np-sn').value=data.surname||'';
+    document.getElementById('np-phone').value=data.phone_number||'';
+    const type=document.getElementById('np-followup-type'); if(type)type.value=normaliseFollowupType(data.followup_type||'follow_up');
+    const owner=document.getElementById('np-followup-owner'); if(owner)owner.value=normaliseFollowupOwner(data.followup_owner||'Common');
+    const status=document.getElementById('np-followup-status'); if(status)status.value=normaliseFollowupStatus(data.followup_status||'active');
+    const month=document.getElementById('np-followup-month'); if(month)month.value=data.followup_due_month?String(data.followup_due_month):'';
+    const year=document.getElementById('np-followup-year');
+    if(year && data.followup_year){
+      if(![...year.options].some(o=>o.value===String(data.followup_year))){
+        year.insertAdjacentHTML('afterbegin',`<option value="${data.followup_year}">${data.followup_year}</option>`);
+      }
+      year.value=String(data.followup_year);
+    }
+    newPatientNote(`Saved patient found: ${(data.first_name||'')} ${(data.surname||'')}. Saving will update this existing record.`, normaliseFollowupStatus(data.followup_status)==='deceased'?'error':'success');
+    return data;
+  }
+  const type=document.getElementById('np-followup-type'); if(type)type.value='new_case';
+  newPatientNote('No saved patient found for this ID card. A new patient record will be created.','success');
+  return null;
+}
+async function saveNewPatientTab(){
+  const fn=document.getElementById('np-fn')?.value.trim()||'';
+  const sn=document.getElementById('np-sn')?.value.trim()||'';
+  const id=normaliseIdCard(document.getElementById('np-id')?.value||'');
+  const phone=document.getElementById('np-phone')?.value.trim()||'';
+  if(!id||!fn||!sn){alert('Please enter ID card, first name and surname.');return;}
+  const monthRaw=document.getElementById('np-followup-month')?.value||'';
+  const yearRaw=document.getElementById('np-followup-year')?.value||'';
+  const payload={
+    followup_type:document.getElementById('np-followup-type')?.value||'new_case',
+    followup_owner:document.getElementById('np-followup-owner')?.value||'Common',
+    followup_status:document.getElementById('np-followup-status')?.value||'active',
+    followup_due_month:monthRaw?Number(monthRaw):null,
+    followup_year:yearRaw?Number(yearRaw):null
+  };
+  const saved=await saveOrUpdatePatientByIdCard(id,fn,sn,phone,payload);
+  if(saved.error||!saved.patient?.id){
+    newPatientNote('Could not save patient: '+(saved.error?.message||'Unknown error'),'error');
+    return;
+  }
+  newPatientNote(`Patient saved: ${fn} ${sn} (${id}).`,'success');
+  if(document.getElementById('page-staff-audit')?.classList.contains('active'))loadStaffAudit();
+  if(document.getElementById('page-dntu-policy')?.classList.contains('active'))loadDntuPolicy();
+  if(document.getElementById('page-reports')?.classList.contains('active'))loadReports();
 }
 
 function closeTabGroups(){
