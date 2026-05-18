@@ -507,8 +507,9 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
   <div class="tabs grouped-tabs">
     <button type="button" class="tab tab-single" data-tab="new-patient" onclick="switchTab('new-patient',this)">Add Patient</button>
     <div class="tab-group">
-      <button type="button" class="tab" data-tabs="patients-active,patients-inpatients,patients-reversed,patients-deceased,patients-relocated-overseas,patients-relocated-gozo" onclick="toggleTabGroup(event,this)">Patients <span class="tab-caret">▾</span></button>
+      <button type="button" class="tab" data-tabs="patients-all,patients-active,patients-inpatients,patients-reversed,patients-deceased,patients-relocated-overseas,patients-relocated-gozo" onclick="toggleTabGroup(event,this)">Patients <span class="tab-caret">▾</span></button>
       <div class="tab-dd-menu">
+        <button type="button" class="tab-dd-item" data-tab="patients-all" onclick="switchTab('patients-all',this)">All Patients <small>Full register</small></button>
         <button type="button" class="tab-dd-item" data-tab="patients-active" onclick="switchTab('patients-active',this)">Active Patients <small>Current</small></button>
         <button type="button" class="tab-dd-item" data-tab="patients-inpatients" onclick="switchTab('patients-inpatients',this)">Inpatients <small>Ward</small></button>
         <button type="button" class="tab-dd-item" data-tab="patients-reversed" onclick="switchTab('patients-reversed',this)">Reversed <small>Register</small></button>
@@ -595,6 +596,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
       <div class="followup-toolbar patient-register-toolbar">
         <label>Patient Group:</label>
         <select id="patients-list-filter" onchange="switchTab(this.value)">
+          <option value="patients-all">All Patients</option>
           <option value="patients-active">Active Patients</option>
           <option value="patients-inpatients">Inpatients</option>
           <option value="patients-reversed">Reversed</option>
@@ -1526,7 +1528,7 @@ function refreshActivePage(){
   switchTab(name,el);
 }
 function returnToPatientsOverview(){
-  switchTab('patients-active',document.querySelector('.tab-dd-item[data-tab="patients-active"]'));
+  switchTab('patients-all',document.querySelector('.tab-dd-item[data-tab="patients-all"]'));
 }
 
 async function loadHolidays(){
@@ -3107,6 +3109,7 @@ function followupStatusBadge(status,showActive=false){
 function patientFollowupStatus(a){return normaliseFollowupStatus(a?.patients?.followup_status);}
 
 const PATIENT_TAB_FILTERS={
+  'patients-all':{status:'all',title:'All Patients',subtitle:'Full patient register across all groups.'},
   'patients-active':{status:'active',title:'Active Patients',subtitle:'Patients currently active in the registry.'},
   'patients-inpatients':{status:'inpatient',title:'Inpatients',subtitle:'Patients marked as inpatient or inpatient status.'},
   'patients-reversed':{status:'reversed',title:'Reversed Patients',subtitle:'Patients with reversal status or reversal date.'},
@@ -3213,7 +3216,7 @@ async function loadPatientsList(tabName){
   if(select)select.value=currentPatientsTab;
   const cfg=PATIENT_TAB_FILTERS[currentPatientsTab]||PATIENT_TAB_FILTERS['patients-active'];
   const searchInput=document.getElementById('patients-list-search');
-  if(searchInput)searchInput.placeholder=cfg.status==='deceased'?'Search name, ID number, RIP date, stoma type, locality...':(cfg.status==='reversed'?'Search ID number, name, reversal date, stoma type...':((cfg.status==='relocated_overseas'||cfg.status==='relocated_gozo')?'Search ID number, name, last seen, discharge date, stoma type...':'Search name, ID card, phone, locality...'));
+  if(searchInput)searchInput.placeholder=cfg.status==='all'?'Search all patients by name, ID card, phone, status, owner, locality...':(cfg.status==='deceased'?'Search name, ID number, RIP date, stoma type, locality...':(cfg.status==='reversed'?'Search ID number, name, reversal date, stoma type...':((cfg.status==='relocated_overseas'||cfg.status==='relocated_gozo')?'Search ID number, name, last seen, discharge date, stoma type...':'Search name, ID card, phone, locality...')));
   const title=document.getElementById('patients-list-title');
   const subtitle=document.getElementById('patients-list-subtitle');
   const cardTitle=document.getElementById('patients-list-card-title');
@@ -3249,20 +3252,26 @@ function renderPatientsList(){
   const countStatus=(st)=>all.filter(p=>patientRegisterStatus(p)===st).length;
   if(stats){
     stats.innerHTML=`
-      <div class="sbox"><div class="sl">Selected Group</div><div class="sv" style="font-size:22px;">${all.filter(p=>patientRegisterStatus(p)===cfg.status).length}</div><div class="ss">${htmlSafe(cfg.title)}</div></div>
+      <div class="sbox"><div class="sl">Selected Group</div><div class="sv" style="font-size:22px;">${cfg.status==='all'?all.length:all.filter(p=>patientRegisterStatus(p)===cfg.status).length}</div><div class="ss">${htmlSafe(cfg.title)}</div></div>
       <div class="sbox"><div class="sl">Active</div><div class="sv">${countStatus('active')}</div><div class="ss">current patients</div></div>
       <div class="sbox"><div class="sl">Inpatients</div><div class="sv">${countStatus('inpatient')}</div><div class="ss">ward patients</div></div>
       <div class="sbox"><div class="sl">Reversed</div><div class="sv">${countStatus('reversed')}</div><div class="ss">reversal register</div></div>
       <div class="sbox"><div class="sl">Deceased</div><div class="sv">${countStatus('deceased')}</div><div class="ss">deceased register</div></div>
       <div class="sbox"><div class="sl">Relocated</div><div class="sv">${countStatus('relocated_overseas')+countStatus('relocated_gozo')}</div><div class="ss">overseas / Gozo</div></div>`;
   }
-  let rows=all.filter(p=>patientRegisterStatus(p)===cfg.status);
+  let rows=cfg.status==='all'?[...all]:all.filter(p=>patientRegisterStatus(p)===cfg.status);
   if(search){
     rows=rows.filter(p=>[
       p.first_name,p.surname,p.id_card,p.phone_number,p.followup_owner,p.consultant,p.locality,p.patient_status_raw,patientRegisterStatusText(patientRegisterStatus(p)),p.sex,p.dob,p.rip_date,p.reversal_date,p.surgery_date,p.discharged_date,p.last_outcome_date,patientStomaTypeText(p.stoma_type_summary)
     ].join(' ').toLowerCase().includes(search));
   }
-  if(isDeceased){
+  if(cfg.status==='all'){
+    rows=[...rows].sort((a,b)=>
+      String(a.surname||'').localeCompare(String(b.surname||''))||
+      String(a.first_name||'').localeCompare(String(b.first_name||''))||
+      String(a.id_card||'').localeCompare(String(b.id_card||''))
+    );
+  }else if(isDeceased){
     rows=[...rows].sort((a,b)=>{
       const nameCompare=String(a.surname||'').localeCompare(String(b.surname||''))||String(a.first_name||'').localeCompare(String(b.first_name||''))||String(a.id_card||'').localeCompare(String(b.id_card||''));
       const aHasRip=!!String(a.rip_date||'').trim();
