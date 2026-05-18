@@ -2613,7 +2613,7 @@ async function searchPatientsForRebook(){
   if(!box)return;
   if(q.length<2){box.innerHTML='<div class="patient-search-empty">Enter at least 2 characters to search.</div>';return;}
   box.innerHTML='<div class="patient-search-empty">Searching patients...</div>';
-  const{data,error}=await SB.from('patients').select('id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date,stoma_type_summary').order('surname',{ascending:true}).limit(700);
+  const{data,error}=await fetchAllPatientsRows('id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date,stoma_type_summary');
   if(error){console.error('Patient search error:',error);box.innerHTML='<div class="patient-search-empty">Could not search patients.</div>';return;}
   const matches=(data||[]).filter(p=>[
     p.first_name,p.surname,p.id_card,p.phone_number,`${p.first_name||''} ${p.surname||''}`
@@ -2915,7 +2915,7 @@ async function loadStaffAudit(){
 
   let allPatients=[];
   const patientSelect='id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type';
-  const{data,error}=await SB.from('patients').select(patientSelect).order('surname',{ascending:true}).order('first_name',{ascending:true});
+  const{data,error}=await fetchAllPatientsRows(patientSelect);
   if(error){
     console.error('Follow-up patient query error:',error);
     if(tbody)tbody.innerHTML='<tr><td colspan="10" class="empty">Follow-up fields are missing. Run the v30L SQL first, then refresh.</td></tr>';
@@ -3110,7 +3110,7 @@ function patientFollowupStatus(a){return normaliseFollowupStatus(a?.patients?.fo
 
 const PATIENT_TAB_FILTERS={
   'patients-all':{status:'all',title:'All Patients',subtitle:'Full patient register across all groups.'},
-  'patients-active':{status:'active',title:'Active Patients',subtitle:'Patients currently active in the registry.'},
+  'patients-active':{status:'active',title:'Active Patients',subtitle:'Patients from the active registry, including paused and inpatient subgroups.'},
   'patients-inpatients':{status:'inpatient',title:'Inpatients',subtitle:'Patients marked as inpatient or inpatient status.'},
   'patients-reversed':{status:'reversed',title:'Reversed Patients',subtitle:'Patients with reversal status or reversal date.'},
   'patients-deceased':{status:'deceased',title:'Deceased Patients',subtitle:'Patients kept in the deceased register.'},
@@ -3136,6 +3136,26 @@ function patientRegisterStatus(p){
   if(p?.rip_date)return 'deceased';
   if(p?.reversal_date)return 'reversed';
   return rawStatus||'active';
+}
+
+function isActiveSourcePatient(p){
+  const rawStatus=patientStatusFromRaw(p?.patient_status_raw);
+  const st=normaliseFollowupStatus(p?.followup_status);
+  if(p?.rip_date || p?.reversal_date)return false;
+  if(['deceased','reversed','relocated_overseas','relocated_gozo'].includes(rawStatus))return false;
+  if(['deceased','reversed','relocated_overseas','relocated_gozo'].includes(st))return false;
+  return rawStatus==='active' || ['active','paused','awaiting_feedback','inpatient'].includes(st);
+}
+function isInpatientSourcePatient(p){
+  const raw=String(p?.assigned_nurse_raw||p?.patient_status_raw||'').toLowerCase();
+  return normaliseFollowupStatus(p?.followup_status)==='inpatient' || patientStatusFromRaw(p?.patient_status_raw)==='inpatient' || raw.includes('inpatient') || raw.includes('in patient');
+}
+function patientMatchesRegisterStatus(p,status){
+  const st=String(status||'active');
+  if(st==='all')return true;
+  if(st==='active')return isActiveSourcePatient(p);
+  if(st==='inpatient')return isInpatientSourcePatient(p);
+  return patientRegisterStatus(p)===st;
 }
 function patientRegisterStatusText(status){
   const st=String(status||'active');
@@ -3210,6 +3230,28 @@ function patientStomaTypeText(value){
 function patientRegisterActions(p,includeRebook=true){
   return `<div class="followup-actions" onclick="event.stopPropagation();"><button class="ncb-btn" onclick="openNewPatientFromExisting('${p.id}')" style="background:#e8f5f4;color:var(--teal);">Edit</button>${includeRebook?`<button class="ncb-btn" onclick="openPatientRebookModal('${p.id}')" style="background:#fff8e1;color:#856404;">Rebook</button>`:''}<button class="ncb-btn" onclick="openFollowupHistory('${p.id}')" style="background:#edf1f5;color:var(--navy);">History</button></div>`;
 }
+
+async function fetchAllPatientsRows(fields, options={}){
+  const pageSize=Number(options.pageSize)||1000;
+  const maxRows=Number(options.maxRows)||20000;
+  let from=0;
+  const all=[];
+  while(from<maxRows){
+    let q=SB.from('patients')
+      .select(fields)
+      .order('surname',{ascending:true})
+      .order('first_name',{ascending:true})
+      .order('id_card',{ascending:true})
+      .range(from,from+pageSize-1);
+    const {data,error}=await q;
+    if(error)return {data:all,error};
+    const batch=data||[];
+    all.push(...batch);
+    if(batch.length<pageSize)break;
+    from+=pageSize;
+  }
+  return {data:all,error:null};
+}
 async function loadPatientsList(tabName){
   currentPatientsTab=tabName||currentPatientsTab||'patients-active';
   const select=document.getElementById('patients-list-filter');
@@ -3224,13 +3266,13 @@ async function loadPatientsList(tabName){
   if(subtitle)subtitle.textContent=cfg.subtitle;
   if(cardTitle)cardTitle.textContent=cfg.title;
   const tbody=document.getElementById('patients-list-tbody');
-  if(tbody)tbody.innerHTML='<tr><td colspan="10" class="empty">Loading patients...</td></tr>';
-  let fields='id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type,patient_status_raw,locality,sex,dob,surgery_date,stoma_type_summary,consultant,last_outcome_date,discharged_date,next_followup_mirror,rip_date,reversal_date,stoma_days,age_at_death';
-  let res=await SB.from('patients').select(fields).order('surname',{ascending:true}).limit(3000);
+  if(tbody)tbody.innerHTML='<tr><td colspan="10" class="empty">Loading all patients from Supabase...</td></tr>';
+  let fields='id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type,patient_status_raw,assigned_nurse_raw,locality,sex,dob,surgery_date,stoma_type_summary,consultant,last_outcome_date,discharged_date,next_followup_mirror,rip_date,reversal_date,stoma_days,age_at_death';
+  let res=await fetchAllPatientsRows(fields);
   if(res.error){
     console.warn('Extended patient register fields unavailable, using core patient fields:',res.error);
     fields='id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type';
-    res=await SB.from('patients').select(fields).order('surname',{ascending:true}).limit(3000);
+    res=await fetchAllPatientsRows(fields);
   }
   if(res.error){
     if(tbody)tbody.innerHTML=`<tr><td colspan="10" class="empty">Could not load patients: ${htmlSafe(res.error.message||'Unknown error')}</td></tr>`;
@@ -3249,20 +3291,20 @@ function renderPatientsList(){
   const isDeceased=currentPatientsTab==='patients-deceased'||cfg.status==='deceased';
   const isReversed=currentPatientsTab==='patients-reversed'||cfg.status==='reversed';
   const isRelocatedOverseas=currentPatientsTab==='patients-relocated-overseas'||currentPatientsTab==='patients-relocated-gozo'||cfg.status==='relocated_overseas'||cfg.status==='relocated_gozo';
-  const countStatus=(st)=>all.filter(p=>patientRegisterStatus(p)===st).length;
+  const countStatus=(st)=>all.filter(p=>patientMatchesRegisterStatus(p,st)).length;
   if(stats){
     stats.innerHTML=`
-      <div class="sbox"><div class="sl">Selected Group</div><div class="sv" style="font-size:22px;">${cfg.status==='all'?all.length:all.filter(p=>patientRegisterStatus(p)===cfg.status).length}</div><div class="ss">${htmlSafe(cfg.title)}</div></div>
+      <div class="sbox"><div class="sl">Selected Group</div><div class="sv" style="font-size:22px;">${cfg.status==='all'?all.length:all.filter(p=>patientMatchesRegisterStatus(p,cfg.status)).length}</div><div class="ss">${htmlSafe(cfg.title)}</div></div>
       <div class="sbox"><div class="sl">Active</div><div class="sv">${countStatus('active')}</div><div class="ss">current patients</div></div>
       <div class="sbox"><div class="sl">Inpatients</div><div class="sv">${countStatus('inpatient')}</div><div class="ss">ward patients</div></div>
       <div class="sbox"><div class="sl">Reversed</div><div class="sv">${countStatus('reversed')}</div><div class="ss">reversal register</div></div>
       <div class="sbox"><div class="sl">Deceased</div><div class="sv">${countStatus('deceased')}</div><div class="ss">deceased register</div></div>
       <div class="sbox"><div class="sl">Relocated</div><div class="sv">${countStatus('relocated_overseas')+countStatus('relocated_gozo')}</div><div class="ss">overseas / Gozo</div></div>`;
   }
-  let rows=cfg.status==='all'?[...all]:all.filter(p=>patientRegisterStatus(p)===cfg.status);
+  let rows=cfg.status==='all'?[...all]:all.filter(p=>patientMatchesRegisterStatus(p,cfg.status));
   if(search){
     rows=rows.filter(p=>[
-      p.first_name,p.surname,p.id_card,p.phone_number,p.followup_owner,p.consultant,p.locality,p.patient_status_raw,patientRegisterStatusText(patientRegisterStatus(p)),p.sex,p.dob,p.rip_date,p.reversal_date,p.surgery_date,p.discharged_date,p.last_outcome_date,patientStomaTypeText(p.stoma_type_summary)
+      p.first_name,p.surname,p.id_card,p.phone_number,p.followup_owner,p.consultant,p.locality,p.patient_status_raw,p.assigned_nurse_raw,p.assigned_nurse_raw,patientRegisterStatusText(patientRegisterStatus(p)),p.sex,p.dob,p.rip_date,p.reversal_date,p.surgery_date,p.discharged_date,p.last_outcome_date,patientStomaTypeText(p.stoma_type_summary)
     ].join(' ').toLowerCase().includes(search));
   }
   if(cfg.status==='all'){
@@ -4000,7 +4042,7 @@ async function loadReportPatientsPage(){
 
 const REPORT_PATIENT_GROUP_CONFIG={
   'report-followups':{mode:'followups',title:'Follow-Ups',subtitle:'Patients requiring follow-up planning, excluding closed groups.'},
-  'report-active-patients':{status:'active',title:'Active Patients',subtitle:'Active patients from the registry.'},
+  'report-active-patients':{status:'active',title:'Active Patients',subtitle:'Patients from the active registry, including paused and inpatient subgroups.'},
   'report-deceased':{status:'deceased',title:'Deceased',subtitle:'Deceased register, sorted by latest Date of RIP first.'},
   'report-reversed':{status:'reversed',title:'Reversed',subtitle:'Patients in the reversed register.'},
   'report-relocated-overseas':{status:'relocated_overseas',title:'Relocated Overseas',subtitle:'Patients marked as relocated overseas.'},
@@ -4019,12 +4061,12 @@ async function loadReportPatientGroup(tabName){
   if(subtitle)subtitle.textContent=cfg.subtitle;
   if(cardTitle)cardTitle.textContent=cfg.title;
   if(search){search.value='';search.placeholder=cfg.status==='deceased'?'Search name, ID number, RIP date, stoma type, locality...':(cfg.status==='reversed'?'Search ID number, name, reversal date, stoma type...':((cfg.status==='relocated_overseas'||cfg.status==='relocated_gozo')?'Search ID number, name, last seen, discharge date, stoma type...':'Search name, ID card, phone, owner, locality...'));}
-  if(tbody)tbody.innerHTML='<tr><td colspan="11" class="empty">Loading report...</td></tr>';
-  let fields='id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type,patient_status_raw,locality,sex,dob,surgery_date,stoma_type_summary,consultant,last_outcome_date,discharged_date,next_followup_mirror,rip_date,reversal_date,stoma_days,age_at_death';
-  let res=await SB.from('patients').select(fields).order('surname',{ascending:true}).limit(3000);
+  if(tbody)tbody.innerHTML='<tr><td colspan="11" class="empty">Loading full report from Supabase...</td></tr>';
+  let fields='id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type,patient_status_raw,assigned_nurse_raw,locality,sex,dob,surgery_date,stoma_type_summary,consultant,last_outcome_date,discharged_date,next_followup_mirror,rip_date,reversal_date,stoma_days,age_at_death';
+  let res=await fetchAllPatientsRows(fields);
   if(res.error){
     fields='id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type';
-    res=await SB.from('patients').select(fields).order('surname',{ascending:true}).limit(3000);
+    res=await fetchAllPatientsRows(fields);
   }
   if(res.error){
     if(tbody)tbody.innerHTML=`<tr><td colspan="11" class="empty">Could not load report: ${htmlSafe(res.error.message||'Unknown error')}</td></tr>`;
@@ -4040,7 +4082,7 @@ function rowsForReportPatientGroup(){
     rows=rows.filter(p=>!['deceased','reversed','relocated_overseas','relocated_gozo'].includes(patientRegisterStatus(p)) && !isClosedFollowupStatus(p.followup_status));
     rows.sort((a,b)=>String(a.followup_owner||'Common').localeCompare(String(b.followup_owner||'Common')) || (Number(a.followup_year)||9999)-(Number(b.followup_year)||9999) || (Number(a.followup_due_month)||99)-(Number(b.followup_due_month)||99) || String(a.surname||'').localeCompare(String(b.surname||'')) || String(a.first_name||'').localeCompare(String(b.first_name||'')));
   }else{
-    rows=rows.filter(p=>patientRegisterStatus(p)===cfg.status);
+    rows=rows.filter(p=>patientMatchesRegisterStatus(p,cfg.status));
     if(cfg.status==='deceased'){
       rows.sort((a,b)=>{
         const nameCompare=String(a.surname||'').localeCompare(String(b.surname||''))||String(a.first_name||'').localeCompare(String(b.first_name||''))||String(a.id_card||'').localeCompare(String(b.id_card||''));
@@ -4088,7 +4130,7 @@ function renderReportPatientGroup(){
   const all=reportPatientGroupRows||[];
   const rows=rowsForReportPatientGroup();
   if(stats){
-    const countStatus=(st)=>all.filter(p=>patientRegisterStatus(p)===st).length;
+    const countStatus=(st)=>all.filter(p=>patientMatchesRegisterStatus(p,st)).length;
     stats.innerHTML=`
       <div class="sbox"><div class="sl">Report Rows</div><div class="sv">${rows.length}</div><div class="ss">${htmlSafe(cfg.title)}</div></div>
       <div class="sbox"><div class="sl">Active</div><div class="sv">${countStatus('active')}</div><div class="ss">patients</div></div>
