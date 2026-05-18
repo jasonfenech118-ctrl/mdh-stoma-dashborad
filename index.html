@@ -1418,7 +1418,7 @@ async function lookupNewPatientById(){
   if(!id){newPatientNote('Enter an ID card to check whether the patient already exists.');return null;}
   newPatientNote('Checking saved patient registry...');
   const{data,error}=await SB.from('patients')
-    .select('id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type')
+    .select('id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date,stoma_type_summary')
     .ilike('id_card',id)
     .maybeSingle();
   if(error){
@@ -2611,7 +2611,7 @@ async function searchPatientsForRebook(){
   if(!box)return;
   if(q.length<2){box.innerHTML='<div class="patient-search-empty">Enter at least 2 characters to search.</div>';return;}
   box.innerHTML='<div class="patient-search-empty">Searching patients...</div>';
-  const{data,error}=await SB.from('patients').select('id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type').order('surname',{ascending:true}).limit(700);
+  const{data,error}=await SB.from('patients').select('id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date,stoma_type_summary').order('surname',{ascending:true}).limit(700);
   if(error){console.error('Patient search error:',error);box.innerHTML='<div class="patient-search-empty">Could not search patients.</div>';return;}
   const matches=(data||[]).filter(p=>[
     p.first_name,p.surname,p.id_card,p.phone_number,`${p.first_name||''} ${p.surname||''}`
@@ -2640,7 +2640,7 @@ function clearPatientRebookSearch(){
   if(box)box.innerHTML='<div class="patient-search-empty">Enter at least 2 characters to search.</div>';
 }
 async function openPatientRebookModal(patientId){
-  const{data:pat,error}=await SB.from('patients').select('id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type').eq('id',patientId).maybeSingle();
+  const{data:pat,error}=await SB.from('patients').select('id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date,stoma_type_summary').eq('id',patientId).maybeSingle();
   if(error||!pat){alert('Could not open this patient for rebooking.');return;}
   if(normaliseFollowupStatus(pat.followup_status)==='deceased'){alert('This patient is marked as deceased and is kept in the separate deceased register. Change the status first before rebooking.');return;}
   const{data:bankRows}=await SB.from('bank_staff').select('id,full_name').order('full_name');
@@ -2703,7 +2703,7 @@ async function lookupPatientByIdForBooking(idInputId,firstInputId,surnameInputId
   }
   if(note){note.className='registry-lookup-note';note.textContent='Checking saved patient registry...';}
   const{data,error}=await SB.from('patients')
-    .select('id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type')
+    .select('id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date,stoma_type_summary')
     .ilike('id_card',id)
     .maybeSingle();
   if(error){
@@ -2750,18 +2750,18 @@ async function saveOrUpdatePatientByIdCard(idCard,firstName,surname,phone,follow
   const id=normaliseIdCard(idCard);
   if(!id||!firstName||!surname)return {patient:null,error:{message:'Missing patient details.'}};
   const existing=await SB.from('patients')
-    .select('id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type')
+    .select('id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date,stoma_type_summary')
     .ilike('id_card',id)
     .maybeSingle();
   if(existing.error)return {patient:null,error:existing.error};
   if(existing.data?.id){
     const updatePayload={first_name:firstName,surname:surname,phone_number:phone||existing.data.phone_number||null,id_card:id,...followupPayload};
     if(normaliseFollowupStatus(existing.data.followup_status)==='deceased')delete updatePayload.followup_status;
-    const updated=await SB.from('patients').update(updatePayload).eq('id',existing.data.id).select('id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type').single();
+    const updated=await SB.from('patients').update(updatePayload).eq('id',existing.data.id).select('id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date,stoma_type_summary').single();
     if(updated.error)return {patient:existing.data,error:updated.error};
     return {patient:updated.data||existing.data,error:null};
   }
-  const inserted=await SB.from('patients').insert({first_name:firstName,surname:surname,id_card:id,phone_number:phone||null,followup_status:'active',...followupPayload}).select('id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type').single();
+  const inserted=await SB.from('patients').insert({first_name:firstName,surname:surname,id_card:id,phone_number:phone||null,followup_status:'active',...followupPayload}).select('id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date,stoma_type_summary').single();
   return {patient:inserted.data,error:inserted.error};
 }
 
@@ -3056,7 +3056,7 @@ async function savePatientFollowup(patientId){
   loadStaffAudit();
 }
 async function openFollowupHistory(patientId){
-  const{data:pat}=await SB.from('patients').select('id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type').eq('id',patientId).maybeSingle();
+  const{data:pat}=await SB.from('patients').select('id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date,stoma_type_summary').eq('id',patientId).maybeSingle();
   const{data:raw}=await SB.from('appointments').select('*').eq('patient_id',patientId).order('appt_date',{ascending:false}).order('appt_slot',{ascending:false});
   const appts=await enrichAppointments(raw||[]);
   const nm=`${pat?.first_name||''} ${pat?.surname||''}`.trim()||'Patient';
@@ -3222,7 +3222,7 @@ async function loadPatientsList(tabName){
   if(cardTitle)cardTitle.textContent=cfg.title;
   const tbody=document.getElementById('patients-list-tbody');
   if(tbody)tbody.innerHTML='<tr><td colspan="10" class="empty">Loading patients...</td></tr>';
-  let fields='id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type,patient_status_raw,locality,sex,dob,surgery_date,stoma_type_summary,last_outcome_date,discharged_date,next_followup_mirror,rip_date,reversal_date,stoma_days,age_at_death';
+  let fields='id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type,patient_status_raw,locality,sex,dob,surgery_date,stoma_type_summary,consultant,last_outcome_date,discharged_date,next_followup_mirror,rip_date,reversal_date,stoma_days,age_at_death';
   let res=await SB.from('patients').select(fields).order('surname',{ascending:true}).limit(3000);
   if(res.error){
     console.warn('Extended patient register fields unavailable, using core patient fields:',res.error);
@@ -3259,7 +3259,7 @@ function renderPatientsList(){
   let rows=all.filter(p=>patientRegisterStatus(p)===cfg.status);
   if(search){
     rows=rows.filter(p=>[
-      p.first_name,p.surname,p.id_card,p.phone_number,p.followup_owner,p.locality,p.patient_status_raw,patientRegisterStatusText(patientRegisterStatus(p)),p.sex,p.dob,p.rip_date,p.reversal_date,p.surgery_date,p.discharged_date,p.last_outcome_date,patientStomaTypeText(p.stoma_type_summary)
+      p.first_name,p.surname,p.id_card,p.phone_number,p.followup_owner,p.consultant,p.locality,p.patient_status_raw,patientRegisterStatusText(patientRegisterStatus(p)),p.sex,p.dob,p.rip_date,p.reversal_date,p.surgery_date,p.discharged_date,p.last_outcome_date,patientStomaTypeText(p.stoma_type_summary)
     ].join(' ').toLowerCase().includes(search));
   }
   if(isDeceased){
@@ -3295,14 +3295,14 @@ function renderPatientsList(){
     thead.innerHTML=isDeceased
       ? '<tr><th>ID Number</th><th>Patient</th><th>Sex</th><th>DOB</th><th>Date of RIP</th><th>Age at Death</th><th>Surgery Date</th><th>Stoma Days</th><th>Stoma Type Summary</th><th>Locality</th><th>Actions</th></tr>'
       : (isReversed
-        ? '<tr><th>ID Number</th><th>Patient</th><th>Phone</th><th>Status</th><th>Owner</th><th>Reversal Date</th><th>Last Seen</th><th>Stoma Type Summary</th><th>Locality</th><th>Actions</th></tr>'
+        ? '<tr><th>ID Number</th><th>Patient</th><th>Phone</th><th>Status</th><th>Owner</th><th>Reversal Date</th><th>Consultant</th><th>Last Seen</th><th>Stoma Type Summary</th><th>Locality</th><th>Actions</th></tr>'
         : (isRelocatedOverseas
           ? '<tr><th>ID Number</th><th>Patient</th><th>Status</th><th>Last Seen</th><th>Date of Discharge</th><th>Stoma Type Summary</th><th>Actions</th></tr>'
           : '<tr><th>Patient</th><th>ID Card</th><th>Phone</th><th>Status</th><th>Owner</th><th>Due Month</th><th>Last Outcome</th><th>Next Follow-up</th><th>Locality</th><th>Actions</th></tr>'));
   }
   if(!tbody)return;
   if(!rows.length){
-    tbody.innerHTML=`<tr><td colspan="${isDeceased?11:(isReversed?10:(isRelocatedOverseas?7:10))}" class="empty">No ${htmlSafe(cfg.title.toLowerCase())} found${search?' for this search':''}.</td></tr>`;
+    tbody.innerHTML=`<tr><td colspan="${isDeceased?11:(isReversed?11:(isRelocatedOverseas?7:10))}" class="empty">No ${htmlSafe(cfg.title.toLowerCase())} found${search?' for this search':''}.</td></tr>`;
     return;
   }
   tbody.innerHTML=rows.map(p=>{
@@ -3333,6 +3333,7 @@ function renderPatientsList(){
         <td>${patientStatusChip(st)}${p.patient_status_raw?`<br/><span style="font-size:10px;color:var(--muted);">${htmlSafe(p.patient_status_raw)}</span>`:''}</td>
         <td>${htmlSafe(p.followup_owner||'Common')}</td>
         <td><strong>${patientDateText(p.reversal_date)}</strong></td>
+        <td>${htmlSafe(p.consultant||'—')}</td>
         <td>${htmlSafe(latest)}</td>
         <td>${patientStomaTypeText(p.stoma_type_summary)}</td>
         <td>${htmlSafe(p.locality||'—')}</td>
@@ -4011,7 +4012,7 @@ async function loadReportPatientGroup(tabName){
   if(cardTitle)cardTitle.textContent=cfg.title;
   if(search){search.value='';search.placeholder=cfg.status==='deceased'?'Search name, ID number, RIP date, stoma type, locality...':(cfg.status==='reversed'?'Search ID number, name, reversal date, stoma type...':((cfg.status==='relocated_overseas'||cfg.status==='relocated_gozo')?'Search ID number, name, last seen, discharge date, stoma type...':'Search name, ID card, phone, owner, locality...'));}
   if(tbody)tbody.innerHTML='<tr><td colspan="11" class="empty">Loading report...</td></tr>';
-  let fields='id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type,patient_status_raw,locality,sex,dob,surgery_date,stoma_type_summary,last_outcome_date,discharged_date,next_followup_mirror,rip_date,reversal_date,stoma_days,age_at_death';
+  let fields='id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type,patient_status_raw,locality,sex,dob,surgery_date,stoma_type_summary,consultant,last_outcome_date,discharged_date,next_followup_mirror,rip_date,reversal_date,stoma_days,age_at_death';
   let res=await SB.from('patients').select(fields).order('surname',{ascending:true}).limit(3000);
   if(res.error){
     fields='id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type';
@@ -4064,7 +4065,7 @@ function rowsForReportPatientGroup(){
   const search=String(document.getElementById('report-patient-group-search')?.value||'').trim().toLowerCase();
   if(search){
     rows=rows.filter(p=>[
-      p.first_name,p.surname,p.id_card,p.phone_number,p.followup_owner,p.followup_year,followupMonthName(p.followup_due_month),p.locality,p.patient_status_raw,patientRegisterStatusText(patientRegisterStatus(p)),p.sex,p.dob,p.rip_date,p.reversal_date,p.surgery_date,p.discharged_date,p.last_outcome_date,patientStomaTypeText(p.stoma_type_summary)
+      p.first_name,p.surname,p.id_card,p.phone_number,p.followup_owner,p.consultant,p.followup_year,followupMonthName(p.followup_due_month),p.locality,p.patient_status_raw,patientRegisterStatusText(patientRegisterStatus(p)),p.sex,p.dob,p.rip_date,p.reversal_date,p.surgery_date,p.discharged_date,p.last_outcome_date,patientStomaTypeText(p.stoma_type_summary)
     ].join(' ').toLowerCase().includes(search));
   }
   return rows;
@@ -4093,7 +4094,7 @@ function renderReportPatientGroup(){
     if(isDeceased){
       thead.innerHTML='<tr><th>ID Number</th><th>Patient</th><th>Sex</th><th>DOB</th><th>Date of RIP</th><th>Age at Death</th><th>Surgery Date</th><th>Stoma Days</th><th>Stoma Type Summary</th><th>Locality</th></tr>';
     }else if(isReversed){
-      thead.innerHTML='<tr><th>ID Number</th><th>Patient</th><th>Phone</th><th>Status</th><th>Owner</th><th>Reversal Date</th><th>Last Seen</th><th>Stoma Type Summary</th><th>Locality</th></tr>';
+      thead.innerHTML='<tr><th>ID Number</th><th>Patient</th><th>Phone</th><th>Status</th><th>Owner</th><th>Reversal Date</th><th>Consultant</th><th>Last Seen</th><th>Stoma Type Summary</th><th>Locality</th></tr>';
     }else if(isRelocatedOverseas){
       thead.innerHTML='<tr><th>ID Number</th><th>Patient</th><th>Status</th><th>Last Seen</th><th>Date of Discharge</th><th>Stoma Type Summary</th></tr>';
     }else if(isFollowups){
@@ -4103,7 +4104,7 @@ function renderReportPatientGroup(){
     }
   }
   if(!tbody)return;
-  if(!rows.length){tbody.innerHTML=`<tr><td colspan="${isDeceased?10:(isReversed?9:(isRelocatedOverseas?6:(isFollowups?10:9)))}" class="empty">No ${htmlSafe(cfg.title.toLowerCase())} found.</td></tr>`;return;}
+  if(!rows.length){tbody.innerHTML=`<tr><td colspan="${isDeceased?10:(isReversed?10:(isRelocatedOverseas?6:(isFollowups?10:9)))}" class="empty">No ${htmlSafe(cfg.title.toLowerCase())} found.</td></tr>`;return;}
   tbody.innerHTML=rows.map(p=>{
     const nm=`${p.first_name||''} ${p.surname||''}`.trim()||'Unnamed patient';
     const st=patientRegisterStatus(p);
@@ -4129,6 +4130,7 @@ function renderReportPatientGroup(){
         <td>${patientStatusChip(st)}${p.patient_status_raw?`<br/><span style="font-size:10px;color:var(--muted);">${htmlSafe(p.patient_status_raw)}</span>`:''}</td>
         <td>${htmlSafe(p.followup_owner||'Common')}</td>
         <td><strong>${patientDateText(p.reversal_date)}</strong></td>
+        <td>${htmlSafe(p.consultant||'—')}</td>
         <td>${htmlSafe(p.last_outcome_date||'—')}</td>
         <td>${patientStomaTypeText(p.stoma_type_summary)}</td>
         <td>${htmlSafe(p.locality||'—')}</td>
@@ -4191,7 +4193,7 @@ async function loadReversalRegister(){
   const year=document.getElementById('rev-year')?.value||'';
   const search=(document.getElementById('rev-search')?.value||'').trim().toLowerCase();
   const{data,error}=await SB.from('patients')
-    .select('id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type')
+    .select('id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date,stoma_type_summary')
     .eq('followup_status','reversed')
     .order('surname',{ascending:true})
     .order('first_name',{ascending:true});
@@ -4205,7 +4207,7 @@ async function loadReversalRegister(){
   if(year)patients=patients.filter(p=>String(p.followup_year||'')===String(year));
   if(search){
     patients=patients.filter(p=>[
-      p.first_name,p.surname,p.id_card,p.phone_number,p.followup_owner,p.followup_year,followupMonthName(p.followup_due_month)
+      p.first_name,p.surname,p.id_card,p.phone_number,p.followup_owner,p.consultant,p.followup_year,followupMonthName(p.followup_due_month)
     ].join(' ').toLowerCase().includes(search));
   }
   const ids=patients.map(p=>p.id).filter(Boolean);
