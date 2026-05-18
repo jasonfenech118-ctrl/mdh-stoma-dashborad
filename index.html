@@ -3134,6 +3134,8 @@ async function loadPatientsList(tabName){
   const select=document.getElementById('patients-list-filter');
   if(select)select.value=currentPatientsTab;
   const cfg=PATIENT_TAB_FILTERS[currentPatientsTab]||PATIENT_TAB_FILTERS['patients-active'];
+  const searchInput=document.getElementById('patients-list-search');
+  if(searchInput)searchInput.placeholder=cfg.status==='deceased'?'Search name, ID number, RIP date, stoma type, locality...':'Search name, ID card, phone, locality...';
   const title=document.getElementById('patients-list-title');
   const subtitle=document.getElementById('patients-list-subtitle');
   const cardTitle=document.getElementById('patients-list-card-title');
@@ -3181,16 +3183,26 @@ function renderPatientsList(){
     ].join(' ').toLowerCase().includes(search));
   }
   if(isDeceased){
-    rows=[...rows].sort((a,b)=>dateSortValue(b.rip_date)-dateSortValue(a.rip_date)||String(a.surname||'').localeCompare(String(b.surname||''))||String(a.first_name||'').localeCompare(String(b.first_name||'')));
+    rows=[...rows].sort((a,b)=>{
+      const nameCompare=String(a.surname||'').localeCompare(String(b.surname||''))||String(a.first_name||'').localeCompare(String(b.first_name||''))||String(a.id_card||'').localeCompare(String(b.id_card||''));
+      const aHasRip=!!String(a.rip_date||'').trim();
+      const bHasRip=!!String(b.rip_date||'').trim();
+      if(aHasRip&&bHasRip){
+        const dateCompare=dateSortValue(b.rip_date)-dateSortValue(a.rip_date);
+        return dateCompare||nameCompare;
+      }
+      if(aHasRip!==bHasRip)return aHasRip?-1:1;
+      return nameCompare;
+    });
   }
   if(thead){
     thead.innerHTML=isDeceased
-      ? '<tr><th>Patient</th><th>ID Card</th><th>Phone</th><th>Sex</th><th>DOB</th><th>Date of RIP</th><th>Age at Death</th><th>Surgery Date</th><th>Stoma Days</th><th>Stoma Type Summary</th><th>Locality</th><th>Actions</th></tr>'
+      ? '<tr><th>ID Number</th><th>Patient</th><th>Sex</th><th>DOB</th><th>Date of RIP</th><th>Age at Death</th><th>Surgery Date</th><th>Stoma Days</th><th>Stoma Type Summary</th><th>Locality</th><th>Actions</th></tr>'
       : '<tr><th>Patient</th><th>ID Card</th><th>Phone</th><th>Status</th><th>Owner</th><th>Due Month</th><th>Last Outcome</th><th>Next Follow-up</th><th>Locality</th><th>Actions</th></tr>';
   }
   if(!tbody)return;
   if(!rows.length){
-    tbody.innerHTML=`<tr><td colspan="${isDeceased?12:10}" class="empty">No ${htmlSafe(cfg.title.toLowerCase())} found${search?' for this search':''}.</td></tr>`;
+    tbody.innerHTML=`<tr><td colspan="${isDeceased?11:10}" class="empty">No ${htmlSafe(cfg.title.toLowerCase())} found${search?' for this search':''}.</td></tr>`;
     return;
   }
   tbody.innerHTML=rows.map(p=>{
@@ -3198,9 +3210,8 @@ function renderPatientsList(){
     const st=patientRegisterStatus(p);
     if(isDeceased){
       return `<tr class="followup-click-row" onclick="openFollowupHistory('${p.id}')">
+        <td><strong>${htmlSafe(p.id_card||'—')}</strong></td>
         <td><strong>${htmlSafe(nm)}</strong><br/><span style="font-size:10px;color:var(--muted);">Click row for history</span></td>
-        <td>${htmlSafe(p.id_card||'—')}</td>
-        <td>${htmlSafe(p.phone_number||'—')}</td>
         <td>${htmlSafe(p.sex||'—')}</td>
         <td>${patientDateText(p.dob)}</td>
         <td><strong>${patientDateText(p.rip_date)}</strong></td>
