@@ -3128,8 +3128,21 @@ function patientStatusFromRaw(raw){
   if(r.includes('active'))return 'active';
   return '';
 }
+function isTrueValue(v){
+  return v===true || v===1 || String(v||'').trim().toLowerCase()==='true';
+}
+function isActiveRegistryPatient(p){
+  const rawStatus=patientStatusFromRaw(p?.patient_status_raw);
+  const rawText=String(p?.patient_status_raw||'').trim().toLowerCase();
+  return isTrueValue(p?.active_registry) || rawStatus==='active' || rawText==='active';
+}
 function patientRegisterStatus(p){
   const rawStatus=patientStatusFromRaw(p?.patient_status_raw);
+  if(isActiveRegistryPatient(p)){
+    const st=normaliseFollowupStatus(p?.followup_status);
+    if(st==='inpatient')return 'inpatient';
+    return 'active';
+  }
   if(rawStatus&&rawStatus!=='active')return rawStatus;
   const st=normaliseFollowupStatus(p?.followup_status);
   if(st==='deceased'||st==='reversed'||st==='relocated_overseas'||st==='relocated_gozo'||st==='inpatient')return st;
@@ -3139,12 +3152,13 @@ function patientRegisterStatus(p){
 }
 
 function isActiveSourcePatient(p){
+  if(isActiveRegistryPatient(p))return true;
   const rawStatus=patientStatusFromRaw(p?.patient_status_raw);
   const st=normaliseFollowupStatus(p?.followup_status);
   if(p?.rip_date || p?.reversal_date)return false;
   if(['deceased','reversed','relocated_overseas','relocated_gozo'].includes(rawStatus))return false;
   if(['deceased','reversed','relocated_overseas','relocated_gozo'].includes(st))return false;
-  return rawStatus==='active' || ['active','paused','awaiting_feedback','inpatient'].includes(st);
+  return ['active','paused','awaiting_feedback','inpatient'].includes(st);
 }
 function isInpatientSourcePatient(p){
   const raw=String(p?.assigned_nurse_raw||p?.patient_status_raw||'').toLowerCase();
@@ -3267,7 +3281,7 @@ async function loadPatientsList(tabName){
   if(cardTitle)cardTitle.textContent=cfg.title;
   const tbody=document.getElementById('patients-list-tbody');
   if(tbody)tbody.innerHTML='<tr><td colspan="10" class="empty">Loading all patients from Supabase...</td></tr>';
-  let fields='id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type,patient_status_raw,assigned_nurse_raw,locality,sex,dob,surgery_date,stoma_type_summary,consultant,last_outcome_date,discharged_date,next_followup_mirror,rip_date,reversal_date,stoma_days,age_at_death';
+  let fields='id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type,active_registry,patient_status_raw,assigned_nurse_raw,locality,sex,dob,surgery_date,stoma_type_summary,consultant,last_outcome_date,discharged_date,next_followup_mirror,rip_date,reversal_date,stoma_days,age_at_death';
   let res=await fetchAllPatientsRows(fields);
   if(res.error){
     console.warn('Extended patient register fields unavailable, using core patient fields:',res.error);
@@ -4062,7 +4076,7 @@ async function loadReportPatientGroup(tabName){
   if(cardTitle)cardTitle.textContent=cfg.title;
   if(search){search.value='';search.placeholder=cfg.status==='deceased'?'Search name, ID number, RIP date, stoma type, locality...':(cfg.status==='reversed'?'Search ID number, name, reversal date, stoma type...':((cfg.status==='relocated_overseas'||cfg.status==='relocated_gozo')?'Search ID number, name, last seen, discharge date, stoma type...':'Search name, ID card, phone, owner, locality...'));}
   if(tbody)tbody.innerHTML='<tr><td colspan="11" class="empty">Loading full report from Supabase...</td></tr>';
-  let fields='id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type,patient_status_raw,assigned_nurse_raw,locality,sex,dob,surgery_date,stoma_type_summary,consultant,last_outcome_date,discharged_date,next_followup_mirror,rip_date,reversal_date,stoma_days,age_at_death';
+  let fields='id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type,active_registry,patient_status_raw,assigned_nurse_raw,locality,sex,dob,surgery_date,stoma_type_summary,consultant,last_outcome_date,discharged_date,next_followup_mirror,rip_date,reversal_date,stoma_days,age_at_death';
   let res=await fetchAllPatientsRows(fields);
   if(res.error){
     fields='id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type';
