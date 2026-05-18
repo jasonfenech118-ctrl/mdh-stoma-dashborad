@@ -3205,7 +3205,7 @@ async function loadPatientsList(tabName){
   if(select)select.value=currentPatientsTab;
   const cfg=PATIENT_TAB_FILTERS[currentPatientsTab]||PATIENT_TAB_FILTERS['patients-active'];
   const searchInput=document.getElementById('patients-list-search');
-  if(searchInput)searchInput.placeholder=cfg.status==='deceased'?'Search name, ID number, RIP date, stoma type, locality...':'Search name, ID card, phone, locality...';
+  if(searchInput)searchInput.placeholder=cfg.status==='deceased'?'Search name, ID number, RIP date, stoma type, locality...':(cfg.status==='relocated_overseas'?'Search name, ID card, last seen, discharge date, stoma type...':'Search name, ID card, phone, locality...');
   const title=document.getElementById('patients-list-title');
   const subtitle=document.getElementById('patients-list-subtitle');
   const cardTitle=document.getElementById('patients-list-card-title');
@@ -3214,7 +3214,7 @@ async function loadPatientsList(tabName){
   if(cardTitle)cardTitle.textContent=cfg.title;
   const tbody=document.getElementById('patients-list-tbody');
   if(tbody)tbody.innerHTML='<tr><td colspan="10" class="empty">Loading patients...</td></tr>';
-  let fields='id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type,patient_status_raw,locality,sex,dob,surgery_date,stoma_type_summary,last_outcome_date,next_followup_mirror,rip_date,reversal_date,stoma_days,age_at_death';
+  let fields='id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type,patient_status_raw,locality,sex,dob,surgery_date,stoma_type_summary,last_outcome_date,discharged_date,next_followup_mirror,rip_date,reversal_date,stoma_days,age_at_death';
   let res=await SB.from('patients').select(fields).order('surname',{ascending:true}).limit(3000);
   if(res.error){
     console.warn('Extended patient register fields unavailable, using core patient fields:',res.error);
@@ -3236,6 +3236,7 @@ function renderPatientsList(){
   const search=String(document.getElementById('patients-list-search')?.value||'').trim().toLowerCase();
   const all=patientsListRows||[];
   const isDeceased=currentPatientsTab==='patients-deceased'||cfg.status==='deceased';
+  const isRelocatedOverseas=currentPatientsTab==='patients-relocated-overseas'||cfg.status==='relocated_overseas';
   const countStatus=(st)=>all.filter(p=>patientRegisterStatus(p)===st).length;
   if(stats){
     stats.innerHTML=`
@@ -3249,7 +3250,7 @@ function renderPatientsList(){
   let rows=all.filter(p=>patientRegisterStatus(p)===cfg.status);
   if(search){
     rows=rows.filter(p=>[
-      p.first_name,p.surname,p.id_card,p.phone_number,p.followup_owner,p.locality,p.patient_status_raw,patientRegisterStatusText(patientRegisterStatus(p)),p.sex,p.dob,p.rip_date,p.surgery_date,patientStomaTypeText(p.stoma_type_summary)
+      p.first_name,p.surname,p.id_card,p.phone_number,p.followup_owner,p.locality,p.patient_status_raw,patientRegisterStatusText(patientRegisterStatus(p)),p.sex,p.dob,p.rip_date,p.surgery_date,p.discharged_date,p.last_outcome_date,patientStomaTypeText(p.stoma_type_summary)
     ].join(' ').toLowerCase().includes(search));
   }
   if(isDeceased){
@@ -3268,11 +3269,13 @@ function renderPatientsList(){
   if(thead){
     thead.innerHTML=isDeceased
       ? '<tr><th>ID Number</th><th>Patient</th><th>Sex</th><th>DOB</th><th>Date of RIP</th><th>Age at Death</th><th>Surgery Date</th><th>Stoma Days</th><th>Stoma Type Summary</th><th>Locality</th><th>Actions</th></tr>'
-      : '<tr><th>Patient</th><th>ID Card</th><th>Phone</th><th>Status</th><th>Owner</th><th>Due Month</th><th>Last Outcome</th><th>Next Follow-up</th><th>Locality</th><th>Actions</th></tr>';
+      : (isRelocatedOverseas
+        ? '<tr><th>Patient</th><th>ID Card</th><th>Status</th><th>Last Seen</th><th>Date of Discharge</th><th>Stoma Type Summary</th><th>Actions</th></tr>'
+        : '<tr><th>Patient</th><th>ID Card</th><th>Phone</th><th>Status</th><th>Owner</th><th>Due Month</th><th>Last Outcome</th><th>Next Follow-up</th><th>Locality</th><th>Actions</th></tr>');
   }
   if(!tbody)return;
   if(!rows.length){
-    tbody.innerHTML=`<tr><td colspan="${isDeceased?11:10}" class="empty">No ${htmlSafe(cfg.title.toLowerCase())} found${search?' for this search':''}.</td></tr>`;
+    tbody.innerHTML=`<tr><td colspan="${isDeceased?11:(isRelocatedOverseas?7:10)}" class="empty">No ${htmlSafe(cfg.title.toLowerCase())} found${search?' for this search':''}.</td></tr>`;
     return;
   }
   tbody.innerHTML=rows.map(p=>{
@@ -3295,6 +3298,17 @@ function renderPatientsList(){
     }
     const latest=p.last_outcome_date||'—';
     const next=p.next_followup_mirror||'—';
+    if(isRelocatedOverseas){
+      return `<tr class="followup-click-row" onclick="openFollowupHistory('${p.id}')">
+        <td><strong>${htmlSafe(nm)}</strong><br/><span style="font-size:10px;color:var(--muted);">Click row for history</span></td>
+        <td>${htmlSafe(p.id_card||'—')}</td>
+        <td>${patientStatusChip(st)}${p.patient_status_raw?`<br/><span style="font-size:10px;color:var(--muted);">${htmlSafe(p.patient_status_raw)}</span>`:''}</td>
+        <td>${patientDateText(p.last_outcome_date)}</td>
+        <td><strong>${patientDateText(p.discharged_date)}</strong></td>
+        <td>${patientStomaTypeText(p.stoma_type_summary)}</td>
+        <td>${patientRegisterActions(p,false)}</td>
+      </tr>`;
+    }
     return `<tr class="followup-click-row" onclick="openFollowupHistory('${p.id}')">
       <td><strong>${htmlSafe(nm)}</strong><br/><span style="font-size:10px;color:var(--muted);">Click row for history</span></td>
       <td>${htmlSafe(p.id_card||'—')}</td>
@@ -3954,9 +3968,9 @@ async function loadReportPatientGroup(tabName){
   if(title)title.textContent=cfg.title;
   if(subtitle)subtitle.textContent=cfg.subtitle;
   if(cardTitle)cardTitle.textContent=cfg.title;
-  if(search){search.value='';search.placeholder=cfg.status==='deceased'?'Search name, ID number, RIP date, stoma type, locality...':'Search name, ID card, phone, owner, locality...';}
+  if(search){search.value='';search.placeholder=cfg.status==='deceased'?'Search name, ID number, RIP date, stoma type, locality...':(cfg.status==='relocated_overseas'?'Search name, ID card, last seen, discharge date, stoma type...':'Search name, ID card, phone, owner, locality...');}
   if(tbody)tbody.innerHTML='<tr><td colspan="11" class="empty">Loading report...</td></tr>';
-  let fields='id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type,patient_status_raw,locality,sex,dob,surgery_date,stoma_type_summary,last_outcome_date,next_followup_mirror,rip_date,reversal_date,stoma_days,age_at_death';
+  let fields='id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type,patient_status_raw,locality,sex,dob,surgery_date,stoma_type_summary,last_outcome_date,discharged_date,next_followup_mirror,rip_date,reversal_date,stoma_days,age_at_death';
   let res=await SB.from('patients').select(fields).order('surname',{ascending:true}).limit(3000);
   if(res.error){
     fields='id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type';
@@ -3993,7 +4007,7 @@ function rowsForReportPatientGroup(){
   const search=String(document.getElementById('report-patient-group-search')?.value||'').trim().toLowerCase();
   if(search){
     rows=rows.filter(p=>[
-      p.first_name,p.surname,p.id_card,p.phone_number,p.followup_owner,p.followup_year,followupMonthName(p.followup_due_month),p.locality,p.patient_status_raw,patientRegisterStatusText(patientRegisterStatus(p)),p.sex,p.dob,p.rip_date,p.surgery_date,patientStomaTypeText(p.stoma_type_summary)
+      p.first_name,p.surname,p.id_card,p.phone_number,p.followup_owner,p.followup_year,followupMonthName(p.followup_due_month),p.locality,p.patient_status_raw,patientRegisterStatusText(patientRegisterStatus(p)),p.sex,p.dob,p.rip_date,p.surgery_date,p.discharged_date,p.last_outcome_date,patientStomaTypeText(p.stoma_type_summary)
     ].join(' ').toLowerCase().includes(search));
   }
   return rows;
@@ -4004,6 +4018,7 @@ function renderReportPatientGroup(){
   const tbody=document.getElementById('report-patient-group-tbody');
   const stats=document.getElementById('report-patient-group-stats');
   const isDeceased=cfg.status==='deceased';
+  const isRelocatedOverseas=cfg.status==='relocated_overseas';
   const isFollowups=cfg.mode==='followups';
   const all=reportPatientGroupRows||[];
   const rows=rowsForReportPatientGroup();
@@ -4019,6 +4034,8 @@ function renderReportPatientGroup(){
   if(thead){
     if(isDeceased){
       thead.innerHTML='<tr><th>ID Number</th><th>Patient</th><th>Sex</th><th>DOB</th><th>Date of RIP</th><th>Age at Death</th><th>Surgery Date</th><th>Stoma Days</th><th>Stoma Type Summary</th><th>Locality</th></tr>';
+    }else if(isRelocatedOverseas){
+      thead.innerHTML='<tr><th>Patient</th><th>ID Card</th><th>Status</th><th>Last Seen</th><th>Date of Discharge</th><th>Stoma Type Summary</th></tr>';
     }else if(isFollowups){
       thead.innerHTML='<tr><th>Patient</th><th>ID Card</th><th>Phone</th><th>Status</th><th>Owner</th><th>Due Month</th><th>Follow-up Year</th><th>Last Outcome</th><th>Next Follow-up</th><th>Locality</th></tr>';
     }else{
@@ -4026,7 +4043,7 @@ function renderReportPatientGroup(){
     }
   }
   if(!tbody)return;
-  if(!rows.length){tbody.innerHTML=`<tr><td colspan="${isDeceased?10:isFollowups?10:9}" class="empty">No ${htmlSafe(cfg.title.toLowerCase())} found.</td></tr>`;return;}
+  if(!rows.length){tbody.innerHTML=`<tr><td colspan="${isDeceased?10:(isRelocatedOverseas?6:(isFollowups?10:9))}" class="empty">No ${htmlSafe(cfg.title.toLowerCase())} found.</td></tr>`;return;}
   tbody.innerHTML=rows.map(p=>{
     const nm=`${p.first_name||''} ${p.surname||''}`.trim()||'Unnamed patient';
     const st=patientRegisterStatus(p);
@@ -4042,6 +4059,16 @@ function renderReportPatientGroup(){
         <td>${htmlSafe(patientStomaDays(p))}</td>
         <td>${patientStomaTypeText(p.stoma_type_summary)}</td>
         <td>${htmlSafe(p.locality||'—')}</td>
+      </tr>`;
+    }
+    if(isRelocatedOverseas){
+      return `<tr>
+        <td><strong>${htmlSafe(nm)}</strong></td>
+        <td style="font-family:monospace;font-size:12px;">${htmlSafe(p.id_card||'—')}</td>
+        <td>${patientStatusChip(st)}${p.patient_status_raw?`<br/><span style="font-size:10px;color:var(--muted);">${htmlSafe(p.patient_status_raw)}</span>`:''}</td>
+        <td>${patientDateText(p.last_outcome_date)}</td>
+        <td><strong>${patientDateText(p.discharged_date)}</strong></td>
+        <td>${patientStomaTypeText(p.stoma_type_summary)}</td>
       </tr>`;
     }
     return `<tr>
