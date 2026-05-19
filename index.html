@@ -108,6 +108,12 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .nav-tile.tile-navy:before,.nav-tile.tile-navy .nav-tile-icon{background:var(--navy);}
 .nav-tile.tile-teal:before,.nav-tile.tile-teal .nav-tile-icon{background:var(--teal);}
 .admission-route-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-top:12px;}
+.admission-route-grid .admission-next-tile{min-height:96px;border-radius:16px;border:2px solid var(--teal);background:linear-gradient(90deg,#ffffff 0%,#f3fbfa 72%,#e0f2f1 72%);padding-right:20px;}
+.admission-route-grid .admission-next-tile .nav-tile-arrow{font-size:12px;color:white;background:var(--teal);border-radius:999px;padding:7px 10px;white-space:nowrap;}
+.admission-route-grid .admission-next-tile:after{content:"";position:absolute;right:-18px;top:50%;transform:translateY(-50%);border-top:24px solid transparent;border-bottom:24px solid transparent;border-left:18px solid var(--teal);}
+.route-stoma-care{margin-top:18px;padding-top:18px;border-top:1px solid var(--border);}
+.route-stoma-care .new-patient-section-title{margin-bottom:10px;}
+
 .admission-route-grid .nav-tile{min-height:92px;align-items:flex-start;padding:16px 18px;overflow:visible;}
 .admission-route-grid .nav-tile-text{display:flex;flex-direction:column;gap:6px;min-width:0;white-space:normal;}
 .admission-route-grid .nav-tile-label{display:block;font-size:14px;line-height:1.35;white-space:normal;overflow:visible;text-overflow:clip;word-break:normal;}
@@ -593,22 +599,11 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
             <div class="fg"><label>Contact Number</label><input type="tel" id="np-phone" placeholder="Contact number"/></div>
           </div>
         </div>
-
-        <div class="new-patient-section">
-          <div class="new-patient-section-title">Stoma + Care</div>
-          <div class="new-patient-grid">
-            <div class="fg"><label>Surgery Date *</label><input type="date" id="np-surgery-date" required/></div>
-            <input type="hidden" id="np-admission-route" value=""/>
-            <div class="fg full"><label>Operation Performed</label><textarea id="np-operation-performed" placeholder="Operation performed"></textarea></div>
-            <div class="fg full"><label>Findings</label><textarea id="np-findings" placeholder="Findings"></textarea></div>
-            <div class="fg full"><label>Stoma Type *</label><div class="choice-group" id="np-stoma-type-group"><label class="choice-chip"><input type="radio" name="np-stoma-type" value="Ileostomy" required/> Ileostomy</label><label class="choice-chip"><input type="radio" name="np-stoma-type" value="Colostomy" required/> Colostomy</label><label class="choice-chip"><input type="radio" name="np-stoma-type" value="Urostomy" required/> Urostomy</label><label class="choice-chip"><input type="radio" name="np-stoma-type" value="Other" required/> Other</label></div></div><div class="fg full"><label>Admission Route Pages</label><div class="choice-hint">Open a route page using the tiles below. The pages remain available even though Admission Route is no longer shown in the form.</div><div class="admission-route-grid">
-                <button type="button" class="nav-tile tile-green" data-admission-route="Elective surgery" onclick="selectAdmissionRouteTile('Elective surgery')"><span class="nav-tile-icon">E</span><span class="nav-tile-text"><span class="nav-tile-label">Elective surgery</span><span class="nav-tile-sub">Planned surgical admission</span></span><span class="nav-tile-arrow">›</span></button>
-                <button type="button" class="nav-tile tile-red" data-admission-route="Emergency surgery" onclick="selectAdmissionRouteTile('Emergency surgery')"><span class="nav-tile-icon">!</span><span class="nav-tile-text"><span class="nav-tile-label">Emergency surgery</span><span class="nav-tile-sub">Urgent unplanned admission</span></span><span class="nav-tile-arrow">›</span></button>
-                <button type="button" class="nav-tile tile-blue" data-admission-route="Fistula/wound management – bagging advice" onclick="selectAdmissionRouteTile('Fistula/wound management – bagging advice')"><span class="nav-tile-icon">W</span><span class="nav-tile-text"><span class="nav-tile-label">Fistula/wound management</span><span class="nav-tile-sub">Bagging advice pathway</span></span><span class="nav-tile-arrow">›</span></button>
-                <button type="button" class="nav-tile tile-purple" data-admission-route="Outside MDH – ostomy formed elsewhere" onclick="selectAdmissionRouteTile('Outside MDH – ostomy formed elsewhere')"><span class="nav-tile-icon">O</span><span class="nav-tile-text"><span class="nav-tile-label">Outside MDH</span><span class="nav-tile-sub">Ostomy formed elsewhere</span></span><span class="nav-tile-arrow">›</span></button>
-              </div></div>
-          </div>
-        </div>
+        <input type="hidden" id="np-surgery-date" value=""/>
+        <input type="hidden" id="np-admission-route" value=""/>
+        <input type="hidden" id="np-operation-performed" value=""/>
+        <input type="hidden" id="np-findings" value=""/>
+        <input type="hidden" id="np-stoma-type-hidden" value=""/>
 
         <div class="new-patient-section">
           <div class="new-patient-section-title">Clinical History</div>
@@ -618,13 +613,17 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
             <div class="fg full"><label>Social History</label><textarea id="np-social-history" placeholder="Social history"></textarea></div>
             <div class="fg full"><label>Medical History / Current Medications</label><div class="choice-group" id="np-medication-history"><label class="choice-chip"><input type="checkbox" name="np-med-history" value="No medications used" onchange="handleMedicationSelection()"/> No medications used</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="OHAs" onchange="handleMedicationSelection()"/> OHAs</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Antiplatelets" onchange="handleMedicationSelection()"/> Antiplatelets</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Anticoagulants" onchange="handleMedicationSelection()"/> Anticoagulants</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Antihypertensives" onchange="handleMedicationSelection()"/> Antihypertensives</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Statins" onchange="handleMedicationSelection()"/> Statins</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Steroids" onchange="handleMedicationSelection()"/> Steroids</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Immunosuppressants" onchange="handleMedicationSelection()"/> Immunosuppressants</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="PPIs" onchange="handleMedicationSelection()"/> PPIs</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Opioids" onchange="handleMedicationSelection()"/> Opioids</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Antibiotics" onchange="handleMedicationSelection()"/> Antibiotics</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Antidiarrhoeal" onchange="handleMedicationSelection()"/> Antidiarrhoeal</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Other" onchange="handleMedicationSelection()"/> Other</label></div><div class="choice-hint">Select all that apply. Use “No medications used” when applicable.</div><input type="text" id="np-medication-other" placeholder="Other medications" style="margin-top:8px;display:none;"/></div><div class="fg full"><label>Additional Notes</label><textarea id="np-medication-notes" placeholder="Additional notes about medical history or current medication"></textarea></div>
             <div class="fg full"><label>DPA *</label><div class="choice-group" id="np-dpa-group"><label class="choice-chip"><input type="radio" name="np-dpa" value="Yes" required/> Yes</label><label class="choice-chip"><input type="radio" name="np-dpa" value="No" required/> No</label><label class="choice-chip"><input type="radio" name="np-dpa" value="N/A" required/> N/A</label></div></div>
-            <div class="fg full"><label>Complications</label><textarea id="np-complications" placeholder="Complications"></textarea></div>
+            <div class="fg full"><label>Admission Route</label><div class="choice-hint">Choose one route to continue to the next step and complete Stoma + Care.</div><div class="admission-route-grid">
+              <button type="button" class="nav-tile admission-next-tile tile-green" data-admission-route="Elective surgery" onclick="selectAdmissionRouteTile('Elective surgery')"><span class="nav-tile-icon">E</span><span class="nav-tile-text"><span class="nav-tile-label">Elective surgery</span><span class="nav-tile-sub">Next step: planned surgical pathway</span></span><span class="nav-tile-arrow">Next ›</span></button>
+              <button type="button" class="nav-tile admission-next-tile tile-red" data-admission-route="Emergency surgery" onclick="selectAdmissionRouteTile('Emergency surgery')"><span class="nav-tile-icon">!</span><span class="nav-tile-text"><span class="nav-tile-label">Emergency surgery</span><span class="nav-tile-sub">Next step: urgent/unplanned pathway</span></span><span class="nav-tile-arrow">Next ›</span></button>
+              <button type="button" class="nav-tile admission-next-tile tile-blue" data-admission-route="Fistula/wound management – bagging advice" onclick="selectAdmissionRouteTile('Fistula/wound management – bagging advice')"><span class="nav-tile-icon">W</span><span class="nav-tile-text"><span class="nav-tile-label">Fistula/wound management</span><span class="nav-tile-sub">Next step: wound/bagging advice</span></span><span class="nav-tile-arrow">Next ›</span></button>
+              <button type="button" class="nav-tile admission-next-tile tile-purple" data-admission-route="Outside MDH – ostomy formed elsewhere" onclick="selectAdmissionRouteTile('Outside MDH – ostomy formed elsewhere')"><span class="nav-tile-icon">O</span><span class="nav-tile-text"><span class="nav-tile-label">Outside MDH</span><span class="nav-tile-sub">Next step: ostomy formed elsewhere</span></span><span class="nav-tile-arrow">Next ›</span></button>
+            </div></div>
           </div>
         </div>
 
         <div id="np-reg-note" class="new-patient-note"></div>
         <div class="new-patient-actions">
-          <button class="btn-save" onclick="saveNewPatientTab()">Save Patient</button>
           <button class="btn-cancel" onclick="clearNewPatientForm()">Clear Form</button>
         </div>
       </div>
@@ -637,10 +636,18 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
         <h3>Elective surgery</h3>
         <p>Use this page for patients admitted for a planned operation or scheduled stoma formation.</p>
         <div class="admission-route-grid">
-          <button type="button" class="nav-tile tile-green active" onclick="continueAddPatientFromRoute('Elective surgery')"><span class="nav-tile-icon">E</span><span class="nav-tile-text"><span class="nav-tile-label">Elective surgery selected</span><span class="nav-tile-sub">Return to Add Patient</span></span><span class="nav-tile-arrow">✓</span></button>
+          <button type="button" class="nav-tile admission-next-tile active" onclick="collectRouteStomaCare('page-admission-elective',false)"><span class="nav-tile-icon">✓</span><span class="nav-tile-text"><span class="nav-tile-label">Elective surgery selected</span><span class="nav-tile-sub">Complete the Stoma + Care section below</span></span><span class="nav-tile-arrow">Step 2</span></button>
         </div>
-        <ul class="route-checklist"><li>Confirm planned operation date and procedure.</li><li>Complete Operation Performed, Findings and Stoma Type.</li><li>Document baseline clinical and social history.</li></ul>
-        <div class="route-actions"><button class="btn-save" onclick="continueAddPatientFromRoute('Elective surgery')">Continue Add Patient</button><button class="btn-cancel" onclick="switchTab('new-patient',document.querySelector('[data-tab=&quot;new-patient&quot;]'))">Back without changing</button></div>
+        <div class="route-stoma-care">
+          <div class="new-patient-section-title">Stoma + Care</div>
+          <div class="new-patient-grid">
+            <div class="fg"><label>Surgery Date *</label><input type="date" class="route-surgery-date" required/></div>
+            <div class="fg full"><label>Operation Performed</label><textarea class="route-operation-performed" placeholder="Operation performed"></textarea></div>
+            <div class="fg full"><label>Findings</label><textarea class="route-findings" placeholder="Findings"></textarea></div>
+            <div class="fg full"><label>Stoma Type *</label><div class="choice-group"><label class="choice-chip"><input type="radio" class="route-stoma-type" name="route-stoma-elective" value="Ileostomy" required/> Ileostomy</label><label class="choice-chip"><input type="radio" class="route-stoma-type" name="route-stoma-elective" value="Colostomy" required/> Colostomy</label><label class="choice-chip"><input type="radio" class="route-stoma-type" name="route-stoma-elective" value="Urostomy" required/> Urostomy</label><label class="choice-chip"><input type="radio" class="route-stoma-type" name="route-stoma-elective" value="Other" required/> Other</label></div></div>
+          </div>
+        </div>
+        <div class="route-actions"><button class="btn-save" onclick="savePatientFromAdmissionRoute('Elective surgery','page-admission-elective')">Complete Patient Record</button><button class="btn-cancel" onclick="switchTab('new-patient',document.querySelector('[data-tab=&quot;new-patient&quot;]'))">Back to Patient Details</button></div>
       </div>
     </div>
 
@@ -650,10 +657,18 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
         <h3>Emergency surgery</h3>
         <p>Use this page for patients admitted urgently or unexpectedly for operative stoma care.</p>
         <div class="admission-route-grid">
-          <button type="button" class="nav-tile tile-red active" onclick="continueAddPatientFromRoute('Emergency surgery')"><span class="nav-tile-icon">!</span><span class="nav-tile-text"><span class="nav-tile-label">Emergency surgery selected</span><span class="nav-tile-sub">Return to Add Patient</span></span><span class="nav-tile-arrow">✓</span></button>
+          <button type="button" class="nav-tile admission-next-tile active" onclick="collectRouteStomaCare('page-admission-emergency',false)"><span class="nav-tile-icon">✓</span><span class="nav-tile-text"><span class="nav-tile-label">Emergency surgery selected</span><span class="nav-tile-sub">Complete the Stoma + Care section below</span></span><span class="nav-tile-arrow">Step 2</span></button>
         </div>
-        <ul class="route-checklist"><li>Record the emergency operation and findings clearly.</li><li>Document complications and immediate care needs.</li><li>Confirm DPA and contact details before saving.</li></ul>
-        <div class="route-actions"><button class="btn-save" onclick="continueAddPatientFromRoute('Emergency surgery')">Continue Add Patient</button><button class="btn-cancel" onclick="switchTab('new-patient',document.querySelector('[data-tab=&quot;new-patient&quot;]'))">Back without changing</button></div>
+        <div class="route-stoma-care">
+          <div class="new-patient-section-title">Stoma + Care</div>
+          <div class="new-patient-grid">
+            <div class="fg"><label>Surgery Date *</label><input type="date" class="route-surgery-date" required/></div>
+            <div class="fg full"><label>Operation Performed</label><textarea class="route-operation-performed" placeholder="Operation performed"></textarea></div>
+            <div class="fg full"><label>Findings</label><textarea class="route-findings" placeholder="Findings"></textarea></div>
+            <div class="fg full"><label>Stoma Type *</label><div class="choice-group"><label class="choice-chip"><input type="radio" class="route-stoma-type" name="route-stoma-emergency" value="Ileostomy" required/> Ileostomy</label><label class="choice-chip"><input type="radio" class="route-stoma-type" name="route-stoma-emergency" value="Colostomy" required/> Colostomy</label><label class="choice-chip"><input type="radio" class="route-stoma-type" name="route-stoma-emergency" value="Urostomy" required/> Urostomy</label><label class="choice-chip"><input type="radio" class="route-stoma-type" name="route-stoma-emergency" value="Other" required/> Other</label></div></div>
+          </div>
+        </div>
+        <div class="route-actions"><button class="btn-save" onclick="savePatientFromAdmissionRoute('Emergency surgery','page-admission-emergency')">Complete Patient Record</button><button class="btn-cancel" onclick="switchTab('new-patient',document.querySelector('[data-tab=&quot;new-patient&quot;]'))">Back to Patient Details</button></div>
       </div>
     </div>
 
@@ -663,10 +678,18 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
         <h3>Fistula/wound management – bagging advice</h3>
         <p>Use this page when the referral is for fistula/wound management or bagging advice rather than a new operation.</p>
         <div class="admission-route-grid">
-          <button type="button" class="nav-tile tile-blue active" onclick="continueAddPatientFromRoute('Fistula/wound management – bagging advice')"><span class="nav-tile-icon">W</span><span class="nav-tile-text"><span class="nav-tile-label">Fistula/wound management selected</span><span class="nav-tile-sub">Return to Add Patient</span></span><span class="nav-tile-arrow">✓</span></button>
+          <button type="button" class="nav-tile admission-next-tile active" onclick="collectRouteStomaCare('page-admission-fistula',false)"><span class="nav-tile-icon">✓</span><span class="nav-tile-text"><span class="nav-tile-label">Fistula/wound management – bagging advice selected</span><span class="nav-tile-sub">Complete the Stoma + Care section below</span></span><span class="nav-tile-arrow">Step 2</span></button>
         </div>
-        <ul class="route-checklist"><li>Describe wound/fistula findings and bagging requirements.</li><li>Use Operation Performed if a procedure was done; otherwise document advice in Findings.</li><li>Record complications and social support needs.</li></ul>
-        <div class="route-actions"><button class="btn-save" onclick="continueAddPatientFromRoute('Fistula/wound management – bagging advice')">Continue Add Patient</button><button class="btn-cancel" onclick="switchTab('new-patient',document.querySelector('[data-tab=&quot;new-patient&quot;]'))">Back without changing</button></div>
+        <div class="route-stoma-care">
+          <div class="new-patient-section-title">Stoma + Care</div>
+          <div class="new-patient-grid">
+            <div class="fg"><label>Surgery Date *</label><input type="date" class="route-surgery-date" required/></div>
+            <div class="fg full"><label>Operation Performed</label><textarea class="route-operation-performed" placeholder="Operation performed"></textarea></div>
+            <div class="fg full"><label>Findings</label><textarea class="route-findings" placeholder="Findings"></textarea></div>
+            <div class="fg full"><label>Stoma Type *</label><div class="choice-group"><label class="choice-chip"><input type="radio" class="route-stoma-type" name="route-stoma-fistula" value="Ileostomy" required/> Ileostomy</label><label class="choice-chip"><input type="radio" class="route-stoma-type" name="route-stoma-fistula" value="Colostomy" required/> Colostomy</label><label class="choice-chip"><input type="radio" class="route-stoma-type" name="route-stoma-fistula" value="Urostomy" required/> Urostomy</label><label class="choice-chip"><input type="radio" class="route-stoma-type" name="route-stoma-fistula" value="Other" required/> Other</label></div></div>
+          </div>
+        </div>
+        <div class="route-actions"><button class="btn-save" onclick="savePatientFromAdmissionRoute('Fistula/wound management – bagging advice','page-admission-fistula')">Complete Patient Record</button><button class="btn-cancel" onclick="switchTab('new-patient',document.querySelector('[data-tab=&quot;new-patient&quot;]'))">Back to Patient Details</button></div>
       </div>
     </div>
 
@@ -676,10 +699,18 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
         <h3>Outside MDH – ostomy formed elsewhere</h3>
         <p>Use this page for patients whose ostomy was formed outside MDH and are being added to the MDH stoma registry.</p>
         <div class="admission-route-grid">
-          <button type="button" class="nav-tile tile-purple active" onclick="continueAddPatientFromRoute('Outside MDH – ostomy formed elsewhere')"><span class="nav-tile-icon">O</span><span class="nav-tile-text"><span class="nav-tile-label">Outside MDH selected</span><span class="nav-tile-sub">Return to Add Patient</span></span><span class="nav-tile-arrow">✓</span></button>
+          <button type="button" class="nav-tile admission-next-tile active" onclick="collectRouteStomaCare('page-admission-outside-mdh',false)"><span class="nav-tile-icon">✓</span><span class="nav-tile-text"><span class="nav-tile-label">Outside MDH – ostomy formed elsewhere selected</span><span class="nav-tile-sub">Complete the Stoma + Care section below</span></span><span class="nav-tile-arrow">Step 2</span></button>
         </div>
-        <ul class="route-checklist"><li>Record where the ostomy was formed if known.</li><li>Document operation details available from outside records.</li><li>Confirm current stoma type, appliance needs and follow-up requirements.</li></ul>
-        <div class="route-actions"><button class="btn-save" onclick="continueAddPatientFromRoute('Outside MDH – ostomy formed elsewhere')">Continue Add Patient</button><button class="btn-cancel" onclick="switchTab('new-patient',document.querySelector('[data-tab=&quot;new-patient&quot;]'))">Back without changing</button></div>
+        <div class="route-stoma-care">
+          <div class="new-patient-section-title">Stoma + Care</div>
+          <div class="new-patient-grid">
+            <div class="fg"><label>Surgery Date *</label><input type="date" class="route-surgery-date" required/></div>
+            <div class="fg full"><label>Operation Performed</label><textarea class="route-operation-performed" placeholder="Operation performed"></textarea></div>
+            <div class="fg full"><label>Findings</label><textarea class="route-findings" placeholder="Findings"></textarea></div>
+            <div class="fg full"><label>Stoma Type *</label><div class="choice-group"><label class="choice-chip"><input type="radio" class="route-stoma-type" name="route-stoma-outside" value="Ileostomy" required/> Ileostomy</label><label class="choice-chip"><input type="radio" class="route-stoma-type" name="route-stoma-outside" value="Colostomy" required/> Colostomy</label><label class="choice-chip"><input type="radio" class="route-stoma-type" name="route-stoma-outside" value="Urostomy" required/> Urostomy</label><label class="choice-chip"><input type="radio" class="route-stoma-type" name="route-stoma-outside" value="Other" required/> Other</label></div></div>
+          </div>
+        </div>
+        <div class="route-actions"><button class="btn-save" onclick="savePatientFromAdmissionRoute('Outside MDH – ostomy formed elsewhere','page-admission-outside-mdh')">Complete Patient Record</button><button class="btn-cancel" onclick="switchTab('new-patient',document.querySelector('[data-tab=&quot;new-patient&quot;]'))">Back to Patient Details</button></div>
       </div>
     </div>
 
@@ -1568,7 +1599,7 @@ function newPatientNote(text,type=''){
   note.textContent=text;
 }
 function clearNewPatientForm(){
-  ['np-id','np-sn','np-fn','np-dob','np-locality','np-sex','np-phone','np-surgery-date','np-admission-route','np-operation-performed','np-findings','np-pmh','np-psh','np-medication-other','np-medication-notes','np-social-history','np-complications'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  ['np-id','np-sn','np-fn','np-dob','np-locality','np-sex','np-phone','np-surgery-date','np-admission-route','np-operation-performed','np-findings','np-stoma-type-hidden','np-pmh','np-psh','np-medication-other','np-medication-notes','np-social-history'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   document.querySelectorAll('input[name="np-med-history"],input[name="np-dpa"],input[name="np-stoma-type"]').forEach(el=>{el.checked=false;});
   handleMedicationSelection();
   newPatientNote('');
@@ -1601,6 +1632,7 @@ async function lookupNewPatientById(){
     const opEl=document.getElementById('np-operation-performed'); if(opEl)opEl.value=data.operation_performed||data.surgery_event_operation_performed||'';
     const findingsEl=document.getElementById('np-findings'); if(findingsEl)findingsEl.value=data.findings||'';
     setRadioValue('np-stoma-type',stomaTypeChoiceFromValue(data.stoma_type_summary));
+    const hiddenStoma=document.getElementById('np-stoma-type-hidden'); if(hiddenStoma)hiddenStoma.value=stomaTypeChoiceFromValue(data.stoma_type_summary)||'';
     const pmhEl=document.getElementById('np-pmh'); if(pmhEl)pmhEl.value=data.past_medical_history||'';
     const pshEl=document.getElementById('np-psh'); if(pshEl)pshEl.value=data.past_surgical_history||'';
     setCheckedValues('np-med-history',medicationHistoryFromData(data));
@@ -1609,7 +1641,6 @@ async function lookupNewPatientById(){
     handleMedicationSelection();
     const socialEl=document.getElementById('np-social-history'); if(socialEl)socialEl.value=data.social_history||'';
     setRadioValue('np-dpa',data.dpa_status||'');
-    const compEl=document.getElementById('np-complications'); if(compEl)compEl.value=data.clinical_complications||'';
     // Follow-up planning fields are intentionally not shown or changed in Add Patient.
     newPatientNote(`Saved patient found: ${(data.first_name||'')} ${(data.surname||'')}. Saving will update this existing record.`, normaliseFollowupStatus(data.followup_status)==='deceased'?'error':'success');
     return data;
@@ -1627,12 +1658,12 @@ async function saveNewPatientTab(){
   const locality=newPatientInputValue('np-locality');
   const surgeryDate=newPatientInputValue('np-surgery-date');
   const admissionRoute=newPatientInputValue('np-admission-route');
-  const stomaType=getRadioValue('np-stoma-type');
+  const stomaType=getRadioValue('np-stoma-type')||newPatientInputValue('np-stoma-type-hidden');
   const dpaStatus=getRadioValue('np-dpa');
   if(!dob){alert('DOB is required.');return;}
   if(!locality){alert('Locality is required.');return;}
-  if(!surgeryDate){alert('Surgery Date is required.');return;}
-  if(!stomaType){alert('Please select Stoma Type.');return;}
+  if(!surgeryDate){alert('Please choose an Admission Route and complete Surgery Date in the Stoma + Care step.');return;}
+  if(!stomaType){alert('Please choose an Admission Route and select Stoma Type in the Stoma + Care step.');return;}
   if(!dpaStatus){alert('Please select DPA: Yes, No, or N/A.');return;}
   const medicationValues=getCheckedValues('np-med-history');
   const medicationOther=newPatientInputValue('np-medication-other');
@@ -1652,8 +1683,7 @@ async function saveNewPatientTab(){
     medication_additional_notes:newPatientInputValue('np-medication-notes')||null,
     drug_history:medicationHistoryText(medicationValues,medicationOther)||null,
     social_history:newPatientInputValue('np-social-history')||null,
-    dpa_status:dpaStatus||null,
-    clinical_complications:newPatientInputValue('np-complications')||null
+    dpa_status:dpaStatus||null
   };
   if(!payload.stoma_type_summary)delete payload.stoma_type_summary;
   const saved=await saveOrUpdatePatientByIdCard(id,fn,sn,phone,payload);
@@ -1700,6 +1730,29 @@ function handleAdmissionRouteChange(sel){
   const pageName=admissionRoutePageName(value);
   if(pageName)switchTab(pageName,document.querySelector(`.nav-tile[data-admission-route="${cssEscape(value)}"]`));
 }
+
+function collectRouteStomaCare(pageId,showAlert=true){
+  const page=document.getElementById(pageId);
+  if(!page)return false;
+  const surgery=page.querySelector('.route-surgery-date')?.value||'';
+  const operation=page.querySelector('.route-operation-performed')?.value?.trim()||'';
+  const findings=page.querySelector('.route-findings')?.value?.trim()||'';
+  const stoma=page.querySelector('.route-stoma-type:checked')?.value||'';
+  if(showAlert&&(!surgery||!stoma)){
+    alert('Please complete Surgery Date and Stoma Type before completing the patient record.');
+    return false;
+  }
+  const surgeryEl=document.getElementById('np-surgery-date'); if(surgeryEl)surgeryEl.value=surgery;
+  const opEl=document.getElementById('np-operation-performed'); if(opEl)opEl.value=operation;
+  const findingsEl=document.getElementById('np-findings'); if(findingsEl)findingsEl.value=findings;
+  const stomaEl=document.getElementById('np-stoma-type-hidden'); if(stomaEl)stomaEl.value=stoma;
+  return true;
+}
+function savePatientFromAdmissionRoute(value,pageId){
+  setAdmissionRouteValue(value);
+  if(!collectRouteStomaCare(pageId,true))return;
+  saveNewPatientTab();
+}
 function selectAdmissionRouteTile(value){
   setAdmissionRouteValue(value);
   const pageName=admissionRoutePageName(value);
@@ -1708,7 +1761,7 @@ function selectAdmissionRouteTile(value){
 function continueAddPatientFromRoute(value){
   setAdmissionRouteValue(value);
   switchTab('new-patient',document.querySelector('[data-tab="new-patient"]'));
-  setTimeout(()=>document.getElementById('np-surgery-date')?.scrollIntoView({behavior:'smooth',block:'center'}),80);
+  setTimeout(()=>document.getElementById('np-reg-note')?.scrollIntoView({behavior:'smooth',block:'center'}),80);
 }
 function switchTab(name,el){
   if(!name)name='roster';
