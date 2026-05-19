@@ -123,6 +123,16 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .route-page-card p{margin:0 0 16px;color:var(--muted);font-size:13px;line-height:1.7;max-width:920px;}
 .route-checklist{margin:10px 0 0;padding-left:18px;color:#34495e;font-size:12px;line-height:1.7;}
 .route-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;}
+
+.elective-save-tile{cursor:default;grid-column:span 1;background:linear-gradient(90deg,#ffffff 0%,#eefaf6 72%,#d8f3e8 72%)!important;}
+.elective-save-tile .nav-tile-text{gap:7px;}
+.elective-plan-label{font-size:11px;font-weight:700;color:var(--navy);display:flex;flex-direction:column;gap:5px;margin-top:3px;max-width:220px;}
+.elective-plan-label input{width:100%;border:1px solid var(--border);border-radius:8px;padding:8px 9px;font-size:12px;background:white;color:var(--navy);font-family:'Inter',sans-serif;}
+.elective-save-btn{border:none;cursor:pointer;font-family:'Inter',sans-serif;font-weight:800;}
+.elective-save-btn:hover{filter:brightness(.95);transform:translateX(1px);}
+.inpatient-type-chip{display:inline-block;padding:4px 8px;border-radius:999px;font-size:10px;font-weight:800;border:1px solid #d6e4ff;background:#eef5ff;color:#1d4ed8;}
+.inpatient-type-chip.awaiting_surgery{background:#fff7ed;color:#c2410c;border-color:#fed7aa;}
+.inpatient-type-chip.inpatient{background:#e8f5f4;color:var(--teal);border-color:#bfe4df;}
 @media(max-width:700px){.centre-hub{padding:14px;margin-bottom:14px;border-radius:16px;}.centre-nav-grid{grid-template-columns:1fr 1fr;gap:9px;}.nav-tile{min-height:54px;padding:10px 12px;gap:9px;}.nav-tile-label{font-size:11px;}.nav-tile-sub{display:none;}.nav-tile-icon{width:30px;height:30px;font-size:14px;}.centre-hub h1{font-size:19px;}.centre-hub-icon{width:42px;height:42px;}.admission-route-grid{grid-template-columns:1fr;gap:12px;}.admission-route-grid .nav-tile{min-height:88px;padding:14px 16px;}.admission-route-grid .nav-tile-label{font-size:13px;line-height:1.35;}.admission-route-grid .nav-tile-sub{display:block;font-size:11px;line-height:1.45;}.route-page-card{padding:18px;}.route-page-card h3{font-size:18px;}.route-page-card p{font-size:13px;line-height:1.65;}}
 
 .main{padding:100px 24px 40px;}
@@ -601,6 +611,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
         </div>
         <input type="hidden" id="np-surgery-date" value=""/>
         <input type="hidden" id="np-planned-surgery-date" value=""/>
+        <input type="hidden" id="np-inpatient-type" value=""/>
         <input type="hidden" id="np-admission-route" value=""/>
         <input type="hidden" id="np-operation-performed" value=""/>
         <input type="hidden" id="np-findings" value=""/>
@@ -615,7 +626,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
             <div class="fg full"><label>Medical History / Current Medications</label><div class="choice-group" id="np-medication-history"><label class="choice-chip"><input type="checkbox" name="np-med-history" value="No medications used" onchange="handleMedicationSelection()"/> No medications used</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="OHAs" onchange="handleMedicationSelection()"/> OHAs</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Antiplatelets" onchange="handleMedicationSelection()"/> Antiplatelets</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Anticoagulants" onchange="handleMedicationSelection()"/> Anticoagulants</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Antihypertensives" onchange="handleMedicationSelection()"/> Antihypertensives</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Statins" onchange="handleMedicationSelection()"/> Statins</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Steroids" onchange="handleMedicationSelection()"/> Steroids</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Immunosuppressants" onchange="handleMedicationSelection()"/> Immunosuppressants</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="PPIs" onchange="handleMedicationSelection()"/> PPIs</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Opioids" onchange="handleMedicationSelection()"/> Opioids</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Antibiotics" onchange="handleMedicationSelection()"/> Antibiotics</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Antidiarrhoeal" onchange="handleMedicationSelection()"/> Antidiarrhoeal</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Other" onchange="handleMedicationSelection()"/> Other</label></div><div class="choice-hint">Select all that apply. Use “No medications used” when applicable.</div><input type="text" id="np-medication-other" placeholder="Other medications" style="margin-top:8px;display:none;"/></div><div class="fg full"><label>Additional Notes</label><textarea id="np-medication-notes" placeholder="Additional notes about medical history or current medication"></textarea></div>
             <div class="fg full"><label>DPA *</label><div class="choice-group" id="np-dpa-group"><label class="choice-chip"><input type="radio" name="np-dpa" value="Yes" required/> Yes</label><label class="choice-chip"><input type="radio" name="np-dpa" value="No" required/> No</label><label class="choice-chip"><input type="radio" name="np-dpa" value="N/A" required/> N/A</label></div></div>
             <div class="fg full"><label>Admission Route</label><div class="choice-hint">Choose one route to continue to the next step and complete Stoma + Care.</div><div class="admission-route-grid">
-              <button type="button" class="nav-tile admission-next-tile tile-green" data-admission-route="Elective surgery" onclick="selectAdmissionRouteTile('Elective surgery')"><span class="nav-tile-icon">E</span><span class="nav-tile-text"><span class="nav-tile-label">Elective surgery</span><span class="nav-tile-sub">Save via planned surgical pathway</span></span><span class="nav-tile-arrow">Save ›</span></button>
+              <div class="nav-tile admission-next-tile elective-save-tile tile-green" data-admission-route="Elective surgery"><span class="nav-tile-icon">E</span><span class="nav-tile-text"><span class="nav-tile-label">Elective surgery</span><span class="nav-tile-sub">Save as awaiting surgery in Inpatients</span><label class="elective-plan-label" onclick="event.stopPropagation();">Planned Surgery Date<input type="date" id="np-elective-planned-date" required onclick="event.stopPropagation();" onkeydown="event.stopPropagation();" onchange="document.getElementById('np-planned-surgery-date').value=this.value;"/></label></span><button type="button" class="nav-tile-arrow elective-save-btn" onclick="saveElectiveAwaitingSurgery(event)">Save ›</button></div>
               <button type="button" class="nav-tile admission-next-tile tile-red" data-admission-route="Emergency surgery" onclick="selectAdmissionRouteTile('Emergency surgery')"><span class="nav-tile-icon">!</span><span class="nav-tile-text"><span class="nav-tile-label">Emergency surgery</span><span class="nav-tile-sub">Next step: urgent/unplanned pathway</span></span><span class="nav-tile-arrow">Next ›</span></button>
               <button type="button" class="nav-tile admission-next-tile tile-blue" data-admission-route="Fistula/wound management – bagging advice" onclick="selectAdmissionRouteTile('Fistula/wound management – bagging advice')"><span class="nav-tile-icon">W</span><span class="nav-tile-text"><span class="nav-tile-label">Fistula/wound management</span><span class="nav-tile-sub">Next step: wound/bagging advice</span></span><span class="nav-tile-arrow">Next ›</span></button>
               <button type="button" class="nav-tile admission-next-tile tile-purple" data-admission-route="Outside MDH – ostomy formed elsewhere" onclick="selectAdmissionRouteTile('Outside MDH – ostomy formed elsewhere')"><span class="nav-tile-icon">O</span><span class="nav-tile-text"><span class="nav-tile-label">Outside MDH</span><span class="nav-tile-sub">Next step: ostomy formed elsewhere</span></span><span class="nav-tile-arrow">Next ›</span></button>
@@ -637,19 +648,18 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
         <h3>Elective surgery</h3>
         <p>Use this page for patients admitted for a planned operation or scheduled stoma formation.</p>
         <div class="admission-route-grid">
-          <button type="button" class="nav-tile admission-next-tile active" onclick="collectRouteStomaCare('page-admission-elective',false)"><span class="nav-tile-icon">✓</span><span class="nav-tile-text"><span class="nav-tile-label">Elective surgery selected</span><span class="nav-tile-sub">Complete Stoma + Care, then save below</span></span><span class="nav-tile-arrow">Save</span></button>
+          <button type="button" class="nav-tile admission-next-tile active" onclick="collectRouteStomaCare('page-admission-elective',false)"><span class="nav-tile-icon">✓</span><span class="nav-tile-text"><span class="nav-tile-label">Elective surgery selected</span><span class="nav-tile-sub">Complete the Stoma + Care section below</span></span><span class="nav-tile-arrow">Step 2</span></button>
         </div>
         <div class="route-stoma-care">
           <div class="new-patient-section-title">Stoma + Care</div>
           <div class="new-patient-grid">
-            <div class="fg"><label>Planned Surgery Date</label><input type="date" class="route-planned-surgery-date"/></div>
             <div class="fg"><label>Surgery Date *</label><input type="date" class="route-surgery-date" required/></div>
             <div class="fg full"><label>Operation Performed</label><textarea class="route-operation-performed" placeholder="Operation performed"></textarea></div>
             <div class="fg full"><label>Findings</label><textarea class="route-findings" placeholder="Findings"></textarea></div>
             <div class="fg full"><label>Stoma Type *</label><div class="choice-group"><label class="choice-chip"><input type="radio" class="route-stoma-type" name="route-stoma-elective" value="Ileostomy" required/> Ileostomy</label><label class="choice-chip"><input type="radio" class="route-stoma-type" name="route-stoma-elective" value="Colostomy" required/> Colostomy</label><label class="choice-chip"><input type="radio" class="route-stoma-type" name="route-stoma-elective" value="Urostomy" required/> Urostomy</label><label class="choice-chip"><input type="radio" class="route-stoma-type" name="route-stoma-elective" value="Other" required/> Other</label></div></div>
           </div>
         </div>
-        <div class="route-actions"><button class="btn-save" onclick="savePatientFromAdmissionRoute('Elective surgery','page-admission-elective')">Save Patient</button><button class="btn-cancel" onclick="switchTab('new-patient',document.querySelector('[data-tab=&quot;new-patient&quot;]'))">Back to Patient Details</button></div>
+        <div class="route-actions"><button class="btn-save" onclick="savePatientFromAdmissionRoute('Elective surgery','page-admission-elective')">Complete Patient Record</button><button class="btn-cancel" onclick="switchTab('new-patient',document.querySelector('[data-tab=&quot;new-patient&quot;]'))">Back to Patient Details</button></div>
       </div>
     </div>
 
@@ -1601,7 +1611,7 @@ function newPatientNote(text,type=''){
   note.textContent=text;
 }
 function clearNewPatientForm(){
-  ['np-id','np-sn','np-fn','np-dob','np-locality','np-sex','np-phone','np-surgery-date','np-admission-route','np-operation-performed','np-findings','np-stoma-type-hidden','np-pmh','np-psh','np-medication-other','np-medication-notes','np-social-history'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  ['np-id','np-sn','np-fn','np-dob','np-locality','np-sex','np-phone','np-surgery-date','np-planned-surgery-date','np-elective-planned-date','np-inpatient-type','np-admission-route','np-operation-performed','np-findings','np-stoma-type-hidden','np-pmh','np-psh','np-medication-other','np-medication-notes','np-social-history'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   document.querySelectorAll('input[name="np-med-history"],input[name="np-dpa"],input[name="np-stoma-type"]').forEach(el=>{el.checked=false;});
   handleMedicationSelection();
   newPatientNote('');
@@ -1614,7 +1624,7 @@ async function lookupNewPatientById(){
   if(!id){newPatientNote('');return null;}
   newPatientNote('Checking saved patient registry...');
   const{data,error}=await SB.from('patients')
-    .select('id,first_name,surname,id_card,phone_number,dob,locality,sex,surgery_date,planned_surgery_date,admission_route,operation_performed,surgery_event_operation_performed,findings,stoma_type_summary,past_medical_history,past_surgical_history,drug_history,medication_history,medication_history_other,medication_additional_notes,social_history,dpa_status,clinical_complications,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date')
+    .select('id,first_name,surname,id_card,phone_number,dob,locality,sex,surgery_date,planned_surgery_date,inpatient_type,admission_route,operation_performed,surgery_event_operation_performed,findings,stoma_type_summary,past_medical_history,past_surgical_history,drug_history,medication_history,medication_history_other,medication_additional_notes,social_history,dpa_status,clinical_complications,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date')
     .ilike('id_card',id)
     .maybeSingle();
   if(error){
@@ -1630,7 +1640,9 @@ async function lookupNewPatientById(){
     const locEl=document.getElementById('np-locality'); if(locEl)locEl.value=data.locality||'';
     const sexEl=document.getElementById('np-sex'); if(sexEl)sexEl.value=data.sex||'';
     const surgEl=document.getElementById('np-surgery-date'); if(surgEl)surgEl.value=String(data.surgery_date||'').slice(0,10);
-    const plannedEl=document.getElementById('np-planned-surgery-date'); if(plannedEl)plannedEl.value=data.planned_surgery_date||'';
+    const plannedEl=document.getElementById('np-planned-surgery-date'); if(plannedEl)plannedEl.value=String(data.planned_surgery_date||'').slice(0,10);
+    const electivePlannedEl=document.getElementById('np-elective-planned-date'); if(electivePlannedEl)electivePlannedEl.value=String(data.planned_surgery_date||'').slice(0,10);
+    const inpatientTypeEl=document.getElementById('np-inpatient-type'); if(inpatientTypeEl)inpatientTypeEl.value=data.inpatient_type||'';
     const routeEl=document.getElementById('np-admission-route'); if(routeEl)routeEl.value=data.admission_route||'';
     const opEl=document.getElementById('np-operation-performed'); if(opEl)opEl.value=data.operation_performed||data.surgery_event_operation_performed||'';
     const findingsEl=document.getElementById('np-findings'); if(findingsEl)findingsEl.value=data.findings||'';
@@ -1651,7 +1663,7 @@ async function lookupNewPatientById(){
   newPatientNote('No saved patient found for this ID card. A new patient record will be created.','success');
   return null;
 }
-async function saveNewPatientTab(){
+async function saveNewPatientTab(options={}){
   const sn=newPatientInputValue('np-sn');
   const fn=newPatientInputValue('np-fn');
   const id=normaliseIdCard(document.getElementById('np-id')?.value||'');
@@ -1659,14 +1671,17 @@ async function saveNewPatientTab(){
   if(!id||!sn||!fn){alert('Please enter ID number, surname and name.');return;}
   const dob=newPatientInputValue('np-dob');
   const locality=newPatientInputValue('np-locality');
+  const awaitingSurgery=!!options.awaitingSurgery;
   const surgeryDate=newPatientInputValue('np-surgery-date');
+  const plannedSurgeryDate=newPatientInputValue('np-planned-surgery-date')||newPatientInputValue('np-elective-planned-date');
   const admissionRoute=newPatientInputValue('np-admission-route');
   const stomaType=getRadioValue('np-stoma-type')||newPatientInputValue('np-stoma-type-hidden');
   const dpaStatus=getRadioValue('np-dpa');
   if(!dob){alert('DOB is required.');return;}
   if(!locality){alert('Locality is required.');return;}
-  if(!surgeryDate){alert('Please choose an Admission Route and complete Surgery Date in the Stoma + Care step.');return;}
-  if(!stomaType){alert('Please choose an Admission Route and select Stoma Type in the Stoma + Care step.');return;}
+  if(awaitingSurgery&&!plannedSurgeryDate){alert('Please enter the Planned Surgery Date for Elective surgery.');return;}
+  if(!awaitingSurgery&&!surgeryDate){alert('Please choose an Admission Route and complete Surgery Date in the Stoma + Care step.');return;}
+  if(!awaitingSurgery&&!stomaType){alert('Please choose an Admission Route and select Stoma Type in the Stoma + Care step.');return;}
   if(!dpaStatus){alert('Please select DPA: Yes, No, or N/A.');return;}
   const medicationValues=getCheckedValues('np-med-history');
   const medicationOther=newPatientInputValue('np-medication-other');
@@ -1675,7 +1690,8 @@ async function saveNewPatientTab(){
     locality:locality||null,
     sex:newPatientInputValue('np-sex')||null,
     surgery_date:surgeryDate||null,
-    planned_surgery_date:newPatientInputValue('np-planned-surgery-date')||null,
+    planned_surgery_date:plannedSurgeryDate||null,
+    inpatient_type:awaitingSurgery?'awaiting_surgery':(newPatientInputValue('np-inpatient-type')||null),
     admission_route:admissionRoute||null,
     operation_performed:newPatientInputValue('np-operation-performed')||null,
     findings:newPatientInputValue('np-findings')||null,
@@ -1689,16 +1705,34 @@ async function saveNewPatientTab(){
     social_history:newPatientInputValue('np-social-history')||null,
     dpa_status:dpaStatus||null
   };
+  if(awaitingSurgery){
+    payload.followup_status='inpatient';
+    payload.patient_status_raw='Awaiting Surgery';
+    payload.active_registry=false;
+  }
   if(!payload.stoma_type_summary)delete payload.stoma_type_summary;
   const saved=await saveOrUpdatePatientByIdCard(id,fn,sn,phone,payload);
   if(saved.error||!saved.patient?.id){
     newPatientNote('Could not save patient: '+(saved.error?.message||'Unknown error'),'error');
     return;
   }
-  newPatientNote(`Patient saved: ${fn} ${sn} (${id}).`,'success');
+  newPatientNote(awaitingSurgery?`Patient saved to Inpatients as awaiting surgery: ${fn} ${sn} (${id}).`:`Patient saved: ${fn} ${sn} (${id}).`,'success');
+  if(awaitingSurgery){
+    await loadPatientsList('patients-inpatients');
+    switchTab('patients-inpatients',document.querySelector('.tab-dd-item[data-tab="patients-inpatients"]'));
+  }
   if(document.getElementById('page-staff-audit')?.classList.contains('active'))loadStaffAudit();
   if(document.getElementById('page-dntu-policy')?.classList.contains('active'))loadDntuPolicy();
   if(document.getElementById('page-reports')?.classList.contains('active'))loadReports();
+}
+async function saveElectiveAwaitingSurgery(event){
+  if(event){event.preventDefault();event.stopPropagation();}
+  const date=document.getElementById('np-elective-planned-date')?.value||'';
+  if(!date){alert('Please enter Planned Surgery Date before saving Elective surgery.');return;}
+  setAdmissionRouteValue('Elective surgery');
+  const plannedEl=document.getElementById('np-planned-surgery-date'); if(plannedEl)plannedEl.value=date;
+  const typeEl=document.getElementById('np-inpatient-type'); if(typeEl)typeEl.value='awaiting_surgery';
+  await saveNewPatientTab({awaitingSurgery:true});
 }
 
 function closeTabGroups(){
@@ -1738,7 +1772,6 @@ function handleAdmissionRouteChange(sel){
 function collectRouteStomaCare(pageId,showAlert=true){
   const page=document.getElementById(pageId);
   if(!page)return false;
-  const planned=page.querySelector('.route-planned-surgery-date')?.value||'';
   const surgery=page.querySelector('.route-surgery-date')?.value||'';
   const operation=page.querySelector('.route-operation-performed')?.value?.trim()||'';
   const findings=page.querySelector('.route-findings')?.value?.trim()||'';
@@ -1748,7 +1781,6 @@ function collectRouteStomaCare(pageId,showAlert=true){
     return false;
   }
   const surgeryEl=document.getElementById('np-surgery-date'); if(surgeryEl)surgeryEl.value=surgery;
-  const plannedEl=document.getElementById('np-planned-surgery-date'); if(plannedEl)plannedEl.value=planned;
   const opEl=document.getElementById('np-operation-performed'); if(opEl)opEl.value=operation;
   const findingsEl=document.getElementById('np-findings'); if(findingsEl)findingsEl.value=findings;
   const stomaEl=document.getElementById('np-stoma-type-hidden'); if(stomaEl)stomaEl.value=stoma;
@@ -2921,7 +2953,7 @@ function clearPatientRebookSearch(){
   if(box)box.innerHTML='<div class="patient-search-empty">Enter at least 2 characters to search.</div>';
 }
 async function openPatientRebookModal(patientId){
-  const{data:pat,error}=await SB.from('patients').select('id,first_name,surname,id_card,phone_number,dob,locality,sex,surgery_date,planned_surgery_date,admission_route,operation_performed,surgery_event_operation_performed,findings,stoma_type_summary,past_medical_history,past_surgical_history,drug_history,medication_history,medication_history_other,medication_additional_notes,social_history,dpa_status,clinical_complications,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date').eq('id',patientId).maybeSingle();
+  const{data:pat,error}=await SB.from('patients').select('id,first_name,surname,id_card,phone_number,dob,locality,sex,surgery_date,planned_surgery_date,inpatient_type,admission_route,operation_performed,surgery_event_operation_performed,findings,stoma_type_summary,past_medical_history,past_surgical_history,drug_history,medication_history,medication_history_other,medication_additional_notes,social_history,dpa_status,clinical_complications,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date').eq('id',patientId).maybeSingle();
   if(error||!pat){alert('Could not open this patient for rebooking.');return;}
   if(normaliseFollowupStatus(pat.followup_status)==='deceased'){alert('This patient is marked as deceased and is kept in the separate deceased register. Change the status first before rebooking.');return;}
   const{data:bankRows}=await SB.from('bank_staff').select('id,full_name').order('full_name');
@@ -2984,7 +3016,7 @@ async function lookupPatientByIdForBooking(idInputId,firstInputId,surnameInputId
   }
   if(note){note.className='registry-lookup-note';note.textContent='Checking saved patient registry...';}
   const{data,error}=await SB.from('patients')
-    .select('id,first_name,surname,id_card,phone_number,dob,locality,sex,surgery_date,planned_surgery_date,admission_route,operation_performed,surgery_event_operation_performed,findings,stoma_type_summary,past_medical_history,past_surgical_history,drug_history,medication_history,medication_history_other,medication_additional_notes,social_history,dpa_status,clinical_complications,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date')
+    .select('id,first_name,surname,id_card,phone_number,dob,locality,sex,surgery_date,planned_surgery_date,inpatient_type,admission_route,operation_performed,surgery_event_operation_performed,findings,stoma_type_summary,past_medical_history,past_surgical_history,drug_history,medication_history,medication_history_other,medication_additional_notes,social_history,dpa_status,clinical_complications,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date')
     .ilike('id_card',id)
     .maybeSingle();
   if(error){
@@ -3031,18 +3063,18 @@ async function saveOrUpdatePatientByIdCard(idCard,firstName,surname,phone,follow
   const id=normaliseIdCard(idCard);
   if(!id||!firstName||!surname)return {patient:null,error:{message:'Missing patient details.'}};
   const existing=await SB.from('patients')
-    .select('id,first_name,surname,id_card,phone_number,dob,locality,sex,surgery_date,planned_surgery_date,admission_route,operation_performed,surgery_event_operation_performed,findings,stoma_type_summary,past_medical_history,past_surgical_history,drug_history,medication_history,medication_history_other,medication_additional_notes,social_history,dpa_status,clinical_complications,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date')
+    .select('id,first_name,surname,id_card,phone_number,dob,locality,sex,surgery_date,planned_surgery_date,inpatient_type,admission_route,operation_performed,surgery_event_operation_performed,findings,stoma_type_summary,past_medical_history,past_surgical_history,drug_history,medication_history,medication_history_other,medication_additional_notes,social_history,dpa_status,clinical_complications,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date')
     .ilike('id_card',id)
     .maybeSingle();
   if(existing.error)return {patient:null,error:existing.error};
   if(existing.data?.id){
     const updatePayload={first_name:firstName,surname:surname,phone_number:phone||existing.data.phone_number||null,id_card:id,...followupPayload};
     if(normaliseFollowupStatus(existing.data.followup_status)==='deceased')delete updatePayload.followup_status;
-    const updated=await SB.from('patients').update(updatePayload).eq('id',existing.data.id).select('id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date,stoma_type_summary').single();
+    const updated=await SB.from('patients').update(updatePayload).eq('id',existing.data.id).select('id,first_name,surname,id_card,phone_number,planned_surgery_date,inpatient_type,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date,stoma_type_summary').single();
     if(updated.error)return {patient:existing.data,error:updated.error};
     return {patient:updated.data||existing.data,error:null};
   }
-  const inserted=await SB.from('patients').insert({first_name:firstName,surname:surname,id_card:id,phone_number:phone||null,followup_status:'active',followup_owner:'Common',followup_type:'new_case',...followupPayload}).select('id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date,stoma_type_summary').single();
+  const inserted=await SB.from('patients').insert({first_name:firstName,surname:surname,id_card:id,phone_number:phone||null,followup_status:'active',followup_owner:'Common',followup_type:'new_case',...followupPayload}).select('id,first_name,surname,id_card,phone_number,planned_surgery_date,inpatient_type,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date,stoma_type_summary').single();
   return {patient:inserted.data,error:inserted.error};
 }
 
@@ -3337,7 +3369,7 @@ async function savePatientFollowup(patientId){
   loadStaffAudit();
 }
 async function openFollowupHistory(patientId){
-  const{data:pat}=await SB.from('patients').select('id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date,stoma_type_summary').eq('id',patientId).maybeSingle();
+  const{data:pat}=await SB.from('patients').select('id,first_name,surname,id_card,phone_number,planned_surgery_date,inpatient_type,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date,stoma_type_summary').eq('id',patientId).maybeSingle();
   const{data:raw}=await SB.from('appointments').select('*').eq('patient_id',patientId).order('appt_date',{ascending:false}).order('appt_slot',{ascending:false});
   const appts=await enrichAppointments(raw||[]);
   const nm=`${pat?.first_name||''} ${pat?.surname||''}`.trim()||'Patient';
@@ -3390,7 +3422,7 @@ function patientFollowupStatus(a){return normaliseFollowupStatus(a?.patients?.fo
 const PATIENT_TAB_FILTERS={
   'patients-all':{status:'all',title:'All Patients',subtitle:'Full patient register across all groups.'},
   'patients-active':{status:'active',title:'Active Patients',subtitle:'Patients from the active registry, including paused and inpatient subgroups.'},
-  'patients-inpatients':{status:'inpatient',title:'Inpatients',subtitle:'Patients marked as inpatient or inpatient status.'},
+  'patients-inpatients':{status:'inpatient',title:'Inpatients',subtitle:'Actual inpatients and patients awaiting elective surgery.'},
   'patients-reversed':{status:'reversed',title:'Reversed Patients',subtitle:'Patients with reversal status or reversal date.'},
   'patients-deceased':{status:'deceased',title:'Deceased Patients',subtitle:'Patients kept in the deceased register.'},
   'patients-relocated-overseas':{status:'relocated_overseas',title:'Relocated Overseas',subtitle:'Patients marked as relocated overseas.'},
@@ -3439,9 +3471,17 @@ function isActiveSourcePatient(p){
   if(['deceased','reversed','relocated_overseas','relocated_gozo'].includes(st))return false;
   return ['active','paused','awaiting_feedback','inpatient'].includes(st);
 }
+function isAwaitingSurgeryPatient(p){
+  const raw=String(p?.patient_status_raw||'').toLowerCase();
+  const type=String(p?.inpatient_type||'').toLowerCase();
+  return type==='awaiting_surgery'||type==='awaiting surgery'||raw.includes('awaiting_surgery')||raw.includes('awaiting surgery')||!!p?.planned_surgery_date;
+}
+function inpatientCategory(p){return isAwaitingSurgeryPatient(p)?'awaiting_surgery':'inpatient';}
+function inpatientCategoryText(p){return inpatientCategory(p)==='awaiting_surgery'?'Awaiting Surgery':'Actual Inpatient';}
+function inpatientCategoryChip(p){const cat=inpatientCategory(p);return `<span class="inpatient-type-chip ${htmlSafe(cat)}">${htmlSafe(inpatientCategoryText(p))}</span>`;}
 function isInpatientSourcePatient(p){
   const raw=String(p?.assigned_nurse_raw||p?.patient_status_raw||'').toLowerCase();
-  return normaliseFollowupStatus(p?.followup_status)==='inpatient' || patientStatusFromRaw(p?.patient_status_raw)==='inpatient' || raw.includes('inpatient') || raw.includes('in patient');
+  return isAwaitingSurgeryPatient(p)||normaliseFollowupStatus(p?.followup_status)==='inpatient' || patientStatusFromRaw(p?.patient_status_raw)==='inpatient' || raw.includes('inpatient') || raw.includes('in patient');
 }
 function patientMatchesRegisterStatus(p,status){
   const st=String(status||'active');
@@ -3560,7 +3600,7 @@ async function loadPatientsList(tabName){
   if(cardTitle)cardTitle.textContent=cfg.title;
   const tbody=document.getElementById('patients-list-tbody');
   if(tbody)tbody.innerHTML='<tr><td colspan="10" class="empty">Loading all patients from Supabase...</td></tr>';
-  let fields='id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type,active_registry,patient_status_raw,assigned_nurse_raw,locality,sex,dob,surgery_date,surgery_type,stoma_type_summary,consultant,last_outcome_date,discharged_date,next_followup_mirror,rip_date,reversal_date,stoma_days,age_at_death';
+  let fields='id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type,active_registry,patient_status_raw,assigned_nurse_raw,locality,sex,dob,surgery_date,planned_surgery_date,inpatient_type,surgery_type,stoma_type_summary,consultant,last_outcome_date,discharged_date,next_followup_mirror,rip_date,reversal_date,stoma_days,age_at_death';
   let res=await fetchAllPatientsRows(fields);
   if(res.error){
     console.warn('Extended patient register fields unavailable, using core patient fields:',res.error);
@@ -3584,6 +3624,7 @@ function renderPatientsList(){
   const isAll=cfg.status==='all'||currentPatientsTab==='patients-all';
   const isDeceased=currentPatientsTab==='patients-deceased'||cfg.status==='deceased';
   const isReversed=currentPatientsTab==='patients-reversed'||cfg.status==='reversed';
+  const isInpatients=currentPatientsTab==='patients-inpatients'||cfg.status==='inpatient';
   const isRelocatedGozo=currentPatientsTab==='patients-relocated-gozo'||cfg.status==='relocated_gozo';
   const isRelocatedOverseas=currentPatientsTab==='patients-relocated-overseas'||currentPatientsTab==='patients-relocated-gozo'||cfg.status==='relocated_overseas'||cfg.status==='relocated_gozo';
   const countStatus=(st)=>all.filter(p=>patientMatchesRegisterStatus(p,st)).length;
@@ -3591,7 +3632,7 @@ function renderPatientsList(){
     stats.innerHTML=`
       <div class="sbox"><div class="sl">Selected Group</div><div class="sv" style="font-size:22px;">${cfg.status==='all'?all.length:all.filter(p=>patientMatchesRegisterStatus(p,cfg.status)).length}</div><div class="ss">${htmlSafe(cfg.title)}</div></div>
       <div class="sbox"><div class="sl">Active</div><div class="sv">${countStatus('active')}</div><div class="ss">current patients</div></div>
-      <div class="sbox"><div class="sl">Inpatients</div><div class="sv">${countStatus('inpatient')}</div><div class="ss">ward patients</div></div>
+      <div class="sbox"><div class="sl">Inpatients</div><div class="sv">${countStatus('inpatient')}</div><div class="ss">actual + awaiting surgery</div></div>
       <div class="sbox"><div class="sl">Reversed</div><div class="sv">${countStatus('reversed')}</div><div class="ss">reversal register</div></div>
       <div class="sbox"><div class="sl">Deceased</div><div class="sv">${countStatus('deceased')}</div><div class="ss">deceased register</div></div>
       <div class="sbox"><div class="sl">Relocated</div><div class="sv">${countStatus('relocated_overseas')+countStatus('relocated_gozo')}</div><div class="ss">overseas / Gozo</div></div>`;
@@ -3599,7 +3640,7 @@ function renderPatientsList(){
   let rows=cfg.status==='all'?[...all]:all.filter(p=>patientMatchesRegisterStatus(p,cfg.status));
   if(search){
     rows=rows.filter(p=>[
-      p.first_name,p.surname,p.id_card,p.phone_number,p.followup_owner,p.consultant,p.locality,p.patient_status_raw,p.assigned_nurse_raw,p.assigned_nurse_raw,patientRegisterStatusText(patientRegisterStatus(p)),p.sex,p.dob,p.rip_date,p.reversal_date,p.surgery_date,p.surgery_type,p.consultant,p.discharged_date,p.last_outcome_date,patientStomaTypeText(p.stoma_type_summary)
+      p.first_name,p.surname,p.id_card,p.phone_number,p.followup_owner,p.consultant,p.locality,p.patient_status_raw,p.assigned_nurse_raw,p.assigned_nurse_raw,p.inpatient_type,p.planned_surgery_date,p.admission_route,patientRegisterStatusText(patientRegisterStatus(p)),p.sex,p.dob,p.rip_date,p.reversal_date,p.surgery_date,p.surgery_type,p.consultant,p.discharged_date,p.last_outcome_date,patientStomaTypeText(p.stoma_type_summary)
     ].join(' ').toLowerCase().includes(search));
   }
   if(isAll){
@@ -3627,6 +3668,13 @@ function renderPatientsList(){
       (dateSortValue(b.reversal_date)-dateSortValue(a.reversal_date))||
       String(a.id_card||'').localeCompare(String(b.id_card||''))
     );
+  }else if(isInpatients){
+    rows=[...rows].sort((a,b)=>{
+      const catCompare=inpatientCategory(a).localeCompare(inpatientCategory(b));
+      const dateCompare=dateSortValue(a.planned_surgery_date)-dateSortValue(b.planned_surgery_date);
+      const nameCompare=String(a.surname||'').localeCompare(String(b.surname||''))||String(a.first_name||'').localeCompare(String(b.first_name||''))||String(a.id_card||'').localeCompare(String(b.id_card||''));
+      return catCompare||dateCompare||nameCompare;
+    });
   }else if(isRelocatedOverseas){
     rows=[...rows].sort((a,b)=>{
       const nameCompare=String(a.surname||'').localeCompare(String(b.surname||''))||String(a.first_name||'').localeCompare(String(b.first_name||''))||String(a.id_card||'').localeCompare(String(b.id_card||''));
@@ -3642,15 +3690,17 @@ function renderPatientsList(){
       ? '<tr><th>ID Number</th><th>Patient</th><th>Sex</th><th>DOB</th><th>Date of RIP</th><th>Age at Death</th><th>Surgery Date</th><th>Stoma Days</th><th>Stoma Type Summary</th><th>Locality</th><th>Actions</th></tr>'
       : (isReversed
         ? '<tr><th>ID Number</th><th>Surname</th><th>Name</th><th>Phone</th><th>Status</th><th>Owner</th><th>Reversal Date</th><th>Consultant</th><th>Last Seen</th><th>Stoma Type Summary</th><th>Locality</th><th>Actions</th></tr>'
-        : (isRelocatedOverseas
+        : (isInpatients
+          ? '<tr><th>ID Number</th><th>Surname</th><th>Name</th><th>Inpatient Type</th><th>Planned Surgery Date</th><th>Surgery Date</th><th>Admission Route</th><th>Owner</th><th>Last Outcome</th><th>Actions</th></tr>'
+          : (isRelocatedOverseas
           ? (isRelocatedGozo
             ? '<tr><th>ID Number</th><th>Patient</th><th>Status</th><th>Last Seen</th><th>Date of Discharge</th><th>Surgery Date</th><th>Consultant</th><th>Surgery Type</th><th>Stoma Type Summary</th><th>Actions</th></tr>'
             : '<tr><th>ID Number</th><th>Patient</th><th>Status</th><th>Last Seen</th><th>Date of Discharge</th><th>Stoma Type Summary</th><th>Actions</th></tr>')
-          : '<tr><th>Patient</th><th>ID Card</th><th>Phone</th><th>Status</th><th>Owner</th><th>Due Month</th><th>Last Outcome</th><th>Next Follow-up</th><th>Locality</th><th>Actions</th></tr>'));
+          : '<tr><th>Patient</th><th>ID Card</th><th>Phone</th><th>Status</th><th>Owner</th><th>Due Month</th><th>Last Outcome</th><th>Next Follow-up</th><th>Locality</th><th>Actions</th></tr>')));
   }
   if(!tbody)return;
   if(!rows.length){
-    tbody.innerHTML=`<tr><td colspan="${isAll?11:(isDeceased?11:(isReversed?12:(isRelocatedOverseas?(isRelocatedGozo?10:7):10)))}" class="empty">No ${htmlSafe(cfg.title.toLowerCase())} found${search?' for this search':''}.</td></tr>`;
+    tbody.innerHTML=`<tr><td colspan="${isAll?11:(isDeceased?11:(isReversed?12:(isInpatients?10:(isRelocatedOverseas?(isRelocatedGozo?10:7):10))))}" class="empty">No ${htmlSafe(cfg.title.toLowerCase())} found${search?' for this search':''}.</td></tr>`;
     return;
   }
   tbody.innerHTML=rows.map(p=>{
@@ -3702,6 +3752,20 @@ function renderPatientsList(){
         <td>${patientStomaTypeText(p.stoma_type_summary)}</td>
         <td>${htmlSafe(p.locality||'—')}</td>
         <td>${patientRegisterActions(p,false)}</td>
+      </tr>`;
+    }
+    if(isInpatients){
+      return `<tr class="followup-click-row" onclick="openFollowupHistory('${p.id}')">
+        <td><strong>${htmlSafe(p.id_card||'—')}</strong></td>
+        <td><strong>${htmlSafe(p.surname||'—')}</strong><br/><span style="font-size:10px;color:var(--muted);">Click row for history</span></td>
+        <td><strong>${htmlSafe(p.first_name||'—')}</strong></td>
+        <td>${inpatientCategoryChip(p)}</td>
+        <td><strong>${patientDateText(p.planned_surgery_date)}</strong></td>
+        <td>${patientDateText(p.surgery_date)}</td>
+        <td>${htmlSafe(p.admission_route||'—')}</td>
+        <td>${htmlSafe(p.followup_owner||'Common')}</td>
+        <td>${htmlSafe(latest)}</td>
+        <td>${patientRegisterActions(p,true)}</td>
       </tr>`;
     }
     if(isRelocatedOverseas){
@@ -4390,7 +4454,7 @@ async function loadReportPatientGroup(tabName){
   if(cardTitle)cardTitle.textContent=cfg.title;
   if(search){search.value='';search.placeholder=cfg.status==='deceased'?'Search name, ID number, RIP date, stoma type, locality...':(cfg.status==='reversed'?'Search ID number, name, reversal date, stoma type...':((cfg.status==='relocated_overseas'||cfg.status==='relocated_gozo')?'Search ID number, name, last seen, discharge date, surgery type, consultant, stoma type...':'Search name, ID card, phone, owner, locality...'));}
   if(tbody)tbody.innerHTML='<tr><td colspan="11" class="empty">Loading full report from Supabase...</td></tr>';
-  let fields='id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type,active_registry,patient_status_raw,assigned_nurse_raw,locality,sex,dob,surgery_date,surgery_type,stoma_type_summary,consultant,last_outcome_date,discharged_date,next_followup_mirror,rip_date,reversal_date,stoma_days,age_at_death';
+  let fields='id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type,active_registry,patient_status_raw,assigned_nurse_raw,locality,sex,dob,surgery_date,planned_surgery_date,inpatient_type,surgery_type,stoma_type_summary,consultant,last_outcome_date,discharged_date,next_followup_mirror,rip_date,reversal_date,stoma_days,age_at_death';
   let res=await fetchAllPatientsRows(fields);
   if(res.error){
     fields='id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type';
@@ -4584,7 +4648,7 @@ async function loadReversalRegister(){
   const year=document.getElementById('rev-year')?.value||'';
   const search=(document.getElementById('rev-search')?.value||'').trim().toLowerCase();
   const{data,error}=await SB.from('patients')
-    .select('id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date,stoma_type_summary')
+    .select('id,first_name,surname,id_card,phone_number,planned_surgery_date,inpatient_type,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date,stoma_type_summary')
     .eq('followup_status','reversed')
     .order('surname',{ascending:true})
     .order('first_name',{ascending:true});
