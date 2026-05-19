@@ -600,6 +600,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
           </div>
         </div>
         <input type="hidden" id="np-surgery-date" value=""/>
+        <input type="hidden" id="np-planned-surgery-date" value=""/>
         <input type="hidden" id="np-admission-route" value=""/>
         <input type="hidden" id="np-operation-performed" value=""/>
         <input type="hidden" id="np-findings" value=""/>
@@ -614,7 +615,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
             <div class="fg full"><label>Medical History / Current Medications</label><div class="choice-group" id="np-medication-history"><label class="choice-chip"><input type="checkbox" name="np-med-history" value="No medications used" onchange="handleMedicationSelection()"/> No medications used</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="OHAs" onchange="handleMedicationSelection()"/> OHAs</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Antiplatelets" onchange="handleMedicationSelection()"/> Antiplatelets</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Anticoagulants" onchange="handleMedicationSelection()"/> Anticoagulants</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Antihypertensives" onchange="handleMedicationSelection()"/> Antihypertensives</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Statins" onchange="handleMedicationSelection()"/> Statins</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Steroids" onchange="handleMedicationSelection()"/> Steroids</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Immunosuppressants" onchange="handleMedicationSelection()"/> Immunosuppressants</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="PPIs" onchange="handleMedicationSelection()"/> PPIs</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Opioids" onchange="handleMedicationSelection()"/> Opioids</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Antibiotics" onchange="handleMedicationSelection()"/> Antibiotics</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Antidiarrhoeal" onchange="handleMedicationSelection()"/> Antidiarrhoeal</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Other" onchange="handleMedicationSelection()"/> Other</label></div><div class="choice-hint">Select all that apply. Use “No medications used” when applicable.</div><input type="text" id="np-medication-other" placeholder="Other medications" style="margin-top:8px;display:none;"/></div><div class="fg full"><label>Additional Notes</label><textarea id="np-medication-notes" placeholder="Additional notes about medical history or current medication"></textarea></div>
             <div class="fg full"><label>DPA *</label><div class="choice-group" id="np-dpa-group"><label class="choice-chip"><input type="radio" name="np-dpa" value="Yes" required/> Yes</label><label class="choice-chip"><input type="radio" name="np-dpa" value="No" required/> No</label><label class="choice-chip"><input type="radio" name="np-dpa" value="N/A" required/> N/A</label></div></div>
             <div class="fg full"><label>Admission Route</label><div class="choice-hint">Choose one route to continue to the next step and complete Stoma + Care.</div><div class="admission-route-grid">
-              <button type="button" class="nav-tile admission-next-tile tile-green" data-admission-route="Elective surgery" onclick="selectAdmissionRouteTile('Elective surgery')"><span class="nav-tile-icon">E</span><span class="nav-tile-text"><span class="nav-tile-label">Elective surgery</span><span class="nav-tile-sub">Next step: planned surgical pathway</span></span><span class="nav-tile-arrow">Next ›</span></button>
+              <button type="button" class="nav-tile admission-next-tile tile-green" data-admission-route="Elective surgery" onclick="selectAdmissionRouteTile('Elective surgery')"><span class="nav-tile-icon">E</span><span class="nav-tile-text"><span class="nav-tile-label">Elective surgery</span><span class="nav-tile-sub">Save via planned surgical pathway</span></span><span class="nav-tile-arrow">Save ›</span></button>
               <button type="button" class="nav-tile admission-next-tile tile-red" data-admission-route="Emergency surgery" onclick="selectAdmissionRouteTile('Emergency surgery')"><span class="nav-tile-icon">!</span><span class="nav-tile-text"><span class="nav-tile-label">Emergency surgery</span><span class="nav-tile-sub">Next step: urgent/unplanned pathway</span></span><span class="nav-tile-arrow">Next ›</span></button>
               <button type="button" class="nav-tile admission-next-tile tile-blue" data-admission-route="Fistula/wound management – bagging advice" onclick="selectAdmissionRouteTile('Fistula/wound management – bagging advice')"><span class="nav-tile-icon">W</span><span class="nav-tile-text"><span class="nav-tile-label">Fistula/wound management</span><span class="nav-tile-sub">Next step: wound/bagging advice</span></span><span class="nav-tile-arrow">Next ›</span></button>
               <button type="button" class="nav-tile admission-next-tile tile-purple" data-admission-route="Outside MDH – ostomy formed elsewhere" onclick="selectAdmissionRouteTile('Outside MDH – ostomy formed elsewhere')"><span class="nav-tile-icon">O</span><span class="nav-tile-text"><span class="nav-tile-label">Outside MDH</span><span class="nav-tile-sub">Next step: ostomy formed elsewhere</span></span><span class="nav-tile-arrow">Next ›</span></button>
@@ -636,18 +637,19 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
         <h3>Elective surgery</h3>
         <p>Use this page for patients admitted for a planned operation or scheduled stoma formation.</p>
         <div class="admission-route-grid">
-          <button type="button" class="nav-tile admission-next-tile active" onclick="collectRouteStomaCare('page-admission-elective',false)"><span class="nav-tile-icon">✓</span><span class="nav-tile-text"><span class="nav-tile-label">Elective surgery selected</span><span class="nav-tile-sub">Complete the Stoma + Care section below</span></span><span class="nav-tile-arrow">Step 2</span></button>
+          <button type="button" class="nav-tile admission-next-tile active" onclick="collectRouteStomaCare('page-admission-elective',false)"><span class="nav-tile-icon">✓</span><span class="nav-tile-text"><span class="nav-tile-label">Elective surgery selected</span><span class="nav-tile-sub">Complete Stoma + Care, then save below</span></span><span class="nav-tile-arrow">Save</span></button>
         </div>
         <div class="route-stoma-care">
           <div class="new-patient-section-title">Stoma + Care</div>
           <div class="new-patient-grid">
+            <div class="fg"><label>Planned Surgery Date</label><input type="date" class="route-planned-surgery-date"/></div>
             <div class="fg"><label>Surgery Date *</label><input type="date" class="route-surgery-date" required/></div>
             <div class="fg full"><label>Operation Performed</label><textarea class="route-operation-performed" placeholder="Operation performed"></textarea></div>
             <div class="fg full"><label>Findings</label><textarea class="route-findings" placeholder="Findings"></textarea></div>
             <div class="fg full"><label>Stoma Type *</label><div class="choice-group"><label class="choice-chip"><input type="radio" class="route-stoma-type" name="route-stoma-elective" value="Ileostomy" required/> Ileostomy</label><label class="choice-chip"><input type="radio" class="route-stoma-type" name="route-stoma-elective" value="Colostomy" required/> Colostomy</label><label class="choice-chip"><input type="radio" class="route-stoma-type" name="route-stoma-elective" value="Urostomy" required/> Urostomy</label><label class="choice-chip"><input type="radio" class="route-stoma-type" name="route-stoma-elective" value="Other" required/> Other</label></div></div>
           </div>
         </div>
-        <div class="route-actions"><button class="btn-save" onclick="savePatientFromAdmissionRoute('Elective surgery','page-admission-elective')">Complete Patient Record</button><button class="btn-cancel" onclick="switchTab('new-patient',document.querySelector('[data-tab=&quot;new-patient&quot;]'))">Back to Patient Details</button></div>
+        <div class="route-actions"><button class="btn-save" onclick="savePatientFromAdmissionRoute('Elective surgery','page-admission-elective')">Save Patient</button><button class="btn-cancel" onclick="switchTab('new-patient',document.querySelector('[data-tab=&quot;new-patient&quot;]'))">Back to Patient Details</button></div>
       </div>
     </div>
 
@@ -1612,7 +1614,7 @@ async function lookupNewPatientById(){
   if(!id){newPatientNote('');return null;}
   newPatientNote('Checking saved patient registry...');
   const{data,error}=await SB.from('patients')
-    .select('id,first_name,surname,id_card,phone_number,dob,locality,sex,surgery_date,admission_route,operation_performed,surgery_event_operation_performed,findings,stoma_type_summary,past_medical_history,past_surgical_history,drug_history,medication_history,medication_history_other,medication_additional_notes,social_history,dpa_status,clinical_complications,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date')
+    .select('id,first_name,surname,id_card,phone_number,dob,locality,sex,surgery_date,planned_surgery_date,admission_route,operation_performed,surgery_event_operation_performed,findings,stoma_type_summary,past_medical_history,past_surgical_history,drug_history,medication_history,medication_history_other,medication_additional_notes,social_history,dpa_status,clinical_complications,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date')
     .ilike('id_card',id)
     .maybeSingle();
   if(error){
@@ -1628,6 +1630,7 @@ async function lookupNewPatientById(){
     const locEl=document.getElementById('np-locality'); if(locEl)locEl.value=data.locality||'';
     const sexEl=document.getElementById('np-sex'); if(sexEl)sexEl.value=data.sex||'';
     const surgEl=document.getElementById('np-surgery-date'); if(surgEl)surgEl.value=String(data.surgery_date||'').slice(0,10);
+    const plannedEl=document.getElementById('np-planned-surgery-date'); if(plannedEl)plannedEl.value=data.planned_surgery_date||'';
     const routeEl=document.getElementById('np-admission-route'); if(routeEl)routeEl.value=data.admission_route||'';
     const opEl=document.getElementById('np-operation-performed'); if(opEl)opEl.value=data.operation_performed||data.surgery_event_operation_performed||'';
     const findingsEl=document.getElementById('np-findings'); if(findingsEl)findingsEl.value=data.findings||'';
@@ -1672,6 +1675,7 @@ async function saveNewPatientTab(){
     locality:locality||null,
     sex:newPatientInputValue('np-sex')||null,
     surgery_date:surgeryDate||null,
+    planned_surgery_date:newPatientInputValue('np-planned-surgery-date')||null,
     admission_route:admissionRoute||null,
     operation_performed:newPatientInputValue('np-operation-performed')||null,
     findings:newPatientInputValue('np-findings')||null,
@@ -1734,6 +1738,7 @@ function handleAdmissionRouteChange(sel){
 function collectRouteStomaCare(pageId,showAlert=true){
   const page=document.getElementById(pageId);
   if(!page)return false;
+  const planned=page.querySelector('.route-planned-surgery-date')?.value||'';
   const surgery=page.querySelector('.route-surgery-date')?.value||'';
   const operation=page.querySelector('.route-operation-performed')?.value?.trim()||'';
   const findings=page.querySelector('.route-findings')?.value?.trim()||'';
@@ -1743,6 +1748,7 @@ function collectRouteStomaCare(pageId,showAlert=true){
     return false;
   }
   const surgeryEl=document.getElementById('np-surgery-date'); if(surgeryEl)surgeryEl.value=surgery;
+  const plannedEl=document.getElementById('np-planned-surgery-date'); if(plannedEl)plannedEl.value=planned;
   const opEl=document.getElementById('np-operation-performed'); if(opEl)opEl.value=operation;
   const findingsEl=document.getElementById('np-findings'); if(findingsEl)findingsEl.value=findings;
   const stomaEl=document.getElementById('np-stoma-type-hidden'); if(stomaEl)stomaEl.value=stoma;
@@ -2915,7 +2921,7 @@ function clearPatientRebookSearch(){
   if(box)box.innerHTML='<div class="patient-search-empty">Enter at least 2 characters to search.</div>';
 }
 async function openPatientRebookModal(patientId){
-  const{data:pat,error}=await SB.from('patients').select('id,first_name,surname,id_card,phone_number,dob,locality,sex,surgery_date,admission_route,operation_performed,surgery_event_operation_performed,findings,stoma_type_summary,past_medical_history,past_surgical_history,drug_history,medication_history,medication_history_other,medication_additional_notes,social_history,dpa_status,clinical_complications,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date').eq('id',patientId).maybeSingle();
+  const{data:pat,error}=await SB.from('patients').select('id,first_name,surname,id_card,phone_number,dob,locality,sex,surgery_date,planned_surgery_date,admission_route,operation_performed,surgery_event_operation_performed,findings,stoma_type_summary,past_medical_history,past_surgical_history,drug_history,medication_history,medication_history_other,medication_additional_notes,social_history,dpa_status,clinical_complications,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date').eq('id',patientId).maybeSingle();
   if(error||!pat){alert('Could not open this patient for rebooking.');return;}
   if(normaliseFollowupStatus(pat.followup_status)==='deceased'){alert('This patient is marked as deceased and is kept in the separate deceased register. Change the status first before rebooking.');return;}
   const{data:bankRows}=await SB.from('bank_staff').select('id,full_name').order('full_name');
@@ -2978,7 +2984,7 @@ async function lookupPatientByIdForBooking(idInputId,firstInputId,surnameInputId
   }
   if(note){note.className='registry-lookup-note';note.textContent='Checking saved patient registry...';}
   const{data,error}=await SB.from('patients')
-    .select('id,first_name,surname,id_card,phone_number,dob,locality,sex,surgery_date,admission_route,operation_performed,surgery_event_operation_performed,findings,stoma_type_summary,past_medical_history,past_surgical_history,drug_history,medication_history,medication_history_other,medication_additional_notes,social_history,dpa_status,clinical_complications,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date')
+    .select('id,first_name,surname,id_card,phone_number,dob,locality,sex,surgery_date,planned_surgery_date,admission_route,operation_performed,surgery_event_operation_performed,findings,stoma_type_summary,past_medical_history,past_surgical_history,drug_history,medication_history,medication_history_other,medication_additional_notes,social_history,dpa_status,clinical_complications,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date')
     .ilike('id_card',id)
     .maybeSingle();
   if(error){
@@ -3025,7 +3031,7 @@ async function saveOrUpdatePatientByIdCard(idCard,firstName,surname,phone,follow
   const id=normaliseIdCard(idCard);
   if(!id||!firstName||!surname)return {patient:null,error:{message:'Missing patient details.'}};
   const existing=await SB.from('patients')
-    .select('id,first_name,surname,id_card,phone_number,dob,locality,sex,surgery_date,admission_route,operation_performed,surgery_event_operation_performed,findings,stoma_type_summary,past_medical_history,past_surgical_history,drug_history,medication_history,medication_history_other,medication_additional_notes,social_history,dpa_status,clinical_complications,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date')
+    .select('id,first_name,surname,id_card,phone_number,dob,locality,sex,surgery_date,planned_surgery_date,admission_route,operation_performed,surgery_event_operation_performed,findings,stoma_type_summary,past_medical_history,past_surgical_history,drug_history,medication_history,medication_history_other,medication_additional_notes,social_history,dpa_status,clinical_complications,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date')
     .ilike('id_card',id)
     .maybeSingle();
   if(existing.error)return {patient:null,error:existing.error};
