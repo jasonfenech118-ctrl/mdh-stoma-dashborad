@@ -586,9 +586,10 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
           <div class="new-patient-section-title">Stoma + Care</div>
           <div class="new-patient-grid">
             <div class="fg"><label>Surgery Date *</label><input type="date" id="np-surgery-date" required/></div>
-            <div class="fg"><label>OperationPerformed</label><input type="text" id="np-operation-performed" placeholder="Operation performed"/></div>
+            <div class="fg"><label>Admission Route *</label><select id="np-admission-route" required><option value="">Select admission route</option><option value="Elective surgery">Elective surgery</option><option value="Emergency surgery">Emergency surgery</option><option value="Fistula/wound management – bagging advice">Fistula/wound management – bagging advice</option><option value="Outside MDH – ostomy formed elsewhere">Outside MDH – ostomy formed elsewhere</option></select></div>
+            <div class="fg full"><label>Operation Performed</label><textarea id="np-operation-performed" placeholder="Operation performed"></textarea></div>
             <div class="fg full"><label>Findings</label><textarea id="np-findings" placeholder="Findings"></textarea></div>
-            <div class="fg"><label>Stoma Type</label><input type="text" id="np-stoma-type" placeholder="e.g. Colostomy, Ileostomy, Urostomy"/></div>
+            <div class="fg full"><label>Stoma Type *</label><div class="choice-group" id="np-stoma-type-group"><label class="choice-chip"><input type="radio" name="np-stoma-type" value="Ileostomy" required/> Ileostomy</label><label class="choice-chip"><input type="radio" name="np-stoma-type" value="Colostomy" required/> Colostomy</label><label class="choice-chip"><input type="radio" name="np-stoma-type" value="Urostomy" required/> Urostomy</label><label class="choice-chip"><input type="radio" name="np-stoma-type" value="Other" required/> Other</label></div></div>
           </div>
         </div>
 
@@ -597,8 +598,8 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
           <div class="new-patient-grid">
             <div class="fg full"><label>Past Medical History</label><textarea id="np-pmh" placeholder="Past medical history"></textarea></div>
             <div class="fg full"><label>Past Surgical History</label><textarea id="np-psh" placeholder="Past surgical history"></textarea></div>
-            <div class="fg full"><label>Medical History / Current Medications</label><div class="choice-group" id="np-medication-history"><label class="choice-chip"><input type="checkbox" name="np-med-history" value="No medications used" onchange="handleMedicationSelection()"/> No medications used</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="OHAs" onchange="handleMedicationSelection()"/> OHAs</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Metformin" onchange="handleMedicationSelection()"/> Metformin</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Insulin" onchange="handleMedicationSelection()"/> Insulin</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Antiplatelets" onchange="handleMedicationSelection()"/> Antiplatelets</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Anticoagulants" onchange="handleMedicationSelection()"/> Anticoagulants</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Antihypertensives" onchange="handleMedicationSelection()"/> Antihypertensives</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Statins" onchange="handleMedicationSelection()"/> Statins</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Steroids" onchange="handleMedicationSelection()"/> Steroids</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Immunosuppressants" onchange="handleMedicationSelection()"/> Immunosuppressants</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="PPIs" onchange="handleMedicationSelection()"/> PPIs</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Opioids" onchange="handleMedicationSelection()"/> Opioids</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Antibiotics" onchange="handleMedicationSelection()"/> Antibiotics</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Other" onchange="handleMedicationSelection()"/> Other</label></div><div class="choice-hint">Select all that apply. Use “No medications used” when applicable.</div><input type="text" id="np-medication-other" placeholder="Other medications" style="margin-top:8px;display:none;"/></div>
             <div class="fg full"><label>Social History</label><textarea id="np-social-history" placeholder="Social history"></textarea></div>
+            <div class="fg full"><label>Medical History / Current Medications</label><div class="choice-group" id="np-medication-history"><label class="choice-chip"><input type="checkbox" name="np-med-history" value="No medications used" onchange="handleMedicationSelection()"/> No medications used</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="OHAs" onchange="handleMedicationSelection()"/> OHAs</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Metformin" onchange="handleMedicationSelection()"/> Metformin</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Insulin" onchange="handleMedicationSelection()"/> Insulin</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Antiplatelets" onchange="handleMedicationSelection()"/> Antiplatelets</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Anticoagulants" onchange="handleMedicationSelection()"/> Anticoagulants</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Antihypertensives" onchange="handleMedicationSelection()"/> Antihypertensives</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Statins" onchange="handleMedicationSelection()"/> Statins</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Steroids" onchange="handleMedicationSelection()"/> Steroids</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Immunosuppressants" onchange="handleMedicationSelection()"/> Immunosuppressants</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="PPIs" onchange="handleMedicationSelection()"/> PPIs</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Opioids" onchange="handleMedicationSelection()"/> Opioids</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Antibiotics" onchange="handleMedicationSelection()"/> Antibiotics</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Other" onchange="handleMedicationSelection()"/> Other</label></div><div class="choice-hint">Select all that apply. Use “No medications used” when applicable.</div><input type="text" id="np-medication-other" placeholder="Other medications" style="margin-top:8px;display:none;"/></div>
             <div class="fg full"><label>DPA *</label><div class="choice-group" id="np-dpa-group"><label class="choice-chip"><input type="radio" name="np-dpa" value="Yes" required/> Yes</label><label class="choice-chip"><input type="radio" name="np-dpa" value="No" required/> No</label><label class="choice-chip"><input type="radio" name="np-dpa" value="N/A" required/> N/A</label></div></div>
             <div class="fg full"><label>Complications</label><textarea id="np-complications" placeholder="Complications"></textarea></div>
           </div>
@@ -1467,20 +1468,28 @@ function medicationHistoryFromData(data){
 function plainStomaTypeValue(value){
   if(value==null)return '';
   if(Array.isArray(value))return value.filter(Boolean).join(', ');
-  if(typeof value==='object')return Object.values(value).filter(Boolean).join(', ');
+  if(typeof value==='object')return Object.values(value).flat().filter(Boolean).join(', ');
   const raw=String(value||'').trim();
   if(!raw)return '';
   try{
     const parsed=JSON.parse(raw);
     if(Array.isArray(parsed))return parsed.filter(Boolean).join(', ');
-    if(parsed&&typeof parsed==='object')return Object.values(parsed).filter(Boolean).join(', ');
+    if(parsed&&typeof parsed==='object')return Object.values(parsed).flat().filter(Boolean).join(', ');
   }catch(e){}
   return raw;
+}
+function stomaTypeChoiceFromValue(value){
+  const raw=plainStomaTypeValue(value).toLowerCase();
+  if(!raw)return '';
+  if(raw.includes('ileostomy'))return 'Ileostomy';
+  if(raw.includes('colostomy'))return 'Colostomy';
+  if(raw.includes('urostomy'))return 'Urostomy';
+  return 'Other';
 }
 function stomaTypePayload(value){
   const raw=String(value||'').trim();
   if(!raw)return null;
-  return raw.split(',').map(x=>x.trim()).filter(Boolean);
+  return [raw];
 }
 function newPatientNote(text,type=''){
   const note=document.getElementById('np-reg-note');
@@ -1489,8 +1498,8 @@ function newPatientNote(text,type=''){
   note.textContent=text;
 }
 function clearNewPatientForm(){
-  ['np-id','np-sn','np-fn','np-dob','np-locality','np-sex','np-phone','np-surgery-date','np-operation-performed','np-findings','np-stoma-type','np-pmh','np-psh','np-medication-other','np-social-history','np-complications'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-  document.querySelectorAll('input[name="np-med-history"],input[name="np-dpa"]').forEach(el=>{el.checked=false;});
+  ['np-id','np-sn','np-fn','np-dob','np-locality','np-sex','np-phone','np-surgery-date','np-admission-route','np-operation-performed','np-findings','np-pmh','np-psh','np-medication-other','np-social-history','np-complications'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.querySelectorAll('input[name="np-med-history"],input[name="np-dpa"],input[name="np-stoma-type"]').forEach(el=>{el.checked=false;});
   handleMedicationSelection();
   newPatientNote('');
 }
@@ -1502,7 +1511,7 @@ async function lookupNewPatientById(){
   if(!id){newPatientNote('');return null;}
   newPatientNote('Checking saved patient registry...');
   const{data,error}=await SB.from('patients')
-    .select('id,first_name,surname,id_card,phone_number,dob,locality,sex,surgery_date,operation_performed,surgery_event_operation_performed,findings,stoma_type_summary,past_medical_history,past_surgical_history,drug_history,medication_history,medication_history_other,social_history,dpa_status,clinical_complications,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date')
+    .select('id,first_name,surname,id_card,phone_number,dob,locality,sex,surgery_date,admission_route,operation_performed,surgery_event_operation_performed,findings,stoma_type_summary,past_medical_history,past_surgical_history,drug_history,medication_history,medication_history_other,social_history,dpa_status,clinical_complications,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date')
     .ilike('id_card',id)
     .maybeSingle();
   if(error){
@@ -1518,9 +1527,10 @@ async function lookupNewPatientById(){
     const locEl=document.getElementById('np-locality'); if(locEl)locEl.value=data.locality||'';
     const sexEl=document.getElementById('np-sex'); if(sexEl)sexEl.value=data.sex||'';
     const surgEl=document.getElementById('np-surgery-date'); if(surgEl)surgEl.value=String(data.surgery_date||'').slice(0,10);
+    const routeEl=document.getElementById('np-admission-route'); if(routeEl)routeEl.value=data.admission_route||'';
     const opEl=document.getElementById('np-operation-performed'); if(opEl)opEl.value=data.operation_performed||data.surgery_event_operation_performed||'';
     const findingsEl=document.getElementById('np-findings'); if(findingsEl)findingsEl.value=data.findings||'';
-    const stomaEl=document.getElementById('np-stoma-type'); if(stomaEl)stomaEl.value=plainStomaTypeValue(data.stoma_type_summary);
+    setRadioValue('np-stoma-type',stomaTypeChoiceFromValue(data.stoma_type_summary));
     const pmhEl=document.getElementById('np-pmh'); if(pmhEl)pmhEl.value=data.past_medical_history||'';
     const pshEl=document.getElementById('np-psh'); if(pshEl)pshEl.value=data.past_surgical_history||'';
     setCheckedValues('np-med-history',medicationHistoryFromData(data));
@@ -1545,12 +1555,15 @@ async function saveNewPatientTab(){
   const dob=newPatientInputValue('np-dob');
   const locality=newPatientInputValue('np-locality');
   const surgeryDate=newPatientInputValue('np-surgery-date');
+  const admissionRoute=newPatientInputValue('np-admission-route');
+  const stomaType=getRadioValue('np-stoma-type');
   const dpaStatus=getRadioValue('np-dpa');
   if(!dob){alert('DOB is required.');return;}
   if(!locality){alert('Locality is required.');return;}
   if(!surgeryDate){alert('Surgery Date is required.');return;}
+  if(!admissionRoute){alert('Admission Route is required.');return;}
+  if(!stomaType){alert('Please select Stoma Type.');return;}
   if(!dpaStatus){alert('Please select DPA: Yes, No, or N/A.');return;}
-  const stomaType=newPatientInputValue('np-stoma-type');
   const medicationValues=getCheckedValues('np-med-history');
   const medicationOther=newPatientInputValue('np-medication-other');
   const payload={
@@ -1558,6 +1571,7 @@ async function saveNewPatientTab(){
     locality:locality||null,
     sex:newPatientInputValue('np-sex')||null,
     surgery_date:surgeryDate||null,
+    admission_route:admissionRoute||null,
     operation_performed:newPatientInputValue('np-operation-performed')||null,
     findings:newPatientInputValue('np-findings')||null,
     stoma_type_summary:stomaTypePayload(stomaType),
@@ -2748,7 +2762,7 @@ function clearPatientRebookSearch(){
   if(box)box.innerHTML='<div class="patient-search-empty">Enter at least 2 characters to search.</div>';
 }
 async function openPatientRebookModal(patientId){
-  const{data:pat,error}=await SB.from('patients').select('id,first_name,surname,id_card,phone_number,dob,locality,sex,surgery_date,operation_performed,surgery_event_operation_performed,findings,stoma_type_summary,past_medical_history,past_surgical_history,drug_history,medication_history,medication_history_other,social_history,dpa_status,clinical_complications,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date').eq('id',patientId).maybeSingle();
+  const{data:pat,error}=await SB.from('patients').select('id,first_name,surname,id_card,phone_number,dob,locality,sex,surgery_date,admission_route,operation_performed,surgery_event_operation_performed,findings,stoma_type_summary,past_medical_history,past_surgical_history,drug_history,medication_history,medication_history_other,social_history,dpa_status,clinical_complications,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date').eq('id',patientId).maybeSingle();
   if(error||!pat){alert('Could not open this patient for rebooking.');return;}
   if(normaliseFollowupStatus(pat.followup_status)==='deceased'){alert('This patient is marked as deceased and is kept in the separate deceased register. Change the status first before rebooking.');return;}
   const{data:bankRows}=await SB.from('bank_staff').select('id,full_name').order('full_name');
@@ -2811,7 +2825,7 @@ async function lookupPatientByIdForBooking(idInputId,firstInputId,surnameInputId
   }
   if(note){note.className='registry-lookup-note';note.textContent='Checking saved patient registry...';}
   const{data,error}=await SB.from('patients')
-    .select('id,first_name,surname,id_card,phone_number,dob,locality,sex,surgery_date,operation_performed,surgery_event_operation_performed,findings,stoma_type_summary,past_medical_history,past_surgical_history,drug_history,medication_history,medication_history_other,social_history,dpa_status,clinical_complications,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date')
+    .select('id,first_name,surname,id_card,phone_number,dob,locality,sex,surgery_date,admission_route,operation_performed,surgery_event_operation_performed,findings,stoma_type_summary,past_medical_history,past_surgical_history,drug_history,medication_history,medication_history_other,social_history,dpa_status,clinical_complications,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date')
     .ilike('id_card',id)
     .maybeSingle();
   if(error){
@@ -2858,7 +2872,7 @@ async function saveOrUpdatePatientByIdCard(idCard,firstName,surname,phone,follow
   const id=normaliseIdCard(idCard);
   if(!id||!firstName||!surname)return {patient:null,error:{message:'Missing patient details.'}};
   const existing=await SB.from('patients')
-    .select('id,first_name,surname,id_card,phone_number,dob,locality,sex,surgery_date,operation_performed,surgery_event_operation_performed,findings,stoma_type_summary,past_medical_history,past_surgical_history,drug_history,medication_history,medication_history_other,social_history,dpa_status,clinical_complications,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date')
+    .select('id,first_name,surname,id_card,phone_number,dob,locality,sex,surgery_date,admission_route,operation_performed,surgery_event_operation_performed,findings,stoma_type_summary,past_medical_history,past_surgical_history,drug_history,medication_history,medication_history_other,social_history,dpa_status,clinical_complications,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date')
     .ilike('id_card',id)
     .maybeSingle();
   if(existing.error)return {patient:null,error:existing.error};
