@@ -52,6 +52,10 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 /* NEW PATIENT PAGE */
 .new-patient-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;}
 .new-patient-grid .fg{margin-bottom:0;}
+.new-patient-section{margin-top:16px;padding:14px;border:1px solid var(--border);border-radius:12px;background:#fbfcfd;}
+.new-patient-section:first-of-type{margin-top:0;}
+.new-patient-section-title{font-size:13px;font-weight:800;color:var(--navy);margin:0 0 12px;text-transform:uppercase;letter-spacing:.04em;}
+.new-patient-grid .fg.full{grid-column:1/-1;}
 .new-patient-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;}
 .new-patient-actions .btn-save,.new-patient-actions .btn-cancel{flex:0 0 auto;min-width:150px;}
 .new-patient-note{margin-top:14px;padding:10px 12px;border-radius:9px;font-size:12px;font-weight:700;background:#f8fafc;color:var(--muted);border:1px solid var(--border);}
@@ -277,8 +281,9 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .msub{font-size:12px;color:var(--muted);margin-bottom:18px;}
 .fg{margin-bottom:12px;}
 .fg label{display:block;font-size:12px;font-weight:600;color:var(--navy);margin-bottom:5px;}
-.fg input,.fg select{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:7px;font-size:13px;font-family:'Inter',sans-serif;outline:none;}
-.fg input:focus,.fg select:focus{border-color:var(--teal);}
+.fg input,.fg select,.fg textarea{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:7px;font-size:13px;font-family:'Inter',sans-serif;outline:none;}
+.fg textarea{min-height:76px;resize:vertical;line-height:1.35;}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--teal);}
 .mact{display:flex;gap:8px;margin-top:20px;}
 .btn-cancel{flex:1;padding:10px;background:#f0f2f5;border:1px solid var(--border);border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;}
 .btn-save{flex:1;padding:10px;background:var(--teal);color:white;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;}
@@ -558,19 +563,40 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
         <div><h2>Add Patient</h2><p>Add a patient to the registry. If the ID card already exists, the saved patient record will be updated instead of duplicated.</p></div>
       </div>
       <div class="card">
-        <div class="card-title">Patient Details</div>
-        <div class="new-patient-grid">
-          <div class="fg"><label>ID Card Number *</label><input type="text" id="np-id" placeholder="Enter ID card" onblur="lookupNewPatientById()" onkeydown="if(event.key==='Enter'){event.preventDefault();lookupNewPatientById();}"/></div>
-          <div class="fg"><label>First Name *</label><input type="text" id="np-fn" placeholder="First name"/></div>
-          <div class="fg"><label>Surname *</label><input type="text" id="np-sn" placeholder="Surname"/></div>
-          <div class="fg"><label>Phone Number</label><input type="tel" id="np-phone" placeholder="Phone number"/></div>
-          <div class="fg"><label>Booking Type / Episode</label><select id="np-followup-type"><option value="new_case">New case</option><option value="follow_up">Follow-up</option></select></div>
-          <div class="fg"><label>Follow-up Owner</label><select id="np-followup-owner"><option value="Common">Common</option><option value="Jason">Jason</option><option value="Jacqueline">Jacqueline</option><option value="Lorraine">Lorraine</option></select></div>
-          <div class="fg"><label>Follow-up Status</label><select id="np-followup-status"><option value="active">Active</option><option value="inpatient">Inpatient</option><option value="awaiting_feedback">Awaiting Feedback</option><option value="paused">Paused</option><option value="deceased">Deceased</option><option value="reversed">Reversed</option><option value="relocated_overseas">Relocated Overseas</option><option value="relocated_gozo">Relocated to Gozo</option></select></div>
-          <div class="fg"><label>Follow-up Due Month</label><select id="np-followup-month"><option value="">No Due Month</option><option value="1">January</option><option value="2">February</option><option value="3">March</option><option value="4">April</option><option value="5">May</option><option value="6">June</option><option value="7">July</option><option value="8">August</option><option value="9">September</option><option value="10">October</option><option value="11">November</option><option value="12">December</option></select></div>
-          <div class="fg"><label>Follow-up Due Year</label><select id="np-followup-year"></select></div>
+        <div class="new-patient-section">
+          <div class="new-patient-section-title">Patient Details</div>
+          <div class="new-patient-grid">
+            <div class="fg"><label>ID Number *</label><input type="text" id="np-id" placeholder="Enter ID number" onblur="lookupNewPatientById()" onkeydown="if(event.key==='Enter'){event.preventDefault();lookupNewPatientById();}"/></div>
+            <div class="fg"><label>Surname *</label><input type="text" id="np-sn" placeholder="Surname"/></div>
+            <div class="fg"><label>Name *</label><input type="text" id="np-fn" placeholder="Name"/></div>
+            <div class="fg"><label>DOB</label><input type="date" id="np-dob"/></div>
+            <div class="fg"><label>Locality</label><input type="text" id="np-locality" placeholder="Locality"/></div>
+            <div class="fg"><label>Sex</label><select id="np-sex"><option value="">Select sex</option><option value="Male">Male</option><option value="Female">Female</option></select></div>
+            <div class="fg"><label>Contact Number</label><input type="tel" id="np-phone" placeholder="Contact number"/></div>
+          </div>
         </div>
-        <div id="np-reg-note" class="new-patient-note">Enter an ID card to check whether the patient already exists.</div>
+
+        <div class="new-patient-section">
+          <div class="new-patient-section-title">Stoma + Care</div>
+          <div class="new-patient-grid">
+            <div class="fg"><label>Surgery Date</label><input type="date" id="np-surgery-date"/></div>
+            <div class="fg"><label>Surgery Event Operation Performed</label><input type="text" id="np-surgery-event-operation" placeholder="Operation performed"/></div>
+            <div class="fg full"><label>Findings</label><textarea id="np-findings" placeholder="Findings"></textarea></div>
+            <div class="fg"><label>Stoma Type</label><input type="text" id="np-stoma-type" placeholder="e.g. Colostomy, Ileostomy, Urostomy"/></div>
+          </div>
+        </div>
+
+        <div class="new-patient-section">
+          <div class="new-patient-section-title">Clinical History</div>
+          <div class="new-patient-grid">
+            <div class="fg full"><label>Past Medical History</label><textarea id="np-pmh" placeholder="Past medical history"></textarea></div>
+            <div class="fg full"><label>Past Surgical History</label><textarea id="np-psh" placeholder="Past surgical history"></textarea></div>
+            <div class="fg full"><label>Drug History</label><textarea id="np-drug-history" placeholder="Drug history"></textarea></div>
+            <div class="fg full"><label>Complications</label><textarea id="np-complications" placeholder="Complications"></textarea></div>
+          </div>
+        </div>
+
+        <div id="np-reg-note" class="new-patient-note">Enter an ID number to check whether the patient already exists.</div>
         <div class="new-patient-actions">
           <button class="btn-save" onclick="saveNewPatientTab()">Save Patient</button>
           <button class="btn-cancel" onclick="clearNewPatientForm()">Clear Form</button>
@@ -1381,15 +1407,31 @@ async function startApp(){
   loadCOD();
   const ry=document.getElementById('rep-year'); if(ry) ry.value=String(new Date().getFullYear());
   const rpy=document.getElementById('rep-pat-year'); if(rpy) rpy.value=String(new Date().getFullYear());
-  initNewPatientYearOptions();
 }
 
 function initNewPatientYearOptions(){
-  const el=document.getElementById('np-followup-year');
-  if(!el)return;
-  const now=new Date().getFullYear();
-  el.innerHTML=[now,now+1,now+2,now+3].map(y=>`<option value="${y}">${y}</option>`).join('');
-  el.value=String(now);
+  // Follow-up planning fields are no longer shown in Add Patient.
+}
+function newPatientInputValue(id){
+  return document.getElementById(id)?.value?.trim()||'';
+}
+function plainStomaTypeValue(value){
+  if(value==null)return '';
+  if(Array.isArray(value))return value.filter(Boolean).join(', ');
+  if(typeof value==='object')return Object.values(value).filter(Boolean).join(', ');
+  const raw=String(value||'').trim();
+  if(!raw)return '';
+  try{
+    const parsed=JSON.parse(raw);
+    if(Array.isArray(parsed))return parsed.filter(Boolean).join(', ');
+    if(parsed&&typeof parsed==='object')return Object.values(parsed).filter(Boolean).join(', ');
+  }catch(e){}
+  return raw;
+}
+function stomaTypePayload(value){
+  const raw=String(value||'').trim();
+  if(!raw)return null;
+  return raw.split(',').map(x=>x.trim()).filter(Boolean);
 }
 function newPatientNote(text,type=''){
   const note=document.getElementById('np-reg-note');
@@ -1398,23 +1440,18 @@ function newPatientNote(text,type=''){
   note.textContent=text;
 }
 function clearNewPatientForm(){
-  ['np-id','np-fn','np-sn','np-phone'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-  const type=document.getElementById('np-followup-type'); if(type)type.value='new_case';
-  const owner=document.getElementById('np-followup-owner'); if(owner)owner.value='Common';
-  const status=document.getElementById('np-followup-status'); if(status)status.value='active';
-  const month=document.getElementById('np-followup-month'); if(month)month.value='';
-  initNewPatientYearOptions();
-  newPatientNote('Enter an ID card to check whether the patient already exists.');
+  ['np-id','np-sn','np-fn','np-dob','np-locality','np-sex','np-phone','np-surgery-date','np-surgery-event-operation','np-findings','np-stoma-type','np-pmh','np-psh','np-drug-history','np-complications'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  newPatientNote('Enter an ID number to check whether the patient already exists.');
 }
 async function lookupNewPatientById(){
   const idEl=document.getElementById('np-id');
   if(!idEl)return null;
   const id=normaliseIdCard(idEl.value);
   idEl.value=id;
-  if(!id){newPatientNote('Enter an ID card to check whether the patient already exists.');return null;}
+  if(!id){newPatientNote('Enter an ID number to check whether the patient already exists.');return null;}
   newPatientNote('Checking saved patient registry...');
   const{data,error}=await SB.from('patients')
-    .select('id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date,stoma_type_summary')
+    .select('id,first_name,surname,id_card,phone_number,dob,locality,sex,surgery_date,surgery_event_operation_performed,findings,stoma_type_summary,past_medical_history,past_surgical_history,drug_history,clinical_complications,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date')
     .ilike('id_card',id)
     .maybeSingle();
   if(error){
@@ -1426,39 +1463,45 @@ async function lookupNewPatientById(){
     document.getElementById('np-fn').value=data.first_name||'';
     document.getElementById('np-sn').value=data.surname||'';
     document.getElementById('np-phone').value=data.phone_number||'';
-    const type=document.getElementById('np-followup-type'); if(type)type.value=normaliseFollowupType(data.followup_type||'follow_up');
-    const owner=document.getElementById('np-followup-owner'); if(owner)owner.value=normaliseFollowupOwner(data.followup_owner||'Common');
-    const status=document.getElementById('np-followup-status'); if(status)status.value=normaliseFollowupStatus(data.followup_status||'active');
-    const month=document.getElementById('np-followup-month'); if(month)month.value=data.followup_due_month?String(data.followup_due_month):'';
-    const year=document.getElementById('np-followup-year');
-    if(year && data.followup_year){
-      if(![...year.options].some(o=>o.value===String(data.followup_year))){
-        year.insertAdjacentHTML('afterbegin',`<option value="${data.followup_year}">${data.followup_year}</option>`);
-      }
-      year.value=String(data.followup_year);
-    }
+    const dobEl=document.getElementById('np-dob'); if(dobEl)dobEl.value=String(data.dob||'').slice(0,10);
+    const locEl=document.getElementById('np-locality'); if(locEl)locEl.value=data.locality||'';
+    const sexEl=document.getElementById('np-sex'); if(sexEl)sexEl.value=data.sex||'';
+    const surgEl=document.getElementById('np-surgery-date'); if(surgEl)surgEl.value=String(data.surgery_date||'').slice(0,10);
+    const opEl=document.getElementById('np-surgery-event-operation'); if(opEl)opEl.value=data.surgery_event_operation_performed||'';
+    const findingsEl=document.getElementById('np-findings'); if(findingsEl)findingsEl.value=data.findings||'';
+    const stomaEl=document.getElementById('np-stoma-type'); if(stomaEl)stomaEl.value=plainStomaTypeValue(data.stoma_type_summary);
+    const pmhEl=document.getElementById('np-pmh'); if(pmhEl)pmhEl.value=data.past_medical_history||'';
+    const pshEl=document.getElementById('np-psh'); if(pshEl)pshEl.value=data.past_surgical_history||'';
+    const drugEl=document.getElementById('np-drug-history'); if(drugEl)drugEl.value=data.drug_history||'';
+    const compEl=document.getElementById('np-complications'); if(compEl)compEl.value=data.clinical_complications||'';
+    // Follow-up planning fields are intentionally not shown or changed in Add Patient.
     newPatientNote(`Saved patient found: ${(data.first_name||'')} ${(data.surname||'')}. Saving will update this existing record.`, normaliseFollowupStatus(data.followup_status)==='deceased'?'error':'success');
     return data;
   }
-  const type=document.getElementById('np-followup-type'); if(type)type.value='new_case';
   newPatientNote('No saved patient found for this ID card. A new patient record will be created.','success');
   return null;
 }
 async function saveNewPatientTab(){
-  const fn=document.getElementById('np-fn')?.value.trim()||'';
-  const sn=document.getElementById('np-sn')?.value.trim()||'';
+  const sn=newPatientInputValue('np-sn');
+  const fn=newPatientInputValue('np-fn');
   const id=normaliseIdCard(document.getElementById('np-id')?.value||'');
-  const phone=document.getElementById('np-phone')?.value.trim()||'';
-  if(!id||!fn||!sn){alert('Please enter ID card, first name and surname.');return;}
-  const monthRaw=document.getElementById('np-followup-month')?.value||'';
-  const yearRaw=document.getElementById('np-followup-year')?.value||'';
+  const phone=newPatientInputValue('np-phone');
+  if(!id||!sn||!fn){alert('Please enter ID number, surname and name.');return;}
+  const stomaType=newPatientInputValue('np-stoma-type');
   const payload={
-    followup_type:document.getElementById('np-followup-type')?.value||'new_case',
-    followup_owner:document.getElementById('np-followup-owner')?.value||'Common',
-    followup_status:document.getElementById('np-followup-status')?.value||'active',
-    followup_due_month:monthRaw?Number(monthRaw):null,
-    followup_year:yearRaw?Number(yearRaw):null
+    dob:newPatientInputValue('np-dob')||null,
+    locality:newPatientInputValue('np-locality')||null,
+    sex:newPatientInputValue('np-sex')||null,
+    surgery_date:newPatientInputValue('np-surgery-date')||null,
+    surgery_event_operation_performed:newPatientInputValue('np-surgery-event-operation')||null,
+    findings:newPatientInputValue('np-findings')||null,
+    stoma_type_summary:stomaTypePayload(stomaType),
+    past_medical_history:newPatientInputValue('np-pmh')||null,
+    past_surgical_history:newPatientInputValue('np-psh')||null,
+    drug_history:newPatientInputValue('np-drug-history')||null,
+    clinical_complications:newPatientInputValue('np-complications')||null
   };
+  if(!payload.stoma_type_summary)delete payload.stoma_type_summary;
   const saved=await saveOrUpdatePatientByIdCard(id,fn,sn,phone,payload);
   if(saved.error||!saved.patient?.id){
     newPatientNote('Could not save patient: '+(saved.error?.message||'Unknown error'),'error');
@@ -2636,7 +2679,7 @@ function clearPatientRebookSearch(){
   if(box)box.innerHTML='<div class="patient-search-empty">Enter at least 2 characters to search.</div>';
 }
 async function openPatientRebookModal(patientId){
-  const{data:pat,error}=await SB.from('patients').select('id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date,stoma_type_summary').eq('id',patientId).maybeSingle();
+  const{data:pat,error}=await SB.from('patients').select('id,first_name,surname,id_card,phone_number,dob,locality,sex,surgery_date,surgery_event_operation_performed,findings,stoma_type_summary,past_medical_history,past_surgical_history,drug_history,clinical_complications,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date').eq('id',patientId).maybeSingle();
   if(error||!pat){alert('Could not open this patient for rebooking.');return;}
   if(normaliseFollowupStatus(pat.followup_status)==='deceased'){alert('This patient is marked as deceased and is kept in the separate deceased register. Change the status first before rebooking.');return;}
   const{data:bankRows}=await SB.from('bank_staff').select('id,full_name').order('full_name');
@@ -2699,7 +2742,7 @@ async function lookupPatientByIdForBooking(idInputId,firstInputId,surnameInputId
   }
   if(note){note.className='registry-lookup-note';note.textContent='Checking saved patient registry...';}
   const{data,error}=await SB.from('patients')
-    .select('id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date,stoma_type_summary')
+    .select('id,first_name,surname,id_card,phone_number,dob,locality,sex,surgery_date,surgery_event_operation_performed,findings,stoma_type_summary,past_medical_history,past_surgical_history,drug_history,clinical_complications,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date')
     .ilike('id_card',id)
     .maybeSingle();
   if(error){
@@ -2746,7 +2789,7 @@ async function saveOrUpdatePatientByIdCard(idCard,firstName,surname,phone,follow
   const id=normaliseIdCard(idCard);
   if(!id||!firstName||!surname)return {patient:null,error:{message:'Missing patient details.'}};
   const existing=await SB.from('patients')
-    .select('id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date,stoma_type_summary')
+    .select('id,first_name,surname,id_card,phone_number,dob,locality,sex,surgery_date,surgery_event_operation_performed,findings,stoma_type_summary,past_medical_history,past_surgical_history,drug_history,clinical_complications,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date')
     .ilike('id_card',id)
     .maybeSingle();
   if(existing.error)return {patient:null,error:existing.error};
@@ -2757,7 +2800,7 @@ async function saveOrUpdatePatientByIdCard(idCard,firstName,surname,phone,follow
     if(updated.error)return {patient:existing.data,error:updated.error};
     return {patient:updated.data||existing.data,error:null};
   }
-  const inserted=await SB.from('patients').insert({first_name:firstName,surname:surname,id_card:id,phone_number:phone||null,followup_status:'active',...followupPayload}).select('id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date,stoma_type_summary').single();
+  const inserted=await SB.from('patients').insert({first_name:firstName,surname:surname,id_card:id,phone_number:phone||null,followup_status:'active',followup_owner:'Common',followup_type:'new_case',...followupPayload}).select('id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date,stoma_type_summary').single();
   return {patient:inserted.data,error:inserted.error};
 }
 
