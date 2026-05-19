@@ -605,7 +605,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
             <div class="fg"><label>Name *</label><input type="text" id="np-fn" placeholder="Name" required/></div>
             <div class="fg"><label>DOB *</label><input type="date" id="np-dob" required/></div>
             <div class="fg"><label>Locality *</label><select id="np-locality" required><option value="">Select locality</option><option value="Attard">Attard</option><option value="Balzan">Balzan</option><option value="Birgu (Vittoriosa)">Birgu (Vittoriosa)</option><option value="Birkirkara">Birkirkara</option><option value="Birżebbuġa">Birżebbuġa</option><option value="Bormla (Cospicua)">Bormla (Cospicua)</option><option value="Dingli">Dingli</option><option value="Fgura">Fgura</option><option value="Floriana">Floriana</option><option value="Gudja">Gudja</option><option value="Gżira">Gżira</option><option value="Ħamrun">Ħamrun</option><option value="Iklin">Iklin</option><option value="Isla (Senglea)">Isla (Senglea)</option><option value="Kalkara">Kalkara</option><option value="Kirkop">Kirkop</option><option value="Lija">Lija</option><option value="Luqa">Luqa</option><option value="Marsa">Marsa</option><option value="Marsaskala">Marsaskala</option><option value="Marsaxlokk">Marsaxlokk</option><option value="Mdina">Mdina</option><option value="Mellieħa">Mellieħa</option><option value="Mġarr">Mġarr</option><option value="Mosta">Mosta</option><option value="Mqabba">Mqabba</option><option value="Msida">Msida</option><option value="Mtarfa">Mtarfa</option><option value="Naxxar">Naxxar</option><option value="Paola">Paola</option><option value="Pembroke">Pembroke</option><option value="Pietà">Pietà</option><option value="Qormi">Qormi</option><option value="Qrendi">Qrendi</option><option value="Rabat">Rabat</option><option value="Safi">Safi</option><option value="San Ġiljan (St. Julian’s)">San Ġiljan (St. Julian’s)</option><option value="San Ġwann">San Ġwann</option><option value="Santa Luċija">Santa Luċija</option><option value="Santa Venera">Santa Venera</option><option value="Siġġiewi">Siġġiewi</option><option value="Sliema">Sliema</option><option value="Swieqi">Swieqi</option><option value="Ta’ Xbiex">Ta’ Xbiex</option><option value="Tarxien">Tarxien</option><option value="Valletta">Valletta</option><option value="Xgħajra">Xgħajra</option><option value="Żabbar">Żabbar</option><option value="Żebbuġ">Żebbuġ</option><option value="Żejtun">Żejtun</option><option value="Żurrieq">Żurrieq</option><option value="Gozo">Gozo</option></select></div>
-            <div class="fg"><label>Sex</label><select id="np-sex"><option value="">Select sex</option><option value="Male">Male</option><option value="Female">Female</option></select></div>
+            <div class="fg"><label>Sex *</label><select id="np-sex" required><option value="">Select sex</option><option value="Male">Male</option><option value="Female">Female</option></select></div>
             <div class="fg"><label>Contact Number</label><input type="tel" id="np-phone" placeholder="Contact number"/></div>
           </div>
         </div>
@@ -620,9 +620,9 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
         <div class="new-patient-section">
           <div class="new-patient-section-title">Clinical History</div>
           <div class="new-patient-grid">
-            <div class="fg full"><label>Past Medical History</label><textarea id="np-pmh" placeholder="Past medical history"></textarea></div>
-            <div class="fg full"><label>Past Surgical History</label><textarea id="np-psh" placeholder="Past surgical history"></textarea></div>
-            <div class="fg full"><label>Social History</label><textarea id="np-social-history" placeholder="Social history"></textarea></div>
+            <div class="fg full"><label>Past Medical History *</label><textarea id="np-pmh" placeholder="Past medical history" required></textarea></div>
+            <div class="fg full"><label>Past Surgical History *</label><textarea id="np-psh" placeholder="Past surgical history" required></textarea></div>
+            <div class="fg full"><label>Social History *</label><textarea id="np-social-history" placeholder="Social history" required></textarea></div>
             <div class="fg full"><label>Medical History / Current Medications</label><div class="choice-group" id="np-medication-history"><label class="choice-chip"><input type="checkbox" name="np-med-history" value="No medications used" onchange="handleMedicationSelection()"/> No medications used</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="OHAs" onchange="handleMedicationSelection()"/> OHAs</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Antiplatelets" onchange="handleMedicationSelection()"/> Antiplatelets</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Anticoagulants" onchange="handleMedicationSelection()"/> Anticoagulants</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Antihypertensives" onchange="handleMedicationSelection()"/> Antihypertensives</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Statins" onchange="handleMedicationSelection()"/> Statins</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Steroids" onchange="handleMedicationSelection()"/> Steroids</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Immunosuppressants" onchange="handleMedicationSelection()"/> Immunosuppressants</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="PPIs" onchange="handleMedicationSelection()"/> PPIs</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Opioids" onchange="handleMedicationSelection()"/> Opioids</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Antibiotics" onchange="handleMedicationSelection()"/> Antibiotics</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Antidiarrhoeal" onchange="handleMedicationSelection()"/> Antidiarrhoeal</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Other" onchange="handleMedicationSelection()"/> Other</label></div><div class="choice-hint">Select all that apply. Use “No medications used” when applicable.</div><input type="text" id="np-medication-other" placeholder="Other medications" style="margin-top:8px;display:none;"/></div><div class="fg full"><label>Additional Notes</label><textarea id="np-medication-notes" placeholder="Additional notes about medical history or current medication"></textarea></div>
             <div class="fg full"><label>DPA *</label><div class="choice-group" id="np-dpa-group"><label class="choice-chip"><input type="radio" name="np-dpa" value="Yes" required/> Yes</label><label class="choice-chip"><input type="radio" name="np-dpa" value="No" required/> No</label><label class="choice-chip"><input type="radio" name="np-dpa" value="N/A" required/> N/A</label></div></div>
             <div class="fg full"><label>Admission Route</label><div class="choice-hint">Choose one route to continue to the next step and complete Stoma + Care.</div><div class="admission-route-grid">
@@ -1663,12 +1663,42 @@ async function lookupNewPatientById(){
   newPatientNote('No saved patient found for this ID card. A new patient record will be created.','success');
   return null;
 }
+function focusAddPatientField(id){
+  const el=document.getElementById(id);
+  if(!el)return;
+  switchTab('new-patient',document.querySelector('[data-tab="new-patient"]'));
+  setTimeout(()=>{el.scrollIntoView({behavior:'smooth',block:'center'});try{el.focus({preventScroll:true});}catch(e){try{el.focus();}catch(_){}}},80);
+}
+function validateAddPatientCoreRequired(){
+  const checks=[
+    ['np-id','ID Number is required.'],
+    ['np-sn','Surname is required.'],
+    ['np-fn','Name is required.'],
+    ['np-dob','DOB is required.'],
+    ['np-locality','Locality is required.'],
+    ['np-sex','Sex is required.'],
+    ['np-pmh','Past Medical History is required.'],
+    ['np-psh','Past Surgical History is required.'],
+    ['np-social-history','Social History is required.']
+  ];
+  for(const [id,msg] of checks){
+    const el=document.getElementById(id);
+    if(!String(el?.value||'').trim()){alert(msg);focusAddPatientField(id);return false;}
+  }
+  if(!getRadioValue('np-dpa')){
+    alert('Please select DPA: Yes, No, or N/A.');
+    const el=document.getElementById('np-dpa-group');
+    switchTab('new-patient',document.querySelector('[data-tab="new-patient"]'));
+    setTimeout(()=>el?.scrollIntoView({behavior:'smooth',block:'center'}),80);
+    return false;
+  }
+  return true;
+}
 async function saveNewPatientTab(options={}){
   const sn=newPatientInputValue('np-sn');
   const fn=newPatientInputValue('np-fn');
   const id=normaliseIdCard(document.getElementById('np-id')?.value||'');
   const phone=newPatientInputValue('np-phone');
-  if(!id||!sn||!fn){alert('Please enter ID number, surname and name.');return;}
   const dob=newPatientInputValue('np-dob');
   const locality=newPatientInputValue('np-locality');
   const awaitingSurgery=!!options.awaitingSurgery;
@@ -1677,12 +1707,10 @@ async function saveNewPatientTab(options={}){
   const admissionRoute=newPatientInputValue('np-admission-route');
   const stomaType=getRadioValue('np-stoma-type')||newPatientInputValue('np-stoma-type-hidden');
   const dpaStatus=getRadioValue('np-dpa');
-  if(!dob){alert('DOB is required.');return;}
-  if(!locality){alert('Locality is required.');return;}
-  if(awaitingSurgery&&!plannedSurgeryDate){alert('Please enter the Planned Surgery Date for Elective surgery.');return;}
+  if(!validateAddPatientCoreRequired())return;
+  if(awaitingSurgery&&!plannedSurgeryDate){alert('Please enter the Planned Surgery Date for Elective surgery.');focusAddPatientField('np-elective-planned-date');return;}
   if(!awaitingSurgery&&!surgeryDate){alert('Please choose an Admission Route and complete Surgery Date in the Stoma + Care step.');return;}
   if(!awaitingSurgery&&!stomaType){alert('Please choose an Admission Route and select Stoma Type in the Stoma + Care step.');return;}
-  if(!dpaStatus){alert('Please select DPA: Yes, No, or N/A.');return;}
   const medicationValues=getCheckedValues('np-med-history');
   const medicationOther=newPatientInputValue('np-medication-other');
   const payload={
@@ -1727,8 +1755,9 @@ async function saveNewPatientTab(options={}){
 }
 async function saveElectiveAwaitingSurgery(event){
   if(event){event.preventDefault();event.stopPropagation();}
+  if(!validateAddPatientCoreRequired())return;
   const date=document.getElementById('np-elective-planned-date')?.value||'';
-  if(!date){alert('Please enter Planned Surgery Date before saving Elective surgery.');return;}
+  if(!date){alert('Please enter Planned Surgery Date before saving Elective surgery.');focusAddPatientField('np-elective-planned-date');return;}
   setAdmissionRouteValue('Elective surgery');
   const plannedEl=document.getElementById('np-planned-surgery-date'); if(plannedEl)plannedEl.value=date;
   const typeEl=document.getElementById('np-inpatient-type'); if(typeEl)typeEl.value='awaiting_surgery';
@@ -1792,6 +1821,7 @@ function savePatientFromAdmissionRoute(value,pageId){
   saveNewPatientTab();
 }
 function selectAdmissionRouteTile(value){
+  if(!validateAddPatientCoreRequired())return;
   setAdmissionRouteValue(value);
   const pageName=admissionRoutePageName(value);
   if(pageName)switchTab(pageName,document.querySelector(`.nav-tile[data-admission-route="${cssEscape(value)}"]`));
