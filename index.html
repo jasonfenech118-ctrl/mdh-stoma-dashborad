@@ -532,7 +532,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
         <button type="button" class="tab-dd-item" data-tab="appointments" onclick="switchTab('appointments',this)">Patient Appointments <small>Book</small></button>
         <button type="button" class="tab-dd-item" data-tab="staff-audit" onclick="switchTab('staff-audit',this)">Follow-up Planning <small>Owners</small></button>
         <button type="button" class="tab-dd-item" data-tab="dntu-policy" onclick="switchTab('dntu-policy',this)">DNTU <small>Tracking</small></button>
-        <button type="button" class="tab-dd-item" data-tab="clinic-audit" onclick="switchTab('clinic-audit',this)">Clinic Audit <small>Calendar</small></button>
+        <button type="button" class="tab-dd-item" data-tab="clinic-audit" onclick="switchTab('clinic-audit',this)">Clinic Diary <small>Calendar</small></button>
       </div>
     </div>
     <div class="tab-group">
@@ -885,7 +885,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 
     <!-- CLINIC AUDIT -->
     <div class="page" id="page-clinic-audit">
-      <div class="phdr"><div><h2>Clinic Audit</h2><p>Monthly appointment calendar and printable monthly lists</p></div></div>
+      <div class="phdr"><div><h2>Clinic Diary</h2><p>Monthly appointment calendar and printable monthly lists</p></div></div>
       <div class="srow" id="clinic-stats"></div>
       <div class="clinic-audit-toolbar">
         <label>Month:</label>
@@ -1414,7 +1414,7 @@ async function lookupNewPatientById(){
   if(!id){newPatientNote('Enter an ID card to check whether the patient already exists.');return null;}
   newPatientNote('Checking saved patient registry...');
   const{data,error}=await SB.from('patients')
-    .select('id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date,stoma_type_summary')
+    .select('id,first_name,surname,id_card,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date,stoma_type_summary,last_outcome_date,locality')
     .ilike('id_card',id)
     .maybeSingle();
   if(error){
@@ -3192,6 +3192,16 @@ function patientDateText(value){
   if(Number.isNaN(d.getTime()))return htmlSafe(raw||'—');
   return d.toLocaleDateString('en-MT',{day:'2-digit',month:'short',year:'numeric'});
 }
+function patientDateNumericText(value){
+  if(!value)return '—';
+  const raw=String(value).slice(0,10);
+  const d=new Date(raw+'T12:00:00');
+  if(Number.isNaN(d.getTime()))return htmlSafe(raw||'—');
+  const dd=String(d.getDate()).padStart(2,'0');
+  const mm=String(d.getMonth()+1).padStart(2,'0');
+  const yy=d.getFullYear();
+  return `${dd}/${mm}/${yy}`;
+}
 function dateSortValue(value){
   if(!value)return 0;
   const d=new Date(String(value).slice(0,10)+'T12:00:00');
@@ -3351,18 +3361,18 @@ function renderPatientsList(){
   }
   if(thead){
     thead.innerHTML=isDeceased
-      ? '<tr><th>ID Number</th><th>Patient</th><th>Sex</th><th>DOB</th><th>Date of RIP</th><th>Age at Death</th><th>Surgery Date</th><th>Stoma Days</th><th>Stoma Type Summary</th><th>Locality</th><th>Actions</th></tr>'
+      ? '<tr><th>ID Number</th><th>Surname</th><th>Name</th><th>Sex</th><th>DOB</th><th>Date of RIP</th><th>Age at Death</th><th>Surgery Date</th><th>Stoma Days</th><th>Stoma Type Summary</th><th>Locality</th><th>Actions</th></tr>'
       : (isReversed
-        ? '<tr><th>ID Number</th><th>Surname</th><th>Name</th><th>Phone</th><th>Status</th><th>Owner</th><th>Reversal Date</th><th>Consultant</th><th>Last Seen</th><th>Stoma Type Summary</th><th>Locality</th><th>Actions</th></tr>'
+        ? '<tr><th>ID Number</th><th>Surname</th><th>Name</th><th>Owner</th><th>Consultant</th><th>Reversal Date</th><th>Last Seen</th><th>Stoma Type Summary</th><th>Locality</th><th>Status</th><th>Actions</th></tr>'
         : (isRelocatedOverseas
           ? (isRelocatedGozo
-            ? '<tr><th>ID Number</th><th>Patient</th><th>Status</th><th>Last Seen</th><th>Date of Discharge</th><th>Surgery Date</th><th>Consultant</th><th>Surgery Type</th><th>Stoma Type Summary</th><th>Actions</th></tr>'
-            : '<tr><th>ID Number</th><th>Patient</th><th>Status</th><th>Last Seen</th><th>Date of Discharge</th><th>Stoma Type Summary</th><th>Actions</th></tr>')
+            ? '<tr><th>ID Number</th><th>Surname</th><th>Name</th><th>Status</th><th>Last Seen</th><th>Date of Discharge</th><th>Surgery Date</th><th>Consultant</th><th>Surgery Type</th><th>Stoma Type Summary</th><th>Actions</th></tr>'
+            : '<tr><th>ID Number</th><th>Surname</th><th>Name</th><th>Status</th><th>Last Seen</th><th>Date of Discharge</th><th>Stoma Type Summary</th><th>Actions</th></tr>')
           : '<tr><th>Patient</th><th>ID Card</th><th>Phone</th><th>Status</th><th>Owner</th><th>Due Month</th><th>Last Outcome</th><th>Next Follow-up</th><th>Locality</th><th>Actions</th></tr>'));
   }
   if(!tbody)return;
   if(!rows.length){
-    tbody.innerHTML=`<tr><td colspan="${isDeceased?11:(isReversed?12:(isRelocatedOverseas?(isRelocatedGozo?10:7):10))}" class="empty">No ${htmlSafe(cfg.title.toLowerCase())} found${search?' for this search':''}.</td></tr>`;
+    tbody.innerHTML=`<tr><td colspan="${isDeceased?12:(isReversed?11:(isRelocatedOverseas?(isRelocatedGozo?11:8):10))}" class="empty">No ${htmlSafe(cfg.title.toLowerCase())} found${search?' for this search':''}.</td></tr>`;
     return;
   }
   tbody.innerHTML=rows.map(p=>{
@@ -3371,7 +3381,8 @@ function renderPatientsList(){
     if(isDeceased){
       return `<tr class="followup-click-row" onclick="openFollowupHistory('${p.id}')">
         <td><strong>${htmlSafe(p.id_card||'—')}</strong></td>
-        <td><strong>${htmlSafe(nm)}</strong><br/><span style="font-size:10px;color:var(--muted);">Click row for history</span></td>
+        <td><strong>${htmlSafe(p.surname||'—')}</strong><br/><span style="font-size:10px;color:var(--muted);">Click row for history</span></td>
+        <td><strong>${htmlSafe(p.first_name||'—')}</strong></td>
         <td>${htmlSafe(p.sex||'—')}</td>
         <td>${patientDateText(p.dob)}</td>
         <td><strong>${patientDateText(p.rip_date)}</strong></td>
@@ -3390,14 +3401,13 @@ function renderPatientsList(){
         <td><strong>${htmlSafe(p.id_card||'—')}</strong></td>
         <td><strong>${htmlSafe(p.surname||'—')}</strong><br/><span style="font-size:10px;color:var(--muted);">Click row for history</span></td>
         <td><strong>${htmlSafe(p.first_name||'—')}</strong></td>
-        <td>${htmlSafe(p.phone_number||'—')}</td>
-        <td>${patientStatusChip(st)}${p.patient_status_raw?`<br/><span style="font-size:10px;color:var(--muted);">${htmlSafe(p.patient_status_raw)}</span>`:''}</td>
         <td>${htmlSafe(p.followup_owner||'Common')}</td>
-        <td><strong>${patientDateText(p.reversal_date)}</strong></td>
         <td>${htmlSafe(p.consultant||'—')}</td>
-        <td>${htmlSafe(latest)}</td>
+        <td><strong>${patientDateNumericText(p.reversal_date)}</strong></td>
+        <td>${patientDateText(latest)}</td>
         <td>${patientStomaTypeText(p.stoma_type_summary)}</td>
         <td>${htmlSafe(p.locality||'—')}</td>
+        <td>${patientStatusChip(st)}${p.patient_status_raw?`<br/><span style="font-size:10px;color:var(--muted);">${htmlSafe(p.patient_status_raw)}</span>`:''}</td>
         <td>${patientRegisterActions(p,false)}</td>
       </tr>`;
     }
@@ -3405,7 +3415,8 @@ function renderPatientsList(){
       if(isRelocatedGozo){
         return `<tr class="followup-click-row" onclick="openFollowupHistory('${p.id}')">
           <td><strong>${htmlSafe(p.id_card||'—')}</strong></td>
-          <td><strong>${htmlSafe(nm)}</strong><br/><span style="font-size:10px;color:var(--muted);">Click row for history</span></td>
+          <td><strong>${htmlSafe(p.surname||'—')}</strong><br/><span style="font-size:10px;color:var(--muted);">Click row for history</span></td>
+          <td><strong>${htmlSafe(p.first_name||'—')}</strong></td>
           <td>${patientStatusChip(st)}${p.patient_status_raw?`<br/><span style="font-size:10px;color:var(--muted);">${htmlSafe(p.patient_status_raw)}</span>`:''}</td>
           <td>${patientDateText(p.last_outcome_date)}</td>
           <td><strong>${patientDateText(p.discharged_date)}</strong></td>
@@ -3418,7 +3429,8 @@ function renderPatientsList(){
       }
       return `<tr class="followup-click-row" onclick="openFollowupHistory('${p.id}')">
         <td><strong>${htmlSafe(p.id_card||'—')}</strong></td>
-        <td><strong>${htmlSafe(nm)}</strong><br/><span style="font-size:10px;color:var(--muted);">Click row for history</span></td>
+        <td><strong>${htmlSafe(p.surname||'—')}</strong><br/><span style="font-size:10px;color:var(--muted);">Click row for history</span></td>
+        <td><strong>${htmlSafe(p.first_name||'—')}</strong></td>
         <td>${patientStatusChip(st)}${p.patient_status_raw?`<br/><span style="font-size:10px;color:var(--muted);">${htmlSafe(p.patient_status_raw)}</span>`:''}</td>
         <td>${patientDateText(p.last_outcome_date)}</td>
         <td><strong>${patientDateText(p.discharged_date)}</strong></td>
@@ -3731,7 +3743,7 @@ function printMonthlyCalendar(){
   const calendar=document.getElementById('clinic-calendar-grid')?.innerHTML||'';
   const totals={total:clinicAuditData.length,booked:clinicAuditData.filter(a=>a.status==='booked').length,attended:clinicAuditData.filter(a=>a.status==='attended').length,cancelled:clinicAuditData.filter(a=>a.status==='cancelled').length,dntu:clinicAuditData.filter(a=>a.status==='did_not_attend').length};
   const w=window.open('','_blank');
-  w.document.write(`<!DOCTYPE html><html><head><title>Clinic Audit Calendar ${clinicMonthLabel(month,year)}</title><style>${printableClinicStyles()}
+  w.document.write(`<!DOCTYPE html><html><head><title>Clinic Diary Calendar ${clinicMonthLabel(month,year)}</title><style>${printableClinicStyles()}
 .registry-lookup-note{margin-top:-6px;margin-bottom:10px;padding:8px 10px;border-radius:8px;font-size:11px;font-weight:700;background:#f8fafc;color:var(--muted);border:1px solid var(--border);}
 .registry-lookup-note.found{background:#e8f5f4;color:var(--teal);border-color:#b7ddd9;}
 .registry-lookup-note.new{background:#fff8e1;color:#856404;border-color:#f2df9f;}
@@ -3747,7 +3759,7 @@ function printMonthlyList(){
   if(!clinicAuditData.length){alert('No appointments found for this month.');return;}
   const totals={total:clinicAuditData.length,booked:clinicAuditData.filter(a=>a.status==='booked').length,attended:clinicAuditData.filter(a=>a.status==='attended').length,cancelled:clinicAuditData.filter(a=>a.status==='cancelled').length,dntu:clinicAuditData.filter(a=>a.status==='did_not_attend').length};
   const w=window.open('','_blank');
-  w.document.write(`<!DOCTYPE html><html><head><title>Clinic Audit List ${clinicMonthLabel(month,year)}</title><style>${printableClinicStyles().replace('@page{size:A4 landscape;margin:10mm;}','@page{size:A4 portrait;margin:10mm;}')}
+  w.document.write(`<!DOCTYPE html><html><head><title>Clinic Diary List ${clinicMonthLabel(month,year)}</title><style>${printableClinicStyles().replace('@page{size:A4 landscape;margin:10mm;}','@page{size:A4 portrait;margin:10mm;}')}
 .registry-lookup-note{margin-top:-6px;margin-bottom:10px;padding:8px 10px;border-radius:8px;font-size:11px;font-weight:700;background:#f8fafc;color:var(--muted);border:1px solid var(--border);}
 .registry-lookup-note.found{background:#e8f5f4;color:var(--teal);border-color:#b7ddd9;}
 .registry-lookup-note.new{background:#fff8e1;color:#856404;border-color:#f2df9f;}
@@ -4138,7 +4150,7 @@ function rowsForReportPatientGroup(){
   const search=String(document.getElementById('report-patient-group-search')?.value||'').trim().toLowerCase();
   if(search){
     rows=rows.filter(p=>[
-      p.first_name,p.surname,p.id_card,p.phone_number,p.followup_owner,p.consultant,p.followup_year,followupMonthName(p.followup_due_month),p.locality,p.patient_status_raw,patientRegisterStatusText(patientRegisterStatus(p)),p.sex,p.dob,p.rip_date,p.reversal_date,p.surgery_date,p.surgery_type,p.consultant,p.discharged_date,p.last_outcome_date,patientStomaTypeText(p.stoma_type_summary)
+      p.first_name,p.surname,p.id_card,p.followup_owner,p.consultant,p.followup_year,followupMonthName(p.followup_due_month),p.locality,p.patient_status_raw,patientRegisterStatusText(patientRegisterStatus(p)),p.sex,p.dob,p.rip_date,p.reversal_date,p.surgery_date,p.surgery_type,p.consultant,p.discharged_date,p.last_outcome_date,patientStomaTypeText(p.stoma_type_summary)
     ].join(' ').toLowerCase().includes(search));
   }
   return rows;
@@ -4166,11 +4178,11 @@ function renderReportPatientGroup(){
   }
   if(thead){
     if(isDeceased){
-      thead.innerHTML='<tr><th>ID Number</th><th>Patient</th><th>Sex</th><th>DOB</th><th>Date of RIP</th><th>Age at Death</th><th>Surgery Date</th><th>Stoma Days</th><th>Stoma Type Summary</th><th>Locality</th></tr>';
+      thead.innerHTML='<tr><th>ID Number</th><th>Surname</th><th>Name</th><th>Sex</th><th>DOB</th><th>Date of RIP</th><th>Age at Death</th><th>Surgery Date</th><th>Stoma Days</th><th>Stoma Type Summary</th><th>Locality</th></tr>';
     }else if(isReversed){
-      thead.innerHTML='<tr><th>ID Number</th><th>Surname</th><th>Name</th><th>Phone</th><th>Status</th><th>Owner</th><th>Reversal Date</th><th>Consultant</th><th>Last Seen</th><th>Stoma Type Summary</th><th>Locality</th></tr>';
+      thead.innerHTML='<tr><th>ID Number</th><th>Surname</th><th>Name</th><th>Owner</th><th>Consultant</th><th>Reversal Date</th><th>Last Seen</th><th>Stoma Type Summary</th><th>Locality</th><th>Status</th></tr>';
     }else if(isRelocatedOverseas){
-      thead.innerHTML=isRelocatedGozo?'<tr><th>ID Number</th><th>Patient</th><th>Status</th><th>Last Seen</th><th>Date of Discharge</th><th>Surgery Date</th><th>Consultant</th><th>Surgery Type</th><th>Stoma Type Summary</th></tr>':'<tr><th>ID Number</th><th>Patient</th><th>Status</th><th>Last Seen</th><th>Date of Discharge</th><th>Stoma Type Summary</th></tr>';
+      thead.innerHTML=isRelocatedGozo?'<tr><th>ID Number</th><th>Surname</th><th>Name</th><th>Status</th><th>Last Seen</th><th>Date of Discharge</th><th>Surgery Date</th><th>Consultant</th><th>Surgery Type</th><th>Stoma Type Summary</th></tr>':'<tr><th>ID Number</th><th>Surname</th><th>Name</th><th>Status</th><th>Last Seen</th><th>Date of Discharge</th><th>Stoma Type Summary</th></tr>';
     }else if(isFollowups){
       thead.innerHTML='<tr><th>Patient</th><th>ID Card</th><th>Phone</th><th>Status</th><th>Owner</th><th>Due Month</th><th>Follow-up Year</th><th>Last Outcome</th><th>Next Follow-up</th><th>Locality</th></tr>';
     }else{
@@ -4178,14 +4190,15 @@ function renderReportPatientGroup(){
     }
   }
   if(!tbody)return;
-  if(!rows.length){tbody.innerHTML=`<tr><td colspan="${isDeceased?10:(isReversed?11:(isRelocatedOverseas?(isRelocatedGozo?9:6):(isFollowups?10:9)))}" class="empty">No ${htmlSafe(cfg.title.toLowerCase())} found.</td></tr>`;return;}
+  if(!rows.length){tbody.innerHTML=`<tr><td colspan="${isDeceased?11:(isReversed?10:(isRelocatedOverseas?(isRelocatedGozo?10:7):(isFollowups?10:9)))}" class="empty">No ${htmlSafe(cfg.title.toLowerCase())} found.</td></tr>`;return;}
   tbody.innerHTML=rows.map(p=>{
     const nm=`${p.first_name||''} ${p.surname||''}`.trim()||'Unnamed patient';
     const st=patientRegisterStatus(p);
     if(isDeceased){
       return `<tr>
         <td><strong>${htmlSafe(p.id_card||'—')}</strong></td>
-        <td><strong>${htmlSafe(nm)}</strong></td>
+        <td><strong>${htmlSafe(p.surname||'—')}</strong></td>
+        <td><strong>${htmlSafe(p.first_name||'—')}</strong></td>
         <td>${htmlSafe(p.sex||'—')}</td>
         <td>${patientDateText(p.dob)}</td>
         <td><strong>${patientDateText(p.rip_date)}</strong></td>
@@ -4201,21 +4214,21 @@ function renderReportPatientGroup(){
         <td style="font-family:monospace;font-size:12px;"><strong>${htmlSafe(p.id_card||'—')}</strong></td>
         <td><strong>${htmlSafe(p.surname||'—')}</strong></td>
         <td><strong>${htmlSafe(p.first_name||'—')}</strong></td>
-        <td>${htmlSafe(p.phone_number||'—')}</td>
-        <td>${patientStatusChip(st)}${p.patient_status_raw?`<br/><span style="font-size:10px;color:var(--muted);">${htmlSafe(p.patient_status_raw)}</span>`:''}</td>
         <td>${htmlSafe(p.followup_owner||'Common')}</td>
-        <td><strong>${patientDateText(p.reversal_date)}</strong></td>
         <td>${htmlSafe(p.consultant||'—')}</td>
-        <td>${htmlSafe(p.last_outcome_date||'—')}</td>
+        <td><strong>${patientDateNumericText(p.reversal_date)}</strong></td>
+        <td>${patientDateText(p.last_outcome_date)}</td>
         <td>${patientStomaTypeText(p.stoma_type_summary)}</td>
         <td>${htmlSafe(p.locality||'—')}</td>
+        <td>${patientStatusChip(st)}${p.patient_status_raw?`<br/><span style="font-size:10px;color:var(--muted);">${htmlSafe(p.patient_status_raw)}</span>`:''}</td>
       </tr>`;
     }
     if(isRelocatedOverseas){
       if(isRelocatedGozo){
         return `<tr>
           <td style="font-family:monospace;font-size:12px;"><strong>${htmlSafe(p.id_card||'—')}</strong></td>
-          <td><strong>${htmlSafe(nm)}</strong></td>
+          <td><strong>${htmlSafe(p.surname||'—')}</strong></td>
+          <td><strong>${htmlSafe(p.first_name||'—')}</strong></td>
           <td>${patientStatusChip(st)}${p.patient_status_raw?`<br/><span style="font-size:10px;color:var(--muted);">${htmlSafe(p.patient_status_raw)}</span>`:''}</td>
           <td>${patientDateText(p.last_outcome_date)}</td>
           <td><strong>${patientDateText(p.discharged_date)}</strong></td>
@@ -4227,7 +4240,8 @@ function renderReportPatientGroup(){
       }
       return `<tr>
         <td style="font-family:monospace;font-size:12px;"><strong>${htmlSafe(p.id_card||'—')}</strong></td>
-        <td><strong>${htmlSafe(nm)}</strong></td>
+        <td><strong>${htmlSafe(p.surname||'—')}</strong></td>
+        <td><strong>${htmlSafe(p.first_name||'—')}</strong></td>
         <td>${patientStatusChip(st)}${p.patient_status_raw?`<br/><span style="font-size:10px;color:var(--muted);">${htmlSafe(p.patient_status_raw)}</span>`:''}</td>
         <td>${patientDateText(p.last_outcome_date)}</td>
         <td><strong>${patientDateText(p.discharged_date)}</strong></td>
@@ -4277,7 +4291,7 @@ async function loadReversalRegister(){
   const tbody=document.getElementById('reversal-tbody');
   const stats=document.getElementById('reversal-stats');
   if(!tbody)return;
-  tbody.innerHTML='<tr><td colspan="10" class="empty">Loading reversal register...</td></tr>';
+  tbody.innerHTML='<tr><td colspan="9" class="empty">Loading reversal register...</td></tr>';
   const year=document.getElementById('rev-year')?.value||'';
   const search=(document.getElementById('rev-search')?.value||'').trim().toLowerCase();
   const{data,error}=await SB.from('patients')
@@ -4287,7 +4301,7 @@ async function loadReversalRegister(){
     .order('first_name',{ascending:true});
   if(error){
     console.error('Reversal register load error:',error);
-    tbody.innerHTML=`<tr><td colspan="10" class="empty">Could not load reversal register: ${htmlSafe(error.message||'Unknown error')}</td></tr>`;
+    tbody.innerHTML=`<tr><td colspan="9" class="empty">Could not load reversal register: ${htmlSafe(error.message||'Unknown error')}</td></tr>`;
     if(stats)stats.innerHTML='<div class="sbox"><div class="sl">Setup Required</div><div class="sv" style="font-size:22px;color:var(--red);">SQL</div><div class="ss">Run the Reversed status SQL first</div></div>';
     return;
   }
@@ -4309,7 +4323,7 @@ async function loadReversalRegister(){
       <div class="sbox"><div class="sl">Appointments</div><div class="sv">${appts.length}</div><div class="ss">recorded history</div></div>
       <div class="sbox"><div class="sl">Seen Records</div><div class="sv">${seenCount}</div><div class="ss" style="color:var(--green)">attended outcomes</div></div>`;
   }
-  if(!patients.length){tbody.innerHTML='<tr><td colspan="10" class="empty">No reversed patients found for this filter.</td></tr>';return;}
+  if(!patients.length){tbody.innerHTML='<tr><td colspan="9" class="empty">No reversed patients found for this filter.</td></tr>';return;}
   tbody.innerHTML=patients.map(p=>{
     const latest=latestByPatient[p.id];
     const nm=`${p.first_name||''} ${p.surname||''}`.trim()||'Unnamed patient';
@@ -4319,8 +4333,9 @@ async function loadReversalRegister(){
       <td style="font-family:monospace;font-size:12px;"><strong>${htmlSafe(p.id_card||'—')}</strong></td>
       <td><strong>${htmlSafe(p.surname||'—')}</strong>${followupStatusBadge('reversed',true)}<br/><span style="font-size:10px;color:var(--muted);">Click row for full history</span></td>
       <td><strong>${htmlSafe(p.first_name||'—')}</strong></td>
-      <td>${htmlSafe(p.phone_number||'—')}</td>
       <td>${htmlSafe(p.followup_owner||'Common')}</td>
+      <td>${htmlSafe(p.consultant||'—')}</td>
+      <td><strong>${patientDateNumericText(p.reversal_date)}</strong></td>
       <td>${htmlSafe(latestLabel)}</td>
       <td>${htmlSafe(nurse)}</td>
       <td onclick="event.stopPropagation();"><button class="ncb-btn" onclick="openFollowupHistory('${p.id}')" style="background:#edf1f5;color:var(--navy);">History</button><button class="ncb-btn" onclick="markReversalActive('${p.id}')" style="margin-left:4px;background:#e8f5f4;color:var(--teal);">Move to Active</button></td>
