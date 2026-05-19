@@ -33,17 +33,42 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .tb-date{font-size:12px;color:rgba(255,255,255,.55);margin-left:16px;}
 .btn-so{padding:6px 14px;border:1px solid rgba(255,255,255,.3);border-radius:6px;color:rgba(255,255,255,.75);background:none;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;}
 .btn-so:hover{background:rgba(255,255,255,.1);}
-.tabs{position:fixed;top:52px;left:0;right:0;background:white;border-bottom:2px solid var(--border);display:flex;padding:0 24px;z-index:200;height:44px;box-shadow:0 2px 4px rgba(0,0,0,.05);overflow:visible;}
-.tab{padding:0 16px;height:44px;display:flex;align-items:center;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .2s;white-space:nowrap;}
+.tabs{position:fixed;top:52px;left:0;right:0;background:white;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:8px;padding:0 24px;z-index:200;height:44px;box-shadow:0 2px 4px rgba(0,0,0,.05);overflow:visible;}
+.tab-group{position:relative;height:44px;display:flex;align-items:center;}
+.tab{padding:0 16px;height:44px;display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;border:none;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .2s;white-space:nowrap;background:transparent;font-family:'Inter',sans-serif;}
 .tab:hover{color:var(--navy);}
-.tab.active{color:var(--navy);border-bottom-color:var(--teal);font-weight:600;}
-.tab-dd{position:relative;height:44px;display:flex;align-items:stretch;flex:0 0 auto;}
-.tab-dd .tab{gap:6px;}
-.tab-caret{font-size:10px;color:var(--muted);margin-left:2px;}
-.tab-dd-menu{display:none;position:absolute;top:44px;left:0;min-width:230px;background:white;border:1px solid var(--border);border-radius:0 0 12px 12px;box-shadow:0 10px 28px rgba(26,46,74,.16);padding:6px;z-index:650;}
-.tab-dd:hover .tab-dd-menu,.tab-dd:focus-within .tab-dd-menu{display:block;}
-.tab-dd-item{width:100%;display:flex;align-items:center;gap:8px;padding:10px 12px;border:none;border-radius:8px;background:white;color:var(--navy);font-size:12px;font-weight:700;text-align:left;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap;}
-.tab-dd-item:hover{background:#e8f5f4;color:var(--teal);}
+.tab.active{color:var(--navy);border-bottom-color:var(--teal);font-weight:800;}
+.tab-caret{font-size:10px;line-height:1;transition:transform .18s;color:var(--muted);}
+.tab-group.open .tab-caret,.tab-group:hover .tab-caret{transform:rotate(180deg);}
+.tab-dd-menu{position:absolute;top:44px;left:0;min-width:220px;background:white;border:1px solid var(--border);border-top:none;border-radius:0 0 12px 12px;box-shadow:0 12px 28px rgba(26,46,74,.14);padding:7px;display:none;z-index:500;}
+.tab-group.open .tab-dd-menu,.tab-group:hover .tab-dd-menu{display:block;}
+.tab-dd-item{width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;text-align:left;padding:10px 12px;border:none;border-radius:9px;background:white;color:var(--navy);font-size:12px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;white-space:nowrap;}
+.tab-dd-item:hover{background:#f5faf9;color:var(--teal);}
+.tab-dd-item.active{background:#e8f5f4;color:var(--teal);}
+.tab-dd-item small{font-size:10px;color:var(--muted);font-weight:600;}
+.tab-single{flex:0 0 auto;}
+@media(max-width:700px){.tabs{padding:0 8px;gap:2px;justify-content:space-between;overflow:visible;}.tab-group{flex:1;min-width:0;}.tab{width:100%;justify-content:center;padding:0 6px;font-size:11px;}.tab-single{width:auto;min-width:78px;font-size:10px;}.tab-dd-menu{position:fixed;top:96px;left:10px;right:10px;min-width:auto;border-top:1px solid var(--border);border-radius:12px;}.tab-dd-item{font-size:12px;padding:11px 12px;}}
+
+/* NEW PATIENT PAGE */
+.new-patient-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;}
+.new-patient-grid .fg{margin-bottom:0;}
+.new-patient-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;}
+.new-patient-actions .btn-save,.new-patient-actions .btn-cancel{flex:0 0 auto;min-width:150px;}
+.new-patient-note{margin-top:14px;padding:10px 12px;border-radius:9px;font-size:12px;font-weight:700;background:#f8fafc;color:var(--muted);border:1px solid var(--border);}
+.new-patient-note.success{background:#e8f5f4;color:var(--teal);border-color:#b7ddd9;}
+.new-patient-note.error{background:#f8d7da;color:#721c24;border-color:#f1b0b7;}
+
+
+/* PATIENT REGISTER LIST */
+.patient-status-chip{display:inline-block;padding:4px 9px;border-radius:14px;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.2px;white-space:nowrap;}
+.patient-status-chip.active{background:#dcfce7;color:#166534;border:1px solid #86efac;}
+.patient-status-chip.inpatient{background:#fef3c7;color:#92400e;border:1px solid #fcd34d;}
+.patient-status-chip.reversed{background:#dbeafe;color:#1e40af;border:1px solid #93c5fd;}
+.patient-status-chip.deceased{background:#e5e7eb;color:#374151;border:1px solid #9ca3af;}
+.patient-status-chip.relocated_overseas{background:#f3e8ff;color:#6b21a8;border:1px solid #d8b4fe;}
+.patient-status-chip.relocated_gozo{background:#ecfeff;color:#155e75;border:1px solid #67e8f9;}
+.patient-register-toolbar input{padding:7px 12px;border:1.5px solid var(--border);border-radius:8px;background:white;font-size:12px;font-family:'Inter',sans-serif;outline:none;min-width:240px;}
+.patient-register-toolbar input:focus{border-color:var(--teal);}
 
 /* FOLLOW-UP CENTRE NAVIGATION TILES */
 .centre-hub{background:linear-gradient(135deg,#ffffff 0%,#f8fffd 100%);border:1px solid var(--border);border-radius:18px;padding:18px 20px;margin-bottom:18px;box-shadow:0 8px 24px rgba(13,115,119,.08);}
@@ -81,6 +106,8 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .phdr p{font-size:12px;color:var(--muted);margin-top:3px;}
 .btn-add{padding:8px 18px;background:var(--teal);color:white;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;}
 .btn-add:hover{opacity:.85;}
+.btn-return{background:var(--navy)!important;}
+.btn-return:hover{opacity:.85;}
 
 /* LEGEND */
 .legend{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px;padding:10px 14px;background:white;border-radius:8px;border:1px solid var(--border);}
@@ -396,6 +423,9 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .followup-status-badge.paused{background:#fff7ed;color:#9a3412;border:1px solid #fed7aa;}
 .followup-status-badge.deceased{background:#e5e7eb;color:#374151;border:1px solid #9ca3af;}
 .followup-status-badge.reversed{background:#dbeafe;color:#1e40af;border:1px solid #93c5fd;}
+.followup-status-badge.inpatient{background:#fef3c7;color:#92400e;border:1px solid #fcd34d;}
+.followup-status-badge.relocated_overseas{background:#f3e8ff;color:#6b21a8;border:1px solid #d8b4fe;}
+.followup-status-badge.relocated_gozo{background:#ecfeff;color:#155e75;border:1px solid #67e8f9;}
 .followup-type-badge{display:inline-block;width:max-content;margin:5px 4px 2px 0;padding:3px 9px;border-radius:12px;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.2px;white-space:nowrap;}
 .followup-type-badge.follow_up{background:#e0f2fe;color:#075985;border:1px solid #7dd3fc;}
 .followup-type-badge.new_case{background:#fef3c7;color:#92400e;border:1px solid #fcd34d;}
@@ -446,6 +476,8 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .registry-lookup-note.new{background:#fff8e1;color:#856404;border-color:#f2df9f;}
 .registry-lookup-note.error{background:#f8d7da;color:#721c24;border-color:#f1b0b7;}
 
+.locked-field,.fg input.locked-field:disabled{background:#f8fafc!important;color:#1a2e4a!important;cursor:not-allowed!important;opacity:1!important;user-select:none!important;pointer-events:none!important;}
+
 </style>
 </head>
 <body>
@@ -472,61 +504,110 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
     </div>
     <button class="btn-so" onclick="doLogout()">Sign Out</button>
   </div>
-  <div class="tabs">
-    <div class="tab active" data-tab="roster" onclick="switchTab('roster',this)">Monthly Roster</div>
-    <div class="tab-dd">
-      <div class="tab" data-tab="appointments" onclick="switchTab('appointments',this)">Patient Appointments <span class="tab-caret">▾</span></div>
+  <div class="tabs grouped-tabs">
+    <button type="button" class="tab tab-single" data-tab="new-patient" onclick="switchTab('new-patient',this)">Add Patient</button>
+    <div class="tab-group">
+      <button type="button" class="tab" data-tabs="patients-all,patients-active,patients-inpatients,patients-reversed,patients-deceased,patients-relocated-overseas,patients-relocated-gozo" onclick="toggleTabGroup(event,this)">Patients <span class="tab-caret">▾</span></button>
       <div class="tab-dd-menu">
-        <button class="tab-dd-item" onclick="switchTab('appointments',document.querySelector('.tab[data-tab=appointments]'))">▦ Daily Appointments</button>
-        <button class="tab-dd-item" onclick="switchTab('dntu-policy',document.querySelector('.tab[data-tab=appointments]'))">△ DNTU</button>
-        <button class="tab-dd-item" onclick="switchTab('staff-audit',document.querySelector('.tab[data-tab=appointments]'))">☑ Follow-up Planning</button>
+        <button type="button" class="tab-dd-item" data-tab="patients-all" onclick="switchTab('patients-all',this)">All Patients <small>Full register</small></button>
+        <button type="button" class="tab-dd-item" data-tab="patients-active" onclick="switchTab('patients-active',this)">Active Patients <small>Current</small></button>
+        <button type="button" class="tab-dd-item" data-tab="patients-inpatients" onclick="switchTab('patients-inpatients',this)">Inpatients <small>Ward</small></button>
+        <button type="button" class="tab-dd-item" data-tab="patients-reversed" onclick="switchTab('patients-reversed',this)">Reversed <small>Register</small></button>
+        <button type="button" class="tab-dd-item" data-tab="patients-deceased" onclick="switchTab('patients-deceased',this)">Deceased <small>Register</small></button>
+        <button type="button" class="tab-dd-item" data-tab="patients-relocated-overseas" onclick="switchTab('patients-relocated-overseas',this)">Relocated Overseas <small>Register</small></button>
+        <button type="button" class="tab-dd-item" data-tab="patients-relocated-gozo" onclick="switchTab('patients-relocated-gozo',this)">Relocated to Gozo <small>Register</small></button>
       </div>
     </div>
-    <div class="tab" data-tab="cod" onclick="switchTab('cod',this)">Change of Duty</div>
-    <div class="tab" data-tab="ot-audit" onclick="switchTab('ot-audit',this)">OT Audit</div>
-    <div class="tab" data-tab="clinic-audit" onclick="switchTab('clinic-audit',this)">Clinic Audit</div>
-    <div class="tab" data-tab="reports" onclick="switchTab('reports',this)">Reports &amp; Charts</div>
+    <div class="tab-group">
+      <button type="button" class="tab active" data-tabs="roster,cod,ot-audit" onclick="toggleTabGroup(event,this)">Staffing <span class="tab-caret">▾</span></button>
+      <div class="tab-dd-menu">
+        <button type="button" class="tab-dd-item active" data-tab="roster" onclick="switchTab('roster',this)">Monthly Roster <small>Roster</small></button>
+        <button type="button" class="tab-dd-item" data-tab="cod" onclick="switchTab('cod',this)">Change of Duty <small>Swaps</small></button>
+        <button type="button" class="tab-dd-item" data-tab="ot-audit" onclick="switchTab('ot-audit',this)">Over Time Audit <small>OT</small></button>
+      </div>
+    </div>
+    <div class="tab-group">
+      <button type="button" class="tab" data-tabs="appointments,staff-audit,dntu-policy,clinic-audit" onclick="toggleTabGroup(event,this)">Appointments <span class="tab-caret">▾</span></button>
+      <div class="tab-dd-menu">
+        <button type="button" class="tab-dd-item" data-tab="appointments" onclick="switchTab('appointments',this)">Patient Appointments <small>Book</small></button>
+        <button type="button" class="tab-dd-item" data-tab="staff-audit" onclick="switchTab('staff-audit',this)">Follow-up Planning <small>Owners</small></button>
+        <button type="button" class="tab-dd-item" data-tab="dntu-policy" onclick="switchTab('dntu-policy',this)">DNTU <small>Tracking</small></button>
+        <button type="button" class="tab-dd-item" data-tab="clinic-audit" onclick="switchTab('clinic-audit',this)">Clinic Audit <small>Calendar</small></button>
+      </div>
+    </div>
+    <div class="tab-group">
+      <button type="button" class="tab" data-tabs="reports,report-followups,report-active-patients,report-deceased,report-reversed,report-relocated-overseas,report-relocated-gozo,report-patients" onclick="toggleTabGroup(event,this)">Reports <span class="tab-caret">▾</span></button>
+      <div class="tab-dd-menu">
+        <button type="button" class="tab-dd-item" data-tab="reports" onclick="switchTab('reports',this)">Reports &amp; Charts <small>KPIs</small></button>
+        <button type="button" class="tab-dd-item" data-tab="report-followups" onclick="switchTab('report-followups',this)">Follow-Ups <small>Due lists</small></button>
+        <button type="button" class="tab-dd-item" data-tab="report-active-patients" onclick="switchTab('report-active-patients',this)">Active Patients <small>Register</small></button>
+        <button type="button" class="tab-dd-item" data-tab="report-deceased" onclick="switchTab('report-deceased',this)">Deceased <small>Register</small></button>
+        <button type="button" class="tab-dd-item" data-tab="report-reversed" onclick="switchTab('report-reversed',this)">Reversed <small>Register</small></button>
+        <button type="button" class="tab-dd-item" data-tab="report-relocated-overseas" onclick="switchTab('report-relocated-overseas',this)">Relocated Overseas <small>Register</small></button>
+        <button type="button" class="tab-dd-item" data-tab="report-relocated-gozo" onclick="switchTab('report-relocated-gozo',this)">Relocated to Gozo <small>Register</small></button>
+        <button type="button" class="tab-dd-item" data-tab="report-patients" onclick="switchTab('report-patients',this)">Patients <small>Booked period</small></button>
+      </div>
+    </div>
   </div>
 
   <div class="main">
 
-    <!-- FOLLOW-UP CENTRE NAVIGATION -->
-    <div class="centre-hub" id="followup-centre-nav">
-      <div class="centre-hub-head">
-        <div class="centre-hub-title">
-          <div class="centre-hub-icon">✓</div>
-          <div>
-            <h1>Follow-Up Centre</h1>
-            <p>Appointments, DNTU, follow-up planning, clinic audit, OT audit and rosters</p>
-          </div>
-        </div>
-        <button class="centre-refresh" onclick="refreshActivePage()">↻ Refresh</button>
+    <!-- NEW PATIENT -->
+    <div class="page" id="page-new-patient">
+      <div class="phdr">
+        <div><h2>Add Patient</h2><p>Add a patient to the registry. If the ID card already exists, the saved patient record will be updated instead of duplicated.</p></div>
       </div>
-      <div class="centre-nav-grid">
-        <button class="nav-tile active" data-tab="roster" onclick="switchTab('roster',this)">
-          <span class="nav-tile-icon">📅</span><span class="nav-tile-text"><span class="nav-tile-label">Monthly Roster</span><span class="nav-tile-sub">Core staff, OT and TIL</span></span><span class="nav-tile-arrow">›</span>
-        </button>
-        <button class="nav-tile" data-tab="appointments" onclick="switchTab('appointments',this)">
-          <span class="nav-tile-icon">▦</span><span class="nav-tile-text"><span class="nav-tile-label">Patient Appointments</span><span class="nav-tile-sub">Book, rebook and view clinic</span></span><span class="nav-tile-arrow">›</span>
-        </button>
-        <button class="nav-tile tile-red" data-tab="dntu-policy" onclick="switchTab('dntu-policy',this)">
-          <span class="nav-tile-icon">△</span><span class="nav-tile-text"><span class="nav-tile-label">DNTU</span><span class="nav-tile-sub">Non-attendance tracking</span></span><span class="nav-tile-arrow">›</span>
-        </button>
-        <button class="nav-tile tile-green" data-tab="staff-audit" onclick="switchTab('staff-audit',this)">
-          <span class="nav-tile-icon">☑</span><span class="nav-tile-text"><span class="nav-tile-label">Follow-up Planning</span><span class="nav-tile-sub">Owners, due months and lists</span></span><span class="nav-tile-arrow">›</span>
-        </button>
-        <button class="nav-tile tile-gold" data-tab="ot-audit" onclick="switchTab('ot-audit',this)">
-          <span class="nav-tile-icon">⏱</span><span class="nav-tile-text"><span class="nav-tile-label">OT Audit</span><span class="nav-tile-sub">Booked and cancelled OT</span></span><span class="nav-tile-arrow">›</span>
-        </button>
-        <button class="nav-tile tile-purple" data-tab="clinic-audit" onclick="switchTab('clinic-audit',this)">
-          <span class="nav-tile-icon">▣</span><span class="nav-tile-text"><span class="nav-tile-label">Clinic Audit</span><span class="nav-tile-sub">Calendar and clinical activity</span></span><span class="nav-tile-arrow">›</span>
-        </button>
-        <button class="nav-tile tile-navy" data-tab="reports" onclick="switchTab('reports',this)">
-          <span class="nav-tile-icon">◔</span><span class="nav-tile-text"><span class="nav-tile-label">Reports &amp; Charts</span><span class="nav-tile-sub">KPIs, charts and print lists</span></span><span class="nav-tile-arrow">›</span>
-        </button>
-        <button class="nav-tile tile-gold" data-tab="cod" onclick="switchTab('cod',this)">
-          <span class="nav-tile-icon">⇄</span><span class="nav-tile-text"><span class="nav-tile-label">Change of Duty</span><span class="nav-tile-sub">Normal, Sunday and public holiday swaps</span></span><span class="nav-tile-arrow">›</span>
-        </button>
+      <div class="card">
+        <div class="card-title">Patient Details</div>
+        <div class="new-patient-grid">
+          <div class="fg"><label>ID Card Number *</label><input type="text" id="np-id" placeholder="Enter ID card" onblur="lookupNewPatientById()" onkeydown="if(event.key==='Enter'){event.preventDefault();lookupNewPatientById();}"/></div>
+          <div class="fg"><label>First Name *</label><input type="text" id="np-fn" placeholder="First name"/></div>
+          <div class="fg"><label>Surname *</label><input type="text" id="np-sn" placeholder="Surname"/></div>
+          <div class="fg"><label>Phone Number</label><input type="tel" id="np-phone" placeholder="Phone number"/></div>
+          <div class="fg"><label>Booking Type / Episode</label><select id="np-followup-type"><option value="new_case">New case</option><option value="follow_up">Follow-up</option></select></div>
+          <div class="fg"><label>Follow-up Owner</label><select id="np-followup-owner"><option value="Common">Common</option><option value="Jason">Jason</option><option value="Jacqueline">Jacqueline</option><option value="Lorraine">Lorraine</option></select></div>
+          <div class="fg"><label>Follow-up Status</label><select id="np-followup-status"><option value="active">Active</option><option value="inpatient">Inpatient</option><option value="awaiting_feedback">Awaiting Feedback</option><option value="paused">Paused</option><option value="deceased">Deceased</option><option value="reversed">Reversed</option><option value="relocated_overseas">Relocated Overseas</option><option value="relocated_gozo">Relocated to Gozo</option></select></div>
+          <div class="fg"><label>Follow-up Due Month</label><select id="np-followup-month"><option value="">No Due Month</option><option value="1">January</option><option value="2">February</option><option value="3">March</option><option value="4">April</option><option value="5">May</option><option value="6">June</option><option value="7">July</option><option value="8">August</option><option value="9">September</option><option value="10">October</option><option value="11">November</option><option value="12">December</option></select></div>
+          <div class="fg"><label>Follow-up Due Year</label><select id="np-followup-year"></select></div>
+        </div>
+        <div id="np-reg-note" class="new-patient-note">Enter an ID card to check whether the patient already exists.</div>
+        <div class="new-patient-actions">
+          <button class="btn-save" onclick="saveNewPatientTab()">Save Patient</button>
+          <button class="btn-cancel" onclick="clearNewPatientForm()">Clear Form</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PATIENTS REGISTER -->
+    <div class="page" id="page-patients-list">
+      <div class="phdr">
+        <div><h2 id="patients-list-title">Patients</h2><p id="patients-list-subtitle">View patient groups from the registry.</p></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+          <button class="btn-add btn-return" onclick="returnToPatientsOverview()">← Return</button>
+          <button class="btn-add" onclick="loadPatientsList()">Refresh</button>
+        </div>
+      </div>
+      <div class="followup-toolbar patient-register-toolbar">
+        <label>Patient Group:</label>
+        <select id="patients-list-filter" onchange="switchTab(this.value)">
+          <option value="patients-all">All Patients</option>
+          <option value="patients-active">Active Patients</option>
+          <option value="patients-inpatients">Inpatients</option>
+          <option value="patients-reversed">Reversed</option>
+          <option value="patients-deceased">Deceased</option>
+          <option value="patients-relocated-overseas">Relocated Overseas</option>
+          <option value="patients-relocated-gozo">Relocated to Gozo</option>
+        </select>
+        <label>Search:</label>
+        <input type="text" id="patients-list-search" placeholder="Search name, ID card, phone, locality..." oninput="renderPatientsList()"/>
+      </div>
+      <div class="srow" id="patients-list-stats"></div>
+      <div class="card">
+        <div class="card-title" id="patients-list-card-title">Patient Register</div>
+        <div style="overflow-x:auto;"><table class="dt">
+          <thead id="patients-list-head"><tr><th>Patient</th><th>ID Card</th><th>Phone</th><th>Status</th><th>Owner</th><th>Due Month</th><th>Last Outcome</th><th>Next Follow-up</th><th>Locality</th><th>Actions</th></tr></thead>
+          <tbody id="patients-list-tbody"><tr><td colspan="10" class="empty">Select a patient group.</td></tr></tbody>
+        </table></div>
       </div>
     </div>
 
@@ -763,13 +844,13 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
     <!-- OT AUDIT -->
     <div class="page" id="page-ot-audit">
       <div class="phdr">
-        <div><h2>OT Audit</h2><p>Overtime and bank/extra support records, including booked, cancelled and printable audit history.</p></div>
+        <div><h2>Over Time Audit</h2><p>Overtime and bank/extra support records, including booked, cancelled and printable audit history.</p></div>
         <button class="btn-add" onclick="loadOvertimeAudit()">Refresh</button>
       </div>
       <div class="card mt16">
         <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px;">
-          <div class="card-title" style="margin-bottom:0;">⏰ Overtime Audit</div>
-          <button class="btn-add" onclick="printOvertimeAudit()" style="padding:7px 14px;">Print OT Audit</button>
+          <div class="card-title" style="margin-bottom:0;">⏰ Over Time Audit</div>
+          <button class="btn-add" onclick="printOvertimeAudit()" style="padding:7px 14px;">Print Over Time Audit</button>
         </div>
         <div class="report-note">This shows overtime/TIL support records, including cancelled OT entries that are kept for audit instead of disappearing.</div>
         <div class="filter-row" style="margin-bottom:10px;">
@@ -797,7 +878,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
         <div id="ot-audit-summary" class="report-note"></div>
         <div style="overflow-x:auto;"><table class="dt" id="ot-audit-table">
           <thead><tr><th>Date</th><th>Nurse</th><th>Type</th><th>Start</th><th>Until</th><th>Hours</th><th>Status</th><th>Cancelled By</th><th>Notes</th></tr></thead>
-          <tbody id="ot-audit-tbody"><tr><td colspan="9" class="empty">Loading overtime audit...</td></tr></tbody>
+          <tbody id="ot-audit-tbody"><tr><td colspan="9" class="empty">Loading Over Time Audit...</td></tr></tbody>
         </table></div>
       </div>
     </div>
@@ -918,6 +999,38 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 
       <div class="kpi-row" id="report-kpis"></div>
 
+
+
+
+
+
+    <!-- REPORT PATIENTS BOOKED -->
+    <div class="page" id="page-report-patients">
+      <div class="phdr">
+        <div>
+          <h2>Patients</h2>
+          <p>Patients booked for the selected month or period.</p>
+        </div>
+        <button class="btn-add" onclick="printReportPatientList()">Print</button>
+      </div>
+      <div class="report-filters">
+        <label>Year:</label>
+        <select id="rep-pat-year" onchange="loadReportPatientsPage()">
+          <option value="2025">2025</option>
+          <option value="2026">2026</option>
+          <option value="2027">2027</option>
+          <option value="2028">2028</option>
+        </select>
+        <label>Month:</label>
+        <select id="rep-pat-month" onchange="loadReportPatientsPage()">
+          <option value="">Full Year</option>
+          <option value="01">January</option><option value="02">February</option><option value="03">March</option>
+          <option value="04">April</option><option value="05">May</option><option value="06">June</option>
+          <option value="07">July</option><option value="08">August</option><option value="09">September</option>
+          <option value="10">October</option><option value="11">November</option><option value="12">December</option>
+        </select>
+        <button onclick="loadReportPatientsPage()">Update Patient Report</button>
+      </div>
       <div class="report-card wide" style="min-height:auto;">
         <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px;">
           <h3 style="margin:0;">👥 Patients Booked for Selected Month / Period</h3>
@@ -952,8 +1065,30 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
           <tbody id="rep-patient-tbody"><tr><td colspan="10" class="empty">Select a period to load patients.</td></tr></tbody>
         </table></div>
       </div>
+    </div>
 
-
+    <!-- REPORT PATIENT GROUPS -->
+    <div class="page" id="page-report-patient-group">
+      <div class="phdr">
+        <div><h2 id="report-patient-group-title">Patient Report</h2><p id="report-patient-group-subtitle">Printable patient report.</p></div>
+        <button class="btn-add" onclick="printReportPatientGroup()">Print</button>
+      </div>
+      <div class="followup-toolbar patient-register-toolbar">
+        <label>Search:</label>
+        <input type="text" id="report-patient-group-search" placeholder="Search patient report..." oninput="renderReportPatientGroup()"/>
+      </div>
+      <div class="srow" id="report-patient-group-stats"></div>
+      <div class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px;">
+          <div class="card-title" id="report-patient-group-card-title" style="margin-bottom:0;">Patient Report</div>
+          <button class="btn-add" onclick="printReportPatientGroup()" style="padding:7px 14px;">Print</button>
+        </div>
+        <div style="overflow-x:auto;"><table class="dt" id="report-patient-group-table">
+          <thead id="report-patient-group-head"><tr><th>Patient</th><th>ID Card</th><th>Phone</th><th>Status</th><th>Owner</th><th>Due Month</th><th>Last Outcome</th><th>Next Follow-up</th><th>Locality</th></tr></thead>
+          <tbody id="report-patient-group-tbody"><tr><td colspan="9" class="empty">Select a report.</td></tr></tbody>
+        </table></div>
+      </div>
+    </div>
     </div>
 
   </div>
@@ -964,8 +1099,8 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 
 <script>
 const SB=supabase.createClient(
-  'https://gkixdimdmechujeqzfkl.supabase.co',
-  'sb_publishable_o3y-iFcJ80dKRfrHA3mHuw_XI2qqjvS'
+  'https://jucunagrwqkzdfajmblg.supabase.co',
+  'sb_publishable_oaTKxc-aLZB2J6aE-_unMw_wFI_WMIE'
 );
 
 let holidays={},staffList=[],rCache={};
@@ -985,6 +1120,11 @@ const FOLLOWUP_OWNER_FILTERS=['Common','All Patients','Jacqueline','Jason','Lorr
 const AUTO_AVAILABILITY_VALUE='auto_availability';
 let reportCharts={};
 let reportPatientRows=[];
+const REPORT_PATIENT_GROUP_TABS=['report-followups','report-active-patients','report-deceased','report-reversed','report-relocated-overseas','report-relocated-gozo'];
+let currentReportPatientGroup='report-followups';
+let reportPatientGroupRows=[];
+let currentPatientsTab='patients-active';
+let patientsListRows=[];
 
 function normaliseFollowupOwner(owner){
   const raw=String(owner||'Common').trim();
@@ -1140,6 +1280,21 @@ function mapById(rows){
   (rows||[]).forEach(r=>{m[String(r.id)]=r;});
   return m;
 }
+async function fetchRowsByIdsInChunks(tableName, selectColumns, ids, chunkSize=80){
+  const out=[];
+  const cleanIds=uniqueNonEmpty(ids);
+  for(let i=0;i<cleanIds.length;i+=chunkSize){
+    const batch=cleanIds.slice(i,i+chunkSize);
+    if(!batch.length)continue;
+    const{data,error}=await SB.from(tableName).select(selectColumns).in('id',batch);
+    if(error){
+      console.error(`Could not load ${tableName} batch:`,error);
+      continue;
+    }
+    out.push(...(data||[]));
+  }
+  return out;
+}
 async function enrichAppointments(rows){
   const base=rows||[];
   const patientIds=uniqueNonEmpty(base.map(a=>a.patient_id));
@@ -1148,17 +1303,24 @@ async function enrichAppointments(rows){
 
   let patientsMap={}, staffMap={}, bankMap={};
 
+  // Appointment Outcomes can load hundreds of appointments at once. Supabase .in() with hundreds of IDs
+  // can exceed the browser/request URL limit, which makes patient names/ID cards/phones appear blank.
+  // Load related records in small batches so every appointment can be linked back to the patient registry.
   if(patientIds.length){
-    const{data}=await SB.from('patients').select('id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type').in('id',patientIds);
-    patientsMap=mapById(data||[]);
+    const patients=await fetchRowsByIdsInChunks(
+      'patients',
+      'id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type',
+      patientIds
+    );
+    patientsMap=mapById(patients||[]);
   }
   if(staffIds.length){
-    const{data}=await SB.from('staff').select('id,full_name,role').in('id',staffIds);
-    staffMap=mapById(data||[]);
+    const staff=await fetchRowsByIdsInChunks('staff','id,full_name,role',staffIds);
+    staffMap=mapById(staff||[]);
   }
   if(bankIds.length){
-    const{data}=await SB.from('bank_staff').select('id,full_name,role').in('id',bankIds);
-    bankMap=mapById(data||[]);
+    const bank=await fetchRowsByIdsInChunks('bank_staff','id,full_name,role',bankIds);
+    bankMap=mapById(bank||[]);
   }
 
   return base.map(a=>({
@@ -1218,32 +1380,149 @@ async function startApp(){
   populateCODDropdowns();
   loadCOD();
   const ry=document.getElementById('rep-year'); if(ry) ry.value=String(new Date().getFullYear());
+  const rpy=document.getElementById('rep-pat-year'); if(rpy) rpy.value=String(new Date().getFullYear());
+  initNewPatientYearOptions();
 }
 
+function initNewPatientYearOptions(){
+  const el=document.getElementById('np-followup-year');
+  if(!el)return;
+  const now=new Date().getFullYear();
+  el.innerHTML=[now,now+1,now+2,now+3].map(y=>`<option value="${y}">${y}</option>`).join('');
+  el.value=String(now);
+}
+function newPatientNote(text,type=''){
+  const note=document.getElementById('np-reg-note');
+  if(!note)return;
+  note.className='new-patient-note'+(type?` ${type}`:'');
+  note.textContent=text;
+}
+function clearNewPatientForm(){
+  ['np-id','np-fn','np-sn','np-phone'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  const type=document.getElementById('np-followup-type'); if(type)type.value='new_case';
+  const owner=document.getElementById('np-followup-owner'); if(owner)owner.value='Common';
+  const status=document.getElementById('np-followup-status'); if(status)status.value='active';
+  const month=document.getElementById('np-followup-month'); if(month)month.value='';
+  initNewPatientYearOptions();
+  newPatientNote('Enter an ID card to check whether the patient already exists.');
+}
+async function lookupNewPatientById(){
+  const idEl=document.getElementById('np-id');
+  if(!idEl)return null;
+  const id=normaliseIdCard(idEl.value);
+  idEl.value=id;
+  if(!id){newPatientNote('Enter an ID card to check whether the patient already exists.');return null;}
+  newPatientNote('Checking saved patient registry...');
+  const{data,error}=await SB.from('patients')
+    .select('id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date,stoma_type_summary')
+    .ilike('id_card',id)
+    .maybeSingle();
+  if(error){
+    console.error('New patient lookup error:',error);
+    newPatientNote('Could not check the patient registry. You can still save, but please verify the details.','error');
+    return null;
+  }
+  if(data?.id){
+    document.getElementById('np-fn').value=data.first_name||'';
+    document.getElementById('np-sn').value=data.surname||'';
+    document.getElementById('np-phone').value=data.phone_number||'';
+    const type=document.getElementById('np-followup-type'); if(type)type.value=normaliseFollowupType(data.followup_type||'follow_up');
+    const owner=document.getElementById('np-followup-owner'); if(owner)owner.value=normaliseFollowupOwner(data.followup_owner||'Common');
+    const status=document.getElementById('np-followup-status'); if(status)status.value=normaliseFollowupStatus(data.followup_status||'active');
+    const month=document.getElementById('np-followup-month'); if(month)month.value=data.followup_due_month?String(data.followup_due_month):'';
+    const year=document.getElementById('np-followup-year');
+    if(year && data.followup_year){
+      if(![...year.options].some(o=>o.value===String(data.followup_year))){
+        year.insertAdjacentHTML('afterbegin',`<option value="${data.followup_year}">${data.followup_year}</option>`);
+      }
+      year.value=String(data.followup_year);
+    }
+    newPatientNote(`Saved patient found: ${(data.first_name||'')} ${(data.surname||'')}. Saving will update this existing record.`, normaliseFollowupStatus(data.followup_status)==='deceased'?'error':'success');
+    return data;
+  }
+  const type=document.getElementById('np-followup-type'); if(type)type.value='new_case';
+  newPatientNote('No saved patient found for this ID card. A new patient record will be created.','success');
+  return null;
+}
+async function saveNewPatientTab(){
+  const fn=document.getElementById('np-fn')?.value.trim()||'';
+  const sn=document.getElementById('np-sn')?.value.trim()||'';
+  const id=normaliseIdCard(document.getElementById('np-id')?.value||'');
+  const phone=document.getElementById('np-phone')?.value.trim()||'';
+  if(!id||!fn||!sn){alert('Please enter ID card, first name and surname.');return;}
+  const monthRaw=document.getElementById('np-followup-month')?.value||'';
+  const yearRaw=document.getElementById('np-followup-year')?.value||'';
+  const payload={
+    followup_type:document.getElementById('np-followup-type')?.value||'new_case',
+    followup_owner:document.getElementById('np-followup-owner')?.value||'Common',
+    followup_status:document.getElementById('np-followup-status')?.value||'active',
+    followup_due_month:monthRaw?Number(monthRaw):null,
+    followup_year:yearRaw?Number(yearRaw):null
+  };
+  const saved=await saveOrUpdatePatientByIdCard(id,fn,sn,phone,payload);
+  if(saved.error||!saved.patient?.id){
+    newPatientNote('Could not save patient: '+(saved.error?.message||'Unknown error'),'error');
+    return;
+  }
+  newPatientNote(`Patient saved: ${fn} ${sn} (${id}).`,'success');
+  if(document.getElementById('page-staff-audit')?.classList.contains('active'))loadStaffAudit();
+  if(document.getElementById('page-dntu-policy')?.classList.contains('active'))loadDntuPolicy();
+  if(document.getElementById('page-reports')?.classList.contains('active'))loadReports();
+}
+
+function closeTabGroups(){
+  document.querySelectorAll('.tab-group.open').forEach(g=>g.classList.remove('open'));
+}
+function toggleTabGroup(event,btn){
+  event.preventDefault();
+  event.stopPropagation();
+  const group=btn.closest('.tab-group');
+  const wasOpen=group?.classList.contains('open');
+  closeTabGroups();
+  if(group&&!wasOpen)group.classList.add('open');
+}
+document.addEventListener('click',e=>{if(!e.target.closest('.tab-group'))closeTabGroups();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeTabGroups();});
+
 function switchTab(name,el){
+  if(!name)name='roster';
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  const page=document.getElementById('page-'+name);
+  const requestedName=String(name);
+  const reportGroupPage=REPORT_PATIENT_GROUP_TABS.includes(requestedName)?'report-patient-group':requestedName;
+  const pageName=requestedName.startsWith('patients-')?'patients-list':reportGroupPage;
+  const page=document.getElementById('page-'+pageName);
   if(page)page.classList.add('active');
-  const topTabName=['staff-audit','dntu-policy'].includes(name)?'appointments':name;
-  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===topTabName));
+  document.querySelectorAll('.tab').forEach(t=>{
+    const groupedTabs=String(t.dataset.tabs||t.dataset.tab||'').split(',').map(x=>x.trim()).filter(Boolean);
+    t.classList.toggle('active',groupedTabs.includes(name));
+  });
+  document.querySelectorAll('.tab-dd-item').forEach(t=>t.classList.toggle('active',t.dataset.tab===name));
   document.querySelectorAll('.nav-tile').forEach(t=>t.classList.toggle('active',t.dataset.tab===name));
-  if(el?.classList?.contains('tab'))el.classList.add('active');
   if(el?.classList?.contains('nav-tile'))el.classList.add('active');
+  closeTabGroups();
   if(name==='staff-audit')loadStaffAudit();
   if(name==='ot-audit')loadOvertimeAudit();
   if(name==='clinic-audit')loadClinicAudit();
   if(name==='appointment-outcomes')loadAppointmentOutcomes();
   if(name==='dntu-policy')loadDntuPolicy();
   if(name==='reports')loadReports();
+  if(name==='report-patients')loadReportPatientsPage();
+  if(REPORT_PATIENT_GROUP_TABS.includes(String(name)))loadReportPatientGroup(String(name));
   if(name==='appointments')loadAppts();
   if(name==='roster')renderRoster();
   if(name==='cod'){populateCODDropdowns();loadCOD();}
+  if(String(name).startsWith('patients-'))loadPatientsList(name);
 }
 function refreshActivePage(){
   const active=document.querySelector('.page.active');
-  const name=active?.id?.replace('page-','')||'roster';
-  const el=document.querySelector(`.nav-tile[data-tab="${name}"]`)||document.querySelector(`.tab[data-tab="${name}"]`);
+  let name=active?.id?.replace('page-','')||'roster';
+  if(name==='patients-list')name=currentPatientsTab||'patients-active';
+  if(name==='report-patient-group')name=currentReportPatientGroup||'report-followups';
+  const el=document.querySelector(`.nav-tile[data-tab="${name}"]`)||document.querySelector(`.tab-dd-item[data-tab="${name}"]`);
   switchTab(name,el);
+}
+function returnToPatientsOverview(){
+  switchTab('patients-all',document.querySelector('.tab-dd-item[data-tab="patients-all"]'));
 }
 
 async function loadHolidays(){
@@ -2328,7 +2607,7 @@ async function searchPatientsForRebook(){
   if(!box)return;
   if(q.length<2){box.innerHTML='<div class="patient-search-empty">Enter at least 2 characters to search.</div>';return;}
   box.innerHTML='<div class="patient-search-empty">Searching patients...</div>';
-  const{data,error}=await SB.from('patients').select('id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type').order('surname',{ascending:true}).limit(700);
+  const{data,error}=await fetchAllPatientsRows('id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date,stoma_type_summary');
   if(error){console.error('Patient search error:',error);box.innerHTML='<div class="patient-search-empty">Could not search patients.</div>';return;}
   const matches=(data||[]).filter(p=>[
     p.first_name,p.surname,p.id_card,p.phone_number,`${p.first_name||''} ${p.surname||''}`
@@ -2357,7 +2636,7 @@ function clearPatientRebookSearch(){
   if(box)box.innerHTML='<div class="patient-search-empty">Enter at least 2 characters to search.</div>';
 }
 async function openPatientRebookModal(patientId){
-  const{data:pat,error}=await SB.from('patients').select('id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type').eq('id',patientId).maybeSingle();
+  const{data:pat,error}=await SB.from('patients').select('id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date,stoma_type_summary').eq('id',patientId).maybeSingle();
   if(error||!pat){alert('Could not open this patient for rebooking.');return;}
   if(normaliseFollowupStatus(pat.followup_status)==='deceased'){alert('This patient is marked as deceased and is kept in the separate deceased register. Change the status first before rebooking.');return;}
   const{data:bankRows}=await SB.from('bank_staff').select('id,full_name').order('full_name');
@@ -2411,18 +2690,21 @@ async function lookupPatientByIdForBooking(idInputId,firstInputId,surnameInputId
   const id=normaliseIdCard(idEl.value);
   idEl.value=id;
   if(!id){
-    if(note){note.className='registry-lookup-note';note.textContent='Enter the ID card first. Existing patients will auto-fill and keep their history.';}
+    if(note){note.className='registry-lookup-note';note.textContent='Enter the ID card first. Patient details will load from the registry. To add or edit patient details, use the New Patient tab.';}
     idEl.dataset.patientId='';
+    idEl.dataset.deceased='false';
+    const f=document.getElementById(firstInputId),s=document.getElementById(surnameInputId),p=document.getElementById(phoneInputId);
+    if(f)f.value=''; if(s)s.value=''; if(p)p.value='';
     return null;
   }
   if(note){note.className='registry-lookup-note';note.textContent='Checking saved patient registry...';}
   const{data,error}=await SB.from('patients')
-    .select('id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type')
+    .select('id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date,stoma_type_summary')
     .ilike('id_card',id)
     .maybeSingle();
   if(error){
     console.error('Patient registry lookup error:',error);
-    if(note){note.className='registry-lookup-note error';note.textContent='Could not check patient registry. You can still continue, but please verify details.';}
+    if(note){note.className='registry-lookup-note error';note.textContent='Could not check patient registry. Please try again before booking.';}
     idEl.dataset.patientId='';
     return null;
   }
@@ -2447,28 +2729,35 @@ async function lookupPatientByIdForBooking(idInputId,firstInputId,surnameInputId
   }
   idEl.dataset.patientId='';
   idEl.dataset.deceased='false';
+  const f=document.getElementById(firstInputId),s=document.getElementById(surnameInputId),p=document.getElementById(phoneInputId);
+  if(f)f.value=''; if(s)s.value=''; if(p)p.value='';
   const prefix=idInputId.startsWith('rb')?'rb':'p';
   const typeEl=document.getElementById(`${prefix}-followup-type`); if(typeEl)typeEl.value='new_case';
   await refreshBookingMonthOptions(prefix);
-  if(note){note.className='registry-lookup-note new';note.textContent='No saved patient found for this ID card. A new patient record will be saved when you book. Booking type is set to New case.';}
+  if(note){
+    note.className='registry-lookup-note new';
+    note.textContent=prefix==='p'
+      ? 'No saved patient found for this ID card. Please add the patient in the New Patient tab first, then return here to book.'
+      : 'No saved patient found for this ID card. A new patient record will be saved when you book. Booking type is set to New case.';
+  }
   return null;
 }
 async function saveOrUpdatePatientByIdCard(idCard,firstName,surname,phone,followupPayload={}){
   const id=normaliseIdCard(idCard);
   if(!id||!firstName||!surname)return {patient:null,error:{message:'Missing patient details.'}};
   const existing=await SB.from('patients')
-    .select('id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type')
+    .select('id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date,stoma_type_summary')
     .ilike('id_card',id)
     .maybeSingle();
   if(existing.error)return {patient:null,error:existing.error};
   if(existing.data?.id){
     const updatePayload={first_name:firstName,surname:surname,phone_number:phone||existing.data.phone_number||null,id_card:id,...followupPayload};
     if(normaliseFollowupStatus(existing.data.followup_status)==='deceased')delete updatePayload.followup_status;
-    const updated=await SB.from('patients').update(updatePayload).eq('id',existing.data.id).select('id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type').single();
+    const updated=await SB.from('patients').update(updatePayload).eq('id',existing.data.id).select('id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date,stoma_type_summary').single();
     if(updated.error)return {patient:existing.data,error:updated.error};
     return {patient:updated.data||existing.data,error:null};
   }
-  const inserted=await SB.from('patients').insert({first_name:firstName,surname:surname,id_card:id,phone_number:phone||null,followup_status:'active',...followupPayload}).select('id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type').single();
+  const inserted=await SB.from('patients').insert({first_name:firstName,surname:surname,id_card:id,phone_number:phone||null,followup_status:'active',...followupPayload}).select('id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date,stoma_type_summary').single();
   return {patient:inserted.data,error:inserted.error};
 }
 
@@ -2491,10 +2780,10 @@ async function bookSlot(slot,date,nid,nname,ntype){
   document.getElementById('mb').innerHTML=`<h2>Book Patient</h2>
     <div class="msub">${htmlSafe(date)} - ${htmlSafe(slot)} · default column: ${htmlSafe(targetLabel)}<br/>Choose the nurse/column manually before saving.</div>
     <div class="fg"><label>ID Card Number * — patient registry lookup</label><input type="text" id="p-id" placeholder="Enter ID card first" onblur="lookupPatientByIdForBooking('p-id','p-fn','p-sn','p-ph','p-reg-note')" onkeydown="if(event.key==='Enter'){event.preventDefault();lookupPatientByIdForBooking('p-id','p-fn','p-sn','p-ph','p-reg-note')}"/></div>
-    <div id="p-reg-note" class="registry-lookup-note">Enter the ID card first. Existing patients will auto-fill and keep their history.</div>
-    <div class="fg"><label>First Name *</label><input type="text" id="p-fn"/></div>
-    <div class="fg"><label>Surname *</label><input type="text" id="p-sn"/></div>
-    <div class="fg"><label>Phone</label><input type="tel" id="p-ph"/></div>
+    <div id="p-reg-note" class="registry-lookup-note">Enter the ID card first. Name, surname and phone are locked here and can only be changed in the New Patient tab.</div>
+    <div class="fg"><label>First Name *</label><input type="text" id="p-fn" class="locked-field" disabled tabindex="-1" autocomplete="off" placeholder="Loaded from registry"/></div>
+    <div class="fg"><label>Surname *</label><input type="text" id="p-sn" class="locked-field" disabled tabindex="-1" autocomplete="off" placeholder="Loaded from registry"/></div>
+    <div class="fg"><label>Phone</label><input type="tel" id="p-ph" class="locked-field" disabled tabindex="-1" autocomplete="off" placeholder="Loaded from registry"/></div>
     ${followupBookingFields('p',{followup_owner:normaliseFollowupOwner(nname),followup_type:'new_case'})}
     <div class="fg"><label>Nurse / Column *</label><select id="p-nurse">${nurseOptions}</select></div>
     <div class="registry-lookup-note found">The selected nurse/column will be used for this appointment. It will not change the patient follow-up owner unless you update that separately.</div>
@@ -2503,20 +2792,28 @@ async function bookSlot(slot,date,nid,nname,ntype){
   refreshBookingMonthOptions('p');
 }
 async function doBook(slot,date,nurseIdParam,nurseType){
+  const idEl=document.getElementById('p-id');
   const fn=document.getElementById('p-fn').value.trim();
   const sn=document.getElementById('p-sn').value.trim();
-  const id=normaliseIdCard(document.getElementById('p-id').value);
-  const ph=document.getElementById('p-ph').value.trim();
-  if(document.getElementById('p-id')?.dataset.deceased==='true'){alert('This patient is marked as deceased. Change the patient status first before booking.');return;}
-  if(!fn||!sn||!id){alert('Please enter the ID card first, then confirm first name and surname.');return;}
-  const followupPayload=readFollowupBookingPayload('p');
+  const id=normaliseIdCard(idEl?.value);
+  if(!id){alert('Please enter the patient ID card first.');return;}
 
-  const saved=await saveOrUpdatePatientByIdCard(id,fn,sn,ph,followupPayload);
-  if(saved.error||!saved.patient?.id){alert('Error saving patient registry record: '+(saved.error?.message||''));return;}
-  const pat=saved.patient;
+  // Book Patient uses the patient registry only. Name, surname and phone are read-only here.
+  // Add or edit patient demographics from the New Patient tab first.
+  if(!idEl.dataset.patientId){
+    await lookupPatientByIdForBooking('p-id','p-fn','p-sn','p-ph','p-reg-note');
+  }
+  if(idEl.dataset.deceased==='true'){alert('This patient is marked as deceased. Change the patient status first before booking.');return;}
+  const patientId=idEl.dataset.patientId;
+  if(!patientId){alert('No saved patient was found for this ID card. Please add the patient in the New Patient tab first, then return here to book.');return;}
+  if(!fn||!sn){alert('This saved patient is missing a first name or surname. Please update the record in the New Patient tab first.');return;}
+
+  const followupPayload=readFollowupBookingPayload('p');
+  const{error:pErr}=await SB.from('patients').update(followupPayload).eq('id',patientId);
+  if(pErr){alert('Could not update patient follow-up details: '+pErr.message);return;}
 
   const manualNurse=document.getElementById('p-nurse')?.value||'common';
-  const payload={patient_id:pat.id,appt_date:date,appt_slot:String(slot).slice(0,5),assigned_to:null,bank_staff_id:null,status:'booked'};
+  const payload={patient_id:patientId,appt_date:date,appt_slot:String(slot).slice(0,5),assigned_to:null,bank_staff_id:null,status:'booked'};
   if(manualNurse.startsWith('core:')) payload.assigned_to=manualNurse.replace('core:','');
   if(manualNurse.startsWith('bank:')) payload.bank_staff_id=manualNurse.replace('bank:','');
 
@@ -2612,7 +2909,7 @@ async function loadStaffAudit(){
 
   let allPatients=[];
   const patientSelect='id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type';
-  const{data,error}=await SB.from('patients').select(patientSelect).order('surname',{ascending:true}).order('first_name',{ascending:true});
+  const{data,error}=await fetchAllPatientsRows(patientSelect);
   if(error){
     console.error('Follow-up patient query error:',error);
     if(tbody)tbody.innerHTML='<tr><td colspan="10" class="empty">Follow-up fields are missing. Run the v30L SQL first, then refresh.</td></tr>';
@@ -2755,7 +3052,7 @@ async function savePatientFollowup(patientId){
   loadStaffAudit();
 }
 async function openFollowupHistory(patientId){
-  const{data:pat}=await SB.from('patients').select('id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type').eq('id',patientId).maybeSingle();
+  const{data:pat}=await SB.from('patients').select('id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date,stoma_type_summary').eq('id',patientId).maybeSingle();
   const{data:raw}=await SB.from('appointments').select('*').eq('patient_id',patientId).order('appt_date',{ascending:false}).order('appt_slot',{ascending:false});
   const appts=await enrichAppointments(raw||[]);
   const nm=`${pat?.first_name||''} ${pat?.surname||''}`.trim()||'Patient';
@@ -2774,22 +3071,28 @@ async function openFollowupHistory(patientId){
 
 
 function normaliseFollowupStatus(status){
-  let st=String(status||'active').trim().toLowerCase().replace(/\s+/g,'_');
+  let st=String(status||'active').trim().toLowerCase().replace(/[\s-]+/g,'_');
   if(st==='reversal')st='reversed';
-  return (st==='awaiting_feedback'||st==='paused'||st==='deceased'||st==='reversed')?st:'active';
+  if(st==='inpatients')st='inpatient';
+  if(st==='relocated_abroad')st='relocated_overseas';
+  if(st==='discharged_to_gozo')st='relocated_gozo';
+  return (st==='awaiting_feedback'||st==='paused'||st==='deceased'||st==='reversed'||st==='inpatient'||st==='relocated_overseas'||st==='relocated_gozo')?st:'active';
 }
 function isClosedFollowupStatus(status){
   const st=normaliseFollowupStatus(status);
-  return st==='deceased'||st==='reversed';
+  return st==='deceased'||st==='reversed'||st==='relocated_overseas'||st==='relocated_gozo';
 }
 function followupStatusText(status){
   const st=normaliseFollowupStatus(status);
   return {
     active:'Active',
+    inpatient:'Inpatient',
     awaiting_feedback:'Awaiting Feedback',
     paused:'Paused',
     deceased:'Deceased',
-    reversed:'Reversed'
+    reversed:'Reversed',
+    relocated_overseas:'Relocated Overseas',
+    relocated_gozo:'Relocated to Gozo'
   }[st]||'Active';
 }
 function followupStatusBadge(status,showActive=false){
@@ -2798,6 +3101,353 @@ function followupStatusBadge(status,showActive=false){
   return `<span class="followup-status-badge ${htmlSafe(st)}">${htmlSafe(followupStatusText(st))}</span>`;
 }
 function patientFollowupStatus(a){return normaliseFollowupStatus(a?.patients?.followup_status);}
+
+const PATIENT_TAB_FILTERS={
+  'patients-all':{status:'all',title:'All Patients',subtitle:'Full patient register across all groups.'},
+  'patients-active':{status:'active',title:'Active Patients',subtitle:'Patients from the active registry, including paused and inpatient subgroups.'},
+  'patients-inpatients':{status:'inpatient',title:'Inpatients',subtitle:'Patients marked as inpatient or inpatient status.'},
+  'patients-reversed':{status:'reversed',title:'Reversed Patients',subtitle:'Patients with reversal status or reversal date.'},
+  'patients-deceased':{status:'deceased',title:'Deceased Patients',subtitle:'Patients kept in the deceased register.'},
+  'patients-relocated-overseas':{status:'relocated_overseas',title:'Relocated Overseas',subtitle:'Patients marked as relocated overseas.'},
+  'patients-relocated-gozo':{status:'relocated_gozo',title:'Relocated to Gozo',subtitle:'Patients marked as relocated or discharged to Gozo.'}
+};
+function patientStatusFromRaw(raw){
+  const r=String(raw||'').trim().toLowerCase().replace(/[\s-]+/g,'_');
+  if(!r)return '';
+  if(r.includes('deceased')||r.includes('rip'))return 'deceased';
+  if(r.includes('reversed')||r.includes('reversal'))return 'reversed';
+  if(r.includes('overseas')||r.includes('abroad'))return 'relocated_overseas';
+  if(r.includes('gozo'))return 'relocated_gozo';
+  if(r.includes('inpatient')||r.includes('in_patient'))return 'inpatient';
+  if(r.includes('active'))return 'active';
+  return '';
+}
+function isTrueValue(v){
+  return v===true || v===1 || String(v||'').trim().toLowerCase()==='true';
+}
+function isActiveRegistryPatient(p){
+  const rawStatus=patientStatusFromRaw(p?.patient_status_raw);
+  const rawText=String(p?.patient_status_raw||'').trim().toLowerCase();
+  return isTrueValue(p?.active_registry) || rawStatus==='active' || rawText==='active';
+}
+function patientRegisterStatus(p){
+  const rawStatus=patientStatusFromRaw(p?.patient_status_raw);
+  if(isActiveRegistryPatient(p)){
+    const st=normaliseFollowupStatus(p?.followup_status);
+    if(st==='inpatient')return 'inpatient';
+    return 'active';
+  }
+  if(rawStatus&&rawStatus!=='active')return rawStatus;
+  const st=normaliseFollowupStatus(p?.followup_status);
+  if(st==='deceased'||st==='reversed'||st==='relocated_overseas'||st==='relocated_gozo'||st==='inpatient')return st;
+  if(p?.rip_date)return 'deceased';
+  if(p?.reversal_date)return 'reversed';
+  return rawStatus||'active';
+}
+
+function isActiveSourcePatient(p){
+  if(isActiveRegistryPatient(p))return true;
+  const rawStatus=patientStatusFromRaw(p?.patient_status_raw);
+  const st=normaliseFollowupStatus(p?.followup_status);
+  if(p?.rip_date || p?.reversal_date)return false;
+  if(['deceased','reversed','relocated_overseas','relocated_gozo'].includes(rawStatus))return false;
+  if(['deceased','reversed','relocated_overseas','relocated_gozo'].includes(st))return false;
+  return ['active','paused','awaiting_feedback','inpatient'].includes(st);
+}
+function isInpatientSourcePatient(p){
+  const raw=String(p?.assigned_nurse_raw||p?.patient_status_raw||'').toLowerCase();
+  return normaliseFollowupStatus(p?.followup_status)==='inpatient' || patientStatusFromRaw(p?.patient_status_raw)==='inpatient' || raw.includes('inpatient') || raw.includes('in patient');
+}
+function patientMatchesRegisterStatus(p,status){
+  const st=String(status||'active');
+  if(st==='all')return true;
+  if(st==='active')return isActiveSourcePatient(p);
+  if(st==='inpatient')return isInpatientSourcePatient(p);
+  return patientRegisterStatus(p)===st;
+}
+function patientRegisterStatusText(status){
+  const st=String(status||'active');
+  return {
+    active:'Active',
+    inpatient:'Inpatient',
+    reversed:'Reversed',
+    deceased:'Deceased',
+    relocated_overseas:'Relocated Overseas',
+    relocated_gozo:'Relocated to Gozo'
+  }[st]||'Active';
+}
+function patientStatusChip(status){
+  const st=String(status||'active');
+  return `<span class="patient-status-chip ${htmlSafe(st)}">${htmlSafe(patientRegisterStatusText(st))}</span>`;
+}
+function patientDueText(p){
+  const month=p?.followup_due_month?followupMonthName(p.followup_due_month):'—';
+  const year=p?.followup_year||'';
+  return month==='—'?'—':`${month} ${year}`.trim();
+}
+function patientDateText(value){
+  if(!value)return '—';
+  const raw=String(value).slice(0,10);
+  const d=new Date(raw+'T12:00:00');
+  if(Number.isNaN(d.getTime()))return htmlSafe(raw||'—');
+  return d.toLocaleDateString('en-MT',{day:'2-digit',month:'short',year:'numeric'});
+}
+function dateSortValue(value){
+  if(!value)return 0;
+  const d=new Date(String(value).slice(0,10)+'T12:00:00');
+  return Number.isNaN(d.getTime())?0:d.getTime();
+}
+function yearsBetween(start,end){
+  if(!start||!end)return null;
+  const s=new Date(String(start).slice(0,10)+'T12:00:00');
+  const e=new Date(String(end).slice(0,10)+'T12:00:00');
+  if(Number.isNaN(s.getTime())||Number.isNaN(e.getTime())||e<s)return null;
+  let age=e.getFullYear()-s.getFullYear();
+  const beforeBirthday=(e.getMonth()<s.getMonth())||(e.getMonth()===s.getMonth()&&e.getDate()<s.getDate());
+  if(beforeBirthday)age--;
+  return age>=0?age:null;
+}
+function daysBetween(start,end){
+  if(!start||!end)return null;
+  const s=new Date(String(start).slice(0,10)+'T12:00:00');
+  const e=new Date(String(end).slice(0,10)+'T12:00:00');
+  if(Number.isNaN(s.getTime())||Number.isNaN(e.getTime())||e<s)return null;
+  return Math.round((e-s)/86400000);
+}
+function patientAgeAtDeath(p){
+  if(p?.age_at_death!==null&&p?.age_at_death!==undefined&&String(p.age_at_death).trim()!=='')return Math.floor(Number(p.age_at_death));
+  const calc=yearsBetween(p?.dob,p?.rip_date);
+  return calc===null?'—':calc;
+}
+function patientStomaDays(p){
+  if(p?.stoma_days!==null&&p?.stoma_days!==undefined&&String(p.stoma_days).trim()!=='')return Math.floor(Number(p.stoma_days));
+  const end=p?.rip_date||new Date().toISOString().slice(0,10);
+  const calc=daysBetween(p?.surgery_date,end);
+  return calc===null?'—':calc;
+}
+function patientStomaTypeText(value){
+  if(value===null||value===undefined||value==='')return '—';
+  let v=value;
+  if(typeof v==='string'){
+    try{v=JSON.parse(v);}catch(e){return htmlSafe(v||'—');}
+  }
+  if(Array.isArray(v))return htmlSafe(v.filter(Boolean).join(', ')||'—');
+  if(typeof v==='object')return htmlSafe(Object.values(v).flat().filter(Boolean).join(', ')||JSON.stringify(v));
+  return htmlSafe(String(v));
+}
+function patientRegisterActions(p,includeRebook=true){
+  return `<div class="followup-actions" onclick="event.stopPropagation();"><button class="ncb-btn" onclick="openNewPatientFromExisting('${p.id}')" style="background:#e8f5f4;color:var(--teal);">Edit</button>${includeRebook?`<button class="ncb-btn" onclick="openPatientRebookModal('${p.id}')" style="background:#fff8e1;color:#856404;">Rebook</button>`:''}<button class="ncb-btn" onclick="openFollowupHistory('${p.id}')" style="background:#edf1f5;color:var(--navy);">History</button></div>`;
+}
+
+async function fetchAllPatientsRows(fields, options={}){
+  const pageSize=Number(options.pageSize)||1000;
+  const maxRows=Number(options.maxRows)||20000;
+  let from=0;
+  const all=[];
+  while(from<maxRows){
+    let q=SB.from('patients')
+      .select(fields)
+      .order('surname',{ascending:true})
+      .order('first_name',{ascending:true})
+      .order('id_card',{ascending:true})
+      .range(from,from+pageSize-1);
+    const {data,error}=await q;
+    if(error)return {data:all,error};
+    const batch=data||[];
+    all.push(...batch);
+    if(batch.length<pageSize)break;
+    from+=pageSize;
+  }
+  return {data:all,error:null};
+}
+async function loadPatientsList(tabName){
+  currentPatientsTab=tabName||currentPatientsTab||'patients-active';
+  const select=document.getElementById('patients-list-filter');
+  if(select)select.value=currentPatientsTab;
+  const cfg=PATIENT_TAB_FILTERS[currentPatientsTab]||PATIENT_TAB_FILTERS['patients-active'];
+  const searchInput=document.getElementById('patients-list-search');
+  if(searchInput)searchInput.placeholder=cfg.status==='all'?'Search all patients by name, ID card, phone, status, owner, locality...':(cfg.status==='deceased'?'Search name, ID number, RIP date, stoma type, locality...':(cfg.status==='reversed'?'Search ID number, name, reversal date, stoma type...':((cfg.status==='relocated_overseas'||cfg.status==='relocated_gozo')?'Search ID number, name, last seen, discharge date, surgery type, consultant, stoma type...':'Search name, ID card, phone, locality...')));
+  const title=document.getElementById('patients-list-title');
+  const subtitle=document.getElementById('patients-list-subtitle');
+  const cardTitle=document.getElementById('patients-list-card-title');
+  if(title)title.textContent=cfg.title;
+  if(subtitle)subtitle.textContent=cfg.subtitle;
+  if(cardTitle)cardTitle.textContent=cfg.title;
+  const tbody=document.getElementById('patients-list-tbody');
+  if(tbody)tbody.innerHTML='<tr><td colspan="10" class="empty">Loading all patients from Supabase...</td></tr>';
+  let fields='id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type,active_registry,patient_status_raw,assigned_nurse_raw,locality,sex,dob,surgery_date,surgery_type,stoma_type_summary,consultant,last_outcome_date,discharged_date,next_followup_mirror,rip_date,reversal_date,stoma_days,age_at_death';
+  let res=await fetchAllPatientsRows(fields);
+  if(res.error){
+    console.warn('Extended patient register fields unavailable, using core patient fields:',res.error);
+    fields='id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type';
+    res=await fetchAllPatientsRows(fields);
+  }
+  if(res.error){
+    if(tbody)tbody.innerHTML=`<tr><td colspan="10" class="empty">Could not load patients: ${htmlSafe(res.error.message||'Unknown error')}</td></tr>`;
+    return;
+  }
+  patientsListRows=res.data||[];
+  renderPatientsList();
+}
+function renderPatientsList(){
+  const cfg=PATIENT_TAB_FILTERS[currentPatientsTab]||PATIENT_TAB_FILTERS['patients-active'];
+  const tbody=document.getElementById('patients-list-tbody');
+  const thead=document.getElementById('patients-list-head');
+  const stats=document.getElementById('patients-list-stats');
+  const search=String(document.getElementById('patients-list-search')?.value||'').trim().toLowerCase();
+  const all=patientsListRows||[];
+  const isDeceased=currentPatientsTab==='patients-deceased'||cfg.status==='deceased';
+  const isReversed=currentPatientsTab==='patients-reversed'||cfg.status==='reversed';
+  const isRelocatedGozo=currentPatientsTab==='patients-relocated-gozo'||cfg.status==='relocated_gozo';
+  const isRelocatedOverseas=currentPatientsTab==='patients-relocated-overseas'||currentPatientsTab==='patients-relocated-gozo'||cfg.status==='relocated_overseas'||cfg.status==='relocated_gozo';
+  const countStatus=(st)=>all.filter(p=>patientMatchesRegisterStatus(p,st)).length;
+  if(stats){
+    stats.innerHTML=`
+      <div class="sbox"><div class="sl">Selected Group</div><div class="sv" style="font-size:22px;">${cfg.status==='all'?all.length:all.filter(p=>patientMatchesRegisterStatus(p,cfg.status)).length}</div><div class="ss">${htmlSafe(cfg.title)}</div></div>
+      <div class="sbox"><div class="sl">Active</div><div class="sv">${countStatus('active')}</div><div class="ss">current patients</div></div>
+      <div class="sbox"><div class="sl">Inpatients</div><div class="sv">${countStatus('inpatient')}</div><div class="ss">ward patients</div></div>
+      <div class="sbox"><div class="sl">Reversed</div><div class="sv">${countStatus('reversed')}</div><div class="ss">reversal register</div></div>
+      <div class="sbox"><div class="sl">Deceased</div><div class="sv">${countStatus('deceased')}</div><div class="ss">deceased register</div></div>
+      <div class="sbox"><div class="sl">Relocated</div><div class="sv">${countStatus('relocated_overseas')+countStatus('relocated_gozo')}</div><div class="ss">overseas / Gozo</div></div>`;
+  }
+  let rows=cfg.status==='all'?[...all]:all.filter(p=>patientMatchesRegisterStatus(p,cfg.status));
+  if(search){
+    rows=rows.filter(p=>[
+      p.first_name,p.surname,p.id_card,p.phone_number,p.followup_owner,p.consultant,p.locality,p.patient_status_raw,p.assigned_nurse_raw,p.assigned_nurse_raw,patientRegisterStatusText(patientRegisterStatus(p)),p.sex,p.dob,p.rip_date,p.reversal_date,p.surgery_date,p.surgery_type,p.consultant,p.discharged_date,p.last_outcome_date,patientStomaTypeText(p.stoma_type_summary)
+    ].join(' ').toLowerCase().includes(search));
+  }
+  if(cfg.status==='all'){
+    rows=[...rows].sort((a,b)=>
+      String(a.surname||'').localeCompare(String(b.surname||''))||
+      String(a.first_name||'').localeCompare(String(b.first_name||''))||
+      String(a.id_card||'').localeCompare(String(b.id_card||''))
+    );
+  }else if(isDeceased){
+    rows=[...rows].sort((a,b)=>{
+      const nameCompare=String(a.surname||'').localeCompare(String(b.surname||''))||String(a.first_name||'').localeCompare(String(b.first_name||''))||String(a.id_card||'').localeCompare(String(b.id_card||''));
+      const aHasRip=!!String(a.rip_date||'').trim();
+      const bHasRip=!!String(b.rip_date||'').trim();
+      if(aHasRip&&bHasRip){
+        const dateCompare=dateSortValue(b.rip_date)-dateSortValue(a.rip_date);
+        return dateCompare||nameCompare;
+      }
+      if(aHasRip!==bHasRip)return aHasRip?-1:1;
+      return nameCompare;
+    });
+  }else if(isReversed){
+    rows=[...rows].sort((a,b)=>
+      String(a.surname||'').localeCompare(String(b.surname||''))||
+      String(a.first_name||'').localeCompare(String(b.first_name||''))||
+      (dateSortValue(b.reversal_date)-dateSortValue(a.reversal_date))||
+      String(a.id_card||'').localeCompare(String(b.id_card||''))
+    );
+  }else if(isRelocatedOverseas){
+    rows=[...rows].sort((a,b)=>{
+      const nameCompare=String(a.surname||'').localeCompare(String(b.surname||''))||String(a.first_name||'').localeCompare(String(b.first_name||''))||String(a.id_card||'').localeCompare(String(b.id_card||''));
+      const lastSeenCompare=dateSortValue(b.last_outcome_date)-dateSortValue(a.last_outcome_date);
+      const dischargeCompare=dateSortValue(b.discharged_date)-dateSortValue(a.discharged_date);
+      return lastSeenCompare||dischargeCompare||nameCompare;
+    });
+  }
+  if(thead){
+    thead.innerHTML=isDeceased
+      ? '<tr><th>ID Number</th><th>Patient</th><th>Sex</th><th>DOB</th><th>Date of RIP</th><th>Age at Death</th><th>Surgery Date</th><th>Stoma Days</th><th>Stoma Type Summary</th><th>Locality</th><th>Actions</th></tr>'
+      : (isReversed
+        ? '<tr><th>ID Number</th><th>Surname</th><th>Name</th><th>Phone</th><th>Status</th><th>Owner</th><th>Reversal Date</th><th>Consultant</th><th>Last Seen</th><th>Stoma Type Summary</th><th>Locality</th><th>Actions</th></tr>'
+        : (isRelocatedOverseas
+          ? (isRelocatedGozo
+            ? '<tr><th>ID Number</th><th>Patient</th><th>Status</th><th>Last Seen</th><th>Date of Discharge</th><th>Surgery Date</th><th>Consultant</th><th>Surgery Type</th><th>Stoma Type Summary</th><th>Actions</th></tr>'
+            : '<tr><th>ID Number</th><th>Patient</th><th>Status</th><th>Last Seen</th><th>Date of Discharge</th><th>Stoma Type Summary</th><th>Actions</th></tr>')
+          : '<tr><th>Patient</th><th>ID Card</th><th>Phone</th><th>Status</th><th>Owner</th><th>Due Month</th><th>Last Outcome</th><th>Next Follow-up</th><th>Locality</th><th>Actions</th></tr>'));
+  }
+  if(!tbody)return;
+  if(!rows.length){
+    tbody.innerHTML=`<tr><td colspan="${isDeceased?11:(isReversed?12:(isRelocatedOverseas?(isRelocatedGozo?10:7):10))}" class="empty">No ${htmlSafe(cfg.title.toLowerCase())} found${search?' for this search':''}.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML=rows.map(p=>{
+    const nm=`${p.first_name||''} ${p.surname||''}`.trim()||'Unnamed patient';
+    const st=patientRegisterStatus(p);
+    if(isDeceased){
+      return `<tr class="followup-click-row" onclick="openFollowupHistory('${p.id}')">
+        <td><strong>${htmlSafe(p.id_card||'—')}</strong></td>
+        <td><strong>${htmlSafe(nm)}</strong><br/><span style="font-size:10px;color:var(--muted);">Click row for history</span></td>
+        <td>${htmlSafe(p.sex||'—')}</td>
+        <td>${patientDateText(p.dob)}</td>
+        <td><strong>${patientDateText(p.rip_date)}</strong></td>
+        <td>${htmlSafe(patientAgeAtDeath(p))}</td>
+        <td>${patientDateText(p.surgery_date)}</td>
+        <td>${htmlSafe(patientStomaDays(p))}</td>
+        <td>${patientStomaTypeText(p.stoma_type_summary)}</td>
+        <td>${htmlSafe(p.locality||'—')}</td>
+        <td>${patientRegisterActions(p,false)}</td>
+      </tr>`;
+    }
+    const latest=p.last_outcome_date||'—';
+    const next=p.next_followup_mirror||'—';
+    if(isReversed){
+      return `<tr class="followup-click-row" onclick="openFollowupHistory('${p.id}')">
+        <td><strong>${htmlSafe(p.id_card||'—')}</strong></td>
+        <td><strong>${htmlSafe(p.surname||'—')}</strong><br/><span style="font-size:10px;color:var(--muted);">Click row for history</span></td>
+        <td><strong>${htmlSafe(p.first_name||'—')}</strong></td>
+        <td>${htmlSafe(p.phone_number||'—')}</td>
+        <td>${patientStatusChip(st)}${p.patient_status_raw?`<br/><span style="font-size:10px;color:var(--muted);">${htmlSafe(p.patient_status_raw)}</span>`:''}</td>
+        <td>${htmlSafe(p.followup_owner||'Common')}</td>
+        <td><strong>${patientDateText(p.reversal_date)}</strong></td>
+        <td>${htmlSafe(p.consultant||'—')}</td>
+        <td>${htmlSafe(latest)}</td>
+        <td>${patientStomaTypeText(p.stoma_type_summary)}</td>
+        <td>${htmlSafe(p.locality||'—')}</td>
+        <td>${patientRegisterActions(p,false)}</td>
+      </tr>`;
+    }
+    if(isRelocatedOverseas){
+      if(isRelocatedGozo){
+        return `<tr class="followup-click-row" onclick="openFollowupHistory('${p.id}')">
+          <td><strong>${htmlSafe(p.id_card||'—')}</strong></td>
+          <td><strong>${htmlSafe(nm)}</strong><br/><span style="font-size:10px;color:var(--muted);">Click row for history</span></td>
+          <td>${patientStatusChip(st)}${p.patient_status_raw?`<br/><span style="font-size:10px;color:var(--muted);">${htmlSafe(p.patient_status_raw)}</span>`:''}</td>
+          <td>${patientDateText(p.last_outcome_date)}</td>
+          <td><strong>${patientDateText(p.discharged_date)}</strong></td>
+          <td>${patientDateText(p.surgery_date)}</td>
+          <td>${htmlSafe(p.consultant||'—')}</td>
+          <td>${htmlSafe(p.surgery_type||'—')}</td>
+          <td>${patientStomaTypeText(p.stoma_type_summary)}</td>
+          <td>${patientRegisterActions(p,false)}</td>
+        </tr>`;
+      }
+      return `<tr class="followup-click-row" onclick="openFollowupHistory('${p.id}')">
+        <td><strong>${htmlSafe(p.id_card||'—')}</strong></td>
+        <td><strong>${htmlSafe(nm)}</strong><br/><span style="font-size:10px;color:var(--muted);">Click row for history</span></td>
+        <td>${patientStatusChip(st)}${p.patient_status_raw?`<br/><span style="font-size:10px;color:var(--muted);">${htmlSafe(p.patient_status_raw)}</span>`:''}</td>
+        <td>${patientDateText(p.last_outcome_date)}</td>
+        <td><strong>${patientDateText(p.discharged_date)}</strong></td>
+        <td>${patientStomaTypeText(p.stoma_type_summary)}</td>
+        <td>${patientRegisterActions(p,false)}</td>
+      </tr>`;
+    }
+    return `<tr class="followup-click-row" onclick="openFollowupHistory('${p.id}')">
+      <td><strong>${htmlSafe(nm)}</strong><br/><span style="font-size:10px;color:var(--muted);">Click row for history</span></td>
+      <td>${htmlSafe(p.id_card||'—')}</td>
+      <td>${htmlSafe(p.phone_number||'—')}</td>
+      <td>${patientStatusChip(st)}${p.patient_status_raw?`<br/><span style="font-size:10px;color:var(--muted);">${htmlSafe(p.patient_status_raw)}</span>`:''}</td>
+      <td>${htmlSafe(p.followup_owner||'Common')}</td>
+      <td>${htmlSafe(patientDueText(p))}</td>
+      <td>${htmlSafe(latest)}</td>
+      <td>${htmlSafe(next)}</td>
+      <td>${htmlSafe(p.locality||'—')}</td>
+      <td>${patientRegisterActions(p,true)}</td>
+    </tr>`;
+  }).join('');
+}
+
+async function openNewPatientFromExisting(patientId){
+  switchTab('new-patient',document.querySelector('.tab[data-tab="new-patient"]'));
+  const {data,error}=await SB.from('patients').select('id_card').eq('id',patientId).maybeSingle();
+  if(error||!data?.id_card){alert('Could not open this patient for editing.');return;}
+  const idEl=document.getElementById('np-id');
+  if(idEl){idEl.value=data.id_card;await lookupNewPatientById();}
+}
 
 
 // APPOINTMENT OUTCOMES TAB — filter fix
@@ -3087,6 +3737,8 @@ function printMonthlyCalendar(){
 .registry-lookup-note.new{background:#fff8e1;color:#856404;border-color:#f2df9f;}
 .registry-lookup-note.error{background:#f8d7da;color:#721c24;border-color:#f1b0b7;}
 
+.locked-field,.fg input.locked-field:disabled{background:#f8fafc!important;color:#1a2e4a!important;cursor:not-allowed!important;opacity:1!important;user-select:none!important;pointer-events:none!important;}
+
 </style></head><body><h1>MDH Stoma Care Clinic</h1><h2>Monthly Appointment Calendar — ${clinicMonthLabel(month,year)}</h2><div class="stats"><div class="stat"><span>Total</span><b>${totals.total}</b></div><div class="stat"><span>Booked</span><b>${totals.booked}</b></div><div class="stat"><span>Seen</span><b>${totals.attended}</b></div><div class="stat"><span>Cancelled</span><b>${totals.cancelled}</b></div><div class="stat"><span>DNTU</span><b>${totals.dntu}</b></div></div><div class="cal">${calendar.replaceAll('clinic-cal-head','head').replaceAll('clinic-day empty-day','day empty').replaceAll('clinic-day has-appts','day').replaceAll('clinic-day','day').replaceAll('clinic-day-num','daynum').replaceAll('clinic-cal-appt','appt').replaceAll('clinic-badge','badge')}</div></body></html>`);
   w.document.close();w.focus();w.print();
 }
@@ -3100,6 +3752,8 @@ function printMonthlyList(){
 .registry-lookup-note.found{background:#e8f5f4;color:var(--teal);border-color:#b7ddd9;}
 .registry-lookup-note.new{background:#fff8e1;color:#856404;border-color:#f2df9f;}
 .registry-lookup-note.error{background:#f8d7da;color:#721c24;border-color:#f1b0b7;}
+
+.locked-field,.fg input.locked-field:disabled{background:#f8fafc!important;color:#1a2e4a!important;cursor:not-allowed!important;opacity:1!important;user-select:none!important;pointer-events:none!important;}
 
 </style></head><body><h1>MDH Stoma Care Clinic</h1><h2>Monthly Appointment List — ${clinicMonthLabel(month,year)}</h2><div class="stats"><div class="stat"><span>Total</span><b>${totals.total}</b></div><div class="stat"><span>Booked</span><b>${totals.booked}</b></div><div class="stat"><span>Seen</span><b>${totals.attended}</b></div><div class="stat"><span>Cancelled</span><b>${totals.cancelled}</b></div><div class="stat"><span>DNTU</span><b>${totals.dntu}</b></div></div>${buildPrintableClinicList()}</body></html>`);
   w.document.close();w.focus();w.print();
@@ -3370,10 +4024,236 @@ function renderReportPatientList(){
 function printReportPatientList(){
   const table=document.getElementById('rep-patient-table');
   if(!table){window.print();return;}
-  const year=document.getElementById('rep-year')?.value||'';
-  const month=document.getElementById('rep-month')?.value||'Full Year';
+  const year=document.getElementById('rep-pat-year')?.value||document.getElementById('rep-year')?.value||'';
+  const month=document.getElementById('rep-pat-month')?.value||document.getElementById('rep-month')?.value||'Full Year';
   const w=window.open('','_blank');
   w.document.write(`<!DOCTYPE html><html><head><title>Patients Booked Report</title><style>body{font-family:Arial,sans-serif;padding:20px;color:#1a2e4a}h1{font-size:20px;margin:0 0 4px}h2{font-size:14px;margin:0 0 18px;color:#506070}table{width:100%;border-collapse:collapse;font-size:11px}th{background:#1a2e4a;color:white;text-align:left;padding:7px}td{border-bottom:1px solid #ddd;padding:7px;vertical-align:top}.status-badge,.followup-status-badge,.followup-type-badge{display:inline-block;padding:2px 6px;border-radius:8px;font-size:10px;font-weight:bold;background:#eef;color:#123;margin:1px}</style></head><body><h1>MDH Stoma Care Clinic</h1><h2>Patients Booked Report — ${htmlSafe(month)} ${htmlSafe(year)}</h2>${table.outerHTML}</body></html>`);
+  w.document.close();w.focus();w.print();
+}
+
+
+function ensureReportPatientDefaults(){
+  const yearEl=document.getElementById('rep-pat-year');
+  const monthEl=document.getElementById('rep-pat-month');
+  if(yearEl && !yearEl.dataset.ready){
+    const y=String(new Date().getFullYear());
+    if([...yearEl.options].some(o=>o.value===y))yearEl.value=y;
+    yearEl.dataset.ready='1';
+  }
+  if(monthEl && !monthEl.dataset.ready){monthEl.value='';monthEl.dataset.ready='1';}
+}
+async function loadReportPatientsPage(){
+  ensureReportPatientDefaults();
+  const year=document.getElementById('rep-pat-year')?.value||String(new Date().getFullYear());
+  const month=document.getElementById('rep-pat-month')?.value||'';
+  const start=month?`${year}-${month}-01`:`${year}-01-01`;
+  const end=month?monthEndDate(year,month):`${year}-12-31`;
+  const tbody=document.getElementById('rep-patient-tbody');
+  if(tbody)tbody.innerHTML='<tr><td colspan="10" class="empty">Loading patients booked for the selected period...</td></tr>';
+  const{data:raw,error}=await SB.from('appointments')
+    .select('*')
+    .gte('appt_date',start)
+    .lte('appt_date',end)
+    .order('appt_date',{ascending:true})
+    .order('appt_slot',{ascending:true});
+  if(error){
+    if(tbody)tbody.innerHTML=`<tr><td colspan="10" class="empty">Could not load patient report: ${htmlSafe(error.message||'Unknown error')}</td></tr>`;
+    return;
+  }
+  reportPatientRows=await enrichAppointments(raw||[]);
+  syncReportPatientColumnFilter(reportPatientRows);
+  renderReportPatientList();
+}
+
+const REPORT_PATIENT_GROUP_CONFIG={
+  'report-followups':{mode:'followups',title:'Follow-Ups',subtitle:'Patients requiring follow-up planning, excluding closed groups.'},
+  'report-active-patients':{status:'active',title:'Active Patients',subtitle:'Patients from the active registry, including paused and inpatient subgroups.'},
+  'report-deceased':{status:'deceased',title:'Deceased',subtitle:'Deceased register, sorted by latest Date of RIP first.'},
+  'report-reversed':{status:'reversed',title:'Reversed',subtitle:'Patients in the reversed register.'},
+  'report-relocated-overseas':{status:'relocated_overseas',title:'Relocated Overseas',subtitle:'Patients marked as relocated overseas.'},
+  'report-relocated-gozo':{status:'relocated_gozo',title:'Relocated to Gozo',subtitle:'Patients marked as relocated to Gozo.'}
+};
+function reportPatientGroupConfig(){return REPORT_PATIENT_GROUP_CONFIG[currentReportPatientGroup]||REPORT_PATIENT_GROUP_CONFIG['report-followups'];}
+async function loadReportPatientGroup(tabName){
+  currentReportPatientGroup=tabName||currentReportPatientGroup||'report-followups';
+  const cfg=reportPatientGroupConfig();
+  const title=document.getElementById('report-patient-group-title');
+  const subtitle=document.getElementById('report-patient-group-subtitle');
+  const cardTitle=document.getElementById('report-patient-group-card-title');
+  const search=document.getElementById('report-patient-group-search');
+  const tbody=document.getElementById('report-patient-group-tbody');
+  if(title)title.textContent=cfg.title;
+  if(subtitle)subtitle.textContent=cfg.subtitle;
+  if(cardTitle)cardTitle.textContent=cfg.title;
+  if(search){search.value='';search.placeholder=cfg.status==='deceased'?'Search name, ID number, RIP date, stoma type, locality...':(cfg.status==='reversed'?'Search ID number, name, reversal date, stoma type...':((cfg.status==='relocated_overseas'||cfg.status==='relocated_gozo')?'Search ID number, name, last seen, discharge date, surgery type, consultant, stoma type...':'Search name, ID card, phone, owner, locality...'));}
+  if(tbody)tbody.innerHTML='<tr><td colspan="11" class="empty">Loading full report from Supabase...</td></tr>';
+  let fields='id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type,active_registry,patient_status_raw,assigned_nurse_raw,locality,sex,dob,surgery_date,surgery_type,stoma_type_summary,consultant,last_outcome_date,discharged_date,next_followup_mirror,rip_date,reversal_date,stoma_days,age_at_death';
+  let res=await fetchAllPatientsRows(fields);
+  if(res.error){
+    fields='id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type';
+    res=await fetchAllPatientsRows(fields);
+  }
+  if(res.error){
+    if(tbody)tbody.innerHTML=`<tr><td colspan="11" class="empty">Could not load report: ${htmlSafe(res.error.message||'Unknown error')}</td></tr>`;
+    return;
+  }
+  reportPatientGroupRows=res.data||[];
+  renderReportPatientGroup();
+}
+function rowsForReportPatientGroup(){
+  const cfg=reportPatientGroupConfig();
+  let rows=[...(reportPatientGroupRows||[])];
+  if(cfg.mode==='followups'){
+    rows=rows.filter(p=>!['deceased','reversed','relocated_overseas','relocated_gozo'].includes(patientRegisterStatus(p)) && !isClosedFollowupStatus(p.followup_status));
+    rows.sort((a,b)=>String(a.followup_owner||'Common').localeCompare(String(b.followup_owner||'Common')) || (Number(a.followup_year)||9999)-(Number(b.followup_year)||9999) || (Number(a.followup_due_month)||99)-(Number(b.followup_due_month)||99) || String(a.surname||'').localeCompare(String(b.surname||'')) || String(a.first_name||'').localeCompare(String(b.first_name||'')));
+  }else{
+    rows=rows.filter(p=>patientMatchesRegisterStatus(p,cfg.status));
+    if(cfg.status==='deceased'){
+      rows.sort((a,b)=>{
+        const nameCompare=String(a.surname||'').localeCompare(String(b.surname||''))||String(a.first_name||'').localeCompare(String(b.first_name||''))||String(a.id_card||'').localeCompare(String(b.id_card||''));
+        const aHasRip=!!String(a.rip_date||'').trim();
+        const bHasRip=!!String(b.rip_date||'').trim();
+        if(aHasRip&&bHasRip)return (dateSortValue(b.rip_date)-dateSortValue(a.rip_date))||nameCompare;
+        if(aHasRip!==bHasRip)return aHasRip?-1:1;
+        return nameCompare;
+      });
+    }else if(cfg.status==='reversed'){
+      rows.sort((a,b)=>
+        String(a.surname||'').localeCompare(String(b.surname||''))||
+        String(a.first_name||'').localeCompare(String(b.first_name||''))||
+        (dateSortValue(b.reversal_date)-dateSortValue(a.reversal_date))||
+        String(a.id_card||'').localeCompare(String(b.id_card||''))
+      );
+    }else if(cfg.status==='relocated_overseas'||cfg.status==='relocated_gozo'){
+      rows.sort((a,b)=>{
+        const nameCompare=String(a.surname||'').localeCompare(String(b.surname||''))||String(a.first_name||'').localeCompare(String(b.first_name||''))||String(a.id_card||'').localeCompare(String(b.id_card||''));
+        const lastSeenCompare=dateSortValue(b.last_outcome_date)-dateSortValue(a.last_outcome_date);
+        const dischargeCompare=dateSortValue(b.discharged_date)-dateSortValue(a.discharged_date);
+        return lastSeenCompare||dischargeCompare||nameCompare;
+      });
+    }else{
+      rows.sort((a,b)=>String(a.surname||'').localeCompare(String(b.surname||''))||String(a.first_name||'').localeCompare(String(b.first_name||''))||String(a.id_card||'').localeCompare(String(b.id_card||'')));
+    }
+  }
+  const search=String(document.getElementById('report-patient-group-search')?.value||'').trim().toLowerCase();
+  if(search){
+    rows=rows.filter(p=>[
+      p.first_name,p.surname,p.id_card,p.phone_number,p.followup_owner,p.consultant,p.followup_year,followupMonthName(p.followup_due_month),p.locality,p.patient_status_raw,patientRegisterStatusText(patientRegisterStatus(p)),p.sex,p.dob,p.rip_date,p.reversal_date,p.surgery_date,p.surgery_type,p.consultant,p.discharged_date,p.last_outcome_date,patientStomaTypeText(p.stoma_type_summary)
+    ].join(' ').toLowerCase().includes(search));
+  }
+  return rows;
+}
+function renderReportPatientGroup(){
+  const cfg=reportPatientGroupConfig();
+  const thead=document.getElementById('report-patient-group-head');
+  const tbody=document.getElementById('report-patient-group-tbody');
+  const stats=document.getElementById('report-patient-group-stats');
+  const isDeceased=cfg.status==='deceased';
+  const isReversed=cfg.status==='reversed';
+  const isRelocatedGozo=cfg.status==='relocated_gozo';
+  const isRelocatedOverseas=cfg.status==='relocated_overseas'||cfg.status==='relocated_gozo';
+  const isFollowups=cfg.mode==='followups';
+  const all=reportPatientGroupRows||[];
+  const rows=rowsForReportPatientGroup();
+  if(stats){
+    const countStatus=(st)=>all.filter(p=>patientMatchesRegisterStatus(p,st)).length;
+    stats.innerHTML=`
+      <div class="sbox"><div class="sl">Report Rows</div><div class="sv">${rows.length}</div><div class="ss">${htmlSafe(cfg.title)}</div></div>
+      <div class="sbox"><div class="sl">Active</div><div class="sv">${countStatus('active')}</div><div class="ss">patients</div></div>
+      <div class="sbox"><div class="sl">Deceased</div><div class="sv">${countStatus('deceased')}</div><div class="ss">register</div></div>
+      <div class="sbox"><div class="sl">Reversed</div><div class="sv">${countStatus('reversed')}</div><div class="ss">register</div></div>
+      <div class="sbox"><div class="sl">Relocated</div><div class="sv">${countStatus('relocated_overseas')+countStatus('relocated_gozo')}</div><div class="ss">overseas / Gozo</div></div>`;
+  }
+  if(thead){
+    if(isDeceased){
+      thead.innerHTML='<tr><th>ID Number</th><th>Patient</th><th>Sex</th><th>DOB</th><th>Date of RIP</th><th>Age at Death</th><th>Surgery Date</th><th>Stoma Days</th><th>Stoma Type Summary</th><th>Locality</th></tr>';
+    }else if(isReversed){
+      thead.innerHTML='<tr><th>ID Number</th><th>Surname</th><th>Name</th><th>Phone</th><th>Status</th><th>Owner</th><th>Reversal Date</th><th>Consultant</th><th>Last Seen</th><th>Stoma Type Summary</th><th>Locality</th></tr>';
+    }else if(isRelocatedOverseas){
+      thead.innerHTML=isRelocatedGozo?'<tr><th>ID Number</th><th>Patient</th><th>Status</th><th>Last Seen</th><th>Date of Discharge</th><th>Surgery Date</th><th>Consultant</th><th>Surgery Type</th><th>Stoma Type Summary</th></tr>':'<tr><th>ID Number</th><th>Patient</th><th>Status</th><th>Last Seen</th><th>Date of Discharge</th><th>Stoma Type Summary</th></tr>';
+    }else if(isFollowups){
+      thead.innerHTML='<tr><th>Patient</th><th>ID Card</th><th>Phone</th><th>Status</th><th>Owner</th><th>Due Month</th><th>Follow-up Year</th><th>Last Outcome</th><th>Next Follow-up</th><th>Locality</th></tr>';
+    }else{
+      thead.innerHTML='<tr><th>Patient</th><th>ID Card</th><th>Phone</th><th>Status</th><th>Owner</th><th>Due Month</th><th>Last Outcome</th><th>Next Follow-up</th><th>Locality</th></tr>';
+    }
+  }
+  if(!tbody)return;
+  if(!rows.length){tbody.innerHTML=`<tr><td colspan="${isDeceased?10:(isReversed?11:(isRelocatedOverseas?(isRelocatedGozo?9:6):(isFollowups?10:9)))}" class="empty">No ${htmlSafe(cfg.title.toLowerCase())} found.</td></tr>`;return;}
+  tbody.innerHTML=rows.map(p=>{
+    const nm=`${p.first_name||''} ${p.surname||''}`.trim()||'Unnamed patient';
+    const st=patientRegisterStatus(p);
+    if(isDeceased){
+      return `<tr>
+        <td><strong>${htmlSafe(p.id_card||'—')}</strong></td>
+        <td><strong>${htmlSafe(nm)}</strong></td>
+        <td>${htmlSafe(p.sex||'—')}</td>
+        <td>${patientDateText(p.dob)}</td>
+        <td><strong>${patientDateText(p.rip_date)}</strong></td>
+        <td>${htmlSafe(patientAgeAtDeath(p))}</td>
+        <td>${patientDateText(p.surgery_date)}</td>
+        <td>${htmlSafe(patientStomaDays(p))}</td>
+        <td>${patientStomaTypeText(p.stoma_type_summary)}</td>
+        <td>${htmlSafe(p.locality||'—')}</td>
+      </tr>`;
+    }
+    if(isReversed){
+      return `<tr>
+        <td style="font-family:monospace;font-size:12px;"><strong>${htmlSafe(p.id_card||'—')}</strong></td>
+        <td><strong>${htmlSafe(p.surname||'—')}</strong></td>
+        <td><strong>${htmlSafe(p.first_name||'—')}</strong></td>
+        <td>${htmlSafe(p.phone_number||'—')}</td>
+        <td>${patientStatusChip(st)}${p.patient_status_raw?`<br/><span style="font-size:10px;color:var(--muted);">${htmlSafe(p.patient_status_raw)}</span>`:''}</td>
+        <td>${htmlSafe(p.followup_owner||'Common')}</td>
+        <td><strong>${patientDateText(p.reversal_date)}</strong></td>
+        <td>${htmlSafe(p.consultant||'—')}</td>
+        <td>${htmlSafe(p.last_outcome_date||'—')}</td>
+        <td>${patientStomaTypeText(p.stoma_type_summary)}</td>
+        <td>${htmlSafe(p.locality||'—')}</td>
+      </tr>`;
+    }
+    if(isRelocatedOverseas){
+      if(isRelocatedGozo){
+        return `<tr>
+          <td style="font-family:monospace;font-size:12px;"><strong>${htmlSafe(p.id_card||'—')}</strong></td>
+          <td><strong>${htmlSafe(nm)}</strong></td>
+          <td>${patientStatusChip(st)}${p.patient_status_raw?`<br/><span style="font-size:10px;color:var(--muted);">${htmlSafe(p.patient_status_raw)}</span>`:''}</td>
+          <td>${patientDateText(p.last_outcome_date)}</td>
+          <td><strong>${patientDateText(p.discharged_date)}</strong></td>
+          <td>${patientDateText(p.surgery_date)}</td>
+          <td>${htmlSafe(p.consultant||'—')}</td>
+          <td>${htmlSafe(p.surgery_type||'—')}</td>
+          <td>${patientStomaTypeText(p.stoma_type_summary)}</td>
+        </tr>`;
+      }
+      return `<tr>
+        <td style="font-family:monospace;font-size:12px;"><strong>${htmlSafe(p.id_card||'—')}</strong></td>
+        <td><strong>${htmlSafe(nm)}</strong></td>
+        <td>${patientStatusChip(st)}${p.patient_status_raw?`<br/><span style="font-size:10px;color:var(--muted);">${htmlSafe(p.patient_status_raw)}</span>`:''}</td>
+        <td>${patientDateText(p.last_outcome_date)}</td>
+        <td><strong>${patientDateText(p.discharged_date)}</strong></td>
+        <td>${patientStomaTypeText(p.stoma_type_summary)}</td>
+      </tr>`;
+    }
+    return `<tr>
+      <td><strong>${htmlSafe(nm)}</strong></td>
+      <td style="font-family:monospace;font-size:12px;">${htmlSafe(p.id_card||'—')}</td>
+      <td>${htmlSafe(p.phone_number||'—')}</td>
+      <td>${patientStatusChip(st)}${p.patient_status_raw?`<br/><span style="font-size:10px;color:var(--muted);">${htmlSafe(p.patient_status_raw)}</span>`:''}</td>
+      <td>${htmlSafe(p.followup_owner||'Common')}</td>
+      <td>${htmlSafe(patientDueText(p))}</td>
+      ${isFollowups?`<td>${htmlSafe(p.followup_year||'—')}</td>`:''}
+      <td>${htmlSafe(p.last_outcome_date||'—')}</td>
+      <td>${htmlSafe(p.next_followup_mirror||'—')}</td>
+      <td>${htmlSafe(p.locality||'—')}</td>
+    </tr>`;
+  }).join('');
+}
+function printReportPatientGroup(){
+  const cfg=reportPatientGroupConfig();
+  const table=document.getElementById('report-patient-group-table');
+  if(!table){window.print();return;}
+  const w=window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html><head><title>${htmlSafe(cfg.title)} Report</title><style>body{font-family:Arial,sans-serif;padding:20px;color:#1a2e4a}h1{font-size:20px;margin:0 0 4px}h2{font-size:14px;margin:0 0 18px;color:#506070}table{width:100%;border-collapse:collapse;font-size:11px}th{background:#1a2e4a;color:white;text-align:left;padding:7px}td{border-bottom:1px solid #ddd;padding:7px;vertical-align:top}.patient-status-chip,.followup-status-badge,.followup-type-badge{display:inline-block;padding:2px 6px;border-radius:8px;font-size:10px;font-weight:bold;background:#eef;color:#123;margin:1px}</style></head><body><h1>MDH Stoma Care Clinic</h1><h2>${htmlSafe(cfg.title)} Report</h2>${table.outerHTML}</body></html>`);
   w.document.close();w.focus();w.print();
 }
 
@@ -3397,17 +4277,17 @@ async function loadReversalRegister(){
   const tbody=document.getElementById('reversal-tbody');
   const stats=document.getElementById('reversal-stats');
   if(!tbody)return;
-  tbody.innerHTML='<tr><td colspan="8" class="empty">Loading reversal register...</td></tr>';
+  tbody.innerHTML='<tr><td colspan="10" class="empty">Loading reversal register...</td></tr>';
   const year=document.getElementById('rev-year')?.value||'';
   const search=(document.getElementById('rev-search')?.value||'').trim().toLowerCase();
   const{data,error}=await SB.from('patients')
-    .select('id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type')
+    .select('id,first_name,surname,id_card,phone_number,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date,stoma_type_summary')
     .eq('followup_status','reversed')
     .order('surname',{ascending:true})
     .order('first_name',{ascending:true});
   if(error){
     console.error('Reversal register load error:',error);
-    tbody.innerHTML=`<tr><td colspan="8" class="empty">Could not load reversal register: ${htmlSafe(error.message||'Unknown error')}</td></tr>`;
+    tbody.innerHTML=`<tr><td colspan="10" class="empty">Could not load reversal register: ${htmlSafe(error.message||'Unknown error')}</td></tr>`;
     if(stats)stats.innerHTML='<div class="sbox"><div class="sl">Setup Required</div><div class="sv" style="font-size:22px;color:var(--red);">SQL</div><div class="ss">Run the Reversed status SQL first</div></div>';
     return;
   }
@@ -3415,7 +4295,7 @@ async function loadReversalRegister(){
   if(year)patients=patients.filter(p=>String(p.followup_year||'')===String(year));
   if(search){
     patients=patients.filter(p=>[
-      p.first_name,p.surname,p.id_card,p.phone_number,p.followup_owner,p.followup_year,followupMonthName(p.followup_due_month)
+      p.first_name,p.surname,p.id_card,p.phone_number,p.followup_owner,p.consultant,p.followup_year,followupMonthName(p.followup_due_month)
     ].join(' ').toLowerCase().includes(search));
   }
   const ids=patients.map(p=>p.id).filter(Boolean);
@@ -3429,18 +4309,18 @@ async function loadReversalRegister(){
       <div class="sbox"><div class="sl">Appointments</div><div class="sv">${appts.length}</div><div class="ss">recorded history</div></div>
       <div class="sbox"><div class="sl">Seen Records</div><div class="sv">${seenCount}</div><div class="ss" style="color:var(--green)">attended outcomes</div></div>`;
   }
-  if(!patients.length){tbody.innerHTML='<tr><td colspan="8" class="empty">No reversed patients found for this filter.</td></tr>';return;}
+  if(!patients.length){tbody.innerHTML='<tr><td colspan="10" class="empty">No reversed patients found for this filter.</td></tr>';return;}
   tbody.innerHTML=patients.map(p=>{
     const latest=latestByPatient[p.id];
     const nm=`${p.first_name||''} ${p.surname||''}`.trim()||'Unnamed patient';
     const latestLabel=latest?`${latest.appt_date} ${String(latest.appt_slot||'').slice(0,5)} · ${statusLabel(latest.status)}`:'No appointment history';
     const nurse=latest?.staff?.full_name||latest?.bank_staff?.full_name||(!latest?.assigned_to&&!latest?.bank_staff_id&&latest?'Common':'—');
     return `<tr class="followup-click-row" onclick="openFollowupHistory('${p.id}')" title="Open full history">
-      <td><strong>${htmlSafe(nm)}</strong>${followupStatusBadge('reversed',true)}<br/><span style="font-size:10px;color:var(--muted);">Click row for full history</span></td>
-      <td style="font-family:monospace;font-size:12px;">${htmlSafe(p.id_card||'—')}</td>
+      <td style="font-family:monospace;font-size:12px;"><strong>${htmlSafe(p.id_card||'—')}</strong></td>
+      <td><strong>${htmlSafe(p.surname||'—')}</strong>${followupStatusBadge('reversed',true)}<br/><span style="font-size:10px;color:var(--muted);">Click row for full history</span></td>
+      <td><strong>${htmlSafe(p.first_name||'—')}</strong></td>
       <td>${htmlSafe(p.phone_number||'—')}</td>
       <td>${htmlSafe(p.followup_owner||'Common')}</td>
-      <td>${htmlSafe(p.followup_year||'—')}</td>
       <td>${htmlSafe(latestLabel)}</td>
       <td>${htmlSafe(nurse)}</td>
       <td onclick="event.stopPropagation();"><button class="ncb-btn" onclick="openFollowupHistory('${p.id}')" style="background:#edf1f5;color:var(--navy);">History</button><button class="ncb-btn" onclick="markReversalActive('${p.id}')" style="margin-left:4px;background:#e8f5f4;color:var(--teal);">Move to Active</button></td>
@@ -3476,12 +4356,12 @@ async function loadOvertimeAudit(){
   const search=(document.getElementById('ot-audit-search')?.value||'').trim().toLowerCase();
   const start=month?`${year}-${month}-01`:`${year}-01-01`;
   const end=month?monthEndDate(year,month):`${year}-12-31`;
-  tbody.innerHTML='<tr><td colspan="9" class="empty">Loading overtime audit...</td></tr>';
+  tbody.innerHTML='<tr><td colspan="9" class="empty">Loading Over Time Audit...</td></tr>';
 
   const{data:bankRaw,error:bankError}=await SB.from('bank_staff_assignments').select('*').gte('work_date',start).lte('work_date',end).order('work_date',{ascending:false});
   const{data:coreRaw,error:coreError}=await SB.from('leave_records').select('*, staff(full_name,role)').eq('leave_type','overtime').gte('start_date',start).lte('start_date',end).order('start_date',{ascending:false});
   if(bankError&&coreError){
-    tbody.innerHTML=`<tr><td colspan="9" class="empty">Could not load overtime audit: ${htmlSafe(bankError.message||coreError.message||'Unknown error')}</td></tr>`;
+    tbody.innerHTML=`<tr><td colspan="9" class="empty">Could not load Over Time Audit: ${htmlSafe(bankError.message||coreError.message||'Unknown error')}</td></tr>`;
     return;
   }
   const bankIds=uniqueNonEmpty((bankRaw||[]).map(b=>b.bank_staff_id));
@@ -3533,7 +4413,7 @@ async function loadOvertimeAudit(){
   const active=filtered.filter(r=>(r.status||'active')==='active').length;
   const cancelled=filtered.filter(r=>(r.status||'active')==='cancelled').length;
   const summary=document.getElementById('ot-audit-summary');
-  if(summary)summary.textContent=`${filtered.length} OT audit record${filtered.length!==1?'s':''} shown — ${active} active/booked, ${cancelled} cancelled.`;
+  if(summary)summary.textContent=`${filtered.length} Over Time Audit record${filtered.length!==1?'s':''} shown — ${active} active/booked, ${cancelled} cancelled.`;
   if(!filtered.length){tbody.innerHTML='<tr><td colspan="9" class="empty">No overtime records found for these filters.</td></tr>';return;}
   tbody.innerHTML=filtered.map(r=>`<tr>
     <td>${htmlSafe(r.date||'—')}</td>
@@ -3549,11 +4429,11 @@ async function loadOvertimeAudit(){
 }
 function printOvertimeAudit(){
   const table=document.getElementById('ot-audit-table');
-  if(!table){alert('No overtime audit table found.');return;}
+  if(!table){alert('No Over Time Audit table found.');return;}
   const year=document.getElementById('ot-audit-year')?.value||'';
   const month=document.getElementById('ot-audit-month')?.selectedOptions?.[0]?.textContent||'All Months';
   const w=window.open('','_blank');
-  w.document.write(`<!DOCTYPE html><html><head><title>Overtime Audit</title><style>body{font-family:Arial,sans-serif;padding:20px;color:#1a2e4a}h1{font-size:20px;margin:0 0 4px}h2{font-size:14px;margin:0 0 18px;color:#506070}table{width:100%;border-collapse:collapse;font-size:11px}th{background:#1a2e4a;color:white;text-align:left;padding:7px}td{border-bottom:1px solid #ddd;padding:7px;vertical-align:top}.status-badge,.ot-badge{display:inline-block;padding:2px 6px;border-radius:8px;font-size:10px;font-weight:bold;background:#eef;color:#123;margin:1px}</style></head><body><h1>MDH Stoma Care Clinic</h1><h2>Overtime Audit — ${htmlSafe(month)} ${htmlSafe(year)}</h2>${table.outerHTML}</body></html>`);
+  w.document.write(`<!DOCTYPE html><html><head><title>Over Time Audit</title><style>body{font-family:Arial,sans-serif;padding:20px;color:#1a2e4a}h1{font-size:20px;margin:0 0 4px}h2{font-size:14px;margin:0 0 18px;color:#506070}table{width:100%;border-collapse:collapse;font-size:11px}th{background:#1a2e4a;color:white;text-align:left;padding:7px}td{border-bottom:1px solid #ddd;padding:7px;vertical-align:top}.status-badge,.ot-badge{display:inline-block;padding:2px 6px;border-radius:8px;font-size:10px;font-weight:bold;background:#eef;color:#123;margin:1px}</style></head><body><h1>MDH Stoma Care Clinic</h1><h2>Over Time Audit — ${htmlSafe(month)} ${htmlSafe(year)}</h2>${table.outerHTML}</body></html>`);
   w.document.close();w.focus();setTimeout(()=>w.print(),250);
 }
 
@@ -3565,10 +4445,10 @@ async function openModal(type,...args){
     html=`<h2>Book Patient</h2>
       <div class="msub">${date} — ${slot}${nurseName?` · ${nurseName}`:''}</div>
       <div class="fg"><label>ID Card Number * — patient registry lookup</label><input type="text" id="p-id" placeholder="Enter ID card first" onblur="lookupPatientByIdForBooking('p-id','p-fn','p-sn','p-phone','p-reg-note')" onkeydown="if(event.key==='Enter'){event.preventDefault();lookupPatientByIdForBooking('p-id','p-fn','p-sn','p-phone','p-reg-note')}"/></div>
-      <div id="p-reg-note" class="registry-lookup-note">Enter the ID card first. Existing patients will auto-fill and keep their history.</div>
-      <div class="fg"><label>First Name *</label><input type="text" id="p-fn" placeholder="First name"/></div>
-      <div class="fg"><label>Surname *</label><input type="text" id="p-sn" placeholder="Surname"/></div>
-      <div class="fg"><label>Phone Number</label><input type="tel" id="p-phone" placeholder="e.g. +356 9999 9999"/></div>
+      <div id="p-reg-note" class="registry-lookup-note">Enter the ID card first. Name, surname and phone are locked here and can only be changed in the New Patient tab.</div>
+      <div class="fg"><label>First Name *</label><input type="text" id="p-fn" class="locked-field" disabled tabindex="-1" autocomplete="off" placeholder="Loaded from registry"/></div>
+      <div class="fg"><label>Surname *</label><input type="text" id="p-sn" class="locked-field" disabled tabindex="-1" autocomplete="off" placeholder="Loaded from registry"/></div>
+      <div class="fg"><label>Phone Number</label><input type="tel" id="p-phone" class="locked-field" disabled tabindex="-1" autocomplete="off" placeholder="Loaded from registry"/></div>
       ${followupBookingFields('p',{followup_type:'new_case',followup_owner:nurseName||'Common'})}
       <div class="mact">
         <button class="btn-cancel" onclick="closeModal()">Cancel</button>
@@ -3602,16 +4482,21 @@ async function openModal(type,...args){
 }
 
 async function saveAppt(slot,date,nurseId){
+  const idEl=document.getElementById('p-id');
   const fn=document.getElementById('p-fn').value.trim();
   const sn=document.getElementById('p-sn').value.trim();
-  const idno=normaliseIdCard(document.getElementById('p-id').value);
-  const phone=document.getElementById('p-phone')?.value.trim()||'';
-  if(document.getElementById('p-id')?.dataset.deceased==='true'){alert('This patient is marked as deceased. Change the patient status first before booking.');return;}
-  if(!fn||!sn||!idno){alert('Please enter the ID card first, then confirm first name and surname.');return;}
+  const idno=normaliseIdCard(idEl?.value);
+  if(!idno){alert('Please enter the patient ID card first.');return;}
+  if(!idEl.dataset.patientId){
+    await lookupPatientByIdForBooking('p-id','p-fn','p-sn','p-phone','p-reg-note');
+  }
+  if(idEl.dataset.deceased==='true'){alert('This patient is marked as deceased. Change the patient status first before booking.');return;}
+  const patId=idEl.dataset.patientId;
+  if(!patId){alert('No saved patient was found for this ID card. Please add the patient in the New Patient tab first, then return here to book.');return;}
+  if(!fn||!sn){alert('This saved patient is missing a first name or surname. Please update the record in the New Patient tab first.');return;}
   const followupPayload=readFollowupBookingPayload('p');
-  const saved=await saveOrUpdatePatientByIdCard(idno,fn,sn,phone,followupPayload);
-  if(saved.error||!saved.patient?.id){alert('Error saving patient registry record: '+(saved.error?.message||''));return;}
-  const patId=saved.patient.id;
+  const{error:pErr}=await SB.from('patients').update(followupPayload).eq('id',patId);
+  if(pErr){alert('Could not update patient follow-up details: '+pErr.message);return;}
   const{error}=await SB.from('appointments').insert({
     patient_id:patId,appt_date:date,appt_slot:slot,
     assigned_to:nurseId&&nurseId!=='undefined'&&nurseId!==''?nurseId:null,
@@ -3644,11 +4529,11 @@ async function saveLeave(){
 }
 
 async function delOT(id){
-  if(!confirm('Cancel this OT entry and keep it in the overtime audit?'))return;
+  if(!confirm('Cancel this OT entry and keep it in the Over Time Audit?'))return;
   const currentUser=await getCurrentUserForAudit();
   let{error}=await SB.from('bank_staff_assignments').update({status:'cancelled',cancelled_at:new Date().toISOString(),cancelled_by_email:currentUser.email,cancelled_by_name:currentUser.name}).eq('id',id);
   if(error && String(error.message||'').toLowerCase().includes('column')){
-    alert('OT audit columns are not installed yet. Please run the OT audit SQL first, then cancel the OT entry again.');
+    alert('Over Time Audit columns are not installed yet. Please run the Over Time Audit SQL first, then cancel the OT entry again.');
     return;
   }
   if(error){alert('Could not cancel OT entry: '+error.message);return;}
