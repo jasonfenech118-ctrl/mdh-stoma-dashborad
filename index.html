@@ -61,6 +61,12 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .new-patient-note{margin-top:14px;padding:10px 12px;border-radius:9px;font-size:12px;font-weight:700;background:#f8fafc;color:var(--muted);border:1px solid var(--border);}
 .new-patient-note.success{background:#e8f5f4;color:var(--teal);border-color:#b7ddd9;}
 .new-patient-note.error{background:#f8d7da;color:#721c24;border-color:#f1b0b7;}
+.new-patient-note:empty{display:none;}
+.choice-group{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:4px;}
+.choice-chip{display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border:1px solid var(--border);border-radius:999px;background:white;font-size:12px;font-weight:700;color:var(--navy);cursor:pointer;user-select:none;}
+.choice-chip input{margin:0;accent-color:var(--teal);}
+.choice-chip:has(input:checked){background:#e8f5f4;border-color:#93d4ce;color:var(--teal);}
+.choice-hint{font-size:10px;color:var(--muted);margin-top:4px;}
 
 
 /* PATIENT REGISTER LIST */
@@ -512,13 +518,13 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
   <div class="tabs grouped-tabs">
     <button type="button" class="tab tab-single" data-tab="new-patient" onclick="switchTab('new-patient',this)">Add Patient</button>
     <div class="tab-group">
-      <button type="button" class="tab" data-tabs="patients-all,patients-active,patients-inpatients,patients-reversed,patients-deceased,patients-relocated-overseas,patients-relocated-gozo" onclick="toggleTabGroup(event,this)">Patients <span class="tab-caret">▾</span></button>
+      <button type="button" class="tab" data-tabs="patients-all,patients-active,patients-inpatients,patients-reversed,patients-deceased,patients-relocated-overseas,patients-relocated-gozo" onclick="toggleTabGroup(event,this)">Patients Registry <span class="tab-caret">▾</span></button>
       <div class="tab-dd-menu">
         <button type="button" class="tab-dd-item" data-tab="patients-all" onclick="switchTab('patients-all',this)">All Patients <small>Full register</small></button>
         <button type="button" class="tab-dd-item" data-tab="patients-active" onclick="switchTab('patients-active',this)">Active Patients <small>Current</small></button>
         <button type="button" class="tab-dd-item" data-tab="patients-inpatients" onclick="switchTab('patients-inpatients',this)">Inpatients <small>Ward</small></button>
-        <button type="button" class="tab-dd-item" data-tab="patients-reversed" onclick="switchTab('patients-reversed',this)">Reversed <small>Register</small></button>
-        <button type="button" class="tab-dd-item" data-tab="patients-deceased" onclick="switchTab('patients-deceased',this)">Deceased <small>Register</small></button>
+        <button type="button" class="tab-dd-item" data-tab="patients-reversed" onclick="switchTab('patients-reversed',this)">Reversed Patients <small>Register</small></button>
+        <button type="button" class="tab-dd-item" data-tab="patients-deceased" onclick="switchTab('patients-deceased',this)">Deceased Patients <small>Register</small></button>
         <button type="button" class="tab-dd-item" data-tab="patients-relocated-overseas" onclick="switchTab('patients-relocated-overseas',this)">Relocated Overseas <small>Register</small></button>
         <button type="button" class="tab-dd-item" data-tab="patients-relocated-gozo" onclick="switchTab('patients-relocated-gozo',this)">Relocated to Gozo <small>Register</small></button>
       </div>
@@ -546,8 +552,8 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
         <button type="button" class="tab-dd-item" data-tab="reports" onclick="switchTab('reports',this)">Reports &amp; Charts <small>KPIs</small></button>
         <button type="button" class="tab-dd-item" data-tab="report-followups" onclick="switchTab('report-followups',this)">Follow-Ups <small>Due lists</small></button>
         <button type="button" class="tab-dd-item" data-tab="report-active-patients" onclick="switchTab('report-active-patients',this)">Active Patients <small>Register</small></button>
-        <button type="button" class="tab-dd-item" data-tab="report-deceased" onclick="switchTab('report-deceased',this)">Deceased <small>Register</small></button>
-        <button type="button" class="tab-dd-item" data-tab="report-reversed" onclick="switchTab('report-reversed',this)">Reversed <small>Register</small></button>
+        <button type="button" class="tab-dd-item" data-tab="report-deceased" onclick="switchTab('report-deceased',this)">Deceased Patients <small>Register</small></button>
+        <button type="button" class="tab-dd-item" data-tab="report-reversed" onclick="switchTab('report-reversed',this)">Reversed Patients <small>Register</small></button>
         <button type="button" class="tab-dd-item" data-tab="report-relocated-overseas" onclick="switchTab('report-relocated-overseas',this)">Relocated Overseas <small>Register</small></button>
         <button type="button" class="tab-dd-item" data-tab="report-relocated-gozo" onclick="switchTab('report-relocated-gozo',this)">Relocated to Gozo <small>Register</small></button>
         <button type="button" class="tab-dd-item" data-tab="report-patients" onclick="switchTab('report-patients',this)">Patients <small>Booked period</small></button>
@@ -566,11 +572,11 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
         <div class="new-patient-section">
           <div class="new-patient-section-title">Patient Details</div>
           <div class="new-patient-grid">
-            <div class="fg"><label>ID Number *</label><input type="text" id="np-id" placeholder="Enter ID number" onblur="lookupNewPatientById()" onkeydown="if(event.key==='Enter'){event.preventDefault();lookupNewPatientById();}"/></div>
-            <div class="fg"><label>Surname *</label><input type="text" id="np-sn" placeholder="Surname"/></div>
-            <div class="fg"><label>Name *</label><input type="text" id="np-fn" placeholder="Name"/></div>
-            <div class="fg"><label>DOB</label><input type="date" id="np-dob"/></div>
-            <div class="fg"><label>Locality</label><input type="text" id="np-locality" placeholder="Locality"/></div>
+            <div class="fg"><label>ID Number *</label><input type="text" id="np-id" placeholder="Enter ID number" required onblur="lookupNewPatientById()" onkeydown="if(event.key==='Enter'){event.preventDefault();lookupNewPatientById();}"/></div>
+            <div class="fg"><label>Surname *</label><input type="text" id="np-sn" placeholder="Surname" required/></div>
+            <div class="fg"><label>Name *</label><input type="text" id="np-fn" placeholder="Name" required/></div>
+            <div class="fg"><label>DOB *</label><input type="date" id="np-dob" required/></div>
+            <div class="fg"><label>Locality *</label><select id="np-locality" required><option value="">Select locality</option><option value="Attard">Attard</option><option value="Balzan">Balzan</option><option value="Birgu (Vittoriosa)">Birgu (Vittoriosa)</option><option value="Birkirkara">Birkirkara</option><option value="Birżebbuġa">Birżebbuġa</option><option value="Bormla (Cospicua)">Bormla (Cospicua)</option><option value="Dingli">Dingli</option><option value="Fgura">Fgura</option><option value="Floriana">Floriana</option><option value="Gudja">Gudja</option><option value="Gżira">Gżira</option><option value="Ħamrun">Ħamrun</option><option value="Iklin">Iklin</option><option value="Isla (Senglea)">Isla (Senglea)</option><option value="Kalkara">Kalkara</option><option value="Kirkop">Kirkop</option><option value="Lija">Lija</option><option value="Luqa">Luqa</option><option value="Marsa">Marsa</option><option value="Marsaskala">Marsaskala</option><option value="Marsaxlokk">Marsaxlokk</option><option value="Mdina">Mdina</option><option value="Mellieħa">Mellieħa</option><option value="Mġarr">Mġarr</option><option value="Mosta">Mosta</option><option value="Mqabba">Mqabba</option><option value="Msida">Msida</option><option value="Mtarfa">Mtarfa</option><option value="Naxxar">Naxxar</option><option value="Paola">Paola</option><option value="Pembroke">Pembroke</option><option value="Pietà">Pietà</option><option value="Qormi">Qormi</option><option value="Qrendi">Qrendi</option><option value="Rabat">Rabat</option><option value="Safi">Safi</option><option value="San Ġiljan (St. Julian’s)">San Ġiljan (St. Julian’s)</option><option value="San Ġwann">San Ġwann</option><option value="Santa Luċija">Santa Luċija</option><option value="Santa Venera">Santa Venera</option><option value="Siġġiewi">Siġġiewi</option><option value="Sliema">Sliema</option><option value="Swieqi">Swieqi</option><option value="Ta’ Xbiex">Ta’ Xbiex</option><option value="Tarxien">Tarxien</option><option value="Valletta">Valletta</option><option value="Xgħajra">Xgħajra</option><option value="Żabbar">Żabbar</option><option value="Żebbuġ">Żebbuġ</option><option value="Żejtun">Żejtun</option><option value="Żurrieq">Żurrieq</option><option value="Gozo">Gozo</option></select></div>
             <div class="fg"><label>Sex</label><select id="np-sex"><option value="">Select sex</option><option value="Male">Male</option><option value="Female">Female</option></select></div>
             <div class="fg"><label>Contact Number</label><input type="tel" id="np-phone" placeholder="Contact number"/></div>
           </div>
@@ -579,8 +585,8 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
         <div class="new-patient-section">
           <div class="new-patient-section-title">Stoma + Care</div>
           <div class="new-patient-grid">
-            <div class="fg"><label>Surgery Date</label><input type="date" id="np-surgery-date"/></div>
-            <div class="fg"><label>Surgery Event Operation Performed</label><input type="text" id="np-surgery-event-operation" placeholder="Operation performed"/></div>
+            <div class="fg"><label>Surgery Date *</label><input type="date" id="np-surgery-date" required/></div>
+            <div class="fg"><label>OperationPerformed</label><input type="text" id="np-operation-performed" placeholder="Operation performed"/></div>
             <div class="fg full"><label>Findings</label><textarea id="np-findings" placeholder="Findings"></textarea></div>
             <div class="fg"><label>Stoma Type</label><input type="text" id="np-stoma-type" placeholder="e.g. Colostomy, Ileostomy, Urostomy"/></div>
           </div>
@@ -591,12 +597,14 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
           <div class="new-patient-grid">
             <div class="fg full"><label>Past Medical History</label><textarea id="np-pmh" placeholder="Past medical history"></textarea></div>
             <div class="fg full"><label>Past Surgical History</label><textarea id="np-psh" placeholder="Past surgical history"></textarea></div>
-            <div class="fg full"><label>Drug History</label><textarea id="np-drug-history" placeholder="Drug history"></textarea></div>
+            <div class="fg full"><label>Medical History / Current Medications</label><div class="choice-group" id="np-medication-history"><label class="choice-chip"><input type="checkbox" name="np-med-history" value="No medications used" onchange="handleMedicationSelection()"/> No medications used</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="OHAs" onchange="handleMedicationSelection()"/> OHAs</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Metformin" onchange="handleMedicationSelection()"/> Metformin</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Insulin" onchange="handleMedicationSelection()"/> Insulin</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Antiplatelets" onchange="handleMedicationSelection()"/> Antiplatelets</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Anticoagulants" onchange="handleMedicationSelection()"/> Anticoagulants</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Antihypertensives" onchange="handleMedicationSelection()"/> Antihypertensives</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Statins" onchange="handleMedicationSelection()"/> Statins</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Steroids" onchange="handleMedicationSelection()"/> Steroids</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Immunosuppressants" onchange="handleMedicationSelection()"/> Immunosuppressants</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="PPIs" onchange="handleMedicationSelection()"/> PPIs</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Opioids" onchange="handleMedicationSelection()"/> Opioids</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Antibiotics" onchange="handleMedicationSelection()"/> Antibiotics</label><label class="choice-chip"><input type="checkbox" name="np-med-history" value="Other" onchange="handleMedicationSelection()"/> Other</label></div><div class="choice-hint">Select all that apply. Use “No medications used” when applicable.</div><input type="text" id="np-medication-other" placeholder="Other medications" style="margin-top:8px;display:none;"/></div>
+            <div class="fg full"><label>Social History</label><textarea id="np-social-history" placeholder="Social history"></textarea></div>
+            <div class="fg full"><label>DPA *</label><div class="choice-group" id="np-dpa-group"><label class="choice-chip"><input type="radio" name="np-dpa" value="Yes" required/> Yes</label><label class="choice-chip"><input type="radio" name="np-dpa" value="No" required/> No</label><label class="choice-chip"><input type="radio" name="np-dpa" value="N/A" required/> N/A</label></div></div>
             <div class="fg full"><label>Complications</label><textarea id="np-complications" placeholder="Complications"></textarea></div>
           </div>
         </div>
 
-        <div id="np-reg-note" class="new-patient-note">Enter an ID number to check whether the patient already exists.</div>
+        <div id="np-reg-note" class="new-patient-note"></div>
         <div class="new-patient-actions">
           <button class="btn-save" onclick="saveNewPatientTab()">Save Patient</button>
           <button class="btn-cancel" onclick="clearNewPatientForm()">Clear Form</button>
@@ -619,8 +627,8 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
           <option value="patients-all">All Patients</option>
           <option value="patients-active">Active Patients</option>
           <option value="patients-inpatients">Inpatients</option>
-          <option value="patients-reversed">Reversed</option>
-          <option value="patients-deceased">Deceased</option>
+          <option value="patients-reversed">Reversed Patients</option>
+          <option value="patients-deceased">Deceased Patients</option>
           <option value="patients-relocated-overseas">Relocated Overseas</option>
           <option value="patients-relocated-gozo">Relocated to Gozo</option>
         </select>
@@ -1415,6 +1423,47 @@ function initNewPatientYearOptions(){
 function newPatientInputValue(id){
   return document.getElementById(id)?.value?.trim()||'';
 }
+function setRadioValue(name,value){
+  document.querySelectorAll(`input[name="${name}"]`).forEach(el=>{el.checked=String(el.value)===String(value||'');});
+}
+function getRadioValue(name){
+  return document.querySelector(`input[name="${name}"]:checked`)?.value||'';
+}
+function setCheckedValues(name,values){
+  const set=new Set(Array.isArray(values)?values:(String(values||'').split(',').map(x=>x.trim()).filter(Boolean)));
+  document.querySelectorAll(`input[name="${name}"]`).forEach(el=>{el.checked=set.has(el.value);});
+  handleMedicationSelection();
+}
+function getCheckedValues(name){
+  return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map(el=>el.value);
+}
+function handleMedicationSelection(){
+  const selected=getCheckedValues('np-med-history');
+  const none=document.querySelector('input[name="np-med-history"][value="No medications used"]');
+  if(none&&none.checked&&selected.length>1){
+    document.querySelectorAll('input[name="np-med-history"]').forEach(el=>{if(el.value!=='No medications used')el.checked=false;});
+  }
+  const other=document.querySelector('input[name="np-med-history"][value="Other"]');
+  const otherInput=document.getElementById('np-medication-other');
+  if(otherInput)otherInput.style.display=other?.checked?'block':'none';
+  if(otherInput&&!(other?.checked))otherInput.value='';
+}
+function medicationHistoryText(values,other){
+  const arr=Array.isArray(values)?values.filter(Boolean):[];
+  const extra=String(other||'').trim();
+  return [...arr,extra?`Other: ${extra}`:''].filter(Boolean).join(', ');
+}
+function medicationHistoryFromData(data){
+  let vals=[];
+  const raw=data?.medication_history;
+  if(Array.isArray(raw))vals=raw;
+  else if(raw&&typeof raw==='object')vals=Object.values(raw).flat().filter(Boolean);
+  else if(typeof raw==='string'&&raw.trim()){
+    try{const parsed=JSON.parse(raw); vals=Array.isArray(parsed)?parsed:[];}catch(e){vals=raw.split(',').map(x=>x.trim()).filter(Boolean);}
+  }
+  if(!vals.length&&data?.drug_history)vals=String(data.drug_history).split(',').map(x=>x.trim()).filter(Boolean).filter(x=>!x.toLowerCase().startsWith('other:'));
+  return vals;
+}
 function plainStomaTypeValue(value){
   if(value==null)return '';
   if(Array.isArray(value))return value.filter(Boolean).join(', ');
@@ -1440,18 +1489,20 @@ function newPatientNote(text,type=''){
   note.textContent=text;
 }
 function clearNewPatientForm(){
-  ['np-id','np-sn','np-fn','np-dob','np-locality','np-sex','np-phone','np-surgery-date','np-surgery-event-operation','np-findings','np-stoma-type','np-pmh','np-psh','np-drug-history','np-complications'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-  newPatientNote('Enter an ID number to check whether the patient already exists.');
+  ['np-id','np-sn','np-fn','np-dob','np-locality','np-sex','np-phone','np-surgery-date','np-operation-performed','np-findings','np-stoma-type','np-pmh','np-psh','np-medication-other','np-social-history','np-complications'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.querySelectorAll('input[name="np-med-history"],input[name="np-dpa"]').forEach(el=>{el.checked=false;});
+  handleMedicationSelection();
+  newPatientNote('');
 }
 async function lookupNewPatientById(){
   const idEl=document.getElementById('np-id');
   if(!idEl)return null;
   const id=normaliseIdCard(idEl.value);
   idEl.value=id;
-  if(!id){newPatientNote('Enter an ID number to check whether the patient already exists.');return null;}
+  if(!id){newPatientNote('');return null;}
   newPatientNote('Checking saved patient registry...');
   const{data,error}=await SB.from('patients')
-    .select('id,first_name,surname,id_card,phone_number,dob,locality,sex,surgery_date,surgery_event_operation_performed,findings,stoma_type_summary,past_medical_history,past_surgical_history,drug_history,clinical_complications,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date')
+    .select('id,first_name,surname,id_card,phone_number,dob,locality,sex,surgery_date,operation_performed,surgery_event_operation_performed,findings,stoma_type_summary,past_medical_history,past_surgical_history,drug_history,medication_history,medication_history_other,social_history,dpa_status,clinical_complications,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date')
     .ilike('id_card',id)
     .maybeSingle();
   if(error){
@@ -1467,12 +1518,16 @@ async function lookupNewPatientById(){
     const locEl=document.getElementById('np-locality'); if(locEl)locEl.value=data.locality||'';
     const sexEl=document.getElementById('np-sex'); if(sexEl)sexEl.value=data.sex||'';
     const surgEl=document.getElementById('np-surgery-date'); if(surgEl)surgEl.value=String(data.surgery_date||'').slice(0,10);
-    const opEl=document.getElementById('np-surgery-event-operation'); if(opEl)opEl.value=data.surgery_event_operation_performed||'';
+    const opEl=document.getElementById('np-operation-performed'); if(opEl)opEl.value=data.operation_performed||data.surgery_event_operation_performed||'';
     const findingsEl=document.getElementById('np-findings'); if(findingsEl)findingsEl.value=data.findings||'';
     const stomaEl=document.getElementById('np-stoma-type'); if(stomaEl)stomaEl.value=plainStomaTypeValue(data.stoma_type_summary);
     const pmhEl=document.getElementById('np-pmh'); if(pmhEl)pmhEl.value=data.past_medical_history||'';
     const pshEl=document.getElementById('np-psh'); if(pshEl)pshEl.value=data.past_surgical_history||'';
-    const drugEl=document.getElementById('np-drug-history'); if(drugEl)drugEl.value=data.drug_history||'';
+    setCheckedValues('np-med-history',medicationHistoryFromData(data));
+    const medOtherEl=document.getElementById('np-medication-other'); if(medOtherEl)medOtherEl.value=data.medication_history_other||'';
+    handleMedicationSelection();
+    const socialEl=document.getElementById('np-social-history'); if(socialEl)socialEl.value=data.social_history||'';
+    setRadioValue('np-dpa',data.dpa_status||'');
     const compEl=document.getElementById('np-complications'); if(compEl)compEl.value=data.clinical_complications||'';
     // Follow-up planning fields are intentionally not shown or changed in Add Patient.
     newPatientNote(`Saved patient found: ${(data.first_name||'')} ${(data.surname||'')}. Saving will update this existing record.`, normaliseFollowupStatus(data.followup_status)==='deceased'?'error':'success');
@@ -1487,18 +1542,32 @@ async function saveNewPatientTab(){
   const id=normaliseIdCard(document.getElementById('np-id')?.value||'');
   const phone=newPatientInputValue('np-phone');
   if(!id||!sn||!fn){alert('Please enter ID number, surname and name.');return;}
+  const dob=newPatientInputValue('np-dob');
+  const locality=newPatientInputValue('np-locality');
+  const surgeryDate=newPatientInputValue('np-surgery-date');
+  const dpaStatus=getRadioValue('np-dpa');
+  if(!dob){alert('DOB is required.');return;}
+  if(!locality){alert('Locality is required.');return;}
+  if(!surgeryDate){alert('Surgery Date is required.');return;}
+  if(!dpaStatus){alert('Please select DPA: Yes, No, or N/A.');return;}
   const stomaType=newPatientInputValue('np-stoma-type');
+  const medicationValues=getCheckedValues('np-med-history');
+  const medicationOther=newPatientInputValue('np-medication-other');
   const payload={
-    dob:newPatientInputValue('np-dob')||null,
-    locality:newPatientInputValue('np-locality')||null,
+    dob:dob||null,
+    locality:locality||null,
     sex:newPatientInputValue('np-sex')||null,
-    surgery_date:newPatientInputValue('np-surgery-date')||null,
-    surgery_event_operation_performed:newPatientInputValue('np-surgery-event-operation')||null,
+    surgery_date:surgeryDate||null,
+    operation_performed:newPatientInputValue('np-operation-performed')||null,
     findings:newPatientInputValue('np-findings')||null,
     stoma_type_summary:stomaTypePayload(stomaType),
     past_medical_history:newPatientInputValue('np-pmh')||null,
     past_surgical_history:newPatientInputValue('np-psh')||null,
-    drug_history:newPatientInputValue('np-drug-history')||null,
+    medication_history:medicationValues.length?medicationValues:null,
+    medication_history_other:medicationOther||null,
+    drug_history:medicationHistoryText(medicationValues,medicationOther)||null,
+    social_history:newPatientInputValue('np-social-history')||null,
+    dpa_status:dpaStatus||null,
     clinical_complications:newPatientInputValue('np-complications')||null
   };
   if(!payload.stoma_type_summary)delete payload.stoma_type_summary;
@@ -2679,7 +2748,7 @@ function clearPatientRebookSearch(){
   if(box)box.innerHTML='<div class="patient-search-empty">Enter at least 2 characters to search.</div>';
 }
 async function openPatientRebookModal(patientId){
-  const{data:pat,error}=await SB.from('patients').select('id,first_name,surname,id_card,phone_number,dob,locality,sex,surgery_date,surgery_event_operation_performed,findings,stoma_type_summary,past_medical_history,past_surgical_history,drug_history,clinical_complications,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date').eq('id',patientId).maybeSingle();
+  const{data:pat,error}=await SB.from('patients').select('id,first_name,surname,id_card,phone_number,dob,locality,sex,surgery_date,operation_performed,surgery_event_operation_performed,findings,stoma_type_summary,past_medical_history,past_surgical_history,drug_history,medication_history,medication_history_other,social_history,dpa_status,clinical_complications,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date').eq('id',patientId).maybeSingle();
   if(error||!pat){alert('Could not open this patient for rebooking.');return;}
   if(normaliseFollowupStatus(pat.followup_status)==='deceased'){alert('This patient is marked as deceased and is kept in the separate deceased register. Change the status first before rebooking.');return;}
   const{data:bankRows}=await SB.from('bank_staff').select('id,full_name').order('full_name');
@@ -2742,7 +2811,7 @@ async function lookupPatientByIdForBooking(idInputId,firstInputId,surnameInputId
   }
   if(note){note.className='registry-lookup-note';note.textContent='Checking saved patient registry...';}
   const{data,error}=await SB.from('patients')
-    .select('id,first_name,surname,id_card,phone_number,dob,locality,sex,surgery_date,surgery_event_operation_performed,findings,stoma_type_summary,past_medical_history,past_surgical_history,drug_history,clinical_complications,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date')
+    .select('id,first_name,surname,id_card,phone_number,dob,locality,sex,surgery_date,operation_performed,surgery_event_operation_performed,findings,stoma_type_summary,past_medical_history,past_surgical_history,drug_history,medication_history,medication_history_other,social_history,dpa_status,clinical_complications,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date')
     .ilike('id_card',id)
     .maybeSingle();
   if(error){
@@ -2789,7 +2858,7 @@ async function saveOrUpdatePatientByIdCard(idCard,firstName,surname,phone,follow
   const id=normaliseIdCard(idCard);
   if(!id||!firstName||!surname)return {patient:null,error:{message:'Missing patient details.'}};
   const existing=await SB.from('patients')
-    .select('id,first_name,surname,id_card,phone_number,dob,locality,sex,surgery_date,surgery_event_operation_performed,findings,stoma_type_summary,past_medical_history,past_surgical_history,drug_history,clinical_complications,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date')
+    .select('id,first_name,surname,id_card,phone_number,dob,locality,sex,surgery_date,operation_performed,surgery_event_operation_performed,findings,stoma_type_summary,past_medical_history,past_surgical_history,drug_history,medication_history,medication_history_other,social_history,dpa_status,clinical_complications,followup_owner,followup_due_month,followup_year,followup_status,followup_type,consultant,reversal_date')
     .ilike('id_card',id)
     .maybeSingle();
   if(existing.error)return {patient:null,error:existing.error};
@@ -4129,8 +4198,8 @@ async function loadReportPatientsPage(){
 const REPORT_PATIENT_GROUP_CONFIG={
   'report-followups':{mode:'followups',title:'Follow-Ups',subtitle:'Patients requiring follow-up planning, excluding closed groups.'},
   'report-active-patients':{status:'active',title:'Active Patients',subtitle:'Patients from the active registry, including paused and inpatient subgroups.'},
-  'report-deceased':{status:'deceased',title:'Deceased',subtitle:'Deceased register, sorted by latest Date of RIP first.'},
-  'report-reversed':{status:'reversed',title:'Reversed',subtitle:'Patients in the reversed register.'},
+  'report-deceased':{status:'deceased',title:'Deceased Patients',subtitle:'Deceased patients register, sorted by latest Date of RIP first.'},
+  'report-reversed':{status:'reversed',title:'Reversed Patients',subtitle:'Patients in the reversed patients register.'},
   'report-relocated-overseas':{status:'relocated_overseas',title:'Relocated Overseas',subtitle:'Patients marked as relocated overseas.'},
   'report-relocated-gozo':{status:'relocated_gozo',title:'Relocated to Gozo',subtitle:'Patients marked as relocated to Gozo.'}
 };
