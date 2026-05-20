@@ -330,6 +330,15 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .clinic-audit-toolbar select{padding:7px 12px;border:1.5px solid var(--border);border-radius:7px;font-size:12px;font-family:'Inter',sans-serif;outline:none;background:white;}
 .clinic-audit-toolbar button{padding:8px 14px;border:none;border-radius:7px;background:var(--teal);color:white;font-size:12px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;}
 .clinic-audit-toolbar .btn-print-list{background:var(--navy);}
+
+.clinic-subtabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px;background:white;border:1px solid var(--border);border-radius:12px;padding:8px;box-shadow:0 2px 6px rgba(0,0,0,.04);}
+.clinic-subtab{border:1.5px solid var(--border);background:white;color:var(--navy);border-radius:9px;padding:8px 14px;font-size:12px;font-weight:900;cursor:pointer;font-family:'Inter',sans-serif;}
+.clinic-subtab:hover{border-color:var(--teal);color:var(--teal);}
+.clinic-subtab.active{background:var(--teal);border-color:var(--teal);color:white;box-shadow:0 2px 7px rgba(13,115,119,.22);}
+.clinic-panel{display:none;}
+.clinic-panel.active{display:block;}
+#clinic-list-status-filter{display:none;align-items:center;gap:8px;flex-wrap:wrap;}
+#clinic-list-status-filter.show{display:inline-flex;}
 .clinic-month-title{font-size:15px;font-weight:800;color:var(--navy);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
 .clinic-calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(120px,1fr));gap:6px;}
 .clinic-cal-head{background:var(--navy);color:white;text-align:center;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;padding:7px;border-radius:7px;}
@@ -1167,8 +1176,11 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 
     <!-- CLINICAL CALENDER -->
     <div class="page" id="page-clinic-audit">
-      <div class="phdr"><div><h2>Clinical Calender</h2><p>Monthly appointment calendar and printable monthly lists</p></div></div>
-      <div class="srow" id="clinic-stats"></div>
+      <div class="phdr"><div><h2>Clinical Calender</h2></div></div>
+      <div class="clinic-subtabs" role="tablist" aria-label="Clinical Calender views">
+        <button type="button" id="clinic-tab-calendar" class="clinic-subtab active" onclick="switchClinicView('calendar')">Monthly Calendar</button>
+        <button type="button" id="clinic-tab-list" class="clinic-subtab" onclick="switchClinicView('list')">Monthly List</button>
+      </div>
       <div class="clinic-audit-toolbar">
         <label>Month:</label>
         <select id="ca-month" onchange="loadClinicAudit()">
@@ -1183,17 +1195,27 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
           <option value="">Current Year</option>
           <option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option><option value="2028">2028</option>
         </select>
-        <button onclick="printMonthlyCalendar()">Print Monthly Calendar</button>
-        <button class="btn-print-list" onclick="printMonthlyList()">Print Monthly List</button>
+        <span id="clinic-list-status-filter">
+          <label>Status:</label>
+          <select id="ca-status" onchange="renderClinicMonthlyList(clinicAuditData)">
+            <option value="all">All</option>
+            <option value="booked">Booked</option>
+            <option value="attended">Seen</option>
+          </select>
+        </span>
+        <button id="clinic-print-btn" class="btn-print-list" onclick="printActiveClinicView()">Print Monthly Calendar</button>
       </div>
-      <div class="card">
-        <div class="clinic-month-title"><span id="clinic-calendar-title">Monthly Calendar</span><span id="clinic-calendar-summary" class="clinic-print-note"></span></div>
-        <div id="clinic-calendar-grid" class="clinic-calendar-grid"></div>
+      <div id="clinic-calendar-panel" class="clinic-panel active">
+        <div class="card">
+          <div class="clinic-month-title"><span id="clinic-calendar-title">Monthly Calendar</span></div>
+          <div id="clinic-calendar-grid" class="clinic-calendar-grid"></div>
+        </div>
       </div>
-      <div class="card">
-        <div class="card-title">Monthly List by Date</div>
-        <div class="clinic-print-note">Appointments are grouped by date in a two-column list for the selected month and year.</div>
-        <div id="clinic-list-grid" class="clinic-list-grid"></div>
+      <div id="clinic-list-panel" class="clinic-panel">
+        <div class="card">
+          <div class="clinic-month-title"><span id="clinic-list-title">Monthly List</span></div>
+          <div id="clinic-list-grid" class="clinic-list-grid"></div>
+        </div>
       </div>
     </div>
 
@@ -4507,6 +4529,32 @@ function groupClinicByDate(rows){
   Object.values(grouped).forEach(list=>list.sort((a,b)=>String(a.appt_slot||'').localeCompare(String(b.appt_slot||''))));
   return grouped;
 }
+function getClinicView(){return document.getElementById('clinic-list-panel')?.classList.contains('active')?'list':'calendar';}
+function switchClinicView(view){
+  const isList=view==='list';
+  document.getElementById('clinic-tab-calendar')?.classList.toggle('active',!isList);
+  document.getElementById('clinic-tab-list')?.classList.toggle('active',isList);
+  document.getElementById('clinic-calendar-panel')?.classList.toggle('active',!isList);
+  document.getElementById('clinic-list-panel')?.classList.toggle('active',isList);
+  document.getElementById('clinic-list-status-filter')?.classList.toggle('show',isList);
+  const printBtn=document.getElementById('clinic-print-btn');
+  if(printBtn)printBtn.textContent=isList?'Print Monthly List':'Print Monthly Calendar';
+  if(isList)renderClinicMonthlyList(clinicAuditData);
+}
+function clinicListStatusFilter(){return document.getElementById('ca-status')?.value||'all';}
+function filteredClinicListRows(rows){
+  const status=clinicListStatusFilter();
+  const source=rows||clinicAuditData||[];
+  if(status==='booked')return source.filter(a=>a.status==='booked');
+  if(status==='attended')return source.filter(a=>a.status==='attended');
+  return source;
+}
+function clinicListFilterLabel(){
+  const status=clinicListStatusFilter();
+  if(status==='booked')return 'Booked';
+  if(status==='attended')return 'Seen';
+  return 'All appointments';
+}
 async function loadClinicAudit(){
   const {month,year}=ensureClinicMonthYear();
   const start=`${year}-${month}-01`;
@@ -4516,22 +4564,10 @@ async function loadClinicAudit(){
   const data=await enrichAppointments(rawData||[]);
   clinicAuditData=data;
 
-  const tot=data.length;
-  const booked=data.filter(a=>a.status==='booked').length;
-  const att=data.filter(a=>a.status==='attended').length;
-  const can=data.filter(a=>a.status==='cancelled').length;
-  const dna=data.filter(a=>a.status==='did_not_attend').length;
-  document.getElementById('clinic-stats').innerHTML=`
-    <div class="sbox"><div class="sl">Total Booked</div><div class="sv">${tot}</div><div class="ss">${clinicMonthLabel(month,year)}</div></div>
-    <div class="sbox"><div class="sl">Booked</div><div class="sv">${booked}</div><div class="ss" style="color:var(--blue)">future/open</div></div>
-    <div class="sbox"><div class="sl">Attended</div><div class="sv">${att}</div><div class="ss" style="color:var(--green)">seen</div></div>
-    <div class="sbox"><div class="sl">Cancelled</div><div class="sv">${can}</div><div class="ss" style="color:var(--red)">cancelled</div></div>
-    <div class="sbox"><div class="sl">Did Not Turn Up</div><div class="sv">${dna}</div><div class="ss" style="color:var(--orange)">DNTU</div></div>`;
-
   const title=document.getElementById('clinic-calendar-title');
-  if(title)title.textContent=`Monthly Appointment Calendar — ${clinicMonthLabel(month,year)}`;
-  const summary=document.getElementById('clinic-calendar-summary');
-  if(summary)summary.textContent=`${tot} appointments`;
+  if(title)title.textContent=`Monthly Calendar — ${clinicMonthLabel(month,year)}`;
+  const listTitle=document.getElementById('clinic-list-title');
+  if(listTitle)listTitle.textContent=`Monthly List — ${clinicMonthLabel(month,year)}`;
 
   renderClinicCalendar(data,month,year);
   renderClinicMonthlyList(data);
@@ -4606,26 +4642,31 @@ function openClinicDayDetails(dateStr){
 function renderClinicMonthlyList(data){
   const grid=document.getElementById('clinic-list-grid');
   if(!grid)return;
-  if(!data.length){grid.innerHTML='<div class="empty" style="grid-column:1/-1;">No appointments found for this month</div>';return;}
-  const grouped=groupClinicByDate(data);
+  const rows=filteredClinicListRows(data||clinicAuditData||[]);
+  const listTitle=document.getElementById('clinic-list-title');
+  const {month,year}=ensureClinicMonthYear();
+  if(listTitle)listTitle.textContent=`Monthly List — ${clinicMonthLabel(month,year)} · ${clinicListFilterLabel()}`;
+  if(!rows.length){grid.innerHTML=`<div class="empty" style="grid-column:1/-1;">No ${htmlSafe(clinicListFilterLabel().toLowerCase())} found for this month</div>`;return;}
+  const grouped=groupClinicByDate(rows);
   const dates=Object.keys(grouped).sort();
   grid.innerHTML=dates.map(ds=>{
     const label=new Date(ds+'T12:00:00').toLocaleDateString('en-MT',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-    const rows=grouped[ds].map(a=>clinicAppointmentCardHTML(a,false)).join('');
+    const cards=grouped[ds].map(a=>clinicAppointmentCardHTML(a,false)).join('');
     return `<div class="clinic-date-card">
       <div class="clinic-date-card-title"><span>${htmlSafe(label)}</span><span class="clinic-date-count">${grouped[ds].length} appointment${grouped[ds].length!==1?'s':''}</span></div>
-      ${rows}
+      ${cards}
     </div>`;
   }).join('');
 }
 function buildPrintableClinicList(){
-  const grouped=groupClinicByDate(clinicAuditData||[]);
+  const rows=filteredClinicListRows(clinicAuditData||[]);
+  const grouped=groupClinicByDate(rows);
   const dates=Object.keys(grouped).sort();
-  if(!dates.length)return '<p>No appointments for this month.</p>';
+  if(!dates.length)return `<p>No ${htmlSafe(clinicListFilterLabel().toLowerCase())} for this month.</p>`;
   return dates.map(ds=>{
     const label=new Date(ds+'T12:00:00').toLocaleDateString('en-MT',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-    const rows=grouped[ds].map(a=>`<tr><td>${String(a.appt_slot||'').slice(0,5)}</td><td>${htmlSafe(a.patients?.id_card||'')}</td><td>${htmlSafe(a.patients?.surname||'')}</td><td>${htmlSafe(a.patients?.first_name||'')}</td><td>${htmlSafe(a.patients?.phone_number||'')}</td><td>${htmlSafe(clinicNurseName(a))}</td><td>${clinicStatusText(a.status)}</td></tr>`).join('');
-    return `<h3>${htmlSafe(label)}</h3><table><thead><tr><th>Time</th><th>ID Card</th><th>Surname</th><th>Name</th><th>Phone</th><th>Nurse</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table>`;
+    const dayRows=grouped[ds].map(a=>`<tr><td>${String(a.appt_slot||'').slice(0,5)}</td><td>${htmlSafe(a.patients?.id_card||'')}</td><td>${htmlSafe(a.patients?.surname||'')}</td><td>${htmlSafe(a.patients?.first_name||'')}</td><td>${htmlSafe(a.patients?.phone_number||'')}</td><td>${htmlSafe(clinicNurseName(a))}</td><td>${clinicStatusText(a.status)}</td></tr>`).join('');
+    return `<h3>${htmlSafe(label)}</h3><table><thead><tr><th>Time</th><th>ID Card</th><th>Surname</th><th>Name</th><th>Phone</th><th>Nurse</th><th>Status</th></tr></thead><tbody>${dayRows}</tbody></table>`;
   }).join('');
 }
 function printableClinicStyles(){return `
@@ -4636,37 +4677,24 @@ function printableClinicStyles(){return `
   .cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}.head{background:#1a2e4a;color:white;text-align:center;padding:5px;font-weight:bold;font-size:9px;border-radius:4px}.day{border:1px solid #cfd8e3;min-height:88px;border-radius:5px;padding:4px;page-break-inside:avoid}.empty{background:#f5f7f9}.daynum{font-weight:bold;color:#1a2e4a;margin-bottom:3px}.appt{font-size:8.5px;border:1px solid #e5eaf0;background:#fafafa;border-radius:4px;padding:2px;margin-bottom:2px}.badge{font-size:8px;font-weight:bold;text-transform:uppercase}.booked{color:#0d47a1}.attended{color:#155724}.cancelled{color:#721c24}.did_not_attend{color:#856404}
   @page{size:A4 landscape;margin:10mm;} @media print{body{margin:0}.no-print{display:none}}
 `;}
+function printActiveClinicView(){
+  if(getClinicView()==='list')printMonthlyList();
+  else printMonthlyCalendar();
+}
 function printMonthlyCalendar(){
   const {month,year}=ensureClinicMonthYear();
   if(!clinicAuditData.length){alert('No appointments found for this month.');return;}
   const calendar=document.getElementById('clinic-calendar-grid')?.innerHTML||'';
-  const totals={total:clinicAuditData.length,booked:clinicAuditData.filter(a=>a.status==='booked').length,attended:clinicAuditData.filter(a=>a.status==='attended').length,cancelled:clinicAuditData.filter(a=>a.status==='cancelled').length,dntu:clinicAuditData.filter(a=>a.status==='did_not_attend').length};
   const w=window.open('','_blank');
-  w.document.write(`<!DOCTYPE html><html><head><title>Clinical Calender ${clinicMonthLabel(month,year)}</title><style>${printableClinicStyles()}
-.registry-lookup-note{margin-top:-6px;margin-bottom:10px;padding:8px 10px;border-radius:8px;font-size:11px;font-weight:700;background:#f8fafc;color:var(--muted);border:1px solid var(--border);}
-.registry-lookup-note.found{background:#e8f5f4;color:var(--teal);border-color:#b7ddd9;}
-.registry-lookup-note.new{background:#fff8e1;color:#856404;border-color:#f2df9f;}
-.registry-lookup-note.error{background:#f8d7da;color:#721c24;border-color:#f1b0b7;}
-
-.locked-field,.fg input.locked-field:disabled{background:#f8fafc!important;color:#1a2e4a!important;cursor:not-allowed!important;opacity:1!important;user-select:none!important;pointer-events:none!important;}
-
-</style></head><body><h1>MDH Stoma Care Clinic</h1><h2>Monthly Appointment Calendar — ${clinicMonthLabel(month,year)}</h2><div class="stats"><div class="stat"><span>Total</span><b>${totals.total}</b></div><div class="stat"><span>Booked</span><b>${totals.booked}</b></div><div class="stat"><span>Seen</span><b>${totals.attended}</b></div><div class="stat"><span>Cancelled</span><b>${totals.cancelled}</b></div><div class="stat"><span>DNTU</span><b>${totals.dntu}</b></div></div><div class="cal">${calendar.replaceAll('clinic-cal-head','head').replaceAll('clinic-day empty-day','day empty').replaceAll('clinic-day has-appts','day').replaceAll('clinic-day','day').replaceAll('clinic-day-num','daynum').replaceAll('clinic-cal-appt','appt').replaceAll('clinic-badge','badge')}</div></body></html>`);
+  w.document.write(`<!DOCTYPE html><html><head><title>Clinical Calender ${clinicMonthLabel(month,year)}</title><style>${printableClinicStyles()}</style></head><body><h1>MDH Stoma Care Clinic</h1><h2>Monthly Appointment Calendar — ${clinicMonthLabel(month,year)}</h2><div class="cal">${calendar.replaceAll('clinic-cal-head','head').replaceAll('clinic-day empty-day','day empty').replaceAll('clinic-day has-appts','day').replaceAll('clinic-day','day').replaceAll('clinic-day-num','daynum').replaceAll('clinic-cal-appt','appt').replaceAll('clinic-badge','badge')}</div></body></html>`);
   w.document.close();w.focus();w.print();
 }
 function printMonthlyList(){
   const {month,year}=ensureClinicMonthYear();
-  if(!clinicAuditData.length){alert('No appointments found for this month.');return;}
-  const totals={total:clinicAuditData.length,booked:clinicAuditData.filter(a=>a.status==='booked').length,attended:clinicAuditData.filter(a=>a.status==='attended').length,cancelled:clinicAuditData.filter(a=>a.status==='cancelled').length,dntu:clinicAuditData.filter(a=>a.status==='did_not_attend').length};
+  const rows=filteredClinicListRows(clinicAuditData||[]);
+  if(!rows.length){alert(`No ${clinicListFilterLabel().toLowerCase()} found for this month.`);return;}
   const w=window.open('','_blank');
-  w.document.write(`<!DOCTYPE html><html><head><title>Clinical Calender List ${clinicMonthLabel(month,year)}</title><style>${printableClinicStyles().replace('@page{size:A4 landscape;margin:10mm;}','@page{size:A4 portrait;margin:10mm;}')}
-.registry-lookup-note{margin-top:-6px;margin-bottom:10px;padding:8px 10px;border-radius:8px;font-size:11px;font-weight:700;background:#f8fafc;color:var(--muted);border:1px solid var(--border);}
-.registry-lookup-note.found{background:#e8f5f4;color:var(--teal);border-color:#b7ddd9;}
-.registry-lookup-note.new{background:#fff8e1;color:#856404;border-color:#f2df9f;}
-.registry-lookup-note.error{background:#f8d7da;color:#721c24;border-color:#f1b0b7;}
-
-.locked-field,.fg input.locked-field:disabled{background:#f8fafc!important;color:#1a2e4a!important;cursor:not-allowed!important;opacity:1!important;user-select:none!important;pointer-events:none!important;}
-
-</style></head><body><h1>MDH Stoma Care Clinic</h1><h2>Monthly Appointment List — ${clinicMonthLabel(month,year)}</h2><div class="stats"><div class="stat"><span>Total</span><b>${totals.total}</b></div><div class="stat"><span>Booked</span><b>${totals.booked}</b></div><div class="stat"><span>Seen</span><b>${totals.attended}</b></div><div class="stat"><span>Cancelled</span><b>${totals.cancelled}</b></div><div class="stat"><span>DNTU</span><b>${totals.dntu}</b></div></div>${buildPrintableClinicList()}</body></html>`);
+  w.document.write(`<!DOCTYPE html><html><head><title>Clinical Calender List ${clinicMonthLabel(month,year)}</title><style>${printableClinicStyles().replace('@page{size:A4 landscape;margin:10mm;}','@page{size:A4 portrait;margin:10mm;}')}</style></head><body><h1>MDH Stoma Care Clinic</h1><h2>Monthly Appointment List — ${clinicMonthLabel(month,year)} · ${clinicListFilterLabel()}</h2>${buildPrintableClinicList()}</body></html>`);
   w.document.close();w.focus();w.print();
 }
 async function setOutcome(id,status){await SB.from('appointments').update({status}).eq('id',id);if(status==='did_not_attend')await checkDntuThresholdForAppointment(id);refreshAppointmentViews();}
