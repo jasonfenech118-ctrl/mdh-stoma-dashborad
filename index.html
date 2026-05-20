@@ -504,7 +504,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 #slots-container{background:linear-gradient(180deg,#f8fafc 0%,#eef3f7 100%);border:1px solid #d3dbe5;border-radius:16px;padding:12px;box-shadow:inset 0 1px 0 rgba(255,255,255,.85),0 3px 10px rgba(26,46,74,.06);overflow-x:auto;}
 #slots-container table.daily-appt-grid{border-spacing:12px 12px!important;min-width:100%;}
 #slots-container table.daily-appt-grid thead th{background:#ffffff!important;border:1px solid #d6dee8!important;box-shadow:0 2px 5px rgba(26,46,74,.06)!important;border-radius:11px!important;}
-#slots-container table.daily-appt-grid tbody tr td:first-child{background:#ffffff!important;border:1px solid #d6dee8!important;border-left:5px solid #1a2e4a!important;border-radius:11px!important;box-shadow:0 2px 6px rgba(26,46,74,.07)!important;text-align:center!important;vertical-align:middle!important;}
+/* v30AJ — Time column removed; do not style first nurse cell as the old time column */
 #slots-container table.daily-appt-grid td{transition:box-shadow .15s ease,transform .15s ease,border-color .15s ease;}
 .appt-cell-card{border:2px solid #9ccfca!important;border-left:8px solid #0d7377!important;border-radius:14px!important;box-shadow:0 3px 10px rgba(13,115,119,.14)!important;padding:10px 12px!important;outline:1px solid rgba(255,255,255,.75)!important;}
 .appt-cell-card.booked{background:#ecfbf8!important;}
@@ -518,6 +518,41 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .appt-cell-card:hover,.appt-cell-unavailable:hover{transform:translateY(-1px);box-shadow:0 7px 16px rgba(26,46,74,.16)!important;}
 #slots-container .cell-time-badge{box-shadow:0 1px 3px rgba(26,46,74,.09);}
 @media(max-width:900px){#slots-container{padding:8px;}#slots-container table.daily-appt-grid{border-spacing:8px 10px!important;}.appt-cell-card,.appt-cell-empty,.appt-cell-unavailable{min-width:135px;}}
+
+/* v30AJ — Patient Appointments: remove left Time column and make every empty slot a clear card */
+#slots-container table.daily-appt-grid.no-time-column{table-layout:fixed;}
+#slots-container table.daily-appt-grid.no-time-column thead th{min-width:170px;}
+#slots-container table.daily-appt-grid.no-time-column .appt-cell-empty{
+  background:linear-gradient(180deg,#ffffff 0%,#f8fbfd 100%)!important;
+  border:2px solid #d6dee8!important;
+  border-left:8px solid #0d7377!important;
+  border-radius:14px!important;
+  box-shadow:0 3px 10px rgba(26,46,74,.08)!important;
+  padding:10px 12px!important;
+  vertical-align:top!important;
+}
+#slots-container table.daily-appt-grid.no-time-column .appt-cell-empty:hover{
+  border-color:#0d7377!important;
+  background:linear-gradient(180deg,#ffffff 0%,#eefaf8 100%)!important;
+  box-shadow:0 7px 16px rgba(13,115,119,.15)!important;
+  transform:translateY(-1px);
+}
+#slots-container table.daily-appt-grid.no-time-column .appt-cell-empty .cell-time-badge{
+  background:#e8f5f4!important;
+  color:#0d7377!important;
+  border:1px solid #b7dedb!important;
+  margin-bottom:8px!important;
+}
+#slots-container table.daily-appt-grid.no-time-column .appt-cell-empty button:not(.book-replacement-btn){
+  background:#ffffff!important;
+  border:2px dashed #0d7377!important;
+  color:#0d7377!important;
+  border-radius:10px!important;
+  min-height:44px!important;
+  font-weight:900!important;
+}
+#slots-container table.daily-appt-grid.no-time-column .appt-cell-empty:hover button:not(.book-replacement-btn){background:#e8f5f4!important;}
+
 
 
 /* v30AF — make ID card and telephone highly visible on appointment cards */
@@ -2553,8 +2588,8 @@ async function loadAppts(){
   const con=document.getElementById('slots-container');
   if(!con)return;
 
-  let html='<table class="daily-appt-grid">';
-  html+='<thead><tr><th style="padding:10px 14px;text-align:left;font-size:11px;font-weight:700;color:#7a8fa6;border-bottom:2px solid #dde3ea;background:#fafafa;min-width:65px;">Time</th>';
+  let html='<table class="daily-appt-grid no-time-column">';
+  html+='<thead><tr>';
   nurses.forEach(n=>{
     let nbadge='';
     if(n.type==='ot') nbadge='<span style="font-size:9px;background:#e6a817;color:#fff;padding:1px 6px;border-radius:4px;margin-left:4px;">OT</span>';
@@ -2567,7 +2602,7 @@ async function loadAppts(){
   html+='</tr></thead><tbody>';
 
   SLOTS.forEach(slot=>{
-    html+=`<tr><td style="padding:10px 14px;font-weight:700;color:#0d7377;font-size:13px;border-bottom:1px solid #dde3ea;background:#fafafa;">${slot}</td>`;
+    html+=`<tr>`;
     nurses.forEach(n=>{
       const slotAppts=appointmentsForSlotAndColumn(appts,slot,n);
       const appt=slotAppts.find(a=>a.status!=='cancelled');
