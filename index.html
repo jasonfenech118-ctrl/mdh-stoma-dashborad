@@ -517,6 +517,13 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 
 .locked-field,.fg input.locked-field:disabled{background:#f8fafc!important;color:#1a2e4a!important;cursor:not-allowed!important;opacity:1!important;user-select:none!important;pointer-events:none!important;}
 
+
+.review-kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:10px 0 12px;}
+.review-kpi{border:1px solid var(--border);border-radius:12px;padding:10px 12px;background:#f8fafc;}
+.review-kpi .klabel{font-size:10px;font-weight:900;letter-spacing:.35px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
+.review-kpi .kvalue{font-size:13px;font-weight:800;color:var(--navy);}
+.new-booking-type-wrap{display:none;border:1px solid #fde68a;background:#fffbeb;border-radius:12px;padding:10px;margin:8px 0;}
+.new-booking-type-wrap.show{display:block;}
 </style>
 </head>
 <body>
@@ -745,7 +752,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
       <div class="card">
         <div class="card-title" id="patients-list-card-title">Patient Register</div>
         <div style="overflow-x:auto;"><table class="dt">
-          <thead id="patients-list-head"><tr><th>Patient</th><th>ID Card</th><th>Phone</th><th>Status</th><th>Owner</th><th>Due Month</th><th>Last Outcome</th><th>Next Follow-up</th><th>Locality</th><th>Actions</th></tr></thead>
+          <thead id="patients-list-head"><tr><th>ID Number</th><th>Surname</th><th>Name</th><th>Phone</th><th>Status</th><th>Owner</th><th>Due Month</th><th>Last Outcome</th><th>Next Follow-up</th><th>Locality</th></tr></thead>
           <tbody id="patients-list-tbody"><tr><td colspan="10" class="empty">Select a patient group.</td></tr></tbody>
         </table></div>
       </div>
@@ -974,8 +981,8 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
       <div class="card">
         <div class="card-title">Patient Follow-up List — <span id="followup-owner-title">Common</span></div>
         <div style="overflow-x:auto;"><table class="dt">
-          <thead><tr><th>Patient</th><th>ID Card</th><th>Phone</th><th>Due Month<br/><span style="font-size:9px;color:var(--muted);font-weight:600;">Clinic Availability</span></th><th>Follow-up Year</th><th>Owner</th><th>Status</th><th>Last Appointment</th><th>Next Appointment Date</th><th>Actions</th></tr></thead>
-          <tbody id="followup-patient-tbody"><tr><td colspan="10" class="empty">Loading follow-up patients...</td></tr></tbody>
+          <thead><tr><th>ID Card</th><th>Surname</th><th>Name</th><th>Phone</th><th>Due Month<br/><span style="font-size:9px;color:var(--muted);font-weight:600;">Clinic Availability</span></th><th>Follow-up Year</th><th>Owner</th><th>Status</th><th>Last Appointment</th><th>Next Appointment Date</th><th>Actions</th></tr></thead>
+          <tbody id="followup-patient-tbody"><tr><td colspan="11" class="empty">Loading follow-up patients...</td></tr></tbody>
         </table></div>
       </div>
 
@@ -1052,7 +1059,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
         <div class="card-title">Monthly List by Date</div>
         <div class="clinic-print-note">Appointments are grouped by date for the selected month and year.</div>
         <div style="overflow-x:auto;"><table class="dt">
-          <thead><tr><th>Slot</th><th>Patient</th><th>ID Card</th><th>Phone</th><th>Nurse</th><th>Status</th><th>Actions</th></tr></thead>
+          <thead><tr><th>Slot</th><th>ID Card</th><th>Surname</th><th>Name</th><th>Phone</th><th>Nurse</th><th>Status</th><th>Actions</th></tr></thead>
           <tbody id="clinic-tbody"></tbody>
         </table></div>
       </div>
@@ -1082,8 +1089,8 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
       </div>
       <div class="dntu-table-wrap">
         <table class="dt">
-          <thead><tr><th>Patient Name and Surname</th><th>ID Card Number</th><th>Phone Number</th><th>Current DNTU Streak</th><th>Last DNTU Date</th></tr></thead>
-          <tbody id="dntu-tbody"><tr><td colspan="5" class="empty">Loading DNTU patients...</td></tr></tbody>
+          <thead><tr><th>ID Card Number</th><th>Surname</th><th>Name</th><th>Phone Number</th><th>Current DNTU Streak</th><th>Last DNTU Date</th></tr></thead>
+          <tbody id="dntu-tbody"><tr><td colspan="6" class="empty">Loading DNTU patients...</td></tr></tbody>
         </table>
       </div>
     </div>
@@ -1201,8 +1208,8 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
         </div>
         <div id="rep-patient-summary" class="report-note"></div>
         <div style="overflow-x:auto;"><table class="dt" id="rep-patient-table">
-          <thead><tr><th>Date</th><th>Slot</th><th>Patient</th><th>ID Card</th><th>Phone</th><th>Allocated Nurse</th><th>Nurse / Column</th><th>Event Type</th><th>Follow-up Due</th><th>Follow-up Status</th></tr></thead>
-          <tbody id="rep-patient-tbody"><tr><td colspan="10" class="empty">Select a period to load patients.</td></tr></tbody>
+          <thead><tr><th>Date</th><th>Slot</th><th>ID Card</th><th>Surname</th><th>Name</th><th>Phone</th><th>Allocated Nurse</th><th>Nurse / Column</th><th>Event Type</th><th>Follow-up Due</th><th>Follow-up Status</th></tr></thead>
+          <tbody id="rep-patient-tbody"><tr><td colspan="11" class="empty">Select a period to load patients.</td></tr></tbody>
         </table></div>
       </div>
     </div>
@@ -1224,7 +1231,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
           <button class="btn-add" onclick="printReportPatientGroup()" style="padding:7px 14px;">Print</button>
         </div>
         <div style="overflow-x:auto;"><table class="dt" id="report-patient-group-table">
-          <thead id="report-patient-group-head"><tr><th>Patient</th><th>ID Card</th><th>Phone</th><th>Status</th><th>Owner</th><th>Due Month</th><th>Last Outcome</th><th>Next Follow-up</th><th>Locality</th></tr></thead>
+          <thead id="report-patient-group-head"><tr><th>ID Number</th><th>Surname</th><th>Name</th><th>Phone</th><th>Status</th><th>Owner</th><th>Due Month</th><th>Last Outcome</th><th>Next Follow-up</th><th>Locality</th></tr></thead>
           <tbody id="report-patient-group-tbody"><tr><td colspan="9" class="empty">Select a report.</td></tr></tbody>
         </table></div>
       </div>
@@ -2157,7 +2164,7 @@ async function loadTodaySnapshot(){
     ${(a.staff||a.bank_staff||(!a.assigned_to&&!a.bank_staff_id))?`<div style="font-size:11px;color:var(--muted);min-width:90px;">${htmlSafe(a.staff?.full_name||a.bank_staff?.full_name||'Common')}</div>`:''}
     <span style="padding:3px 9px;border-radius:12px;font-size:10px;font-weight:700;text-transform:uppercase;cursor:default;" class="${sc[a.status]||'ps-booked'}">${sl[a.status]||''}</span>
     <div style="display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end;max-width:270px;">
-      ${a.status!=='attended'?`<button class="ncb-btn ncb-attended" title="Seen" onclick="setAS('${a.id}','attended')">✅</button>`:''}
+      ${a.status!=='attended'?`<button class="ncb-btn ncb-attended" title="Seen" onclick="openAppointmentReviewCard('${a.id}','seen','attended')">✅</button>`:''}
       ${a.status!=='did_not_attend'?`<button class="ncb-btn ncb-dna" onclick="setAS('${a.id}','did_not_attend')">DNTU</button>`:''}
       ${a.status!=='cancelled'?`<button class="ncb-btn ncb-cancel" title="Cancel" onclick="setAS('${a.id}','cancelled')">✖</button>`:''}
       <button class="ncb-btn" onclick="editAppointment('${a.id}')" style="background:#e8f5f4;color:var(--teal);">Edit</button>
@@ -2546,7 +2553,7 @@ async function loadAppts(){
           ${followupStatusBadge(appt.patients?.followup_status)}
           ${cancelledSlotHistoryHTML(cancelledHere)}
           <div class="appt-action-row">
-            ${appt.status!=='attended'?`<button title="Seen" onclick="setAS('${appt.id}','attended')" style="padding:2px 6px;border-radius:5px;font-size:9px;font-weight:700;cursor:pointer;border:none;background:#d4edda;color:#155724;">✅</button>`:''}
+            ${appt.status!=='attended'?`<button title="Seen" onclick="openAppointmentReviewCard('${appt.id}','seen','attended')" style="padding:2px 6px;border-radius:5px;font-size:9px;font-weight:700;cursor:pointer;border:none;background:#d4edda;color:#155724;">✅</button>`:''}
             ${appt.status!=='did_not_attend'?`<button onclick="setAS('${appt.id}','did_not_attend')" style="padding:2px 6px;border-radius:5px;font-size:9px;font-weight:700;cursor:pointer;border:none;background:#fff3cd;color:#856404;">DNTU</button>`:''}
             ${appt.status!=='cancelled'?`<button title="Cancel" onclick="setAS('${appt.id}','cancelled')" style="padding:2px 6px;border-radius:5px;font-size:9px;font-weight:700;cursor:pointer;border:none;background:#f8d7da;color:#721c24;">✖</button>`:''}
             <button onclick="editAppointment('${appt.id}')" style="padding:2px 6px;border-radius:5px;font-size:9px;font-weight:700;cursor:pointer;border:none;background:#e8f5f4;color:#0d7377;">Edit</button>
@@ -2826,7 +2833,10 @@ async function refreshOutcomeMonthOptions(){
   updateOutcomeAvailabilityPreview();
 }
 async function setAS(id,status){
-  try{await openOutcomeFollowupModal(id,status);}
+  try{
+    if(status==='attended')await openAppointmentReviewCard(id,'seen','attended');
+    else await openOutcomeFollowupModal(id,status);
+  }
   catch(e){console.error('Outcome button error:',e);alert('Could not open the outcome box: '+(e.message||e));}
 }
 async function openOutcomeFollowupModal(apptId,status){
@@ -2840,6 +2850,9 @@ async function openOutcomeFollowupModal(apptId,status){
   const defaultYear=Math.max(Number(p.followup_year)||now.getFullYear(),now.getFullYear());
   const monthsForYear=dueMonthListForYear(defaultYear);
   const defaultMonth=monthsForYear.includes(Number(p.followup_due_month))?Number(p.followup_due_month):(monthsForYear[0]||now.getMonth()+1);
+  const originalMonth=Number(p.followup_due_month)||0;
+  const originalYear=Number(p.followup_year)||0;
+  const originalDueLabel=originalMonth?`${followupMonthName(originalMonth)} ${originalYear||''}`.trim():'No month currently allocated';
   const availability=await getMonthlyClinicAvailability(defaultYear,contextForFollowupOwner(ownerDefault));
   const statusDefault=status==='did_not_attend'?normaliseFollowupStatus(p.followup_status||'active'):normaliseFollowupStatus(p.followup_status||'active');
   document.getElementById('mb').innerHTML=`<h2>Record ${htmlSafe(outcomeLabel(status))}</h2>
@@ -2903,41 +2916,150 @@ async function delApp(id){
   if(error){alert('Delete failed: '+error.message);return;}
   refreshAppointmentViews();
 }
-async function editAppointment(id){
-  const{data:raw,error}=await SB.from('appointments').select('*').eq('id',id).single();
-  if(error||!raw){alert('Could not load this appointment for editing.');return;}
+async function refreshAppointmentReviewMonthOptions(){
+  const owner=document.getElementById('ar-followup-owner')?.value||'Common';
+  const year=document.getElementById('ar-fu-year')?.value||String(defaultFollowupYear());
+  const select=document.getElementById('ar-fu-month');
+  if(!select)return;
+  const selected=select.value||'';
+  const ctx=contextForFollowupOwner(owner);
+  const counts=await getMonthlyClinicAvailability(year,ctx);
+  select.innerHTML='<option value="">Select next follow-up due month</option>'+buildAvailabilityMonthOptions(year,owner,selected,counts);
+  if(selected && [...select.options].some(o=>String(o.value)===String(selected)))select.value=String(selected);
+  else select.value='';
+  storeAvailabilityOnSelect(select,counts,ctx);
+  select.onchange=updateAppointmentReviewAvailabilityPreview;
+  updateAppointmentReviewAvailabilityPreview();
+}
+function updateAppointmentReviewAvailabilityPreview(){
+  const select=document.getElementById('ar-fu-month');
+  const note=document.getElementById('ar-fu-availability');
+  if(!select||!note)return;
+  const raw=String(select.value||'');
+  if(!raw){
+    note.innerHTML='<div class="registry-lookup-note new" style="margin-top:4px;">Please choose the next follow-up month before saving. This step confirms the next appointment has been planned.</div>';
+    return;
+  }
+  const {counts,ctx}=readAvailabilityFromSelect(select);
+  const year=document.getElementById('ar-fu-year')?.value||String(defaultFollowupYear());
+  const chosen=selectedAvailabilityMonth(select,year);
+  const originalMonth=Number(select?.dataset?.originalMonth)||0;
+  const originalYear=Number(select?.dataset?.originalYear)||0;
+  let warning='';
+  if(originalMonth && Number(chosen.month)===originalMonth){
+    warning=`<div class="registry-lookup-note error" style="margin-top:4px;margin-bottom:8px;">This is still the current follow-up month (${htmlSafe(followupMonthName(originalMonth))}${originalYear?' '+htmlSafe(originalYear):''}). Please choose a different month before saving.</div>`;
+  }
+  note.innerHTML=warning+(chosen.isAuto?availabilityAutoNoteHTML(chosen.month):'')+availabilityPreviewHTML(counts[chosen.month]||{booked:0,capacity:0},ctx,chosen.month);
+}
+async function openAppointmentReviewCard(apptId,mode='edit',statusDefault=''){
+  const{data:raw,error}=await SB.from('appointments').select('*').eq('id',apptId).single();
+  if(error||!raw){alert('Could not load this appointment.');return;}
   const enriched=(await enrichAppointments([raw]))[0]||raw;
+  const p=enriched.patients||{};
   const{data:bankRows}=await SB.from('bank_staff').select('id,full_name').order('full_name');
   const currentNurse=enriched.bank_staff_id?`bank:${enriched.bank_staff_id}`:(enriched.assigned_to?`core:${enriched.assigned_to}`:'common');
   const coreOptions=(staffList||[]).map(s=>`<option value="core:${s.id}" ${currentNurse===`core:${s.id}`?'selected':''}>${htmlSafe(s.full_name)}</option>`).join('');
   const bankOptions=(bankRows||[]).map(b=>`<option value="bank:${b.id}" ${currentNurse===`bank:${b.id}`?'selected':''}>${htmlSafe(b.full_name)} (OT/Bank)</option>`).join('');
-  document.getElementById('mb').innerHTML=`<h2>Edit Appointment</h2>
-    <div class="msub">Correct patient, date, time, nurse/column, or outcome.</div>
-    <div class="fg"><label>First Name *</label><input type="text" id="e-fn" value="${htmlSafe(enriched.patients?.first_name||'')}"/></div>
-    <div class="fg"><label>Surname *</label><input type="text" id="e-sn" value="${htmlSafe(enriched.patients?.surname||'')}"/></div>
-    <div class="fg"><label>ID Card *</label><input type="text" id="e-idcard" value="${htmlSafe(enriched.patients?.id_card||'')}"/></div>
-    <div class="fg"><label>Phone</label><input type="tel" id="e-phone" value="${htmlSafe(enriched.patients?.phone_number||'')}"/></div>
-    <div class="fg"><label>Appointment Date *</label><input type="date" id="e-date" value="${htmlSafe(enriched.appt_date||'')}"/></div>
-    <div class="fg"><label>Appointment Time *</label><input type="time" id="e-slot" value="${htmlSafe(String(enriched.appt_slot||'').slice(0,5))}"/></div>
-    <div class="fg"><label>Nurse / Column</label><select id="e-nurse"><option value="common" ${currentNurse==='common'?'selected':''}>Common</option>${coreOptions}${bankOptions}</select></div>
-    <div class="fg"><label>Appointment Outcome</label><select id="e-status">
-      <option value="booked" ${enriched.status==='booked'?'selected':''}>Booked</option>
-      <option value="attended" ${enriched.status==='attended'?'selected':''}>Seen / Attended</option>
-      <option value="did_not_attend" ${enriched.status==='did_not_attend'?'selected':''}>DNTU</option>
-      <option value="cancelled" ${enriched.status==='cancelled'?'selected':''}>Cancelled</option>
+  const now=new Date();
+  const ownerDefault=normaliseFollowupOwner(p.followup_owner||appointmentNurseLabel(enriched)||'Common');
+  const defaultYear=Math.max(Number(p.followup_year)||now.getFullYear(),now.getFullYear());
+  const monthsForYear=dueMonthListForYear(defaultYear);
+  const defaultMonth=monthsForYear.includes(Number(p.followup_due_month))?Number(p.followup_due_month):(monthsForYear[0]||now.getMonth()+1);
+  const originalMonth=Number(p.followup_due_month)||0;
+  const originalYear=Number(p.followup_year)||0;
+  const originalDueLabel=originalMonth?`${followupMonthName(originalMonth)} ${originalYear||''}`.trim():'No month currently allocated';
+  const availability=await getMonthlyClinicAvailability(defaultYear,contextForFollowupOwner(ownerDefault));
+  const chosenStatus=statusDefault||enriched.status||'booked';
+  document.getElementById('mb').innerHTML=`<h2>Appointment Review / Seen</h2>
+    <div class="msub">Review patient details, then actively choose the next follow-up due month before saving. This prevents an appointment from being closed without forward planning.</div>
+    <div class="review-kpi-grid">
+      <div class="review-kpi"><div class="klabel">ID Card Number</div><div class="kvalue">${htmlSafe(p.id_card||'—')}</div></div>
+      <div class="review-kpi"><div class="klabel">Name</div><div class="kvalue">${htmlSafe(p.first_name||'—')}</div></div>
+      <div class="review-kpi"><div class="klabel">Surname</div><div class="kvalue">${htmlSafe(p.surname||'—')}</div></div>
+      <div class="review-kpi"><div class="klabel">Phone</div><div class="kvalue">${htmlSafe(p.phone_number||'—')}</div></div>
+    </div>
+    <div class="fg"><label>ID Card Number *</label><input type="text" id="ar-idcard" value="${htmlSafe(p.id_card||'')}"/></div>
+    <div class="fg"><label>Name *</label><input type="text" id="ar-fn" value="${htmlSafe(p.first_name||'')}"/></div>
+    <div class="fg"><label>Surname *</label><input type="text" id="ar-sn" value="${htmlSafe(p.surname||'')}"/></div>
+    <div class="fg"><label>Phone</label><input type="tel" id="ar-phone" value="${htmlSafe(p.phone_number||'')}"/></div>
+    <div class="fg"><label>Appointment Date *</label><input type="date" id="ar-date" value="${htmlSafe(enriched.appt_date||'')}"/></div>
+    <div class="fg"><label>Appointment Time *</label><input type="time" id="ar-slot" value="${htmlSafe(String(enriched.appt_slot||'').slice(0,5))}"/></div>
+    <div class="fg"><label>Nurse / Column</label><select id="ar-nurse"><option value="common" ${currentNurse==='common'?'selected':''}>Common</option>${coreOptions}${bankOptions}</select></div>
+    <div class="fg"><label>Appointment Outcome</label><select id="ar-status">
+      <option value="booked" ${chosenStatus==='booked'?'selected':''}>Booked</option>
+      <option value="attended" ${chosenStatus==='attended'?'selected':''}>Seen / Attended</option>
+      <option value="did_not_attend" ${chosenStatus==='did_not_attend'?'selected':''}>DNTU</option>
+      <option value="cancelled" ${chosenStatus==='cancelled'?'selected':''}>Cancelled</option>
     </select></div>
-    <div class="fg"><label>Follow-up allocation / owner</label><select id="e-followup-owner">${followupOwnerOptions(enriched.patients?.followup_owner||'Common')}</select></div>
-    <div class="fg"><label>Booking type / episode</label><select id="e-followup-type">${followupTypeOptions(enriched.patients?.followup_type||'follow_up')}</select></div>
-    <div class="fg"><label>Follow-up Status</label><select id="e-followup-status">
-      <option value="active" ${normaliseFollowupStatus(enriched.patients?.followup_status)==='active'?'selected':''}>Active</option>
-      <option value="awaiting_feedback" ${normaliseFollowupStatus(enriched.patients?.followup_status)==='awaiting_feedback'?'selected':''}>Awaiting Feedback</option>
-      <option value="paused" ${normaliseFollowupStatus(enriched.patients?.followup_status)==='paused'?'selected':''}>Paused</option>
-      <option value="deceased" ${normaliseFollowupStatus(enriched.patients?.followup_status)==='deceased'?'selected':''}>Deceased</option>
-      <option value="reversed" ${normaliseFollowupStatus(enriched.patients?.followup_status)==='reversed'?'selected':''}>Reversed</option>
-    </select></div>
-    <div class="mact"><button class="btn-cancel" onclick="closeModal()">Cancel</button><button class="btn-save" onclick="saveEditedAppointment('${id}','${enriched.patient_id||''}')">Save Changes</button></div>`;
+    <div class="fg"><label>Follow-up allocation / owner</label><select id="ar-followup-owner" onchange="refreshAppointmentReviewMonthOptions()">${followupOwnerOptions(ownerDefault)}</select></div>
+    <div class="fg"><label>Follow-up due year *</label><select id="ar-fu-year" onchange="refreshAppointmentReviewMonthOptions()">${followupYearOptions(defaultYear)}</select></div>
+    <div class="fg"><label>Next follow-up due month * <span style="font-size:11px;color:#b45309;">must be a different month</span></label><select id="ar-fu-month" data-default-month="${defaultMonth}" data-original-month="${originalMonth||''}" data-original-year="${originalYear||''}" required>
+      <option value="" selected>Select next follow-up due month</option><option value="${AUTO_AVAILABILITY_VALUE}">According to clinic availability</option>${monthsForYear.map(m=>`<option value="${m}">${availabilityOptionText(m,availability[m]||0,contextForFollowupOwner(ownerDefault))}</option>`).join('')}
+    </select><div class="registry-lookup-note new" style="margin-top:5px;">Current allocated due month: <strong>${htmlSafe(originalDueLabel)}</strong>. Please choose a different next due month before saving.</div><div id="ar-fu-availability" style="margin-top:5px;">Please choose a different next follow-up due month before saving.</div></div>
+    <div class="mact"><button class="btn-cancel" onclick="closeModal()">Cancel</button><button class="btn-save" onclick="saveAppointmentReview('${apptId}','${enriched.patient_id||''}')">${mode==='seen'?'Save Seen':'Save Changes'}</button></div>`;
   openMo();
+  const arMonth=document.getElementById('ar-fu-month');
+  storeAvailabilityOnSelect(arMonth,availability,contextForFollowupOwner(ownerDefault));
+  if(arMonth)arMonth.onchange=updateAppointmentReviewAvailabilityPreview;
+  updateAppointmentReviewAvailabilityPreview();
 }
+async function saveAppointmentReview(apptId,patientId){
+  const fn=document.getElementById('ar-fn')?.value.trim();
+  const sn=document.getElementById('ar-sn')?.value.trim();
+  const idcard=normaliseIdCard(document.getElementById('ar-idcard')?.value);
+  const phone=document.getElementById('ar-phone')?.value.trim();
+  const date=document.getElementById('ar-date')?.value;
+  const slot=document.getElementById('ar-slot')?.value;
+  const nurse=document.getElementById('ar-nurse')?.value||'common';
+  const status=document.getElementById('ar-status')?.value||'booked';
+  const owner=document.getElementById('ar-followup-owner')?.value||'Common';
+  const year=document.getElementById('ar-fu-year')?.value;
+  const monthSelect=document.getElementById('ar-fu-month');
+  const rawMonthChoice=String(monthSelect?.value||'');
+  const month=rawMonthChoice?resolveMonthValueFromSelect(monthSelect,year):null;
+  const originalMonth=Number(monthSelect?.dataset?.originalMonth)||0;
+  const originalYear=Number(monthSelect?.dataset?.originalYear)||0;
+  if(!fn||!sn||!idcard||!date||!slot){alert('Please fill in ID card, name, surname, date and time.');return;}
+  if(!rawMonthChoice||!month||!year){alert('Please select the next follow-up due month and year before saving. This ensures the next appointment is planned.');return;}
+  if(originalMonth && Number(month)===originalMonth){
+    alert('Please choose a different follow-up due month before saving. The current due month is already '+followupMonthName(originalMonth)+(originalYear?' '+originalYear:'')+'.');
+    return;
+  }
+  const patientUpdate={first_name:fn,surname:sn,id_card:idcard,phone_number:phone||null,followup_owner:owner,followup_due_month:Number(month),followup_year:Number(year)};
+  if(status==='attended')patientUpdate.followup_type='follow_up';
+  let savedPatientId=patientId;
+  if(savedPatientId){
+    const{error:pErr}=await SB.from('patients').update(patientUpdate).eq('id',savedPatientId);
+    if(pErr){alert('Patient update error: '+pErr.message);return;}
+  }else{
+    const saved=await saveOrUpdatePatientByIdCard(idcard,fn,sn,phone,patientUpdate);
+    if(saved.error||!saved.patient?.id){alert('Could not save patient: '+(saved.error?.message||'Unknown error'));return;}
+    savedPatientId=saved.patient.id;
+  }
+  const apptUpdate={patient_id:savedPatientId,appt_date:date,appt_slot:String(slot).slice(0,5),assigned_to:null,bank_staff_id:null,status};
+  if(nurse.startsWith('core:')) apptUpdate.assigned_to=nurse.replace('core:','');
+  if(nurse.startsWith('bank:')) apptUpdate.bank_staff_id=nurse.replace('bank:','');
+  if(['attended','did_not_attend','cancelled'].includes(status)){
+    const currentUser=await getCurrentUserForAudit();
+    apptUpdate.outcome_recorded_at=new Date().toISOString();
+    apptUpdate.outcome_recorded_by_email=currentUser.email;
+    apptUpdate.outcome_recorded_by_name=currentUser.name;
+  }
+  let{error:aErr}=await SB.from('appointments').update(apptUpdate).eq('id',apptId);
+  if(aErr && String(aErr.message||'').toLowerCase().includes('column')){
+    const fallback={patient_id:savedPatientId,appt_date:date,appt_slot:String(slot).slice(0,5),assigned_to:apptUpdate.assigned_to,bank_staff_id:apptUpdate.bank_staff_id,status};
+    const retry=await SB.from('appointments').update(fallback).eq('id',apptId);
+    aErr=retry.error;
+  }
+  if(aErr){alert('Appointment update error: '+aErr.message);return;}
+  closeModal();
+  if(status==='did_not_attend')await checkDntuThresholdForAppointment(apptId);
+  refreshAppointmentViews();
+}
+async function editAppointment(id){
+  return openAppointmentReviewCard(id,'edit');
+}
+
 async function saveEditedAppointment(apptId,patientId){
   const fn=document.getElementById('e-fn').value.trim();
   const sn=document.getElementById('e-sn').value.trim();
@@ -3047,6 +3169,19 @@ async function savePatientRebook(patientId){
 }
 
 function normaliseIdCard(v){return String(v||'').trim().toUpperCase().replace(/\s+/g,'');}
+function setBookCardNewPatientMode(isNew){
+  const wrap=document.getElementById('p-new-booking-type-wrap');
+  if(wrap)wrap.classList.toggle('show',!!isNew);
+  ['p-fn','p-sn','p-ph'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    el.disabled=!isNew;
+    el.classList.toggle('locked-field',!isNew);
+    if(isNew)el.removeAttribute('tabindex');
+    else el.setAttribute('tabindex','-1');
+  });
+}
+
 async function lookupPatientByIdForBooking(idInputId,firstInputId,surnameInputId,phoneInputId,noteId){
   const idEl=document.getElementById(idInputId);
   const note=document.getElementById(noteId);
@@ -3059,6 +3194,7 @@ async function lookupPatientByIdForBooking(idInputId,firstInputId,surnameInputId
     idEl.dataset.deceased='false';
     const f=document.getElementById(firstInputId),s=document.getElementById(surnameInputId),p=document.getElementById(phoneInputId);
     if(f)f.value=''; if(s)s.value=''; if(p)p.value='';
+    if(idInputId==='p-id')setBookCardNewPatientMode(false);
     return null;
   }
   if(note){note.className='registry-lookup-note';note.textContent='Checking saved patient registry...';}
@@ -3077,6 +3213,7 @@ async function lookupPatientByIdForBooking(idInputId,firstInputId,surnameInputId
     if(f)f.value=data.first_name||'';
     if(s)s.value=data.surname||'';
     if(p)p.value=data.phone_number||'';
+    if(idInputId==='p-id')setBookCardNewPatientMode(false);
     idEl.dataset.patientId=data.id;
     idEl.dataset.deceased=normaliseFollowupStatus(data.followup_status)==='deceased'?'true':'false';
     const prefix=idInputId.startsWith('rb')?'rb':'p';
@@ -3095,13 +3232,14 @@ async function lookupPatientByIdForBooking(idInputId,firstInputId,surnameInputId
   idEl.dataset.deceased='false';
   const f=document.getElementById(firstInputId),s=document.getElementById(surnameInputId),p=document.getElementById(phoneInputId);
   if(f)f.value=''; if(s)s.value=''; if(p)p.value='';
+  if(idInputId==='p-id')setBookCardNewPatientMode(true);
   const prefix=idInputId.startsWith('rb')?'rb':'p';
   const typeEl=document.getElementById(`${prefix}-followup-type`); if(typeEl)typeEl.value='new_case';
   await refreshBookingMonthOptions(prefix);
   if(note){
     note.className='registry-lookup-note new';
     note.textContent=prefix==='p'
-      ? 'No saved patient found for this ID card. Please add the patient in the New Patient tab first, then return here to book.'
+      ? 'No saved patient found for this ID card. Enter the patient name/surname and select the Booking Type / Episode before booking.'
       : 'No saved patient found for this ID card. A new patient record will be saved when you book. Booking type is set to New case.';
   }
   return null;
@@ -3142,53 +3280,49 @@ async function bookSlot(slot,date,nid,nname,ntype){
   const targetLabel=ntype==='common'?'Common column':`${nname}${ntype==='ot'?' (OT)':ntype==='til'?' (TIL In)':''}`;
   const nurseOptions=await buildNurseAllocationOptions(ntype,nid);
   document.getElementById('mb').innerHTML=`<h2>Book Patient</h2>
-    <div class="msub">${htmlSafe(date)} - ${htmlSafe(slot)} · default column: ${htmlSafe(targetLabel)}<br/>Choose the nurse/column manually before saving.</div>
+    <div class="msub">${htmlSafe(date)} - ${htmlSafe(slot)} · default column: ${htmlSafe(targetLabel)}<br/>Enter the ID Card first. Existing patient details will load automatically.</div>
     <div class="fg"><label>ID Card Number * — patient registry lookup</label><input type="text" id="p-id" placeholder="Enter ID card first" onblur="lookupPatientByIdForBooking('p-id','p-fn','p-sn','p-ph','p-reg-note')" onkeydown="if(event.key==='Enter'){event.preventDefault();lookupPatientByIdForBooking('p-id','p-fn','p-sn','p-ph','p-reg-note')}"/></div>
-    <div id="p-reg-note" class="registry-lookup-note">Enter the ID card first. Name, surname and phone are locked here and can only be changed in the New Patient tab.</div>
-    <div class="fg"><label>First Name *</label><input type="text" id="p-fn" class="locked-field" disabled tabindex="-1" autocomplete="off" placeholder="Loaded from registry"/></div>
+    <div id="p-reg-note" class="registry-lookup-note">Enter the ID card first. Name, surname and phone are locked for existing patients and can be changed from Add Patient.</div>
+    <div class="fg"><label>Name *</label><input type="text" id="p-fn" class="locked-field" disabled tabindex="-1" autocomplete="off" placeholder="Loaded from registry"/></div>
     <div class="fg"><label>Surname *</label><input type="text" id="p-sn" class="locked-field" disabled tabindex="-1" autocomplete="off" placeholder="Loaded from registry"/></div>
     <div class="fg"><label>Phone</label><input type="tel" id="p-ph" class="locked-field" disabled tabindex="-1" autocomplete="off" placeholder="Loaded from registry"/></div>
-    ${followupBookingFields('p',{followup_owner:normaliseFollowupOwner(nname),followup_type:'new_case'})}
+    <div id="p-new-booking-type-wrap" class="new-booking-type-wrap"><div class="fg" style="margin:0;"><label>Booking Type / Episode *</label><select id="p-followup-type">${followupTypeOptions('new_case')}</select></div><div class="registry-lookup-note new" style="margin-top:8px;">This ID is not in the patient registry. Select the episode type before booking.</div></div>
     <div class="fg"><label>Nurse / Column *</label><select id="p-nurse">${nurseOptions}</select></div>
-    <div class="registry-lookup-note found">The selected nurse/column will be used for this appointment. It will not change the patient follow-up owner unless you update that separately.</div>
+    <div class="registry-lookup-note found">The selected nurse/column will be used for this appointment. Follow-up allocation is reviewed when the patient is Seen or Edited.</div>
     <div class="mact"><button class="btn-cancel" onclick="closeModal()">Cancel</button><button class="btn-save" onclick="doBook('${jsSafe(slot)}','${jsSafe(date)}')">Book Patient</button></div>`;
   openMo();
-  refreshBookingMonthOptions('p');
+  setBookCardNewPatientMode(false);
 }
 async function doBook(slot,date,nurseIdParam,nurseType){
   const idEl=document.getElementById('p-id');
   const fn=document.getElementById('p-fn').value.trim();
   const sn=document.getElementById('p-sn').value.trim();
+  const phone=document.getElementById('p-ph').value.trim();
   const id=normaliseIdCard(idEl?.value);
   if(!id){alert('Please enter the patient ID card first.');return;}
-
-  // Book Patient uses the patient registry only. Name, surname and phone are read-only here.
-  // Add or edit patient demographics from the New Patient tab first.
   if(!idEl.dataset.patientId){
     await lookupPatientByIdForBooking('p-id','p-fn','p-sn','p-ph','p-reg-note');
   }
   if(idEl.dataset.deceased==='true'){alert('This patient is marked as deceased. Change the patient status first before booking.');return;}
-  const patientId=idEl.dataset.patientId;
-  if(!patientId){alert('No saved patient was found for this ID card. Please add the patient in the New Patient tab first, then return here to book.');return;}
-  if(!fn||!sn){alert('This saved patient is missing a first name or surname. Please update the record in the New Patient tab first.');return;}
-
-  const followupPayload=readFollowupBookingPayload('p');
-  const{error:pErr}=await SB.from('patients').update(followupPayload).eq('id',patientId);
-  if(pErr){alert('Could not update patient follow-up details: '+pErr.message);return;}
-
+  let patientId=idEl.dataset.patientId;
+  if(!patientId){
+    if(!fn||!sn){alert('This is a new patient. Please enter Name and Surname before booking.');return;}
+    const followupType=document.getElementById('p-followup-type')?.value||'new_case';
+    const saved=await saveOrUpdatePatientByIdCard(id,fn,sn,phone,{followup_type:followupType,followup_owner:'Common',followup_status:'active'});
+    if(saved.error||!saved.patient?.id){alert('Could not save new patient: '+(saved.error?.message||'Unknown error'));return;}
+    patientId=saved.patient.id;
+  }else if(!fn||!sn){
+    alert('This saved patient is missing a first name or surname. Please update the record in Add Patient first.');return;
+  }
   const manualNurse=document.getElementById('p-nurse')?.value||'common';
   const payload={patient_id:patientId,appt_date:date,appt_slot:String(slot).slice(0,5),assigned_to:null,bank_staff_id:null,status:'booked'};
   if(manualNurse.startsWith('core:')) payload.assigned_to=manualNurse.replace('core:','');
   if(manualNurse.startsWith('bank:')) payload.bank_staff_id=manualNurse.replace('bank:','');
-
   const{error}=await SB.from('appointments').insert(payload);
   if(error){
     const msg=String(error.message||'');
-    if(msg.toLowerCase().includes('duplicate')||msg.toLowerCase().includes('unique')){
-      alert('Booking blocked by a database slot rule. The cancelled records are kept, but Supabase still has a unique slot constraint. Tell me and I will give you the small SQL fix.');
-    }else{
-      alert('Booking error: '+msg);
-    }
+    if(msg.toLowerCase().includes('duplicate')||msg.toLowerCase().includes('unique'))alert('Booking blocked by a database slot rule. The cancelled records are kept, but Supabase still has a unique slot constraint. Tell me and I will give you the small SQL fix.');
+    else alert('Booking error: '+msg);
     return;
   }
   closeModal();loadAppts();loadTodaySnapshot();if(document.getElementById('page-reports')?.classList.contains('active'))loadReports();
@@ -3267,7 +3401,7 @@ async function loadStaffAudit(){
   const year=document.getElementById('followup-year')?.value||String(new Date().getFullYear());
   const month=document.getElementById('followup-month')?.value||'';
   const tbody=document.getElementById('followup-patient-tbody');
-  if(tbody)tbody.innerHTML='<tr><td colspan="10" class="empty">Loading follow-up patients...</td></tr>';
+  if(tbody)tbody.innerHTML='<tr><td colspan="11" class="empty">Loading follow-up patients...</td></tr>';
   const title=document.getElementById('followup-owner-title');
   if(title)title.textContent=selectedFollowupOwner;
 
@@ -3339,7 +3473,7 @@ async function loadStaffAudit(){
   }
 
   if(!tbody)return;
-  if(!patients.length){const statusLabel=followupStatus==='paused'?'paused':followupStatus==='awaiting_feedback'?'awaiting feedback':followupStatus==='deceased'?'deceased':followupStatus==='reversed'?'reversed':followupStatus==='all'?'all':'active';tbody.innerHTML=`<tr><td colspan="10" class="empty">No ${statusLabel} patients for this owner/year/month.</td></tr>`;return;}
+  if(!patients.length){const statusLabel=followupStatus==='paused'?'paused':followupStatus==='awaiting_feedback'?'awaiting feedback':followupStatus==='deceased'?'deceased':followupStatus==='reversed'?'reversed':followupStatus==='all'?'all':'active';tbody.innerHTML=`<tr><td colspan="11" class="empty">No ${statusLabel} patients for this owner/year/month.</td></tr>`;return;}
   const latestByPatient={};
   appts.forEach(a=>{if(!latestByPatient[a.patient_id])latestByPatient[a.patient_id]=a;});
   const grouped={};
@@ -3366,7 +3500,7 @@ async function loadStaffAudit(){
   order.forEach(m=>{
     const rows=grouped[m]||[];
     if(!rows.length)return;
-    html+=`<tr class="followup-month-row"><td colspan="10">${followupMonthName(m)} — ${rows.length} patient${rows.length!==1?'s':''}</td></tr>`;
+    html+=`<tr class="followup-month-row"><td colspan="11">${followupMonthName(m)} — ${rows.length} patient${rows.length!==1?'s':''}</td></tr>`;
     rows.forEach(p=>{
       const nm=`${p.first_name||''} ${p.surname||''}`.trim()||'Unnamed patient';
       const latest=latestByPatient[p.id];
@@ -3384,8 +3518,9 @@ async function loadStaffAudit(){
       const availabilityKey=`${rowOwner}_${rowYear}`;
       const rowMonthOptions=buildAvailabilityMonthOptions(rowYear,rowOwner,rowMonth,followupAvailabilityByOwnerYear[availabilityKey]||{});
       html+=`<tr class="followup-click-row ${(rowStatus==='paused'||dntuStreak>=3)?'dntu-row-paused':''}" onclick="openFollowupHistory('${p.id}')" title="Open full follow-up appointment history">
-        <td><strong>${htmlSafe(nm)}</strong>${pausedBadge}${awaitingBadge}<br/><span style="font-size:10px;color:var(--muted);">Click row for full history</span></td>
-        <td style="font-family:monospace;font-size:12px;">${htmlSafe(p.id_card||'—')}</td>
+        <td style="font-family:monospace;font-size:12px;"><strong>${htmlSafe(p.id_card||'—')}</strong></td>
+        <td><strong>${htmlSafe(p.surname||'—')}</strong>${pausedBadge}${awaitingBadge}<br/><span style="font-size:10px;color:var(--muted);">Click row for full history</span></td>
+        <td><strong>${htmlSafe(p.first_name||'—')}</strong></td>
         <td>${htmlSafe(p.phone_number||'—')}</td>
         <td onclick="event.stopPropagation();"><select class="followup-small-select month-availability-select" id="fu-month-${p.id}" data-selected-month="${rowMonth}">${rowMonthOptions}</select></td>
         <td onclick="event.stopPropagation();"><select class="followup-small-select" id="fu-year-${p.id}" onchange="refreshFollowupPlanningMonthOptions('${p.id}')">${yearOptions}</select></td>
@@ -3732,25 +3867,31 @@ function renderPatientsList(){
       const dischargeCompare=dateSortValue(b.discharged_date)-dateSortValue(a.discharged_date);
       return lastSeenCompare||dischargeCompare||nameCompare;
     });
+  }else{
+    rows=[...rows].sort((a,b)=>
+      String(a.surname||'').localeCompare(String(b.surname||''))||
+      String(a.first_name||'').localeCompare(String(b.first_name||''))||
+      String(a.id_card||'').localeCompare(String(b.id_card||''))
+    );
   }
   if(thead){
     thead.innerHTML=isAll
       ? '<tr><th>ID Card</th><th>Surname</th><th>Name</th><th>Phone</th><th>Status</th><th>Owner</th><th>Due Month</th><th>Last Outcome</th><th>Next Follow-up</th><th>Locality</th><th>Actions</th></tr>'
       : isDeceased
-      ? '<tr><th>ID Number</th><th>Patient</th><th>Sex</th><th>DOB</th><th>Date of RIP</th><th>Age at Death</th><th>Surgery Date</th><th>Stoma Days</th><th>Stoma Type Summary</th><th>Locality</th><th>Actions</th></tr>'
+      ? '<tr><th>ID Number</th><th>Surname</th><th>Name</th><th>Sex</th><th>DOB</th><th>Date of RIP</th><th>Age at Death</th><th>Surgery Date</th><th>Stoma Days</th><th>Stoma Type Summary</th><th>Locality</th><th>Actions</th></tr>'
       : (isReversed
-        ? '<tr><th>ID Number</th><th>Surname</th><th>Name</th><th>Phone</th><th>Status</th><th>Owner</th><th>Reversal Date</th><th>Consultant</th><th>Last Seen</th><th>Stoma Type Summary</th><th>Locality</th><th>Actions</th></tr>'
+        ? '<tr><th>ID Number</th><th>Surname</th><th>Name</th><th>Owner</th><th>Consultant</th><th>Reversal Date</th><th>Last Seen</th><th>Stoma Type Summary</th><th>Locality</th><th>Status</th><th>Actions</th></tr>'
         : (isInpatients
           ? '<tr><th>ID Number</th><th>Surname</th><th>Name</th><th>Inpatient Type</th><th>Planned Surgery Date</th><th>Surgery Date</th><th>Admission Route</th><th>Owner</th><th>Last Outcome</th></tr>'
           : (isRelocatedOverseas
           ? (isRelocatedGozo
-            ? '<tr><th>ID Number</th><th>Patient</th><th>Status</th><th>Last Seen</th><th>Date of Discharge</th><th>Surgery Date</th><th>Consultant</th><th>Surgery Type</th><th>Stoma Type Summary</th><th>Actions</th></tr>'
-            : '<tr><th>ID Number</th><th>Patient</th><th>Status</th><th>Last Seen</th><th>Date of Discharge</th><th>Stoma Type Summary</th><th>Actions</th></tr>')
-          : '<tr><th>Patient</th><th>ID Card</th><th>Phone</th><th>Status</th><th>Owner</th><th>Due Month</th><th>Last Outcome</th><th>Next Follow-up</th><th>Locality</th></tr>')));
+            ? '<tr><th>ID Number</th><th>Surname</th><th>Name</th><th>Status</th><th>Last Seen</th><th>Date of Discharge</th><th>Surgery Date</th><th>Consultant</th><th>Surgery Type</th><th>Stoma Type Summary</th><th>Actions</th></tr>'
+            : '<tr><th>ID Number</th><th>Surname</th><th>Name</th><th>Status</th><th>Last Seen</th><th>Date of Discharge</th><th>Stoma Type Summary</th><th>Actions</th></tr>')
+          : '<tr><th>ID Number</th><th>Surname</th><th>Name</th><th>Phone</th><th>Status</th><th>Owner</th><th>Due Month</th><th>Last Outcome</th><th>Next Follow-up</th><th>Locality</th></tr>')));
   }
   if(!tbody)return;
   if(!rows.length){
-    tbody.innerHTML=`<tr><td colspan="${isAll?11:(isDeceased?11:(isReversed?12:(isInpatients?9:(isRelocatedOverseas?(isRelocatedGozo?10:7):9))))}" class="empty">No ${htmlSafe(cfg.title.toLowerCase())} found${search?' for this search':''}.</td></tr>`;
+    tbody.innerHTML=`<tr><td colspan="${isAll?11:(isDeceased?12:(isReversed?11:(isInpatients?9:(isRelocatedOverseas?(isRelocatedGozo?11:8):10))))}" class="empty">No ${htmlSafe(cfg.title.toLowerCase())} found${search?' for this search':''}.</td></tr>`;
     return;
   }
   tbody.innerHTML=rows.map(p=>{
@@ -3774,7 +3915,8 @@ function renderPatientsList(){
     if(isDeceased){
       return `<tr class="followup-click-row" onclick="openFollowupHistory('${p.id}')">
         <td><strong>${htmlSafe(p.id_card||'—')}</strong></td>
-        <td><strong>${htmlSafe(nm)}</strong><br/><span style="font-size:10px;color:var(--muted);">Click row for history</span></td>
+        <td><strong>${htmlSafe(p.surname||'—')}</strong><br/><span style="font-size:10px;color:var(--muted);">Click row for history</span></td>
+        <td><strong>${htmlSafe(p.first_name||'—')}</strong></td>
         <td>${htmlSafe(p.sex||'—')}</td>
         <td>${patientDateText(p.dob)}</td>
         <td><strong>${patientDateText(p.rip_date)}</strong></td>
@@ -3793,14 +3935,13 @@ function renderPatientsList(){
         <td><strong>${htmlSafe(p.id_card||'—')}</strong></td>
         <td><strong>${htmlSafe(p.surname||'—')}</strong><br/><span style="font-size:10px;color:var(--muted);">Click row for history</span></td>
         <td><strong>${htmlSafe(p.first_name||'—')}</strong></td>
-        <td>${htmlSafe(p.phone_number||'—')}</td>
-        <td>${patientStatusChip(st)}</td>
         <td>${htmlSafe(p.followup_owner||'Common')}</td>
-        <td><strong>${patientDateText(p.reversal_date)}</strong></td>
         <td>${htmlSafe(p.consultant||'—')}</td>
+        <td><strong>${patientDateText(p.reversal_date)}</strong></td>
         <td>${htmlSafe(latest)}</td>
         <td>${patientStomaTypeText(p.stoma_type_summary)}</td>
         <td>${htmlSafe(p.locality||'—')}</td>
+        <td>${patientStatusChip(st)}</td>
         <td>${patientRegisterEditAction(p)}</td>
       </tr>`;
     }
@@ -3821,7 +3962,8 @@ function renderPatientsList(){
       if(isRelocatedGozo){
         return `<tr class="followup-click-row" onclick="openFollowupHistory('${p.id}')">
           <td><strong>${htmlSafe(p.id_card||'—')}</strong></td>
-          <td><strong>${htmlSafe(nm)}</strong><br/><span style="font-size:10px;color:var(--muted);">Click row for history</span></td>
+          <td><strong>${htmlSafe(p.surname||'—')}</strong><br/><span style="font-size:10px;color:var(--muted);">Click row for history</span></td>
+          <td><strong>${htmlSafe(p.first_name||'—')}</strong></td>
           <td>${patientStatusChip(st)}</td>
           <td>${patientDateText(p.last_outcome_date)}</td>
           <td><strong>${patientDateText(p.discharged_date)}</strong></td>
@@ -3834,7 +3976,8 @@ function renderPatientsList(){
       }
       return `<tr class="followup-click-row" onclick="openFollowupHistory('${p.id}')">
         <td><strong>${htmlSafe(p.id_card||'—')}</strong></td>
-        <td><strong>${htmlSafe(nm)}</strong><br/><span style="font-size:10px;color:var(--muted);">Click row for history</span></td>
+        <td><strong>${htmlSafe(p.surname||'—')}</strong><br/><span style="font-size:10px;color:var(--muted);">Click row for history</span></td>
+        <td><strong>${htmlSafe(p.first_name||'—')}</strong></td>
         <td>${patientStatusChip(st)}</td>
         <td>${patientDateText(p.last_outcome_date)}</td>
         <td><strong>${patientDateText(p.discharged_date)}</strong></td>
@@ -3843,8 +3986,9 @@ function renderPatientsList(){
       </tr>`;
     }
     return `<tr class="followup-click-row" onclick="openFollowupHistory('${p.id}')">
-      <td><strong>${htmlSafe(nm)}</strong><br/><span style="font-size:10px;color:var(--muted);">Click row for history</span></td>
-      <td>${htmlSafe(p.id_card||'—')}</td>
+      <td><strong>${htmlSafe(p.id_card||'—')}</strong></td>
+      <td><strong>${htmlSafe(p.surname||'—')}</strong><br/><span style="font-size:10px;color:var(--muted);">Click row for history</span></td>
+      <td><strong>${htmlSafe(p.first_name||'—')}</strong></td>
       <td>${htmlSafe(p.phone_number||'—')}</td>
       <td>${patientStatusChip(st)}</td>
       <td>${htmlSafe(p.followup_owner||'Common')}</td>
@@ -4099,15 +4243,16 @@ function renderClinicCalendar(data,month,year){
 function renderClinicMonthlyList(data){
   const tbody=document.getElementById('clinic-tbody');
   if(!tbody)return;
-  if(!data.length){tbody.innerHTML='<tr><td colspan="7" class="empty">No appointments found for this month</td></tr>';return;}
+  if(!data.length){tbody.innerHTML='<tr><td colspan="8" class="empty">No appointments found for this month</td></tr>';return;}
   const grouped=groupClinicByDate(data);
   const dates=Object.keys(grouped).sort();
   tbody.innerHTML=dates.map(ds=>{
     const label=new Date(ds+'T12:00:00').toLocaleDateString('en-MT',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
     const rows=grouped[ds].map(a=>`<tr>
       <td><strong>${String(a.appt_slot||'').slice(0,5)}</strong></td>
-      <td><strong>${htmlSafe(clinicPatientName(a))}</strong></td>
-      <td style="font-family:monospace;font-size:12px;">${htmlSafe(a.patients?.id_card||'')}</td>
+      <td style="font-family:monospace;font-size:12px;"><strong>${htmlSafe(a.patients?.id_card||'')}</strong></td>
+      <td><strong>${htmlSafe(a.patients?.surname||'—')}</strong></td>
+      <td><strong>${htmlSafe(a.patients?.first_name||'—')}</strong></td>
       <td>${htmlSafe(a.patients?.phone_number||'—')}</td>
       <td>${htmlSafe(clinicNurseName(a))}</td>
       <td>${clinicBadge(a.status)}${followupStatusBadge(a.patients?.followup_status)}</td>
@@ -4119,7 +4264,7 @@ function renderClinicMonthlyList(data){
         <button class="ncb-btn ncb-del" title="Delete" onclick="delFromAudit('${a.id}')" style="margin-left:3px;">🗑</button>
       </td>
     </tr>`).join('');
-    return `<tr class="clinic-list-date"><td colspan="7">${htmlSafe(label)} — ${grouped[ds].length} appointment${grouped[ds].length!==1?'s':''}</td></tr>${rows}`;
+    return `<tr class="clinic-list-date"><td colspan="8">${htmlSafe(label)} — ${grouped[ds].length} appointment${grouped[ds].length!==1?'s':''}</td></tr>${rows}`;
   }).join('');
 }
 function buildPrintableClinicList(){
@@ -4128,8 +4273,8 @@ function buildPrintableClinicList(){
   if(!dates.length)return '<p>No appointments for this month.</p>';
   return dates.map(ds=>{
     const label=new Date(ds+'T12:00:00').toLocaleDateString('en-MT',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-    const rows=grouped[ds].map(a=>`<tr><td>${String(a.appt_slot||'').slice(0,5)}</td><td>${htmlSafe(clinicPatientName(a))}</td><td>${htmlSafe(a.patients?.id_card||'')}</td><td>${htmlSafe(a.patients?.phone_number||'')}</td><td>${htmlSafe(clinicNurseName(a))}</td><td>${clinicStatusText(a.status)}</td></tr>`).join('');
-    return `<h3>${htmlSafe(label)}</h3><table><thead><tr><th>Time</th><th>Patient</th><th>ID Card</th><th>Phone</th><th>Nurse</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table>`;
+    const rows=grouped[ds].map(a=>`<tr><td>${String(a.appt_slot||'').slice(0,5)}</td><td>${htmlSafe(a.patients?.id_card||'')}</td><td>${htmlSafe(a.patients?.surname||'')}</td><td>${htmlSafe(a.patients?.first_name||'')}</td><td>${htmlSafe(a.patients?.phone_number||'')}</td><td>${htmlSafe(clinicNurseName(a))}</td><td>${clinicStatusText(a.status)}</td></tr>`).join('');
+    return `<h3>${htmlSafe(label)}</h3><table><thead><tr><th>Time</th><th>ID Card</th><th>Surname</th><th>Name</th><th>Phone</th><th>Nurse</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table>`;
   }).join('');
 }
 function printableClinicStyles(){return `
@@ -4212,7 +4357,7 @@ function latestDntuAppointment(rows){
 }
 async function loadDntuPolicy(){
   const tbody=document.getElementById('dntu-tbody');
-  if(tbody)tbody.innerHTML='<tr><td colspan="5" class="empty">Loading DNTU patients...</td></tr>';
+  if(tbody)tbody.innerHTML='<tr><td colspan="6" class="empty">Loading DNTU patients...</td></tr>';
   const{data:raw,error}=await SB.from('appointments').select('*').order('appt_date',{ascending:false}).order('appt_slot',{ascending:false});
   if(error){console.error('DNTU load error:',error);if(tbody)tbody.innerHTML='<tr><td colspan="5" class="empty">Could not load DNTU records.</td></tr>';return;}
   const appts=await enrichAppointments(raw||[]);
@@ -4230,6 +4375,8 @@ async function loadDntuPolicy(){
     return {
       patientId:sample.patient_id,
       patientName:clinicPatientName(sample),
+      surname:sample.patients?.surname||'',
+      firstName:sample.patients?.first_name||'',
       idCard:sample.patients?.id_card||'',
       phone:sample.patients?.phone_number||'',
       streak,
@@ -4257,10 +4404,11 @@ function renderDntuPolicy(){
   if(dntuOwner!=='all')rows=rows.filter(r=>r.owner===dntuOwner);
   const tbody=document.getElementById('dntu-tbody');
   if(!tbody)return;
-  if(!rows.length){tbody.innerHTML='<tr><td colspan="5" class="empty">No patients match the selected DNTU selection.</td></tr>';return;}
+  if(!rows.length){tbody.innerHTML='<tr><td colspan="6" class="empty">No patients match the selected DNTU selection.</td></tr>';return;}
   tbody.innerHTML=rows.map(r=>`<tr>
-    <td><strong>${htmlSafe(r.patientName)}</strong></td>
-    <td style="font-family:monospace;font-size:12px;">${htmlSafe(r.idCard)}</td>
+    <td style="font-family:monospace;font-size:12px;"><strong>${htmlSafe(r.idCard)}</strong></td>
+    <td><strong>${htmlSafe(r.surname||'—')}</strong></td>
+    <td><strong>${htmlSafe(r.firstName||'—')}</strong></td>
     <td>${htmlSafe(r.phone||'—')}</td>
     <td><span class="dntu-streak">${r.streak}</span></td>
     <td>${htmlSafe(r.lastDntuDate||'—')}</td>
@@ -4422,12 +4570,13 @@ function renderReportPatientList(){
     rows=rows.filter(a=>[patientName(a),a.patients?.id_card,a.patients?.phone_number,reportAllocatedOwner(a),reportNurseColumn(a),statusLabel(a.status)].join(' ').toLowerCase().includes(search));
   }
   if(summary)summary.textContent=`Showing ${rows.length} booking record${rows.length!==1?'s':''}. Use the filters above to view seen patients, DNTU, cancelled or booked patients.`;
-  if(!rows.length){tbody.innerHTML='<tr><td colspan="10" class="empty">No patients match the selected filters.</td></tr>';return;}
+  if(!rows.length){tbody.innerHTML='<tr><td colspan="11" class="empty">No patients match the selected filters.</td></tr>';return;}
   tbody.innerHTML=rows.map(a=>`<tr>
     <td>${htmlSafe(a.appt_date||'')}</td>
     <td><strong>${htmlSafe(String(a.appt_slot||'').slice(0,5))}</strong></td>
-    <td><strong>${htmlSafe(patientName(a))}</strong></td>
-    <td style="font-family:monospace;font-size:12px;">${htmlSafe(a.patients?.id_card||'—')}</td>
+    <td style="font-family:monospace;font-size:12px;"><strong>${htmlSafe(a.patients?.id_card||'—')}</strong></td>
+    <td><strong>${htmlSafe(a.patients?.surname||'—')}</strong></td>
+    <td><strong>${htmlSafe(a.patients?.first_name||'—')}</strong></td>
     <td>${htmlSafe(a.patients?.phone_number||'—')}</td>
     <td>${htmlSafe(reportAllocatedOwner(a))}</td>
     <td>${htmlSafe(reportNurseColumn(a))}</td>
@@ -4581,26 +4730,27 @@ function renderReportPatientGroup(){
   }
   if(thead){
     if(isDeceased){
-      thead.innerHTML='<tr><th>ID Number</th><th>Patient</th><th>Sex</th><th>DOB</th><th>Date of RIP</th><th>Age at Death</th><th>Surgery Date</th><th>Stoma Days</th><th>Stoma Type Summary</th><th>Locality</th></tr>';
+      thead.innerHTML='<tr><th>ID Number</th><th>Surname</th><th>Name</th><th>Sex</th><th>DOB</th><th>Date of RIP</th><th>Age at Death</th><th>Surgery Date</th><th>Stoma Days</th><th>Stoma Type Summary</th><th>Locality</th></tr>';
     }else if(isReversed){
-      thead.innerHTML='<tr><th>ID Number</th><th>Surname</th><th>Name</th><th>Phone</th><th>Status</th><th>Owner</th><th>Reversal Date</th><th>Consultant</th><th>Last Seen</th><th>Stoma Type Summary</th><th>Locality</th></tr>';
+      thead.innerHTML='<tr><th>ID Number</th><th>Surname</th><th>Name</th><th>Owner</th><th>Consultant</th><th>Reversal Date</th><th>Last Seen</th><th>Stoma Type Summary</th><th>Locality</th><th>Status</th></tr>';
     }else if(isRelocatedOverseas){
-      thead.innerHTML=isRelocatedGozo?'<tr><th>ID Number</th><th>Patient</th><th>Status</th><th>Last Seen</th><th>Date of Discharge</th><th>Surgery Date</th><th>Consultant</th><th>Surgery Type</th><th>Stoma Type Summary</th></tr>':'<tr><th>ID Number</th><th>Patient</th><th>Status</th><th>Last Seen</th><th>Date of Discharge</th><th>Stoma Type Summary</th></tr>';
+      thead.innerHTML=isRelocatedGozo?'<tr><th>ID Number</th><th>Surname</th><th>Name</th><th>Status</th><th>Last Seen</th><th>Date of Discharge</th><th>Surgery Date</th><th>Consultant</th><th>Surgery Type</th><th>Stoma Type Summary</th></tr>':'<tr><th>ID Number</th><th>Surname</th><th>Name</th><th>Status</th><th>Last Seen</th><th>Date of Discharge</th><th>Stoma Type Summary</th></tr>';
     }else if(isFollowups){
-      thead.innerHTML='<tr><th>Patient</th><th>ID Card</th><th>Phone</th><th>Status</th><th>Owner</th><th>Due Month</th><th>Follow-up Year</th><th>Last Outcome</th><th>Next Follow-up</th><th>Locality</th></tr>';
+      thead.innerHTML='<tr><th>ID Number</th><th>Surname</th><th>Name</th><th>Phone</th><th>Status</th><th>Owner</th><th>Due Month</th><th>Follow-up Year</th><th>Last Outcome</th><th>Next Follow-up</th><th>Locality</th></tr>';
     }else{
-      thead.innerHTML='<tr><th>Patient</th><th>ID Card</th><th>Phone</th><th>Status</th><th>Owner</th><th>Due Month</th><th>Last Outcome</th><th>Next Follow-up</th><th>Locality</th></tr>';
+      thead.innerHTML='<tr><th>ID Number</th><th>Surname</th><th>Name</th><th>Phone</th><th>Status</th><th>Owner</th><th>Due Month</th><th>Last Outcome</th><th>Next Follow-up</th><th>Locality</th></tr>';
     }
   }
   if(!tbody)return;
-  if(!rows.length){tbody.innerHTML=`<tr><td colspan="${isDeceased?10:(isReversed?11:(isRelocatedOverseas?(isRelocatedGozo?9:6):(isFollowups?10:9)))}" class="empty">No ${htmlSafe(cfg.title.toLowerCase())} found.</td></tr>`;return;}
+  if(!rows.length){tbody.innerHTML=`<tr><td colspan="${isDeceased?11:(isReversed?10:(isRelocatedOverseas?(isRelocatedGozo?10:7):(isFollowups?11:10)))}" class="empty">No ${htmlSafe(cfg.title.toLowerCase())} found.</td></tr>`;return;}
   tbody.innerHTML=rows.map(p=>{
     const nm=`${p.first_name||''} ${p.surname||''}`.trim()||'Unnamed patient';
     const st=patientRegisterStatus(p);
     if(isDeceased){
       return `<tr>
         <td><strong>${htmlSafe(p.id_card||'—')}</strong></td>
-        <td><strong>${htmlSafe(nm)}</strong></td>
+        <td><strong>${htmlSafe(p.surname||'—')}</strong></td>
+        <td><strong>${htmlSafe(p.first_name||'—')}</strong></td>
         <td>${htmlSafe(p.sex||'—')}</td>
         <td>${patientDateText(p.dob)}</td>
         <td><strong>${patientDateText(p.rip_date)}</strong></td>
@@ -4616,21 +4766,21 @@ function renderReportPatientGroup(){
         <td style="font-family:monospace;font-size:12px;"><strong>${htmlSafe(p.id_card||'—')}</strong></td>
         <td><strong>${htmlSafe(p.surname||'—')}</strong></td>
         <td><strong>${htmlSafe(p.first_name||'—')}</strong></td>
-        <td>${htmlSafe(p.phone_number||'—')}</td>
-        <td>${patientStatusChip(st)}</td>
         <td>${htmlSafe(p.followup_owner||'Common')}</td>
-        <td><strong>${patientDateText(p.reversal_date)}</strong></td>
         <td>${htmlSafe(p.consultant||'—')}</td>
+        <td><strong>${patientDateText(p.reversal_date)}</strong></td>
         <td>${htmlSafe(p.last_outcome_date||'—')}</td>
         <td>${patientStomaTypeText(p.stoma_type_summary)}</td>
         <td>${htmlSafe(p.locality||'—')}</td>
+        <td>${patientStatusChip(st)}</td>
       </tr>`;
     }
     if(isRelocatedOverseas){
       if(isRelocatedGozo){
         return `<tr>
           <td style="font-family:monospace;font-size:12px;"><strong>${htmlSafe(p.id_card||'—')}</strong></td>
-          <td><strong>${htmlSafe(nm)}</strong></td>
+          <td><strong>${htmlSafe(p.surname||'—')}</strong></td>
+          <td><strong>${htmlSafe(p.first_name||'—')}</strong></td>
           <td>${patientStatusChip(st)}</td>
           <td>${patientDateText(p.last_outcome_date)}</td>
           <td><strong>${patientDateText(p.discharged_date)}</strong></td>
@@ -4642,7 +4792,8 @@ function renderReportPatientGroup(){
       }
       return `<tr>
         <td style="font-family:monospace;font-size:12px;"><strong>${htmlSafe(p.id_card||'—')}</strong></td>
-        <td><strong>${htmlSafe(nm)}</strong></td>
+        <td><strong>${htmlSafe(p.surname||'—')}</strong></td>
+        <td><strong>${htmlSafe(p.first_name||'—')}</strong></td>
         <td>${patientStatusChip(st)}</td>
         <td>${patientDateText(p.last_outcome_date)}</td>
         <td><strong>${patientDateText(p.discharged_date)}</strong></td>
@@ -4650,8 +4801,9 @@ function renderReportPatientGroup(){
       </tr>`;
     }
     return `<tr>
-      <td><strong>${htmlSafe(nm)}</strong></td>
-      <td style="font-family:monospace;font-size:12px;">${htmlSafe(p.id_card||'—')}</td>
+      <td style="font-family:monospace;font-size:12px;"><strong>${htmlSafe(p.id_card||'—')}</strong></td>
+      <td><strong>${htmlSafe(p.surname||'—')}</strong></td>
+      <td><strong>${htmlSafe(p.first_name||'—')}</strong></td>
       <td>${htmlSafe(p.phone_number||'—')}</td>
       <td>${patientStatusChip(st)}</td>
       <td>${htmlSafe(p.followup_owner||'Common')}</td>
