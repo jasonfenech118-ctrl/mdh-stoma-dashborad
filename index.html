@@ -500,6 +500,26 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .book-replacement-btn:hover{background:#e0f3f1!important;}
 .appt-action-row{margin-top:6px!important;display:flex!important;gap:5px!important;flex-wrap:wrap!important;align-items:center!important;border-top:1px solid rgba(13,115,119,.12);padding-top:6px;}
 
+/* v30AI — stronger visual separation for Patient Appointments cells */
+#slots-container{background:linear-gradient(180deg,#f8fafc 0%,#eef3f7 100%);border:1px solid #d3dbe5;border-radius:16px;padding:12px;box-shadow:inset 0 1px 0 rgba(255,255,255,.85),0 3px 10px rgba(26,46,74,.06);overflow-x:auto;}
+#slots-container table.daily-appt-grid{border-spacing:12px 12px!important;min-width:100%;}
+#slots-container table.daily-appt-grid thead th{background:#ffffff!important;border:1px solid #d6dee8!important;box-shadow:0 2px 5px rgba(26,46,74,.06)!important;border-radius:11px!important;}
+#slots-container table.daily-appt-grid tbody tr td:first-child{background:#ffffff!important;border:1px solid #d6dee8!important;border-left:5px solid #1a2e4a!important;border-radius:11px!important;box-shadow:0 2px 6px rgba(26,46,74,.07)!important;text-align:center!important;vertical-align:middle!important;}
+#slots-container table.daily-appt-grid td{transition:box-shadow .15s ease,transform .15s ease,border-color .15s ease;}
+.appt-cell-card{border:2px solid #9ccfca!important;border-left:8px solid #0d7377!important;border-radius:14px!important;box-shadow:0 3px 10px rgba(13,115,119,.14)!important;padding:10px 12px!important;outline:1px solid rgba(255,255,255,.75)!important;}
+.appt-cell-card.booked{background:#ecfbf8!important;}
+.appt-cell-card.attended{background:#e1f6e8!important;border-color:#9bd6aa!important;border-left-color:#27ae60!important;}
+.appt-cell-card.dntu{background:#fff6d8!important;border-color:#efd38a!important;border-left-color:#e6a817!important;}
+.appt-cell-empty{border:2px dashed #b9c6d4!important;border-radius:14px!important;background:#ffffff!important;box-shadow:0 2px 7px rgba(26,46,74,.05)!important;padding:10px!important;min-width:150px;}
+.appt-cell-empty:hover{border-color:#0d7377!important;background:#f2fbfa!important;box-shadow:0 5px 14px rgba(13,115,119,.13)!important;}
+.appt-cell-empty button:not(.book-replacement-btn){border-color:#b9c6d4!important;background:#f8fafc!important;color:#52667a!important;font-weight:800!important;}
+.appt-cell-empty:hover button:not(.book-replacement-btn){border-color:#0d7377!important;color:#0d7377!important;background:#e8f5f4!important;}
+.appt-cell-unavailable{border:2px solid #f1b8b8!important;border-left:8px solid #c0392b!important;border-radius:14px!important;background:#fff7f7!important;box-shadow:0 2px 7px rgba(192,57,43,.08)!important;padding:10px!important;font-weight:900!important;}
+.appt-cell-card:hover,.appt-cell-unavailable:hover{transform:translateY(-1px);box-shadow:0 7px 16px rgba(26,46,74,.16)!important;}
+#slots-container .cell-time-badge{box-shadow:0 1px 3px rgba(26,46,74,.09);}
+@media(max-width:900px){#slots-container{padding:8px;}#slots-container table.daily-appt-grid{border-spacing:8px 10px!important;}.appt-cell-card,.appt-cell-empty,.appt-cell-unavailable{min-width:135px;}}
+
+
 /* v30AF — make ID card and telephone highly visible on appointment cards */
 .appt-patient-name{font-size:13px!important;font-weight:800!important;color:#10243d!important;line-height:1.2;margin-bottom:5px;}
 .appt-contact-row{display:flex;flex-wrap:wrap;gap:5px;margin:4px 0 5px 0;align-items:center;}
@@ -2576,7 +2596,7 @@ async function loadAppts(){
           </div>
         </td>`;
       }else if(n.type==='absent'||n.type==='ot-booked'){
-        html+=`<td style="padding:8px;border-bottom:1px solid #dde3ea;border-left:1px solid #dde3ea;background:${cellBg};text-align:center;color:#c0392b;font-size:10px;border-radius:7px;"><div class="cell-time-badge warning">${slot}</div><br/>Not rostered</td>`;
+        html+=`<td class="appt-cell-unavailable" style="padding:8px;border-bottom:1px solid #dde3ea;border-left:1px solid #dde3ea;background:${cellBg};text-align:center;color:#c0392b;font-size:10px;border-radius:7px;"><div class="cell-time-badge warning">${slot}</div><br/>Not rostered</td>`;
       }else{
         html+=`<td class="appt-cell-empty" style="padding:8px;background:${cellBg};vertical-align:top;">
           <div class="cell-time-badge muted">${slot}</div>
