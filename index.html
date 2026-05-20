@@ -370,7 +370,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .clinic-day-count:hover{filter:brightness(.96);box-shadow:0 1px 4px rgba(13,115,119,.18);}
 #clinic-list-panel .card{padding:14px;}
 #clinic-list-panel .clinic-month-title{font-size:13px;margin-bottom:7px;}
-#clinic-list-panel .clinic-list-grid{gap:7px;}
+#clinic-list-panel .clinic-list-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;}
 #clinic-list-panel .clinic-date-card{border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.035);}
 #clinic-list-panel .clinic-date-card-title{padding:6px 8px;font-size:10px;letter-spacing:.2px;}
 #clinic-list-panel .clinic-date-count{font-size:9px;padding:1px 6px;}
@@ -379,12 +379,12 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 #clinic-list-panel .clinic-list-time{min-width:38px;padding:2px 6px;font-size:9px;}
 #clinic-list-panel .clinic-list-name{font-size:11px;line-height:1.12;}
 #clinic-list-panel .clinic-list-id{font-size:10px;margin-top:1px;}
-#clinic-list-panel .clinic-list-meta{grid-template-columns:repeat(4,minmax(0,1fr));gap:2px 6px;font-size:9px;line-height:1.15;margin:3px 0;}
+#clinic-list-panel .clinic-list-meta{grid-template-columns:repeat(2,minmax(0,1fr));gap:2px 6px;font-size:9px;line-height:1.15;margin:3px 0;}
 #clinic-list-panel .clinic-badge{font-size:8px;padding:1px 6px;border-radius:8px;}
 #clinic-list-panel .followup-status-badge{display:inline-block;margin:2px 0 0 4px;font-size:8px;padding:1px 6px;vertical-align:middle;}
 #clinic-list-panel .clinic-list-actions{display:none!important;}
-@media(max-width:1100px){#clinic-list-panel .clinic-list-meta{grid-template-columns:repeat(2,minmax(0,1fr));}}
-@media(max-width:980px){.clinic-list-grid{grid-template-columns:1fr;}.clinic-list-meta{grid-template-columns:1fr;}#clinic-list-panel .clinic-list-meta{grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(max-width:1200px){#clinic-list-panel .clinic-list-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(max-width:980px){.clinic-list-grid{grid-template-columns:1fr;}.clinic-list-meta{grid-template-columns:1fr;}#clinic-list-panel .clinic-list-grid{grid-template-columns:1fr;}#clinic-list-panel .clinic-list-meta{grid-template-columns:repeat(2,minmax(0,1fr));}}
 .clinic-list-date{background:#eef2f7!important;color:var(--navy);font-weight:800;text-transform:uppercase;font-size:11px;}
 .clinic-list-date td{padding:8px 14px!important;}
 .clinic-badge{display:inline-block;padding:2px 7px;border-radius:9px;font-size:9px;font-weight:800;text-transform:uppercase;white-space:nowrap;}
@@ -4623,6 +4623,13 @@ function clinicAppointmentActionsHTML(a,closeAfter=false){
 }
 function clinicAppointmentCardHTML(a,closeAfter=false,showActions=true){
   const patientName=clinicPatientName(a);
+  const metaHtml=showActions
+    ? `<div><strong>Surname:</strong> ${htmlSafe(a.patients?.surname||'—')}</div>
+      <div><strong>Name:</strong> ${htmlSafe(a.patients?.first_name||'—')}</div>
+      <div><strong>Phone:</strong> ${htmlSafe(a.patients?.phone_number||'—')}</div>
+      <div><strong>Nurse:</strong> ${htmlSafe(clinicNurseName(a))}</div>`
+    : `<div><strong>Phone:</strong> ${htmlSafe(a.patients?.phone_number||'—')}</div>
+      <div><strong>Nurse:</strong> ${htmlSafe(clinicNurseName(a))}</div>`;
   return `<div class="clinic-list-appt-card">
     <div class="clinic-list-main">
       <div>
@@ -4631,12 +4638,7 @@ function clinicAppointmentCardHTML(a,closeAfter=false,showActions=true){
       </div>
       <span class="clinic-list-time">${String(a.appt_slot||'').slice(0,5)||'—'}</span>
     </div>
-    <div class="clinic-list-meta">
-      <div><strong>Surname:</strong> ${htmlSafe(a.patients?.surname||'—')}</div>
-      <div><strong>Name:</strong> ${htmlSafe(a.patients?.first_name||'—')}</div>
-      <div><strong>Phone:</strong> ${htmlSafe(a.patients?.phone_number||'—')}</div>
-      <div><strong>Nurse:</strong> ${htmlSafe(clinicNurseName(a))}</div>
-    </div>
+    <div class="clinic-list-meta">${metaHtml}</div>
     <div>${clinicBadge(a.status)}${followupStatusBadge(a.patients?.followup_status)}</div>
     ${showActions?clinicAppointmentActionsHTML(a,closeAfter):''}
   </div>`;
