@@ -370,6 +370,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .clinic-day-count:hover{filter:brightness(.96);box-shadow:0 1px 4px rgba(13,115,119,.18);}
 #clinic-list-panel .card{padding:14px;}
 #clinic-list-panel .clinic-month-title{font-size:13px;margin-bottom:7px;}
+.clinic-list-total{display:inline-flex;align-items:center;justify-content:center;padding:3px 9px;border-radius:999px;background:#e8f5f4;color:var(--teal);border:1px solid #b7ddd9;font-size:10px;font-weight:900;white-space:nowrap;}
 #clinic-list-panel .clinic-list-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;}
 #clinic-list-panel .clinic-date-card{border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.035);}
 #clinic-list-panel .clinic-date-card-title{padding:6px 8px;font-size:10px;letter-spacing:.2px;}
@@ -1230,7 +1231,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
       </div>
       <div id="clinic-list-panel" class="clinic-panel">
         <div class="card">
-          <div class="clinic-month-title"><span id="clinic-list-title">Monthly List</span></div>
+          <div class="clinic-month-title"><span id="clinic-list-title">Monthly List</span><span id="clinic-list-total" class="clinic-list-total">Total: 0</span></div>
           <div id="clinic-list-grid" class="clinic-list-grid clinic-list-compact"></div>
         </div>
       </div>
@@ -4663,8 +4664,10 @@ function renderClinicMonthlyList(data){
   if(!grid)return;
   const rows=filteredClinicListRows(data||clinicAuditData||[]);
   const listTitle=document.getElementById('clinic-list-title');
+  const listTotal=document.getElementById('clinic-list-total');
   const {month,year}=ensureClinicMonthYear();
   if(listTitle)listTitle.textContent=`Monthly List — ${clinicMonthLabel(month,year)} · ${clinicListFilterLabel()}`;
+  if(listTotal)listTotal.textContent=`Total: ${rows.length}`;
   if(!rows.length){grid.innerHTML=`<div class="empty" style="grid-column:1/-1;">No ${htmlSafe(clinicListFilterLabel().toLowerCase())} found for this month</div>`;return;}
   const grouped=groupClinicByDate(rows);
   const dates=Object.keys(grouped).sort();
@@ -4682,17 +4685,27 @@ function buildPrintableClinicList(){
   const grouped=groupClinicByDate(rows);
   const dates=Object.keys(grouped).sort();
   if(!dates.length)return `<p>No ${htmlSafe(clinicListFilterLabel().toLowerCase())} for this month.</p>`;
-  return dates.map(ds=>{
-    const label=new Date(ds+'T12:00:00').toLocaleDateString('en-MT',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-    const dayRows=grouped[ds].map(a=>`<tr><td>${String(a.appt_slot||'').slice(0,5)}</td><td>${htmlSafe(a.patients?.id_card||'')}</td><td>${htmlSafe(a.patients?.surname||'')}</td><td>${htmlSafe(a.patients?.first_name||'')}</td><td>${htmlSafe(a.patients?.phone_number||'')}</td><td>${htmlSafe(clinicNurseName(a))}</td><td>${clinicStatusText(a.status)}</td></tr>`).join('');
-    return `<h3>${htmlSafe(label)}</h3><table><thead><tr><th>Time</th><th>ID Card</th><th>Surname</th><th>Name</th><th>Phone</th><th>Nurse</th><th>Status</th></tr></thead><tbody>${dayRows}</tbody></table>`;
-  }).join('');
+  return `<div class="print-total">Total: ${rows.length} appointment${rows.length!==1?'s':''}</div>
+    <div class="print-list-grid">${dates.map(ds=>{
+      const label=new Date(ds+'T12:00:00').toLocaleDateString('en-MT',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+      const dayRows=grouped[ds].map(a=>`<div class="print-appt"><div class="print-appt-main"><strong>${htmlSafe(clinicPatientName(a))}</strong><span class="print-time">${String(a.appt_slot||'').slice(0,5)||'—'}</span></div><div>ID: ${htmlSafe(a.patients?.id_card||'—')}</div><div>Phone: ${htmlSafe(a.patients?.phone_number||'—')}</div><div>Nurse: ${htmlSafe(clinicNurseName(a))}</div><div>Status: ${htmlSafe(clinicStatusText(a.status))}</div></div>`).join('');
+      return `<section class="print-date-card"><h3>${htmlSafe(label)} <span>${grouped[ds].length}</span></h3>${dayRows}</section>`;
+    }).join('')}</div>`;
 }
 function printableClinicStyles(){return `
-  body{font-family:Arial,sans-serif;color:#1a2e2d;margin:18px;font-size:11px;}
-  h1{font-size:20px;margin:0 0 4px;color:#1a2e4a;} h2{font-size:14px;margin:0 0 12px;color:#0d7377;} h3{font-size:12px;margin:12px 0 5px;color:#1a2e4a;}
+  *{box-sizing:border-box;} body{font-family:Arial,sans-serif;color:#1a2e2d;margin:18px;font-size:11px;}
+  h1{font-size:20px;margin:0 0 4px;color:#1a2e4a;} h2{font-size:14px;margin:0 0 8px;color:#0d7377;} h3{font-size:10px;margin:0;color:#1a2e4a;}
   .stats{display:flex;gap:8px;margin:10px 0 12px;flex-wrap:wrap}.stat{border:1px solid #dde3ea;border-radius:8px;padding:7px 10px}.stat b{font-size:16px;color:#1a2e4a;display:block}.stat span{font-size:9px;text-transform:uppercase;color:#7a8fa6;font-weight:bold}
-  table{width:100%;border-collapse:collapse;margin-bottom:8px;} th,td{border:1px solid #cfd8e3;padding:5px;text-align:left;vertical-align:top;} th{background:#eef2f7;color:#1a2e4a;font-size:9px;text-transform:uppercase;}
+  table{width:100%;table-layout:fixed;border-collapse:collapse;margin-bottom:8px;} th,td{border:1px solid #cfd8e3;padding:5px;text-align:left;vertical-align:top;word-break:break-word;} th{background:#eef2f7;color:#1a2e4a;font-size:9px;text-transform:uppercase;}
+  .print-total{display:inline-block;margin:0 0 8px;padding:4px 9px;border:1px solid #b7ddd9;border-radius:999px;background:#e8f5f4;color:#0d7377;font-size:11px;font-weight:bold;}
+  .print-list-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;align-items:start;}
+  .print-date-card{border:1px solid #cfd8e3;border-radius:7px;background:#fff;overflow:hidden;page-break-inside:avoid;break-inside:avoid;}
+  .print-date-card h3{display:flex;justify-content:space-between;gap:6px;background:#eef2f7;border-bottom:1px solid #cfd8e3;padding:5px 6px;text-transform:uppercase;letter-spacing:.2px;}
+  .print-date-card h3 span{color:#0d7377;font-weight:bold;}
+  .print-appt{padding:4px 5px;border-bottom:1px solid #e5eaf0;font-size:8.6px;line-height:1.22;page-break-inside:avoid;break-inside:avoid;}
+  .print-appt:last-child{border-bottom:none;}
+  .print-appt-main{display:flex;align-items:flex-start;justify-content:space-between;gap:4px;margin-bottom:2px;color:#1a2e4a;}
+  .print-time{flex:0 0 auto;border-radius:999px;background:#e8f5f4;color:#0d7377;padding:1px 5px;font-size:8px;font-weight:bold;}
   .cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}.head{background:#1a2e4a;color:white;text-align:center;padding:5px;font-weight:bold;font-size:9px;border-radius:4px}.day{border:1px solid #cfd8e3;min-height:88px;border-radius:5px;padding:4px;page-break-inside:avoid}.empty{background:#f5f7f9}.daynum{font-weight:bold;color:#1a2e4a;margin-bottom:3px}.appt{font-size:8.5px;border:1px solid #e5eaf0;background:#fafafa;border-radius:4px;padding:2px;margin-bottom:2px}.badge{font-size:8px;font-weight:bold;text-transform:uppercase}.booked{color:#0d47a1}.attended{color:#155724}.cancelled{color:#721c24}.did_not_attend{color:#856404}
   @page{size:A4 landscape;margin:10mm;} @media print{body{margin:0}.no-print{display:none}}
 `;}
@@ -4713,7 +4726,7 @@ function printMonthlyList(){
   const rows=filteredClinicListRows(clinicAuditData||[]);
   if(!rows.length){alert(`No ${clinicListFilterLabel().toLowerCase()} found for this month.`);return;}
   const w=window.open('','_blank');
-  w.document.write(`<!DOCTYPE html><html><head><title>Clinical Calender List ${clinicMonthLabel(month,year)}</title><style>${printableClinicStyles().replace('@page{size:A4 landscape;margin:10mm;}','@page{size:A4 portrait;margin:10mm;}')}</style></head><body><h1>MDH Stoma Care Clinic</h1><h2>Monthly Appointment List — ${clinicMonthLabel(month,year)} · ${clinicListFilterLabel()}</h2>${buildPrintableClinicList()}</body></html>`);
+  w.document.write(`<!DOCTYPE html><html><head><title>Clinical Calender List ${clinicMonthLabel(month,year)}</title><style>${printableClinicStyles()}</style></head><body><h1>MDH Stoma Care Clinic</h1><h2>Monthly Appointment List — ${clinicMonthLabel(month,year)} · ${clinicListFilterLabel()}</h2>${buildPrintableClinicList()}</body></html>`);
   w.document.close();w.focus();w.print();
 }
 async function setOutcome(id,status){await SB.from('appointments').update({status}).eq('id',id);if(status==='did_not_attend')await checkDntuThresholdForAppointment(id);refreshAppointmentViews();}
