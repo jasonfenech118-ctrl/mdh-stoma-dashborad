@@ -594,6 +594,52 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .registry-lookup-note.new{background:#fff8e1;color:#856404;border-color:#f2df9f;}
 .registry-lookup-note.error{background:#f8d7da;color:#721c24;border-color:#f1b0b7;}
 
+
+/* v30AK — compact Patient Appointments cells so the grid fits on one page without horizontal scrolling */
+#page-appointments .phdr{margin-bottom:8px!important;}
+#page-appointments .appt-date-row{margin-bottom:8px!important;gap:8px!important;}
+#page-appointments .patient-search-card{padding:9px 11px!important;margin-bottom:9px!important;}
+#page-appointments .patient-search-head{margin-bottom:6px!important;}
+#page-appointments .patient-search-row input{padding:6px 9px!important;font-size:11px!important;}
+#page-appointments .patient-search-row button{padding:6px 10px!important;font-size:11px!important;}
+#page-appointments > div[style*="background:white"] > div[style*="background:#1a2e4a"]{padding:8px 12px!important;}
+#slots-container{padding:6px!important;overflow-x:visible!important;}
+#slots-container table.daily-appt-grid,
+#slots-container table.daily-appt-grid.no-time-column{width:100%!important;min-width:0!important;table-layout:fixed!important;border-spacing:5px 6px!important;}
+#slots-container table.daily-appt-grid.no-time-column thead th,
+#slots-container table.daily-appt-grid thead th{min-width:0!important;padding:5px 4px!important;font-size:10px!important;line-height:1.15!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;border-radius:8px!important;}
+#slots-container table.daily-appt-grid.no-time-column thead th span{font-size:7px!important;padding:1px 4px!important;margin-left:2px!important;border-radius:4px!important;}
+#slots-container table.daily-appt-grid td{min-width:0!important;overflow:hidden!important;}
+#slots-container .appt-cell-card,
+#slots-container table.daily-appt-grid.no-time-column .appt-cell-empty,
+#slots-container .appt-cell-unavailable{padding:5px 6px!important;border-radius:9px!important;box-shadow:0 1px 4px rgba(26,46,74,.08)!important;}
+#slots-container .appt-cell-card{border-width:1px!important;border-left-width:5px!important;}
+#slots-container table.daily-appt-grid.no-time-column .appt-cell-empty{border-width:1px!important;border-left-width:5px!important;}
+#slots-container .appt-cell-unavailable{border-width:1px!important;border-left-width:5px!important;font-size:9px!important;}
+#slots-container .cell-time-badge{min-width:34px!important;padding:1px 5px!important;margin-bottom:3px!important;font-size:8px!important;line-height:1.1!important;border-radius:999px!important;}
+#slots-container .appt-patient-name{font-size:10.5px!important;line-height:1.1!important;margin-bottom:3px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;}
+#slots-container .appt-contact-row{gap:2px!important;margin:2px 0 3px 0!important;}
+#slots-container .appt-contact-pill{padding:1px 4px!important;border-radius:6px!important;font-size:8.5px!important;line-height:1.05!important;max-width:100%!important;}
+#slots-container .appt-contact-label{display:none!important;}
+#slots-container .appt-contact-value{font-size:8.5px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;max-width:76px!important;}
+#slots-container .followup-status-badge,
+#slots-container .followup-type-badge{font-size:7.5px!important;padding:1px 4px!important;margin:2px 2px 1px 0!important;border-radius:8px!important;}
+#slots-container .appt-action-row{margin-top:3px!important;padding-top:3px!important;gap:2px!important;}
+#slots-container .appt-action-row button{padding:1px 4px!important;font-size:8px!important;border-radius:4px!important;line-height:1.2!important;min-height:18px!important;}
+#slots-container .cancel-history-box{margin:4px 0 2px 0!important;padding:5px 6px!important;border-radius:8px!important;}
+#slots-container .cancel-history-title{font-size:7.5px!important;margin-bottom:3px!important;}
+#slots-container .cancel-history-item{padding:4px 5px!important;margin-top:3px!important;gap:3px!important;}
+#slots-container .cancel-chip{font-size:7.5px!important;padding:1px 4px!important;}
+#slots-container .cancel-text{font-size:8px!important;line-height:1.1!important;}
+#slots-container table.daily-appt-grid.no-time-column .appt-cell-empty button:not(.book-replacement-btn){min-height:26px!important;padding:3px 4px!important;border-radius:7px!important;font-size:9px!important;line-height:1.1!important;}
+#slots-container .book-cell-time{font-size:8px!important;margin-bottom:1px!important;}
+#slots-container .book-replacement-btn{padding:4px 4px!important;margin-top:4px!important;font-size:9px!important;}
+@media(max-width:900px){
+  #slots-container{overflow-x:auto!important;}
+  #slots-container table.daily-appt-grid.no-time-column thead th{font-size:9px!important;}
+  #slots-container .appt-contact-value{max-width:60px!important;}
+}
+
 </style>
 </head>
 <body>
