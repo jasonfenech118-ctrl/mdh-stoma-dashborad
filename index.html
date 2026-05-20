@@ -587,7 +587,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
         <button type="button" class="tab-dd-item" data-tab="report-patients" onclick="switchTab('report-patients',this)">Patients <small>Booked period</small></button>
       </div>
     </div>
-    <button type="button" class="tab tab-single" data-tab="change-password" onclick="switchTab('change-password',this)">Change Password</button>
+    <button type="button" class="tab tab-single" data-tab="account" onclick="switchTab('account',this)">Account</button>
   </div>
 
   <div class="main">
@@ -1238,32 +1238,39 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
         </table></div>
       </div>
     </div>
-
-
-    <!-- CHANGE PASSWORD -->
-    <div class="page" id="page-change-password">
-      <div class="phdr">
-        <div><h2>Change Password</h2><p>Nurses can update their own dashboard login password while signed in.</p></div>
-      </div>
-      <div class="card" style="max-width:760px;">
-        <div class="card-title">Password Update</div>
-        <p style="margin-top:0;color:var(--muted);font-size:13px;line-height:1.5;">Enter a new password and confirm it. The change applies to your own logged-in account.</p>
-        <div class="new-patient-grid">
-          <div class="fg full"><label>Signed in as</label><input type="email" id="cp-email" disabled placeholder="Logged-in email"/></div>
-          <div class="fg"><label>New Password *</label><input type="password" id="cp-new" autocomplete="new-password" placeholder="New password"/></div>
-          <div class="fg"><label>Confirm New Password *</label><input type="password" id="cp-confirm" autocomplete="new-password" placeholder="Confirm new password" onkeydown="if(event.key==='Enter'){event.preventDefault();changeOwnPassword();}"/></div>
-        </div>
-        <div id="cp-msg" class="new-patient-note"></div>
-        <div class="new-patient-actions">
-          <button class="btn-cancel" onclick="clearPasswordForm()">Clear</button>
-          <button class="btn-save" onclick="changeOwnPassword()">Update Password</button>
-        </div>
-      </div>
-    </div>
     </div>
 
   </div>
 </div>
+
+    <!-- ACCOUNT -->
+    <div class="page" id="page-account">
+      <div class="phdr">
+        <div>
+          <h2>Account</h2>
+          <p>Change your password for this dashboard account.</p>
+        </div>
+      </div>
+      <div class="card" style="max-width:640px;">
+        <div class="card-title">Change Password</div>
+        <div class="new-patient-grid">
+          <div class="fg full">
+            <label>Change Password</label>
+            <input type="password" id="account-new-password" placeholder="Enter new password" autocomplete="new-password"/>
+          </div>
+          <div class="fg full">
+            <label>Confirm Password</label>
+            <input type="password" id="account-confirm-password" placeholder="Confirm new password" autocomplete="new-password" onkeydown="if(event.key==='Enter'){event.preventDefault();changeAccountPassword();}"/>
+          </div>
+        </div>
+        <div id="account-password-message" style="margin-top:10px;font-size:12px;font-weight:700;color:var(--muted);"></div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;">
+          <button class="btn-save" onclick="changeAccountPassword()">Change Password</button>
+          <button class="btn-cancel" onclick="document.getElementById('account-new-password').value='';document.getElementById('account-confirm-password').value='';document.getElementById('account-password-message').textContent='';">Clear</button>
+        </div>
+      </div>
+    </div>
+
 
 <!-- MODAL -->
 <div class="mo" id="mo" onclick="moOut(event)"><div class="mb" id="mb"></div></div>
@@ -1535,38 +1542,23 @@ async function doLogin(){
 document.getElementById('li-pass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
 async function doLogout(){await SB.auth.signOut();document.getElementById('app').style.display='none';document.getElementById('login-screen').style.display='flex';}
 async function checkSession(){const{data}=await SB.auth.getSession();if(data.session)startApp();}
-async function loadPasswordPage(){
-  const emailEl=document.getElementById('cp-email');
-  const msg=document.getElementById('cp-msg');
-  if(msg){msg.className='new-patient-note';msg.textContent='';}
-  try{
-    const{data}=await SB.auth.getUser();
-    if(emailEl)emailEl.value=data?.user?.email||'';
-  }catch(e){if(emailEl)emailEl.value='';}
-}
-function clearPasswordForm(){
-  const n=document.getElementById('cp-new');
-  const c=document.getElementById('cp-confirm');
-  const msg=document.getElementById('cp-msg');
-  if(n)n.value='';
-  if(c)c.value='';
-  if(msg){msg.className='new-patient-note';msg.textContent='';}
-}
-async function changeOwnPassword(){
-  const n=document.getElementById('cp-new');
-  const c=document.getElementById('cp-confirm');
-  const msg=document.getElementById('cp-msg');
-  const password=(n?.value||'').trim();
-  const confirm=(c?.value||'').trim();
-  if(msg){msg.className='new-patient-note';msg.textContent='';}
-  if(!password||!confirm){if(msg){msg.className='new-patient-note error';msg.textContent='Please enter and confirm the new password.';}return;}
-  if(password.length<8){if(msg){msg.className='new-patient-note error';msg.textContent='Password must be at least 8 characters.';}return;}
-  if(password!==confirm){if(msg){msg.className='new-patient-note error';msg.textContent='Passwords do not match.';}return;}
-  if(msg){msg.className='new-patient-note';msg.textContent='Updating password...';}
-  const{error}=await SB.auth.updateUser({password});
-  if(error){if(msg){msg.className='new-patient-note error';msg.textContent='Could not update password: '+(error.message||'Unknown error');}return;}
-  clearPasswordForm();
-  if(msg){msg.className='new-patient-note found';msg.textContent='Password updated successfully. Please use the new password next time you sign in.';}
+
+async function changeAccountPassword(){
+  const msg=document.getElementById('account-password-message');
+  const pass=document.getElementById('account-new-password')?.value||'';
+  const confirm=document.getElementById('account-confirm-password')?.value||'';
+  if(msg){msg.style.color='var(--muted)';msg.textContent='';}
+  if(!pass||!confirm){if(msg){msg.style.color='var(--red)';msg.textContent='Please enter and confirm the new password.';}return;}
+  if(pass.length<8){if(msg){msg.style.color='var(--red)';msg.textContent='Password must be at least 8 characters.';}return;}
+  if(pass!==confirm){if(msg){msg.style.color='var(--red)';msg.textContent='The two passwords do not match.';}return;}
+  const {data:sessionData}=await SB.auth.getSession();
+  if(!sessionData?.session){if(msg){msg.style.color='var(--red)';msg.textContent='Your session has expired. Please sign in again.';}return;}
+  if(msg){msg.style.color='var(--muted)';msg.textContent='Updating password...';}
+  const {error}=await SB.auth.updateUser({password:pass});
+  if(error){if(msg){msg.style.color='var(--red)';msg.textContent='Could not change password: '+(error.message||'Unknown error');}return;}
+  document.getElementById('account-new-password').value='';
+  document.getElementById('account-confirm-password').value='';
+  if(msg){msg.style.color='var(--green)';msg.textContent='Password changed successfully.';}
 }
 
 async function startApp(){
@@ -1892,7 +1884,6 @@ function switchTab(name,el){
   if(name==='appointments')loadAppts();
   if(name==='roster')renderRoster();
   if(name==='cod'){populateCODDropdowns();loadCOD();}
-  if(name==='change-password')loadPasswordPage();
   if(String(name).startsWith('patients-'))loadPatientsList(name);
 }
 function refreshActivePage(){
