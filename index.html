@@ -623,6 +623,36 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .review-kpi{border:1px solid var(--border);border-radius:12px;padding:10px 12px;background:#f8fafc;}
 .review-kpi .klabel{font-size:10px;font-weight:900;letter-spacing:.35px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
 .review-kpi .kvalue{font-size:13px;font-weight:800;color:var(--navy);}
+
+/* v30AO — Emergency Surgery 7-day Stoma Daily Review checklist */
+.stoma-review-toolbar{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin:12px 0 14px;padding:12px;border:1px solid var(--border);border-radius:14px;background:#fbfcfd;}
+.stoma-review-toolbar .fg{margin-bottom:0;}
+.stoma-review-note{grid-column:1/-1;margin:0!important;}
+.stoma-review-grid{display:grid;grid-template-columns:1fr;gap:10px;margin-top:12px;}
+.stoma-day-card{border:1.5px solid var(--border);border-radius:14px;background:white;padding:12px 14px;box-shadow:0 1px 5px rgba(0,0,0,.04);position:relative;overflow:hidden;}
+.stoma-day-card:before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--muted);}
+.stoma-day-card.active{border-color:var(--teal);background:#f4fbfa;box-shadow:0 4px 14px rgba(13,115,119,.12);}
+.stoma-day-card.active:before{background:var(--teal);}
+.stoma-day-card.missed{background:#f1f3f5;color:#7b8794;border-color:#d7dde4;}
+.stoma-day-card.missed:before{background:#9aa6b2;}
+.stoma-day-card.pending{background:#fbfcfd;border-style:dashed;}
+.stoma-day-card.pending:before{background:#d4dce6;}
+.stoma-day-card.outside{background:#fff8e1;border-color:#f2df9f;}
+.stoma-day-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+.stoma-day-title{font-size:13px;font-weight:900;color:var(--navy);line-height:1.25;}
+.stoma-day-date{font-size:11px;color:var(--muted);font-weight:800;margin-top:2px;}
+.stoma-day-card.missed .stoma-day-title,.stoma-day-card.missed .stoma-day-date{text-decoration:line-through;color:#7b8794;}
+.stoma-day-status{display:inline-flex;align-items:center;gap:4px;padding:4px 9px;border-radius:999px;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.2px;background:#eef2f7;color:#536579;border:1px solid #d7dde4;}
+.stoma-day-status.active{background:#e8f5f4;color:var(--teal);border-color:#b7ddd9;}
+.stoma-day-status.missed{background:#e5e7eb;color:#6b7280;border-color:#d1d5db;}
+.stoma-day-status.pending{background:#f8fafc;color:#94a3b8;border-color:#e2e8f0;}
+.stoma-review-fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-top:12px;padding-top:10px;border-top:1px solid rgba(13,115,119,.13);}
+.stoma-review-fields .fg{margin-bottom:0;}
+.stoma-review-fields .fg.full{grid-column:1/-1;}
+.stoma-review-fields input[readonly]{background:#f8fafc;color:var(--navy);font-weight:700;}
+.stoma-missed-reason,.stoma-pending-reason{font-size:11px;color:var(--muted);font-weight:700;margin-top:8px;line-height:1.35;}
+.stoma-missed-reason{color:#6b7280;text-decoration:line-through;}
+@media print{.stoma-review-toolbar{grid-template-columns:repeat(3,1fr)!important;}.stoma-day-card{break-inside:avoid;page-break-inside:avoid;box-shadow:none!important;}}
 .new-booking-type-wrap{display:none;border:1px solid #fde68a;background:#fffbeb;border-radius:12px;padding:10px;margin:8px 0;}
 .new-booking-type-wrap.show{display:block;}
 /* v30AG — simplified booking card and clearer Edit / Seen follow-up card */
@@ -852,19 +882,17 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
     </div>
 
     <div class="page" id="page-admission-emergency-daily-review">
-      <div class="phdr"><div><h2>Stoma Daily Review</h2><p>Third step in the Emergency Surgery pathway.</p></div><button class="btn-add btn-return" onclick="switchTab('admission-emergency',document.querySelector('.nav-tile[data-admission-route=&quot;Emergency surgery&quot;]'))">← Back to Emergency Surgery</button></div>
+      <div class="phdr"><div><h2>Stoma Daily Review</h2></div><button class="btn-add btn-return" onclick="switchTab('admission-emergency',document.querySelector('.nav-tile[data-admission-route=&quot;Emergency surgery&quot;]'))">← Back to Emergency Surgery</button></div>
       <div class="route-page-card">
-        <h3>Stoma Daily Review</h3>
-        <p>This page follows the Emergency Surgery Stoma + Care step. Review the emergency details before saving the patient record.</p>
-        <div class="route-stoma-care">
-          <div class="new-patient-section-title">Emergency Pathway Review</div>
-          <div id="emergency-daily-review-summary" class="review-kpi-grid">
-            <div class="review-kpi"><div class="klabel">Surgery Date</div><div class="kvalue">—</div></div>
-            <div class="review-kpi"><div class="klabel">Stoma Type</div><div class="kvalue">—</div></div>
-            <div class="review-kpi"><div class="klabel">Route</div><div class="kvalue">Emergency surgery</div></div>
-          </div>
-          <div class="booking-guidance-note">This is now the third page of the Emergency Surgery pathway. The final save happens from here, so nurses must intentionally pass through Stoma Daily Review before the patient record is saved.</div>
+        <h3>7-Day Stoma Daily Review Checklist</h3>
+        <p>The seven review days are calculated automatically from the Surgery Date. Any days before the selected review date are greyed and crossed out as missed.</p>
+        <div class="stoma-review-toolbar">
+          <div class="fg"><label>Review Date *</label><input type="date" id="edr-review-date" onchange="renderEmergencyStomaDailyReview()"/></div>
+          <div class="fg"><label>Automated Signature</label><input type="text" id="edr-signature" readonly placeholder="Logged-in nurse"/></div>
+          <div id="edr-review-window-note" class="registry-lookup-note new stoma-review-note"></div>
         </div>
+        <input type="hidden" id="np-stoma-daily-review-json" value=""/>
+        <div id="emergency-daily-review-list" class="stoma-review-grid"></div>
         <div class="route-actions"><button class="btn-save" onclick="saveEmergencyDailyReviewPatient()">Save Patient Record</button><button class="btn-cancel" onclick="switchTab('admission-emergency',document.querySelector('.nav-tile[data-admission-route=&quot;Emergency surgery&quot;]'))">Back to Emergency Surgery</button></div>
       </div>
     </div>
@@ -2035,30 +2063,160 @@ function savePatientFromAdmissionRoute(value,pageId){
   if(!collectRouteStomaCare(pageId,true))return;
   saveNewPatientTab();
 }
-function emergencyStomaDailyReviewSummary(){
-  const summary=document.getElementById('emergency-daily-review-summary');
-  if(!summary)return;
-  const page=document.getElementById('page-admission-emergency');
-  const surgery=page?.querySelector('.route-surgery-date')?.value||document.getElementById('np-surgery-date')?.value||'';
-  const stoma=page?.querySelector('.route-stoma-type:checked')?.value||document.getElementById('np-stoma-type-hidden')?.value||'';
-  const operation=page?.querySelector('.route-operation-performed')?.value?.trim()||document.getElementById('np-operation-performed')?.value||'';
-  const findings=page?.querySelector('.route-findings')?.value?.trim()||document.getElementById('np-findings')?.value||'';
-  summary.innerHTML=`
-    <div class="review-kpi"><div class="klabel">Surgery Date</div><div class="kvalue">${htmlSafe(surgery||'—')}</div></div>
-    <div class="review-kpi"><div class="klabel">Stoma Type</div><div class="kvalue">${htmlSafe(stoma||'—')}</div></div>
-    <div class="review-kpi"><div class="klabel">Route</div><div class="kvalue">Emergency surgery</div></div>
-    <div class="review-kpi"><div class="klabel">Operation</div><div class="kvalue">${htmlSafe(operation||'—')}</div></div>
-    <div class="review-kpi" style="grid-column:1 / -1;"><div class="klabel">Findings</div><div class="kvalue">${htmlSafe(findings||'—')}</div></div>`;
+function emergencyReviewDateDiff(surgeryDate,reviewDate){
+  if(!surgeryDate||!reviewDate)return null;
+  const s=new Date(surgeryDate+'T12:00:00');
+  const r=new Date(reviewDate+'T12:00:00');
+  return Math.round((r-s)/86400000);
 }
-function continueEmergencyToStomaDailyReview(){
+function emergencyReviewTimeNow(){
+  const d=new Date();
+  return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+}
+function emergencyReviewSavedData(){
+  const raw=document.getElementById('np-stoma-daily-review-json')?.value||'';
+  if(!raw)return {};
+  try{return JSON.parse(raw)||{};}catch(e){return {};}
+}
+function emergencyReviewCurrentFormData(){
+  const page=document.getElementById('page-admission-emergency');
+  const surgeryDate=page?.querySelector('.route-surgery-date')?.value||document.getElementById('np-surgery-date')?.value||'';
+  const reviewDate=document.getElementById('edr-review-date')?.value||TODAY;
+  const diff=emergencyReviewDateDiff(surgeryDate,reviewDate);
+  const activeIndex=(diff!==null&&diff>=0&&diff<7)?diff:-1;
+  const activeDate=activeIndex>=0?dateAddStr(surgeryDate,activeIndex):'';
+  return {
+    surgery_date:surgeryDate,
+    review_date:reviewDate,
+    day_number:activeIndex>=0?activeIndex+1:null,
+    day_date:activeDate,
+    stoma_colour:document.getElementById('edr-colour')?.value||'',
+    stoma_function:document.getElementById('edr-function')?.value||'',
+    peristomal_skin:document.getElementById('edr-skin')?.value||'',
+    time_of_review:document.getElementById('edr-time')?.value||'',
+    signature:document.getElementById('edr-signature')?.value||'',
+    comments:document.getElementById('edr-comments')?.value?.trim()||''
+  };
+}
+function syncEmergencyStomaDailyReviewData(){
+  const hidden=document.getElementById('np-stoma-daily-review-json');
+  if(hidden)hidden.value=JSON.stringify(emergencyReviewCurrentFormData());
+}
+async function ensureEmergencyReviewSignature(){
+  const sig=document.getElementById('edr-signature');
+  if(!sig)return;
+  if(!sig.value){
+    const user=await getCurrentUserForAudit();
+    sig.value=user.name||user.email||'Logged-in nurse';
+  }
+}
+async function prepareEmergencyStomaDailyReview(){
+  const reviewDate=document.getElementById('edr-review-date');
+  if(reviewDate&&!reviewDate.value)reviewDate.value=TODAY;
+  await ensureEmergencyReviewSignature();
+  renderEmergencyStomaDailyReview();
+}
+function renderEmergencyStomaDailyReview(){
+  const list=document.getElementById('emergency-daily-review-list');
+  const note=document.getElementById('edr-review-window-note');
+  if(!list)return;
+  const page=document.getElementById('page-admission-emergency');
+  const surgeryDate=page?.querySelector('.route-surgery-date')?.value||document.getElementById('np-surgery-date')?.value||'';
+  const reviewDateEl=document.getElementById('edr-review-date');
+  const reviewDate=reviewDateEl?.value||TODAY;
+  const saved=emergencyReviewSavedData();
+  const diff=emergencyReviewDateDiff(surgeryDate,reviewDate);
+  if(!surgeryDate){
+    list.innerHTML='<div class="registry-lookup-note error">Please go back and enter the Surgery Date first.</div>';
+    if(note)note.textContent='The 7-day checklist cannot be calculated without a Surgery Date.';
+    return;
+  }
+  const activeIndex=(diff!==null&&diff>=0&&diff<7)?diff:-1;
+  const reviewLabel=reviewDate?fmtLabel(reviewDate):'—';
+  const surgeryLabel=fmtLabel(surgeryDate);
+  if(note){
+    note.className='registry-lookup-note new stoma-review-note';
+    if(diff<0){note.className='registry-lookup-note error stoma-review-note';note.textContent='Review Date cannot be before the Surgery Date.';}
+    else if(diff>6){note.className='registry-lookup-note error stoma-review-note';note.textContent='The selected Review Date is after Day 7. Choose a date within the first seven days from surgery.';}
+    else note.innerHTML=`Surgery Date: <strong>${htmlSafe(surgeryLabel)}</strong>. Review Date: <strong>${htmlSafe(reviewLabel)}</strong>. Active review: <strong>Day ${activeIndex+1}</strong>.`;
+  }
+  const colourOptions=['','Pink / healthy','Red / moist','Pale','Dusky','Black / necrotic','Other'];
+  const functionOptions=['','Functioning','No output yet','Flatus only','Faeces present','High output','Mucus only','Other'];
+  const skinOptions=['','Intact','Mild redness','Excoriated','Broken skin','Painful','Leakage noted','Other'];
+  const optionHTML=(opts,val)=>opts.map(o=>`<option value="${htmlSafe(o)}" ${String(o)===String(val||'')?'selected':''}>${htmlSafe(o||'Select')}</option>`).join('');
+  const activeTime=saved.time_of_review||emergencyReviewTimeNow();
+  const cards=[];
+  for(let i=0;i<7;i++){
+    const dayDate=dateAddStr(surgeryDate,i);
+    const dayLabel=fmtLabel(dayDate);
+    let status='pending',statusText='Pending',reason='Awaiting this review day.';
+    if(diff<0){status='pending';statusText='Pending';reason='Review date is before surgery date.';}
+    else if(diff>6){status='missed';statusText='Missed';reason='This day is outside the selected review date and is now crossed out.';}
+    else if(i<activeIndex){status='missed';statusText='Missed';reason='Missed before the first recorded stoma review.';}
+    else if(i===activeIndex){status='active';statusText='Complete today';reason='';}
+    else {status='pending';statusText='Pending';reason='Future review day.';}
+    const form=status==='active'?`
+      <div class="stoma-review-fields">
+        <div class="fg"><label>Stoma colour *</label><select id="edr-colour" onchange="syncEmergencyStomaDailyReviewData()">${optionHTML(colourOptions,saved.stoma_colour)}</select></div>
+        <div class="fg"><label>Function *</label><select id="edr-function" onchange="syncEmergencyStomaDailyReviewData()">${optionHTML(functionOptions,saved.stoma_function)}</select></div>
+        <div class="fg"><label>Peristomal skin *</label><select id="edr-skin" onchange="syncEmergencyStomaDailyReviewData()">${optionHTML(skinOptions,saved.peristomal_skin)}</select></div>
+        <div class="fg"><label>Time of review *</label><input type="time" id="edr-time" value="${htmlSafe(saved.time_of_review||activeTime)}" onchange="syncEmergencyStomaDailyReviewData()"/></div>
+        <div class="fg full"><label>Comments</label><textarea id="edr-comments" placeholder="Brief comments" oninput="syncEmergencyStomaDailyReviewData()">${htmlSafe(saved.comments||'')}</textarea></div>
+        <div class="fg full"><label>Automated signature</label><input type="text" value="${htmlSafe(document.getElementById('edr-signature')?.value||saved.signature||'Logged-in nurse')}" readonly/></div>
+      </div>`:(status==='missed'?`<div class="stoma-missed-reason">${htmlSafe(reason)}</div>`:`<div class="stoma-pending-reason">${htmlSafe(reason)}</div>`);
+    cards.push(`<div class="stoma-day-card ${status}">
+      <div class="stoma-day-top"><div><div class="stoma-day-title">Day ${i+1}</div><div class="stoma-day-date">${htmlSafe(dayLabel)}</div></div><span class="stoma-day-status ${status}">${htmlSafe(statusText)}</span></div>
+      ${form}
+    </div>`);
+  }
+  list.innerHTML=cards.join('');
+  syncEmergencyStomaDailyReviewData();
+}
+function validateEmergencyStomaDailyReview(){
+  syncEmergencyStomaDailyReviewData();
+  const data=emergencyReviewCurrentFormData();
+  const diff=emergencyReviewDateDiff(data.surgery_date,data.review_date);
+  if(diff===null){alert('Please enter the Surgery Date and Review Date.');return false;}
+  if(diff<0){alert('Review Date cannot be before Surgery Date.');return false;}
+  if(diff>6){alert('The 7-day Stoma Daily Review only accepts dates from Day 1 to Day 7 after surgery. Please choose a Review Date within that window.');return false;}
+  if(!data.stoma_colour||!data.stoma_function||!data.peristomal_skin||!data.time_of_review){
+    alert('Please complete Stoma colour, Function, Peristomal skin and Time of review for the active day.');
+    return false;
+  }
+  return true;
+}
+function appendEmergencyStomaDailyReviewToFindings(){
+  syncEmergencyStomaDailyReviewData();
+  const data=emergencyReviewCurrentFormData();
+  const emergencyPage=document.getElementById('page-admission-emergency');
+  const baseFindings=emergencyPage?.querySelector('.route-findings')?.value?.trim()||'';
+  const reviewText=[
+    'Stoma Daily Review',
+    `Review Date: ${fmtLabel(data.review_date)}`,
+    `Checklist Day: Day ${data.day_number} (${fmtLabel(data.day_date)})`,
+    `Stoma colour: ${data.stoma_colour}`,
+    `Function: ${data.stoma_function}`,
+    `Peristomal skin: ${data.peristomal_skin}`,
+    `Time of review: ${data.time_of_review}`,
+    `Automated signature: ${data.signature||'Logged-in nurse'}`,
+    data.comments?`Comments: ${data.comments}`:''
+  ].filter(Boolean).join('\n');
+  const hiddenFindings=document.getElementById('np-findings');
+  if(hiddenFindings)hiddenFindings.value=baseFindings?`${baseFindings}\n\n${reviewText}`:reviewText;
+}
+async function continueEmergencyToStomaDailyReview(){
   setAdmissionRouteValue('Emergency surgery');
   if(!collectRouteStomaCare('page-admission-emergency',true))return;
-  emergencyStomaDailyReviewSummary();
+  await prepareEmergencyStomaDailyReview();
   switchTab('admission-emergency-daily-review',document.querySelector('.nav-tile[data-admission-route="Emergency surgery"]'));
 }
-function saveEmergencyDailyReviewPatient(){
+async function saveEmergencyDailyReviewPatient(){
   setAdmissionRouteValue('Emergency surgery');
   if(!collectRouteStomaCare('page-admission-emergency',true))return;
+  await ensureEmergencyReviewSignature();
+  renderEmergencyStomaDailyReview();
+  if(!validateEmergencyStomaDailyReview())return;
+  appendEmergencyStomaDailyReviewToFindings();
   saveNewPatientTab();
 }
 function selectAdmissionRouteTile(value){
