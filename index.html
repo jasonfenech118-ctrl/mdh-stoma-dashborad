@@ -847,7 +847,25 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
             <div class="fg full"><label>Stoma Type *</label><div class="choice-group"><label class="choice-chip"><input type="radio" class="route-stoma-type" name="route-stoma-emergency" value="Ileostomy" required/> Ileostomy</label><label class="choice-chip"><input type="radio" class="route-stoma-type" name="route-stoma-emergency" value="Colostomy" required/> Colostomy</label><label class="choice-chip"><input type="radio" class="route-stoma-type" name="route-stoma-emergency" value="Urostomy" required/> Urostomy</label><label class="choice-chip"><input type="radio" class="route-stoma-type" name="route-stoma-emergency" value="Other" required/> Other</label></div></div>
           </div>
         </div>
-        <div class="route-actions"><button class="btn-save" onclick="savePatientFromAdmissionRoute('Emergency surgery','page-admission-emergency')">Save and continue</button><button class="btn-cancel" onclick="switchTab('new-patient',document.querySelector('[data-tab=&quot;new-patient&quot;]'))">Back to Patient Details</button></div>
+        <div class="route-actions"><button class="btn-save" onclick="continueEmergencyToStomaDailyReview()">Save and continue</button><button class="btn-cancel" onclick="switchTab('new-patient',document.querySelector('[data-tab=&quot;new-patient&quot;]'))">Back to Patient Details</button></div>
+      </div>
+    </div>
+
+    <div class="page" id="page-admission-emergency-daily-review">
+      <div class="phdr"><div><h2>Stoma Daily Review</h2><p>Third step in the Emergency Surgery pathway.</p></div><button class="btn-add btn-return" onclick="switchTab('admission-emergency',document.querySelector('.nav-tile[data-admission-route=&quot;Emergency surgery&quot;]'))">← Back to Emergency Surgery</button></div>
+      <div class="route-page-card">
+        <h3>Stoma Daily Review</h3>
+        <p>This page follows the Emergency Surgery Stoma + Care step. Review the emergency details before saving the patient record.</p>
+        <div class="route-stoma-care">
+          <div class="new-patient-section-title">Emergency Pathway Review</div>
+          <div id="emergency-daily-review-summary" class="review-kpi-grid">
+            <div class="review-kpi"><div class="klabel">Surgery Date</div><div class="kvalue">—</div></div>
+            <div class="review-kpi"><div class="klabel">Stoma Type</div><div class="kvalue">—</div></div>
+            <div class="review-kpi"><div class="klabel">Route</div><div class="kvalue">Emergency surgery</div></div>
+          </div>
+          <div class="booking-guidance-note">This is now the third page of the Emergency Surgery pathway. The final save happens from here, so nurses must intentionally pass through Stoma Daily Review before the patient record is saved.</div>
+        </div>
+        <div class="route-actions"><button class="btn-save" onclick="saveEmergencyDailyReviewPatient()">Save Patient Record</button><button class="btn-cancel" onclick="switchTab('admission-emergency',document.querySelector('.nav-tile[data-admission-route=&quot;Emergency surgery&quot;]'))">Back to Emergency Surgery</button></div>
       </div>
     </div>
 
@@ -2015,6 +2033,32 @@ function collectRouteStomaCare(pageId,showAlert=true){
 function savePatientFromAdmissionRoute(value,pageId){
   setAdmissionRouteValue(value);
   if(!collectRouteStomaCare(pageId,true))return;
+  saveNewPatientTab();
+}
+function emergencyStomaDailyReviewSummary(){
+  const summary=document.getElementById('emergency-daily-review-summary');
+  if(!summary)return;
+  const page=document.getElementById('page-admission-emergency');
+  const surgery=page?.querySelector('.route-surgery-date')?.value||document.getElementById('np-surgery-date')?.value||'';
+  const stoma=page?.querySelector('.route-stoma-type:checked')?.value||document.getElementById('np-stoma-type-hidden')?.value||'';
+  const operation=page?.querySelector('.route-operation-performed')?.value?.trim()||document.getElementById('np-operation-performed')?.value||'';
+  const findings=page?.querySelector('.route-findings')?.value?.trim()||document.getElementById('np-findings')?.value||'';
+  summary.innerHTML=`
+    <div class="review-kpi"><div class="klabel">Surgery Date</div><div class="kvalue">${htmlSafe(surgery||'—')}</div></div>
+    <div class="review-kpi"><div class="klabel">Stoma Type</div><div class="kvalue">${htmlSafe(stoma||'—')}</div></div>
+    <div class="review-kpi"><div class="klabel">Route</div><div class="kvalue">Emergency surgery</div></div>
+    <div class="review-kpi"><div class="klabel">Operation</div><div class="kvalue">${htmlSafe(operation||'—')}</div></div>
+    <div class="review-kpi" style="grid-column:1 / -1;"><div class="klabel">Findings</div><div class="kvalue">${htmlSafe(findings||'—')}</div></div>`;
+}
+function continueEmergencyToStomaDailyReview(){
+  setAdmissionRouteValue('Emergency surgery');
+  if(!collectRouteStomaCare('page-admission-emergency',true))return;
+  emergencyStomaDailyReviewSummary();
+  switchTab('admission-emergency-daily-review',document.querySelector('.nav-tile[data-admission-route="Emergency surgery"]'));
+}
+function saveEmergencyDailyReviewPatient(){
+  setAdmissionRouteValue('Emergency surgery');
+  if(!collectRouteStomaCare('page-admission-emergency',true))return;
   saveNewPatientTab();
 }
 function selectAdmissionRouteTile(value){
