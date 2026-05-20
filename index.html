@@ -4972,6 +4972,16 @@ function closeModal(){document.getElementById('mo').classList.remove('open');}
 function moOut(e){if(e.target===document.getElementById('mo'))closeModal();}
 
 checkSession();
+
+
+// Explicit global exports for inline button handlers after deployment/minification/caching.
+try{
+  if(typeof doLogin==='function') window.doLogin=doLogin;
+  if(typeof doLogout==='function') window.doLogout=doLogout;
+  if(typeof switchTab==='function') window.switchTab=switchTab;
+  if(typeof changeAccountPassword==='function') window.changeAccountPassword=changeAccountPassword;
+}catch(e){console.warn('Global export setup skipped',e);}
+
 </script>
 </body>
 </html>
