@@ -4425,7 +4425,6 @@ function renderPatientsList(){
   if(stats){
     if(activeOwnerFilter){
       stats.innerHTML=`
-        <div class="sbox"><div class="sl">Selected Owner</div><div class="sv" style="font-size:22px;">${selectedGroupCount}</div><div class="ss">${htmlSafe(activeOwnerFilter+' · active patients only')}</div></div>
         <div class="sbox"><div class="sl">Active</div><div class="sv">${activeSelectedCount}</div><div class="ss">${htmlSafe(activeOwnerFilter+' active patients')}</div></div>`;
     }else{
       stats.innerHTML=`
