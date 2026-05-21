@@ -80,12 +80,16 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .patient-status-chip.relocated_gozo{background:#ecfeff;color:#155e75;border:1px solid #67e8f9;}
 .patient-register-toolbar input{padding:7px 12px;border:1.5px solid var(--border);border-radius:8px;background:white;font-size:12px;font-family:'Inter',sans-serif;outline:none;min-width:240px;}
 .patient-register-toolbar input:focus{border-color:var(--teal);}
-.patient-owner-filter-buttons{display:none;align-items:center;gap:6px;flex-wrap:wrap;width:100%;padding-top:4px;}
-.patient-owner-filter-buttons .owner-filter-label{font-size:12px;font-weight:800;color:var(--navy);}
-.patient-owner-filter-buttons .patient-owner-btn{padding:7px 13px;border:1.5px solid var(--border);border-radius:999px;background:white;color:var(--navy);font-size:12px;font-weight:800;cursor:pointer;font-family:'Inter',sans-serif;}
-.patient-owner-filter-buttons .patient-owner-btn:hover{border-color:var(--teal);color:var(--teal);}
-.patient-owner-filter-buttons .patient-owner-btn.active{background:var(--teal);border-color:var(--teal);color:white;box-shadow:0 2px 7px rgba(13,115,119,.18);}
-.patient-owner-filter-buttons .owner-filter-hint{font-size:11px;color:var(--muted);font-weight:600;}
+.patient-owner-filter-buttons{display:none;align-items:center;gap:5px;flex-wrap:wrap;width:100%;padding-top:4px;}
+.patient-owner-filter-buttons .owner-filter-label{font-size:11px;font-weight:900;color:var(--navy);text-transform:uppercase;letter-spacing:.35px;margin-right:1px;}
+.patient-owner-filter-buttons .patient-owner-btn{--owner-color:var(--teal);padding:5px 10px;border:1.4px solid var(--owner-color);border-radius:999px;background:#fff;color:var(--owner-color);font-size:11px;font-weight:900;cursor:pointer;font-family:'Inter',sans-serif;line-height:1.15;box-shadow:0 1px 3px rgba(26,46,74,.06);transition:transform .12s,filter .12s,box-shadow .12s;}
+.patient-owner-filter-buttons .patient-owner-btn[data-owner="Common"]{--owner-color:var(--teal);background:#e8f5f4;}
+.patient-owner-filter-buttons .patient-owner-btn[data-owner="Jacqueline"]{--owner-color:#7c3aed;background:#f3e8ff;}
+.patient-owner-filter-buttons .patient-owner-btn[data-owner="Jason"]{--owner-color:var(--blue);background:#eef6ff;}
+.patient-owner-filter-buttons .patient-owner-btn[data-owner="Lorraine"]{--owner-color:var(--gold);background:#fff8e1;}
+.patient-owner-filter-buttons .patient-owner-btn:hover{filter:brightness(.97);transform:translateY(-1px);box-shadow:0 3px 8px rgba(26,46,74,.12);}
+.patient-owner-filter-buttons .patient-owner-btn.active{background:var(--owner-color);border-color:var(--owner-color);color:white;box-shadow:0 3px 9px rgba(26,46,74,.18);}
+.patient-owner-filter-buttons .owner-filter-hint{font-size:10px;color:var(--muted);font-weight:700;margin-left:2px;}
 
 /* FOLLOW-UP CENTRE NAVIGATION TILES */
 .centre-hub{background:linear-gradient(135deg,#ffffff 0%,#f8fffd 100%);border:1px solid var(--border);border-radius:18px;padding:18px 20px;margin-bottom:18px;box-shadow:0 8px 24px rgba(13,115,119,.08);}
@@ -967,7 +971,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
           <button type="button" class="patient-owner-btn" data-owner="Jacqueline" onclick="setPatientsListOwnerFilter('Jacqueline')">Jacqueline</button>
           <button type="button" class="patient-owner-btn" data-owner="Jason" onclick="setPatientsListOwnerFilter('Jason')">Jason</button>
           <button type="button" class="patient-owner-btn" data-owner="Lorraine" onclick="setPatientsListOwnerFilter('Lorraine')">Lorraine</button>
-          <span class="owner-filter-hint">Current patients only; excludes deceased, reversed and relocated records. Click again to clear.</span>
+          <span class="owner-filter-hint">Excludes deceased, reversed and relocated patients.</span>
         </div>
       </div>
       <div class="srow" id="patients-list-stats"></div>
@@ -4345,6 +4349,10 @@ async function fetchAllPatientsRows(fields, options={}){
   }
   return {data:all,error:null};
 }
+const OWNER_QUICK_FILTER_EXCLUDED_STATUSES=['deceased','reversed','relocated_overseas','relocated_gozo'];
+function patientEligibleForOwnerQuickFilter(p){
+  return !OWNER_QUICK_FILTER_EXCLUDED_STATUSES.includes(patientRegisterStatus(p));
+}
 function updatePatientsListOwnerButtons(){
   const wrap=document.getElementById('patients-owner-filter-wrap');
   if(!wrap)return;
@@ -4360,17 +4368,6 @@ function setPatientsListOwnerFilter(owner){
   const next=normaliseFollowupOwner(owner);
   patientsListOwnerFilter=patientsListOwnerFilter===next?'':next;
   renderPatientsList();
-}
-const PATIENT_OWNER_FILTER_EXCLUDED_STATUSES=['deceased','reversed','relocated_overseas','relocated_gozo'];
-function patientOwnerFilterEligible(p){
-  const rawStatus=patientStatusFromRaw(p?.patient_status_raw);
-  const followupStatus=normaliseFollowupStatus(p?.followup_status);
-  const registerStatus=patientRegisterStatus(p);
-  if(PATIENT_OWNER_FILTER_EXCLUDED_STATUSES.includes(rawStatus))return false;
-  if(PATIENT_OWNER_FILTER_EXCLUDED_STATUSES.includes(followupStatus))return false;
-  if(PATIENT_OWNER_FILTER_EXCLUDED_STATUSES.includes(registerStatus))return false;
-  if(p?.rip_date || p?.reversal_date)return false;
-  return true;
 }
 async function loadPatientsList(tabName){
   currentPatientsTab=tabName||currentPatientsTab||'patients-active';
@@ -4418,12 +4415,9 @@ function renderPatientsList(){
   const isRelocatedGozo=currentPatientsTab==='patients-relocated-gozo'||cfg.status==='relocated_gozo';
   const isRelocatedOverseas=currentPatientsTab==='patients-relocated-overseas'||currentPatientsTab==='patients-relocated-gozo'||cfg.status==='relocated_overseas'||cfg.status==='relocated_gozo';
   const countStatus=(st)=>all.filter(p=>patientMatchesRegisterStatus(p,st)).length;
-  const selectedGroupCount=activeOwnerFilter
-    ? all.filter(p=>patientOwnerFilterEligible(p)&&normaliseFollowupOwner(p.followup_owner||'Common')===activeOwnerFilter).length
-    : (cfg.status==='all'?all.length:all.filter(p=>patientMatchesRegisterStatus(p,cfg.status)).length);
   if(stats){
     stats.innerHTML=`
-      <div class="sbox"><div class="sl">Selected Group</div><div class="sv" style="font-size:22px;">${selectedGroupCount}</div><div class="ss">${htmlSafe(activeOwnerFilter?cfg.title+' · '+activeOwnerFilter+' (current only)':cfg.title)}</div></div>
+      <div class="sbox"><div class="sl">Selected Group</div><div class="sv" style="font-size:22px;">${cfg.status==='all'?all.length:all.filter(p=>patientMatchesRegisterStatus(p,cfg.status)).length}</div><div class="ss">${htmlSafe(activeOwnerFilter?cfg.title+' · '+activeOwnerFilter:cfg.title)}</div></div>
       <div class="sbox"><div class="sl">Active</div><div class="sv">${countStatus('active')}</div><div class="ss">current patients</div></div>
       <div class="sbox"><div class="sl">Inpatients</div><div class="sv">${countStatus('inpatient')}</div><div class="ss">actual + awaiting surgery</div></div>
       <div class="sbox"><div class="sl">Reversed</div><div class="sv">${countStatus('reversed')}</div><div class="ss">reversal register</div></div>
@@ -4432,7 +4426,7 @@ function renderPatientsList(){
   }
   let rows=cfg.status==='all'?[...all]:all.filter(p=>patientMatchesRegisterStatus(p,cfg.status));
   if(activeOwnerFilter){
-    rows=rows.filter(p=>patientOwnerFilterEligible(p)&&normaliseFollowupOwner(p.followup_owner||'Common')===activeOwnerFilter);
+    rows=rows.filter(p=>patientEligibleForOwnerQuickFilter(p)&&normaliseFollowupOwner(p.followup_owner||'Common')===activeOwnerFilter);
   }
   if(search){
     rows=rows.filter(p=>[
