@@ -4418,15 +4418,24 @@ function renderPatientsList(){
     ? all.filter(p=>patientEligibleForOwnerQuickFilter(p)&&normaliseFollowupOwner(p.followup_owner||'Common')===activeOwnerFilter)
     : all;
   const countStatus=(st)=>statsBase.filter(p=>patientMatchesRegisterStatus(p,st)).length;
-  const selectedGroupCount=cfg.status==='all'?statsBase.length:statsBase.filter(p=>patientMatchesRegisterStatus(p,cfg.status)).length;
+  const activeSelectedCount=countStatus('active');
+  const selectedGroupCount=activeOwnerFilter
+    ? activeSelectedCount
+    : (cfg.status==='all'?statsBase.length:statsBase.filter(p=>patientMatchesRegisterStatus(p,cfg.status)).length);
   if(stats){
-    stats.innerHTML=`
-      <div class="sbox"><div class="sl">${activeOwnerFilter?'Selected Owner':'Selected Group'}</div><div class="sv" style="font-size:22px;">${selectedGroupCount}</div><div class="ss">${htmlSafe(activeOwnerFilter?activeOwnerFilter+' · active/current only':cfg.title)}</div></div>
-      <div class="sbox"><div class="sl">Active</div><div class="sv">${countStatus('active')}</div><div class="ss">${htmlSafe(activeOwnerFilter?activeOwnerFilter+' current patients':'current patients')}</div></div>
-      <div class="sbox"><div class="sl">Inpatients</div><div class="sv">${countStatus('inpatient')}</div><div class="ss">actual + awaiting surgery</div></div>
-      <div class="sbox"><div class="sl">Reversed</div><div class="sv">${countStatus('reversed')}</div><div class="ss">${htmlSafe(activeOwnerFilter?'excluded from owner filter':'reversal register')}</div></div>
-      <div class="sbox"><div class="sl">Deceased</div><div class="sv">${countStatus('deceased')}</div><div class="ss">${htmlSafe(activeOwnerFilter?'excluded from owner filter':'deceased register')}</div></div>
-      <div class="sbox"><div class="sl">Relocated</div><div class="sv">${countStatus('relocated_overseas')+countStatus('relocated_gozo')}</div><div class="ss">${htmlSafe(activeOwnerFilter?'excluded from owner filter':'overseas / Gozo')}</div></div>`;
+    if(activeOwnerFilter){
+      stats.innerHTML=`
+        <div class="sbox"><div class="sl">Selected Owner</div><div class="sv" style="font-size:22px;">${selectedGroupCount}</div><div class="ss">${htmlSafe(activeOwnerFilter+' · active patients only')}</div></div>
+        <div class="sbox"><div class="sl">Active</div><div class="sv">${activeSelectedCount}</div><div class="ss">${htmlSafe(activeOwnerFilter+' active patients')}</div></div>`;
+    }else{
+      stats.innerHTML=`
+        <div class="sbox"><div class="sl">Selected Group</div><div class="sv" style="font-size:22px;">${selectedGroupCount}</div><div class="ss">${htmlSafe(cfg.title)}</div></div>
+        <div class="sbox"><div class="sl">Active</div><div class="sv">${countStatus('active')}</div><div class="ss">current patients</div></div>
+        <div class="sbox"><div class="sl">Inpatients</div><div class="sv">${countStatus('inpatient')}</div><div class="ss">actual + awaiting surgery</div></div>
+        <div class="sbox"><div class="sl">Reversed</div><div class="sv">${countStatus('reversed')}</div><div class="ss">reversal register</div></div>
+        <div class="sbox"><div class="sl">Deceased</div><div class="sv">${countStatus('deceased')}</div><div class="ss">deceased register</div></div>
+        <div class="sbox"><div class="sl">Relocated</div><div class="sv">${countStatus('relocated_overseas')+countStatus('relocated_gozo')}</div><div class="ss">overseas / Gozo</div></div>`;
+    }
   }
   let rows=cfg.status==='all'?[...all]:all.filter(p=>patientMatchesRegisterStatus(p,cfg.status));
   if(activeOwnerFilter){
