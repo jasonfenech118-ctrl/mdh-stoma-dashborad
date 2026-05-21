@@ -80,6 +80,12 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .patient-status-chip.relocated_gozo{background:#ecfeff;color:#155e75;border:1px solid #67e8f9;}
 .patient-register-toolbar input{padding:7px 12px;border:1.5px solid var(--border);border-radius:8px;background:white;font-size:12px;font-family:'Inter',sans-serif;outline:none;min-width:240px;}
 .patient-register-toolbar input:focus{border-color:var(--teal);}
+.patient-owner-filter-buttons{display:none;align-items:center;gap:6px;flex-wrap:wrap;width:100%;padding-top:4px;}
+.patient-owner-filter-buttons .owner-filter-label{font-size:12px;font-weight:800;color:var(--navy);}
+.patient-owner-filter-buttons .patient-owner-btn{padding:7px 13px;border:1.5px solid var(--border);border-radius:999px;background:white;color:var(--navy);font-size:12px;font-weight:800;cursor:pointer;font-family:'Inter',sans-serif;}
+.patient-owner-filter-buttons .patient-owner-btn:hover{border-color:var(--teal);color:var(--teal);}
+.patient-owner-filter-buttons .patient-owner-btn.active{background:var(--teal);border-color:var(--teal);color:white;box-shadow:0 2px 7px rgba(13,115,119,.18);}
+.patient-owner-filter-buttons .owner-filter-hint{font-size:11px;color:var(--muted);font-weight:600;}
 
 /* FOLLOW-UP CENTRE NAVIGATION TILES */
 .centre-hub{background:linear-gradient(135deg,#ffffff 0%,#f8fffd 100%);border:1px solid var(--border);border-radius:18px;padding:18px 20px;margin-bottom:18px;box-shadow:0 8px 24px rgba(13,115,119,.08);}
@@ -955,6 +961,14 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
         </select>
         <label>Search:</label>
         <input type="text" id="patients-list-search" placeholder="Search name, ID card, phone, locality..." oninput="renderPatientsList()"/>
+        <div id="patients-owner-filter-wrap" class="patient-owner-filter-buttons">
+          <span class="owner-filter-label">Owner:</span>
+          <button type="button" class="patient-owner-btn" data-owner="Common" onclick="setPatientsListOwnerFilter('Common')">Common</button>
+          <button type="button" class="patient-owner-btn" data-owner="Jacqueline" onclick="setPatientsListOwnerFilter('Jacqueline')">Jacqueline</button>
+          <button type="button" class="patient-owner-btn" data-owner="Jason" onclick="setPatientsListOwnerFilter('Jason')">Jason</button>
+          <button type="button" class="patient-owner-btn" data-owner="Lorraine" onclick="setPatientsListOwnerFilter('Lorraine')">Lorraine</button>
+          <span class="owner-filter-hint">Click again to show all owners.</span>
+        </div>
       </div>
       <div class="srow" id="patients-list-stats"></div>
       <div class="card">
@@ -1519,6 +1533,7 @@ let currentReportPatientGroup='report-followups';
 let reportPatientGroupRows=[];
 let currentPatientsTab='patients-active';
 let patientsListRows=[];
+let patientsListOwnerFilter='';
 
 function normaliseFollowupOwner(owner){
   const raw=String(owner||'Common').trim();
@@ -4330,6 +4345,22 @@ async function fetchAllPatientsRows(fields, options={}){
   }
   return {data:all,error:null};
 }
+function updatePatientsListOwnerButtons(){
+  const wrap=document.getElementById('patients-owner-filter-wrap');
+  if(!wrap)return;
+  const show=currentPatientsTab==='patients-all';
+  wrap.style.display=show?'flex':'none';
+  wrap.querySelectorAll('.patient-owner-btn').forEach(btn=>{
+    const owner=btn.getAttribute('data-owner')||'';
+    btn.classList.toggle('active',show&&patientsListOwnerFilter===owner);
+    btn.title=patientsListOwnerFilter===owner?'Click to clear this owner filter':'Filter All Patients by '+owner;
+  });
+}
+function setPatientsListOwnerFilter(owner){
+  const next=normaliseFollowupOwner(owner);
+  patientsListOwnerFilter=patientsListOwnerFilter===next?'':next;
+  renderPatientsList();
+}
 async function loadPatientsList(tabName){
   currentPatientsTab=tabName||currentPatientsTab||'patients-active';
   const select=document.getElementById('patients-list-filter');
@@ -4367,6 +4398,9 @@ function renderPatientsList(){
   const search=String(document.getElementById('patients-list-search')?.value||'').trim().toLowerCase();
   const all=patientsListRows||[];
   const isAll=cfg.status==='all'||currentPatientsTab==='patients-all';
+  if(!isAll)patientsListOwnerFilter='';
+  updatePatientsListOwnerButtons();
+  const activeOwnerFilter=isAll?patientsListOwnerFilter:'';
   const isDeceased=currentPatientsTab==='patients-deceased'||cfg.status==='deceased';
   const isReversed=currentPatientsTab==='patients-reversed'||cfg.status==='reversed';
   const isInpatients=currentPatientsTab==='patients-inpatients'||cfg.status==='inpatient';
@@ -4375,7 +4409,7 @@ function renderPatientsList(){
   const countStatus=(st)=>all.filter(p=>patientMatchesRegisterStatus(p,st)).length;
   if(stats){
     stats.innerHTML=`
-      <div class="sbox"><div class="sl">Selected Group</div><div class="sv" style="font-size:22px;">${cfg.status==='all'?all.length:all.filter(p=>patientMatchesRegisterStatus(p,cfg.status)).length}</div><div class="ss">${htmlSafe(cfg.title)}</div></div>
+      <div class="sbox"><div class="sl">Selected Group</div><div class="sv" style="font-size:22px;">${cfg.status==='all'?all.length:all.filter(p=>patientMatchesRegisterStatus(p,cfg.status)).length}</div><div class="ss">${htmlSafe(activeOwnerFilter?cfg.title+' · '+activeOwnerFilter:cfg.title)}</div></div>
       <div class="sbox"><div class="sl">Active</div><div class="sv">${countStatus('active')}</div><div class="ss">current patients</div></div>
       <div class="sbox"><div class="sl">Inpatients</div><div class="sv">${countStatus('inpatient')}</div><div class="ss">actual + awaiting surgery</div></div>
       <div class="sbox"><div class="sl">Reversed</div><div class="sv">${countStatus('reversed')}</div><div class="ss">reversal register</div></div>
@@ -4383,6 +4417,9 @@ function renderPatientsList(){
       <div class="sbox"><div class="sl">Relocated</div><div class="sv">${countStatus('relocated_overseas')+countStatus('relocated_gozo')}</div><div class="ss">overseas / Gozo</div></div>`;
   }
   let rows=cfg.status==='all'?[...all]:all.filter(p=>patientMatchesRegisterStatus(p,cfg.status));
+  if(activeOwnerFilter){
+    rows=rows.filter(p=>normaliseFollowupOwner(p.followup_owner||'Common')===activeOwnerFilter);
+  }
   if(search){
     rows=rows.filter(p=>[
       p.first_name,p.surname,p.id_card,p.phone_number,p.followup_owner,p.consultant,p.locality,p.patient_status_raw,p.assigned_nurse_raw,p.assigned_nurse_raw,p.inpatient_type,p.planned_surgery_date,p.admission_route,patientRegisterStatusText(patientRegisterStatus(p)),p.sex,p.dob,p.rip_date,p.reversal_date,p.surgery_date,p.surgery_type,p.consultant,p.discharged_date,p.last_outcome_date,patientStomaTypeText(p.stoma_type_summary)
@@ -4451,7 +4488,7 @@ function renderPatientsList(){
   }
   if(!tbody)return;
   if(!rows.length){
-    tbody.innerHTML=`<tr><td colspan="${isAll?11:(isDeceased?12:(isReversed?11:(isInpatients?9:(isRelocatedOverseas?(isRelocatedGozo?11:8):10))))}" class="empty">No ${htmlSafe(cfg.title.toLowerCase())} found${search?' for this search':''}.</td></tr>`;
+    tbody.innerHTML=`<tr><td colspan="${isAll?11:(isDeceased?12:(isReversed?11:(isInpatients?9:(isRelocatedOverseas?(isRelocatedGozo?11:8):10))))}" class="empty">No ${htmlSafe(activeOwnerFilter?activeOwnerFilter+' patients':cfg.title.toLowerCase())} found${search?' for this search':''}.</td></tr>`;
     return;
   }
   tbody.innerHTML=rows.map(p=>{
